@@ -44,3 +44,43 @@
     docker system info # общая информация о системе (соответствует docker info)
     docker system df # занятое место на диске
     docker system prune -af # удаление неиспользуемых данных и очистка диска
+
+# named volume
+    docker run --detach --name jenkins --publish 80:8080 --volume=jenkins_home:/var/jenkins_home/ jenkins/jenkins:lts-jdk11 # запуск контейнера jenkins с подключением каталога /var/jenkins_home как тома jenkins_home
+    docker volume ls # просмотр томов
+    docker volume prune # удаление неиспользуемых томов и очистка диска. Для удаления тома все контейнеры, в которых он подключен, должны быть остановлены и удалены
+ 
+# bind mount
+# запуск контейнера node-exporter с монтированием каталогов внутрь контейнера в режиме read only: 
+    /proc хоста прокидывается в /host/proc:ro внутрь контейнера, /sys - в /host/sys:ro, а / - в /rootfs:ro
+
+    docker run \
+    -p 9100:9100 \
+    -v "/proc:/host/proc:ro" \
+    -v "/sys:/host/sys:ro" \
+    -v "/:/rootfs:ro" \
+    --name node-exporter prom/node-exporter:v1.1.2
+
+# commit
+# запуск контейнера из образа ubuntu в интерактивном режиме, установка утилиты ping и коммит образа под именем ubuntu-ping:20.04
+    docker run -it --name ubuntu-ping ubuntu:20.04 bash
+    apt update && apt install -y iputils-ping
+    exit
+    docker commit ubuntu-ping ubuntu-ping:20.04
+    docker images
+ 
+# Dockerfile
+# создание файла Dockerfile декларативного описания
+    FROM ubuntu:20.04
+    RUN apt-get update && apt-get install -y iputils-ping
+ 
+# запуск команды build из каталога с Dockerfile для создания образа simust/ubuntu-ping:20.04
+    docker build -t ubuntu-ping:20.04 .
+    docker images
+ 
+# tag, login, push
+    docker tag ubuntu-ping:20.04 simust/ubuntu-ping:20.04 # создание из локального образа ubuntu-ping:20.04 тега с репозиторием для издателя simust
+    docker images
+# вход в репозиторий docker.io под пользователем simust и отправка образа
+    docker login -u simust docker.io
+    docker push simust/ubuntu-ping:20.04
