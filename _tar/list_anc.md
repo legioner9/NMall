@@ -13,3 +13,7 @@ https://pythonru.com/
 https://pythobyte.com
 
 https://python.astrotech.io
+
+https://docs.pydantic.dev/latest/
+
+https://www.opennet.ru/docs/
