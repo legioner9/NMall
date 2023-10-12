@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Используем procmail для управления почтой — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://neddoc.com/diplom-o-professionalnoj-perepodgotovke/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Диплом о профессиональной переподготовке </p> <p class='block_links_text'> <a href="https://neddoc.com/diplom-o-professionalnoj-perepodgotovke/" target="_blank">Диплом о профессиональной переподготовке</a> что такое профессиональная переподготовка. </p><p class='block_links_url'> neddoc.com </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Используем procmail для управления почтой</h1>
+
+<ul><li><A
+href="procmail.htm#instalacion">Установка</A></li>
+<li><A
+href="procmail.htm#funcionamiento">Основные
+функции</A></li>
+<li><A
+href="procmail.htm#configuracion">Конфигурация</A></li>
+<li><A
+href="procmail.htm#lists">Списки
+рассылки (mailing lists)</A></li>
+<li><A
+href="procmail.htm#contestacion">Ответы
+на почту</A></li>
+<li><A
+href="procmail.htm#evitando">Бесконечные
+циклы</A></li>
+<li><A
+href="procmail.htm#decode">Декодирование
+файлов</A></li>
+<li><A
+href="procmail.htm#conclusion">Заключение</A></li></ul>
+
+            <h2>Установка</h2>
+            <P>Первым делом необходимо получить <!--<A
+            href="ftp://ftp.informatik.rwth-aachen.de/pub/packages/procmail/procmail.tar.gz">-->последнюю
+            версию procmail<!--</A>-->. Когда писалась эта статья, последней версией
+            была 3.11pre7.</P>
+            <P>После получения исходного кода программы, для инсталляции его
+            необходимо разархивировать следующей командой: <TT>tar -xzvf
+            procmail.tar.gz</TT></P>
+            <P>Следующий шаг заключается в редактировании файлов
+            <TT>Makefile</TT> и <TT>config.h</TT>. Поскольку эта статья только
+            введение, и чтобы его чрезмерно не усложнять, мы не будем объяснять
+            различные опции конфигурации этих файлов. Заинтересовавшийся
+            читатель может посмотреть в справочных страницах (manual pages) и
+            поставляемой с исходным текстом документации.</P>
+            <P>Тем не менее, о существовании опции <TT>BASENAME</TT> в
+            <TT>Makefile</TT> обычно упоминается. Этой опцией мы указываем
+            базовый каталог, в который будет установлен procmail. Из указанного
+            нами базового каталога пойдут другие каталоги, такие как
+            <TT>bin</TT> и <TT>man</TT>.</P>
+            <P>Наконец, для компиляции пакета мы должны выполнить команду
+            <TT>make install</TT>.</P>
+            <P>Procmail можно установить для всей системы и затем вызывать
+            некоторым правилом <TT>sendmail(8)</TT>, или он может быть
+            установлен любым пользователем для личного использования. В
+            последнем случае пользователь указывает использование procmail в
+            своем файле <TT>.forward</TT>, где должна присутствовать строка на
+            подобии следующей:</P><TT>|IFS=' ' &amp;&amp; exec
+            /home/juan/procmail/bin/procmail -f- || exit 75 #juan</TT>
+            <P>В этой строке я предположил, что пользователь <I>juan</I>
+            установил procmail в свой домашний каталог HOME. Для этой конкретной
+            строки <TT>BASENAME</TT>, указываемое во время компиляции, будет
+            <TT>/home/juan/procmail</TT>.</P><A name=funcionamiento></A>
+            <h2>Основные функции</h2>
+            <P>Procmail читает из своего стандартного входа. Он проверяет
+            конфигурационный файл <TT>.procmailrc</TT>, который должен
+            находиться в каталоге HOME пользователя. В этом файле
+            определяются некоторые правила, которые указывают procmail, какие
+            действия надо предпринять после получения сообщения. Он может
+            решить, что с ним делать - сохранить его, игнорировать,
+            автоматически ответить и т.д. - проверив некоторые строки в
+            заголовке сообщения.</P>
+            <P>Кроме того, procmail позволяет нам автоматически обрабатывать
+            приходящую почту или почту, хранящуюся в файле.</P><A
+            name=configuracion></A>
+            <h2>Конфигурация</h2>
+            <P>Используется конфигурационный файл <TT>.procmailrc</TT> и он
+            должен находиться в каталоге HOME.</P>
+            <P>Любая строка, начинающаяся с <TT>#</TT> считается
+            комментарием.</P>
+            <P>Строки, начинающиеся с <TT>:0</TT> или <TT>:0:</TT> указывают на
+            начало нового правила, которое говорит procmail что делать с
+            сообщением.</P>
+            <P>Строки, начинающиеся с <TT>*</TT>, обозначают условие выполнения
+            правила. Procmail использует этот механизм для определения
+            сообщения, которое необходимо обработать этим правилом.</P>
+            <P>Оставшиеся строки, то есть те, которые не начинаются с <TT>:</TT>
+            или <TT>*</TT> рассматриваются как команды, или, другими словами,
+            предпринимаемые procmail'ом действия, удовлетворяющие условию.
+            Некоторыми возможными действиями или командами могут быть удалить
+            сообщение, переслать сообщение, сохранить сообщение и т.д.</P>
+            <P>Первым делом необходимо указать в <TT>.procmailrc</TT> некоторые
+            переменные окружения, здесь приведены некоторые из переменных,
+            которые бы я порекомендовал определить в вашем .procmailrc </P>
+            <P><B>MAILDIR</B><BR>Указывает на каталог, в котором procmail
+            сохраняет файлы с почтовыми сообщениями. Обычно эта переменная
+            указывает на $HOME/mail или $HOME/Mail. Тот или иной каталог,
+            зависит от используемого почтового клиента.</P>
+            <P><B>LOGFILE</B><BR>Указывает на имя лог-файла, в котором procmail
+            записывает все выполненные операции.</P>
+            <P><B>SENDMAIL</B><BR>Указывает на то, где найти sendmail, который
+            используется для автоматического ответа на сообщения.</P>
+            <P><B>FORMAIL</B><BR>Указывает на то, где найти formail. Эта
+            программа распространяется вместе с procmail и ее задачей является
+            изменение почтовых заголовков или переформатирование сообщения для
+            отправки или сохранения.</P>
+            <P><B>DEFAULT</B><BR>Файл, в котором сохраняется сообщение, если
+            procmail не может применить к нему ни одного определенного
+            правила.</P>
+            <P>Определять переменную окружения можно в любом месте
+            <TT>.procmailrc</TT>. Если переменная записана без символа
+            <TT>=</TT>, за которым следует значение, то такая переменная
+            удаляется.</P>
+            <P>Что касается правил, то они делятся на две группы: Первые
+            предполагают, что после их применения сообщение доставлено, и
+            остальные.</P>
+            <P>Первые правила простые, после обработки предполагается, что к
+            этому сообщению дальнейшие правила не применяются и поэтому
+            сообщение считается доставленным.</P>
+            <P>Второй тип правил, то есть те, которые не считают, что сообщение
+            доставлено после их обработки, очень полезны при использовании
+            нескольких правил и для многократной обработки перед доставкой
+            одного и того же сообщения.</P>
+            <P>Общий синтаксис правила следующий:<BR><PRE>
+           :0 [опции] [ : [исполняемый файл] ]
+           * условие 1
+           * условие 2
+                 .
+                 .
+                 .
+           * условие N
+           команда
+           </PRE>
+            <P>Пройдемся по каждой части и проанализируем ее конструкцию. Прежде
+            всего, каждое правило начинается с <TT>:0</TT>, после этого могут
+            следовать любые из этих опций:</P><B>H</B> Условие применяется к
+            заголовку почты.<BR><B>B</B> Условие ищется в теле
+            сообщения.<BR><B>D</B> Это условие означает, что верхний и нижний
+            регистры различаются.<BR><B>A</B> Это правило применяется только
+            когда применялось предыдущее.<BR><B>a</B> Как и <B>A</B>, за
+            исключением того, что при применении предыдущего правила ошибок не
+            должно быть.<BR><B>E</B> Это правило выполняется, если предыдущее не
+            было применено.<BR><B>e</B> Это правило будет исполнено, если
+            предыдущее был выполнено, но завершилось с ошибками.<BR><B>h</B>
+            Команде передается заголовок сообщения.<BR><B>b</B> Команде
+            передается тело сообщения.<BR><B>f</B> Команда интерпретируется как
+            фильтр.<BR><B>c</B> Создать копию <I>cc</I> сообщения. При
+            применении этого правила предполагается, что сообщение доставляется
+            с этим флагом и после его доставки дальнейшие правила можно
+            применять к копии сообщения.<BR><B>w</B> Ждать окончания исполнения
+            команды для получения результата.<BR><B>W</B> Так же как и
+            предыдущая опция, но в случае ошибки не выдавать ни каких
+            сообщений.<BR><B>i</B> Игнорировать возможные опечатки.<BR><B>r</B>
+            Пишет сообщение таким, как оно есть. Проверка на окончание пустой
+            строкой не выполняется.<BR>
+            <P>По умолчанию, если не была указана ни одна опция, условие
+            применяется к заголовку сообщения (опция H). На стандартный вход
+            команды поуступает и заголовок и тело сообщения (опции h и g).
+            Верхний и нижний регистры не различаются.</P>
+            <P>После <TT>:0</TT> и возможных опций может следовать второе
+            <TT>:</TT>. Если так и есть, то это указывает на то, что файл
+            назначения, куда должно быть записано сообщение, должен быть
+            блокирован во избежание ситуации, когда два процесса одновременно
+            пишут в один файл. Можно указать файл, который будет использован в
+            качестве блокирующего.</P>
+            <P>Далее идут условия, по одному в строке, и перед каждым ставится
+            символ <TT>*</TT>. Условия обычно записываются в виде <I>регулярных
+            выражений</I> для того, чтобы определить последовательность символов
+            в заголовке или теле сообщения. Регулярное выражение среди прочих
+            использует следующие символы:</P><B>^</B> Начало строки.<BR><B>$</B>
+            Конец строки.<BR><B>.</B> Любой символ, за исключением символа
+            возврата каретки.<BR><B>*</B> Ноль или более раз.<BR><B>+</B> Один
+            или более раз.<BR><B>?</B> Ноль или более раз.<BR><B>[a-z]</B>
+            Диапазон символов, в этом случае от a до z.<BR><B>[^a-z]</B> Любой
+            символ вне диапазона от a до z.<BR><B>a|b</B> Или 'a' или 'b'<BR>
+            <P>После условий идет одна команда. Если первый символ команды
+            является одним из приведенных ниже, то предполагается особое
+            поведение:</P><B>!</B> Сообщение перенаправляется на все указанные
+            почтовые адреса.<BR><B>|</B> Если после этого символа следует
+            исполняемый файл, то он исполняется всякий раз, когда выполняется
+            условие. Если после этого символа ничего не стоит, то весь текст
+            сообщения отправляется на стандартный вывод. Если за <B>|</B>
+            следует переменная, то результат указанной команды сохраняется в эту
+            переменную.<BR><A name=lists></A>
+            <h2>Списки рассылки (mailing lists)</h2>
+            <P>Управление вашей почтой - это та ситуация, когда procmail может
+            быть очень полезен. Предположим, что мы подписаны на три списка
+            рассылка по Линукс, и каждый список идентифицируется по адресу
+            отправителя, например у нас могут быть следующие адреса</P><PRE>
+           <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6e02430207001b162e0d0f021801401a0b020b0d01401b021e090d400b1d">[email&#160;protected]</a>
+           linu<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0b734b657e68676e687e257e656a66256673">[email&#160;protected]</a>
+           <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="9af6f3f4efe2b7e9fff9efe8f3eee3dae8fffef2fbeeb4f9f5f7">[email&#160;protected]</a>
+         </PRE>
+            <P>При обычных условиях сообщения из этих списков рассылки будут
+            поступать вместе, на один и тот же почтовый ящик, и если ничего не
+            будет предпринято, они останутся перемешанными. Было бы гораздо
+            проще, если бы поступающая почта сортировалась и сохранялась в
+            соответствующих файлах.</P>
+            <P>Procmail решает эту проблему просто. Мы можем использовать файл
+            <TT>.procmailrc</TT> со следующими очень простыми правилами
+            сортировки нашей почты из различных списков рассылки по Линукс:</P><PRE>
+:0
+* ^From.*<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c2aeefaeabacb7ba82a1a3aeb4adecb6a7aea7a1adecb7aeb2a5a1eca7b1">[email&#160;protected]</a>
+l-linux
+
+:0
+* ^From.*<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="2b4742455e536b455e48474e485e055e454a46054653">[email&#160;protected]</a>
+linux-mx
+
+:0
+* ^From.*<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f5999c9b808dd886909680879c818cb58790919d9481db969a98">[email&#160;protected]</a>
+linux-security
+</PRE>
+            <P>Внимательно исследуем одно из этих правил. Если вы поймете
+            внутренний принцип работы какого-либо правила, то легко будет понять
+            остальное, поскольку основной механизм остается прежним.</P>
+            <P>В начале находится строка <TT>:0</TT>, которая обозначает начало
+            нового правила. Других опций не указано, поэтому для этого правила
+            procmail берет опции по умолчанию: верхний и нижний регистры не
+            различаются, условие применяется только к заголовку почты, команда
+            обрабатывает и заголовок и тело сообщения.</P>
+            <P>В следующей строке находится условие, которое, поскольку оно
+            упоминалось прежде, всегда распознается, так как первым стоит символ
+            <TT>*</TT>. Условие является следующим регулярным
+            выражением:</P><TT>^From.*<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="680401061d1028061d0b040d0b1d461d060905460510">[email&#160;protected]</a></TT><BR>
+            <P>Подстрока <TT>^From</TT> указывает procmail на то, что необходимо
+            искать эти строки следом за подстрокой <TT>From</TT>.</P>
+            <P>Следующий символ <TT>.*</TT> означает любое количество символов.
+            Ранее мы отметили, что в регулярном выражении символ "<TT>.</TT>"
+            эквивалентент любому символу, а <TT>*</TT> обозначает ноль или
+            больше. Следовательно <TT>.*</TT> означает, что после начального
+            <TT>From</TT> может быть ноль или более символов.</P>
+            <P>Дальше идет строка <TT><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5a3633342f221a342f39363f392f742f343b37743722">[email&#160;protected]</a></TT>, которая
+            является адресом, с которого пришло сообщение.</P>
+            <P>Подумав немного над этим регулярным выражением, вы поймете, что
+            это правило "вычислит" следующие строки:</P><PRE>
+From: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="1c70757269645c72697f70797f693269727d71327164">[email&#160;protected]</a>
+From:<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="375b5e59424f775942545b525442194259565a195a4f">[email&#160;protected]</a>
+FROM <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5f3336312a271f312a3c333a3c2a712a313e32713227">[email&#160;protected]</a>
+</PRE>
+            <P>Используя это правило, уже можно различать сообщения, приходящие
+            с этого адреса и остальные. Что же теперь нужно сделать с
+            сообщением?.</P>
+            <P>Следующей строкой является команда (или действие) и оно
+            указывает, что делать с сообщением. В этом случае предполагается
+            сохранить его в файле <TT>linux-mx</TT>. Если абсолютный путь к
+            файлу не указан, по умолчанию принимается, что он добавляется к
+            переменной окружения <TT>$MAILDIR</TT>.</P>
+            <P>Очевидно, сообщения приходящие из различных списков теперь можно
+            распределять по различным файлам, в зависимости от адреса
+            отправителя (поле From).</P><A name=contestacion></A>
+            <h2>Автоматический ответ</h2>
+            <P>Другой ситуацией, в которой procmail может пригодиться, являются
+            автоответчики. Часто очень удобно, например, если вы хотите
+            автоматически отправить ваш публичный ключ PGP любому, запросившему
+            его по E-Mail</P>
+            <P>Чтобы это сделать, напишите правило, которое считает запросом
+            вашего ключа PGP любое собщение, в строке subject которого есть
+            строка PGP. Это правило можно записать как:</P><PRE>
+0:
+* ^Subject.*PGP
+| (formail -r ; cat $HOME/key.asc) | sendmail -t
+</PRE>
+            <P>Та же самая идея используется для написания обычной программы,
+            которая сообщает людям о том, что мы в отпуске и ответим на их
+            почтовое сообщение по возвращении:</P><PRE>
+0:
+| (formail -r; cat $HOME/vacations.txt) | sendmail -t
+</PRE>
+            <P>В последнем случае условий нет, так как на все сообщения будут
+            отправлены одни и те же ответы.</P><A name=evitando></A>
+            <h2>Как избежать зацикливания автоответчика</h2>
+            <P>В предыдущих примерах не было попыток обработки возможного
+            зацикливания, которое иногда случается, если почта отвечается
+            автоматически.</P>
+            <P>Если в сообщении адресом отправителя является наш собственный
+            E-Mail адрес, и программа должна ответить на этот адрес, то ответ
+            вернется к нам же. На это сообщение следует еще один ответ и так
+            далее до бесконечности. Чтобы этого избежать, при ответе на
+            сообщение нужно добавить дополнительную строку к заголовку, чтобы
+            указать, что на это сообщение уже отвечали. Используется опция
+            <TT>-A</TT> formail:</P><TT>formail -r -A"X-Loop: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f89c918ab89d95999194d69d8b">[email&#160;protected]</a>"
+            </TT><BR>
+            <P>Здесь <TT><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="1d79746f5d78707c747133786e">[email&#160;protected]</a></TT> будет нашим собственным E-Mail
+            адресом. В этом случае при создании заголовка ответа добавляется
+            строка <I>X-Loop</I> с тем, чтобы позднее можно было проверить новым
+            правилом:</P><PRE>
+:0
+* !^X-Loop: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c9ada0bb89aca4a8a0a5e7acba">[email&#160;protected]</a>
+| (formail -r -A"X-Loop: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="89ede0fbc9ece4e8e0e5a7ecfa">[email&#160;protected]</a>" ;
+    cat $HOME/vacation.txt) | sendmail -t
+</PRE>
+            <P>Это правило предотвращает зацикливание, так как любое собщение,
+            содержащее в заголовке строку <I>X-Loop</I> не будет удовлетворять
+            условиям, и в результате procmail на него не ответит.</P><A
+            name=decode></A>
+            <h2>Декодирование файлов</h2>
+            <P>Еще одним интересным правилом нашего <TT>.procmailrc</TT> может
+            быть декодировка поступающей почты, автоматически закодированной
+            <TT>uuencode(1)</TT>. Это правило можно задать как:</P><PRE>
+:0 B
+* ^begin 644 .*
+{
+        MAILDIR=$HOME/files
+
+        :0
+        | uudecode
+}
+</PRE>
+            <P>Здесь явно задано опцией <TT>B</TT>, что условие правила должно
+            применяться только к телу сообщения.</P>
+            <P>Если правило находит строку, начинающуюся со строки "begin 644",
+            то это означает, что это начало файла, закодированного
+            <TT>uuencode(1)</TT>, поэтому устанавливается переменная окружения
+            <TT>MAILDIR</TT>, что эквивалентно изменению каталога, на который
+            указывает эта переменная. С этого момента все действия по выводу
+            сообщений будут выполняться с учетом указанного базового каталога. В
+            нашем случае, нам необходимо, чтобы поступающие сообщения
+            сохранялись в <TT>$HOME/files</TT>.</P>
+            <P>Дальше идет правило, безусловное, которое только направляет
+            сообщение в канал для декодирования. Исходный файл будет отправлен в
+            <TT>$HOME/files</TT>.</P><A name=conclusion></A>
+            <h2>Заключение</h2>
+            <P>Хочется верить, что после этого краткого вводного курса в
+            procmail стало ясно, что procmail чрезвычайно гибок и может помочь
+            сделать управление нашей почтой очень простым и удобным. Я бы
+            рекомендовал поэкспериментировать с регулярными выражениями и
+            правилами, адаптировать их к вашим потребностям, так как возможности
+            procmail простираются гораздо дальше, чем я смог обсудить в этом
+            кратком вступлении.</P>
+
+            <B>Дальнейшая информация</B>:<BR>
+      <UL>
+        <LI>Прочтите страницу справки (manual page) по procmail
+        <LI>Прочтите другие статьи этого автора: <!--<A
+        href="http://www.tldp.org/linuxfocus/Russian/November1997/article7.html">-->PGP
+        в Linux<!--</A>-->.
+        <UL><BR><BR>
+          <P align=right><I>Перевод на русский: <A href="../cdn-cgi/l/email-protection.html#f994988a919e8b989db98c8a98d7979c8d">Владимир Попов</A></I></P></UL></LI></UL>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

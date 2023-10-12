@@ -1,0 +1,1585 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>X Window System и виртуальные консоли — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Часто Задаваемые Вопросы
+          по FreeBSD 2.X, 3.X и 4.X</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "admin.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">
+          </td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "networking.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="CHAPTER">
+      <h1><a name="X">Chapter 11. X Window System и виртуальные
+      консоли</a></h1>
+
+      <div class="QANDASET">
+        <dl>
+          <dt>11.1. <a href="x.html#RUNNING-X">Я хочу запустить X,
+          как это сделать?</a></dt>
+
+          <dt>11.2. <a href="x.html#RUNNING-X-SECURELEVELS">Я <span
+          class="emphasis"><i class="EMPHASIS">попытался</i></span>
+          запустить X, но получил сообщение ``<tt class=
+          "ERRORNAME">KDENABIO failed (Operation not
+          permitted)</tt>'' после ввода команды <tt class=
+          "COMMAND">startx</tt>. Что мне теперь делать?</a></dt>
+
+          <dt>11.3. <a href="x.html#X-AND-MOUSED">Почему моя мышь
+          не работает с X?</a></dt>
+
+          <dt>11.4. <a href="x.html#X-AND-WHEEL">У моей мыши есть
+          колёсико. Могу ли я его использовать при работе в
+          X?</a></dt>
+
+          <dt>11.5. <a href="x.html#WINDOW-MENU-WEIRD">Меню и
+          диалоговые окна в X Window работают неправильно!</a></dt>
+
+          <dt>11.6. <a href="x.html#VIRTUAL-CONSOLE">Что такое
+          виртуальные консоли и как изменить их
+          количество?</a></dt>
+
+          <dt>11.7. <a href="x.html#VTY-FROM-X">Как осуществляется
+          доступ к виртуальным консолям из X?</a></dt>
+
+          <dt>11.8. <a href="x.html#XDM-BOOT">Как запустить XDM во
+          время загрузки?</a></dt>
+
+          <dt>11.9. <a href="x.html#XCONSOLE-FAILURE">При запуске
+          xconsole выдаётся сообщение ``<tt class=
+          "ERRORNAME">Couldn't open console</tt>''.</a></dt>
+
+          <dt>11.10. <a href="x.html#XFREE86-ROOT">Раньше я
+          запускал XFree86, работая как обычный пользователь, а
+          теперь при запуске выдается сообщение о том, что я должен
+          быть пользователем <tt class=
+          "USERNAME">root</tt>!</a></dt>
+
+          <dt>11.11. <a href="x.html#PS2-X">Моя мышь PS/2 в X
+          работает неправильно.</a></dt>
+
+          <dt>11.12. <a href="x.html#PS2-MOUSESYSTEMS">Моя мышь
+          PS/2 от MouseSystems похоже, не работает.</a></dt>
+
+          <dt>11.13. <a href="x.html#IMAKE-TMPL">При компиляции
+          приложений для X программа <tt class="COMMAND">imake</tt>
+          не может найти файл <tt class="FILENAME">Imake.tmpl</tt>.
+          Где он находится?</a></dt>
+
+          <dt>11.14. <a href="x.html#MOUSE-BUTTON-REVERSE">Как
+          поменять местами кнопки мыши?</a></dt>
+
+          <dt>11.15. <a href="x.html#INSTALL-SPLASH">Как установить
+          экранную заставку и где такие заставки можно
+          найти?</a></dt>
+
+          <dt>11.16. <a href="x.html#WINDOWS-KEYS">Можно ли в X
+          использовать клавиши Windows(tm), которые есть на
+          клавиатуре?</a></dt>
+
+          <dt>11.17. <a href="x.html#X-3D-ACCELERATION">Как
+          заставить работать аппаратное ускорение 3D-графики для
+          OpenGL?</a></dt>
+        </dl>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="RUNNING-X"></a><b>11.1.</b> Я хочу
+            запустить X, как это сделать?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Самый простой способ - это указать во время
+            инсталляции, что вы хотите использовать X.</p>
+
+            <p>Затем следуйте указаниям в документации по утилите
+            <tt class="COMMAND">xf86config</tt>, которая
+            предназначена для конфигурирования работы XFree86(tm) с
+            вашим графическим адаптером/мышью/итд.</p>
+
+            <p>Вы можете также попробовать сервер Xaccel. За
+            подробной информацией обратитесь к разделу,
+            посвящённому продуктам фирм <a href=
+            "commercial.html#XIG">Xi Graphics</a> и <a href=
+            "commercial.html#METROX">Metro Link</a>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="RUNNING-X-SECURELEVELS"></a><b>11.2.</b> Я
+            <span class="emphasis"><i class=
+            "EMPHASIS">попытался</i></span> запустить X, но получил
+            сообщение ``<tt class="ERRORNAME">KDENABIO failed
+            (Operation not permitted)</tt>'' после ввода команды
+            <tt class="COMMAND">startx</tt>. Что мне теперь
+            делать?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>В вашей системе установлен повышенный уровень
+            безопасности, не так ли? На самом деле, при повышенном
+            уровне защиты X запустить невозможно. Чтобы выяснить,
+            почему это так, обратитесь к страницам справки по <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">init</span>(8)</span>.</p>
+
+            <p>Так что вопрос сводится к тому, как вам это обойти,
+            и у вас здесь есть в основном два варианта: понизить
+            ваш уровень защиты обратно к нулю (обычно это делается
+            в <tt class="FILENAME">/etc/rc.conf</tt>) или во время
+            загрузки запускать <span class="CITEREFENTRY"><span
+            class="REFENTRYTITLE">xdm</span>(1)</span> (до того,
+            как повышается уровень защиты).</p>
+
+            <p>Обратитесь к <a href="x.html#XDM-BOOT">Q: 11.8.</a>
+            для получения более полной информации о запуске <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">xdm</span>(1)</span> во время
+            загрузки.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="X-AND-MOUSED"></a><b>11.3.</b> Почему моя
+            мышь не работает с X?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Если вы используете syscons (стандартный
+            драйвер консоли), то можете настроить поддержку
+            указателя мыши во всех виртуальных экранах. Во
+            избежание конфликтов с X, драйвер syscons поддерживает
+            виртуальное устройство <tt class=
+            "DEVICENAME">/dev/sysmouse</tt>. Все события,
+            получаемые от реальной мыши, пишутся в устройство
+            sysmouse через moused. Если вы хотите использовать вашу
+            мышь на одной или нескольких виртуальных консолях,
+            <span class="emphasis"><i class=
+            "EMPHASIS">продолжая</i></span> использовать X,
+            посмотрите <a href="hardware.html#MOUSED">Q: 4.13.</a>
+            и настройте moused.</p>
+
+            <p>Затем отредактируйте <tt class=
+            "FILENAME">/etc/XF86Config</tt> так, чтобы в нём были
+            следующие строки.</p>
+<pre class="PROGRAMLISTING">
+    Section        Pointer
+    Protocol       "SysMouse"
+    Device         "/dev/sysmouse"
+    .....
+
+</pre>
+
+            <p>Пример выше предназначен для XFree86 3.3.2 и выше.
+            Для более ранних версий параметр <span class=
+            "emphasis"><i class="EMPHASIS">Protocol</i></span>
+            должен быть <span class="emphasis"><i class=
+            "EMPHASIS">MouseSystems</i></span>.</p>
+
+            <p>Некоторые предпочитают использовать в X устройство
+            <tt class="DEVICENAME">/dev/mouse</tt>. Чтобы оно
+            работало, файл устройства <tt class=
+            "DEVICENAME">/dev/mouse</tt> должен являться ссылкой на
+            <tt class="DEVICENAME">/dev/sysmouse</tt> (посмотрите
+            справку по <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">sysmouse</span>(4)</span>):</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /dev</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>rm -f mouse</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>ln -s sysmouse mouse</b></tt>
+
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="X-AND-WHEEL"></a><b>11.4.</b> У моей мыши
+            есть колёсико. Могу ли я его использовать при работе в
+            X?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Да. Но вам нужно будет настроить
+            программы-клиенты для X. Посмотрите <!--<a href=
+            "http://www.inria.fr/koala/colas/mouse-wheel-scroll/"
+            target="_top">-->страничку Коласа Наабу (Colas Nahaboo)
+            (http://www.inria.fr/koala/colas/mouse-wheel-scroll/)<!--</a>-->.</p>
+
+            <p>Если вы собираетесь использовать программу <b class=
+            "APPLICATION">imwheel</b>, следуйте этим простым
+            указаниям:</p>
+
+            <ol type="1">
+              <li>
+                <p>Трансляция событий от колёсика</p>
+
+                <p>Работа программы <b class=
+                "APPLICATION">imwheel</b> основана на трансляции
+                событий от кнопок мыши 4 и 5 в события от
+                клавиатуры. То есть вам нужно заставить драйвер
+                мыши транслировать события от колёсика в события от
+                кнопок 4 и 5. Есть два способа сделать это, в
+                первом из которых трансляцию выполняет <span class=
+                "CITEREFENTRY"><span class=
+                "REFENTRYTITLE">moused</span>(8)</span>. Во втором
+                методе трансляцию событий выполняет сам
+                X-сервер.</p>
+
+                <ol type="a">
+                  <li>
+                    <p>Использование <span class=
+                    "CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span> для
+                    трансляции событий от колёсика</p>
+
+                    <p>Для того, чтобы <span class=
+                    "CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span>
+                    выполнял преобразование событий, просто
+                    добавьте опцию <tt class="OPTION">-z 4</tt> к
+                    команде, запускающей <span class=
+                    "CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span>.
+                    Например, если обычно вы запускаете <span
+                    class="CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span>
+                    командой <tt class="COMMAND">moused -p
+                    /dev/psm0</tt>, то теперь вы должны будете
+                    использовать <tt class="COMMAND">moused -p
+                    /dev/psm0 -z 4</tt>. Если <span class=
+                    "CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span>
+                    запускается у вас автоматически во время
+                    загрузки через <tt class=
+                    "FILENAME">/etc/rc.conf</tt>, то вы можете
+                    просто добавить опцию <tt class="OPTION">-z
+                    4</tt> к переменной <tt class=
+                    "VARNAME">moused_flags</tt> в файле <tt class=
+                    "FILENAME">/etc/rc.conf</tt>.</p>
+
+                    <p>Теперь вам нужно указать X, что вы
+                    используете 5-кнопочную мышь. Для этого просто
+                    добавьте строчку <tt class="LITERAL">Buttons
+                    5</tt> в секцию <span class=
+                    "QUOTE">"Pointer"</span> файла <tt class=
+                    "FILENAME">/etc/XF86Config</tt>. Например, в
+                    вашем файле <tt class=
+                    "FILENAME">/etc/XF86Config</tt> секция <span
+                    class="QUOTE">"Pointer"</span> может принять
+                    такой вид:</p>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3957"></a>
+
+                      <p><b>Example 11-1. Секция <span class=
+                      "QUOTE">"Pointer"</span> для мыши с колёсиком
+                      из файла XF86Config для XFree86 3.x с
+                      трансляцией через moused</b></p>
+<pre class="PROGRAMLISTING">
+    Section "Pointer"
+                  Protocol        "SysMouse"
+                  Device          "/dev/sysmouse"
+                  Buttons         5
+                  EndSection
+</pre>
+                    </div>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3961"></a>
+
+                      <p><b>Example 11-2. Секция <span class=
+                      "QUOTE">"InputDevice"</span> для мыши с
+                      колёсиком из файла XF86Config для XFree86 4.x
+                      с преобразованием через X-сервер</b></p>
+<pre class="PROGRAMLISTING">
+    Section "InputDevice"
+       Identifier      "Mouse1"
+       Driver          "mouse"
+       Option          "Protocol" "auto"
+       Option          "Device" "/dev/sysmouse"
+       Option          "Buttons" "5"
+    EndSection
+</pre>
+                    </div>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3965"></a>
+
+                      <p><b>Example 11-3. Пример <span class=
+                      "QUOTE">".emacs"</span> для простой прокрутки
+                      страницы мышью с колёсиком</b></p>
+<pre class="PROGRAMLISTING">
+    ;; wheel mouse
+    (global-set-key [mouse-4] 'scroll-down)
+    (global-set-key [mouse-5] 'scroll-up)
+</pre>
+                    </div>
+                  </li>
+
+                  <li>
+                    <p>Использование X-сервера для трансляции
+                    событий от колёсика</p>
+
+                    <p>Если <span class="CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span> у вас
+                    не запущен или если вы не хотите, чтобы <span
+                    class="CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span>
+                    занимался трансляцией событий от колёсика, то
+                    это может сделать X-сервер. Это требует
+                    некоторых модификаций в вашем файле <tt class=
+                    "FILENAME">/etc/XF86Config</tt>. Во-первых, вам
+                    нужно правильно выбрать протокол для вашей
+                    мыши. Большинство манипуляторов с колёсиками
+                    используют протокол <span class=
+                    "QUOTE">"IntelliMouse"</span>. Однако XFree86
+                    поддерживает другие протоколы, такие, как <span
+                    class="QUOTE">"MouseManPlusPS/2"</span> для
+                    мышей Logitech MouseMan+. После того, как вы
+                    выберите используемый протокол, в секцию <span
+                    class="QUOTE">"Pointer"</span> нужно будет
+                    добавить строчку <tt class=
+                    "VARNAME">Protocol</tt>.</p>
+
+                    <p>Во-вторых, вам нужно указать, что X-сервер
+                    будет переопределять события от колёсика в
+                    события от кнопок 4 и 5. Это делается заданием
+                    опции <tt class=
+                    "VARNAME">ZAxisMapping</tt>.</p>
+
+                    <p>Например, если вы не используете <span
+                    class="CITEREFENTRY"><span class=
+                    "REFENTRYTITLE">moused</span>(8)</span> и ваша
+                    мышь IntelliMouse подключена к порту для мыши
+                    PS/2, в вашем файле <tt class=
+                    "FILENAME">/etc/XF86Config</tt> должно быть
+                    указано следующее:</p>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3990"></a>
+
+                      <p><b>Example 11-4. Секция <span class=
+                      "QUOTE">"Pointer"</span> для мыши с колёсиком
+                      из файла <tt class="FILENAME">XF86Config</tt>
+                      с трансляцией с помощью X-сервера</b></p>
+<pre class="PROGRAMLISTING">
+    Section "Pointer"
+                  Protocol        "IntelliMouse"
+                  Device          "/dev/psm0"
+                  ZAxisMapping    4 5
+                  EndSection
+</pre>
+                    </div>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3995"></a>
+
+                      <p><b>Example 11-5. Раздел <span class=
+                      "QUOTE">"InputDevice"</span> для мыши с
+                      колесиком в XF86Config из XFree86 4.x с
+                      трансляцией через X-сервер</b></p>
+<pre class="PROGRAMLISTING">
+    Section "InputDevice"
+       Identifier      "Mouse1"
+       Driver          "mouse"
+       Option          "Protocol" "auto"
+       Option          "Device" "/dev/psm0"
+       Option          "ZAxisMapping" "4 5"
+    EndSection
+</pre>
+                    </div>
+
+                    <div class="EXAMPLE">
+                      <a name="AEN3999"></a>
+
+                      <p><b>Example 11-6. Пример <span class=
+                      "QUOTE">".emacs"</span> для простой прокрутки
+                      страницы при помощи мыши с колесиком</b></p>
+<pre class="PROGRAMLISTING">
+    ;; wheel mouse
+    (global-set-key [mouse-4] 'scroll-down)
+    (global-set-key [mouse-5] 'scroll-up)
+</pre>
+                    </div>
+                  </li>
+                </ol>
+              </li>
+
+              <li>
+                <p>Установка программы <b class=
+                "APPLICATION">imwheel</b></p>
+
+                <p>Теперь установите программу <b class=
+                "APPLICATION">Imwheel</b> из Коллекции Портов. Она
+                находится в категории <tt class=
+                "FILENAME">x11</tt>. Эта утилита будет
+                преобразовывать события от колёсика вашей мыши в
+                события от клавиатуры. Например, она может послать
+                в программу последовательность <b class=
+                "KEYCAP">Page Up</b>, когда вы крутите колёсико
+                вперёд. Для преобразования событий от колёсика в
+                нажатия клавиш <b class="APPLICATION">imwheel</b>
+                использует конфигурационный файл, причём для разных
+                приложений возможна посылка разных
+                последовательностей. Конфигурационным файлом,
+                используемым по умолчанию, является <tt class=
+                "FILENAME">/usr/X11R6/etc/imwheelrc</tt>. Вы можете
+                скопировать его в <tt class=
+                "FILENAME">~/.imwheelrc</tt> и отредактировать,
+                если хотите изменить параметры работы <b class=
+                "APPLICATION">imwheel</b>. Формат конфигурационного
+                файла описан на странице Справочника о <span class=
+                "CITEREFENTRY"><span class=
+                "REFENTRYTITLE">imwheel</span>(1)</span>.</p>
+              </li>
+
+              <li>
+                <p>Настройка редактора <b class=
+                "APPLICATION">Emacs</b> для работы с <b class=
+                "APPLICATION">Imwheel</b> (<span class=
+                "emphasis"><i class="EMPHASIS">по
+                желанию</i></span>)</p>
+
+                <p>Если вы используете <b class=
+                "APPLICATION">emacs</b> или <b class=
+                "APPLICATION">Xemacs</b>, то в ваш файл <tt class=
+                "FILENAME">~/.emacs</tt> нужно добавить маленький
+                раздел. Для редактора <b class=
+                "APPLICATION">emacs</b>, добавьте следующее:</p>
+
+                <div class="EXAMPLE">
+                  <a name="AEN4027"></a>
+
+                  <p><b>Example 11-7. Конфигурация Emacs для работы
+                  с Imwheel</b></p>
+<pre class="PROGRAMLISTING">
+    ;;; For imwheel
+              (setq imwheel-scroll-interval 3)
+              (defun imwheel-scroll-down-some-lines ()
+                (interactive)
+                (scroll-down imwheel-scroll-interval))
+              (defun imwheel-scroll-up-some-lines ()
+                (interactive)
+                (scroll-up imwheel-scroll-interval))
+              (global-set-key [?\M-\C-\)] 'imwheel-scroll-up-some-lines)
+              (global-set-key [?\M-\C-\(] 'imwheel-scroll-down-some-lines)
+              ;;; end imwheel section
+</pre>
+                </div>
+
+                <p>Для редактора <b class="APPLICATION">Xemacs</b>,
+                в ваш файл <tt class="FILENAME">~/.emacs</tt>
+                добавьте следующее:</p>
+
+                <div class="EXAMPLE">
+                  <a name="AEN4035"></a>
+
+                  <p><b>Example 11-8. Конфигурация Xemacs для
+                  работы с Imwheel</b></p>
+<pre class="PROGRAMLISTING">
+    ;;; For imwheel
+              (setq imwheel-scroll-interval 3)
+              (defun imwheel-scroll-down-some-lines ()
+                (interactive)
+                (scroll-down imwheel-scroll-interval))
+              (defun imwheel-scroll-up-some-lines ()
+                (interactive)
+                (scroll-up imwheel-scroll-interval))
+              (define-key global-map [(control meta \))] 'imwheel-scroll-up-some-lines)
+              (define-key global-map [(control meta \()] 'imwheel-scroll-down-some-lines)
+              ;;; end imwheel section
+</pre>
+                </div>
+              </li>
+
+              <li>
+                <p>Запуск <b class="APPLICATION">Imwheel</b></p>
+
+                <p>Вы можете просто набрать команду <tt class=
+                "COMMAND">imwheel</tt> в вашем в окне xterm после
+                установки. Она сама перейдёт в фоновый режим и
+                немедленно начнёт работу. Если вы хотите
+                использовать <b class="APPLICATION">imwheel</b>
+                всегда, просто добавьте её запуск в ваш <tt class=
+                "FILENAME">.xinitrc</tt> или <tt class=
+                "FILENAME">.xsession</tt>. Все предупреждения о
+                PID-файлах, которые выводит <b class=
+                "APPLICATION">imwheel</b>, можно проигнорировать.
+                Эти предупреждения имеют смысл только в
+                Linux-версии <b class=
+                "APPLICATION">imwheel</b>.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="WINDOW-MENU-WEIRD"></a><b>11.5.</b> Меню и
+            диалоговые окна в X Window работают неправильно!</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Попробуйте выключить Num Lock.</p>
+
+            <p>Если клавиша Num Lock во время загрузки по умолчанию
+            включена, добавьте в секцию <tt class=
+            "LITERAL">Keyboard</tt> файла <tt class=
+            "FILENAME">XF86Config</tt> следующую строку.</p>
+<pre class="PROGRAMLISTING">
+    # Let the server do the NumLock processing.  This should only be
+    # required when using pre-R6 clients
+        ServerNumLock
+
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="VIRTUAL-CONSOLE"></a><b>11.6.</b> Что такое
+            виртуальные консоли и как изменить их количество?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Виртуальные консоли, упрощённо говоря,
+            позволяют вам иметь несколько одновременных сеансов
+            работы с той же самой машиной без установки какой бы то
+            ни было сети или запуска X.</p>
+
+            <p>При запуске системы после вывода сообщений этапа
+            загрузки на консоль выдаётся приглашение на вход в
+            систему. Вы можете ввести своё имя и пароль и начать
+            работать (или играть!) на первой виртуальной
+            консоли.</p>
+
+            <p>В какой-то момент вы можете захотеть запустить ещё
+            одну сеанс, скажем, чтобы заглянуть в документацию по
+            программе, которую вы запустили или для для чтения
+            электронной почты во время ожидания завершения передачи
+            данных по FTP. Просто нажмите Alt-F2 (удерживая клавишу
+            Alt, нажмите F2) и вы обнаружите приглашение, ждущее
+            вас на второй <span class="QUOTE">"виртуальной
+            консоли"</span>! Когда захотите вернуться к
+            первоначальному сеансу, нажмите Alt-F1.</p>
+
+            <p>После инсталляции по умолчанию во FreeBSD
+            задействованы три виртуальных консоли (8 начиная с
+            3.3-RELEASE), а комбинации клавиш Alt-F1, Alt-F2 и
+            Alt-F3 служат для переключения между ними.</p>
+
+            <p>Чтобы увеличить количество консолей, отредактируйте
+            файл <tt class="FILENAME">/etc/ttys</tt> (посмотрите
+            справку по <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">ttys</span>(5)</span>), добавив туда
+            записи для терминалов с именами от <tt class=
+            "DEVICENAME">ttyv4</tt> до <tt class=
+            "DEVICENAME">ttyvc</tt> после слов <span class=
+            "QUOTE">"Virtual terminals"</span>:</p>
+<pre class="PROGRAMLISTING">
+    # Edit the existing entry for ttyv3 in /etc/ttys and change
+    # "off" to "on".
+    ttyv3   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv4   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv5   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv6   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv7   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv8   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyv9   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyva   "/usr/libexec/getty Pc"         cons25  on secure
+    ttyvb   "/usr/libexec/getty Pc"         cons25  on secure
+
+</pre>
+
+            <p>Используйте из них столько, сколько посчитаете
+            нужным. Чем больше виртуальных терминалов у вас
+            имеется, тем больше ресурсов они используют; это может
+            иметь значение, если у вас меньше чем 8МБ ОЗУ. Вы
+            можете сменить статус консолей с <tt class=
+            "LITERAL">secure</tt> на <tt class=
+            "LITERAL">insecure</tt>.</p>
+
+            <div class="IMPORTANT">
+              <blockquote class="IMPORTANT">
+                <p><b>Important:</b> Если вы хотите запустить X, вы
+                <span class="emphasis"><i class=
+                "EMPHASIS">должны</i></span> оставить для него по
+                крайней мере один неиспользуемый (или выключенный)
+                виртуальный терминал. Таким образов, если вы хотите
+                иметь приглашения login на всех двенадцати
+                функциональных клавиши, то вам не повезло - вы
+                можете это сделать только для одиннадцати из них,
+                если хотите на этой же машине ещё запустить
+                X-сервер.</p>
+              </blockquote>
+            </div>
+
+            <p>Самым простым способом убрать консоль является
+            просто её выключение. Например, если вы запустили на
+            всех 12 консолях виртуальные терминалы, как указано
+            выше, и ещё хотите запустить X, то должны будете
+            изменить параметры двенадцатого виртуального терминала
+            с:</p>
+<pre class="PROGRAMLISTING">
+    ttyvb   "/usr/libexec/getty Pc"         cons25  on  secure
+
+</pre>
+
+            <p>на:</p>
+<pre class="PROGRAMLISTING">
+    ttyvb   "/usr/libexec/getty Pc"         cons25  off secure
+
+</pre>
+
+            <p>Если на вашей клавиатуре только десять
+            функциональных клавиш, то последние строки будут
+            выглядеть так:</p>
+<pre class="PROGRAMLISTING">
+    ttyv9   "/usr/libexec/getty Pc"         cons25  off secure
+    ttyva   "/usr/libexec/getty Pc"         cons25  off secure
+    ttyvb   "/usr/libexec/getty Pc"         cons25  off secure
+
+</pre>
+
+            <p>(Вы также можете просто их удалить.)</p>
+
+            <p>После того, как вы отредактировали файл <tt class=
+            "FILENAME">/etc/ttys</tt>, проверьте, что у вас имеется
+            достаточное количество устройств для виртуальных
+            терминалов. Самый простой способ сделать это:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /dev</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>sh MAKEDEV vty12</b></tt>
+
+</pre>
+
+            <p>Самым простым (и надёжным) способом активировать
+            виртуальные консоли является перезагрузка. Однако если
+            вы вовсе не хотите этого делать, просто остановите X
+            Window System и выполните (как пользователь <tt class=
+            "USERNAME">root</tt>):</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>kill -HUP 1</b></tt>
+
+</pre>
+
+            <p>При этом требуется, чтобы вы полностью закрыли X
+            Window, если она была запущена, до запуска этой
+            команды. Если вы это не сделаете, ваша система может
+            повиснуть/заблокироваться после выполнения команды
+            kill.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="VTY-FROM-X"></a><b>11.7.</b> Как
+            осуществляется доступ к виртуальным консолям из X?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Используйте комбинацию клавиш <b class=
+            "KEYCAP">Ctrl</b>+<b class="KEYCAP">Alt</b>+<b class=
+            "KEYCAP">F<tt class="REPLACEABLE"><i>n</i></tt></b> для
+            переключения обратно в виртуальную консоль. Нажатие <b
+            class="KEYCAP">Ctrl</b>+<b class="KEYCAP">Alt</b>+<b
+            class="KEYCAP">F1</b> вернёт вас на первую виртуальную
+            консоль.</p>
+
+            <p>После того, как вы оказались в текстовой консоли,
+            можете использовать, как обычно, комбинации <b class=
+            "KEYCAP">Alt</b>+<b class="KEYCAP">F<tt class=
+            "REPLACEABLE"><i>n</i></tt></b> для переключения между
+            ними.</p>
+
+            <p>Чтобы вернуться в сеанс работы X, вы должны
+            переключиться в виртуальную консоль, на которой
+            запущена X Window. Если вы запустили X из командной
+            строки (например, при помощи команды <tt class=
+            "COMMAND">startx</tt>), то сеанс работы X будет
+            привязан к следующей неиспользуемой виртуальной
+            консоли, а не к той текстовой консоли, с которой он был
+            запущен. Если у вас имеется восемь активных виртуальных
+            терминалов, то X будет работать на девятом, и вам нужно
+            будет воспользоваться комбинацией <b class=
+            "KEYCAP">Alt</b>+<b class="KEYCAP">F9</b> для возврата
+            в X.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="XDM-BOOT"></a><b>11.8.</b> Как запустить
+            XDM во время загрузки?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Есть две философские школы, проповедующие
+            различные методы запуска <!--<a href=
+            "http://www.FreeBSD.org/cgi/man.cgi?manpath=xfree86&query=xdm"
+             target="_top">-->xdm<!--</a>-->. Последователи одного течения
+            запускают xdm из <tt class="FILENAME">/etc/ttys</tt>
+            (посмотрите <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">ttys</span>(5)</span>), используя
+            приводимый пример, тогда как другие вставляют запуск
+            xdm в скрипт <tt class="FILENAME">rc.local</tt>
+            (посмотрите справку по <span class="CITEREFENTRY"><span
+            class="REFENTRYTITLE">rc</span>(8)</span>) или <tt
+            class="FILENAME">X.sh</tt>, помещая последний в каталог
+            <tt class="FILENAME">/usr/local/etc/rc.d</tt>. Оба
+            метода равноправны, и один из них может работать в
+            ситуациях, с которыми не справляется другой и наоборот.
+            В обоих случая результат один и тот же: X выводит
+            графическое приглашение login:.</p>
+
+            <p>Плюсом метода с использованием ttys является
+            документирование того, на каком vty будет запущен X и
+            то, что ответственность за перезапуск X-сервера при
+            завершении сеанса работы лежит на процессе init. Метод
+            с использованием rc.local позволяет просто прекратить
+            работу xdm, если при запуске X возникли какие-нибудь
+            проблемы.</p>
+
+            <p>Из rc.local <tt class="COMMAND">xdm</tt> должен быть
+            запущен без аргументов, (то есть как даемон). xdm
+            должен быть запущен ПОСЛЕ запуска <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">getty</span>(8)</span>, иначе они будут
+            конфликтовать, блокируя консоль. Лучше всего выдержать
+            паузу секунд на 10 и потом запустить <tt class=
+            "COMMAND">xdm</tt>.</p>
+
+            <p>Если <tt class="COMMAND">xdm</tt> запускается из <tt
+            class="FILENAME">/etc/ttys</tt>, то есть вероятность
+            конфликта между <tt class="COMMAND">xdm</tt> и <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">getty</span>(8)</span>. Одним из
+            способов избежать этого является добавление номера <tt
+            class="LITERAL">vt</tt> в файл <tt class=
+            "FILENAME">/usr/X11R6/lib/X11/xdm/Xservers</tt>.</p>
+<pre class="PROGRAMLISTING">
+    :0 local /usr/X11R6/bin/X vt4
+
+</pre>
+
+            <p>В вышеприведённом случае X-серверу указывается
+            работать на <tt class="DEVICENAME">/dev/ttyv3</tt>.
+            Заметьте, что номера отличаются на единицу. Дело в том,
+            что X-сервер считает vty от единицы, когда как отсчёт
+            vty в ядре FreeBSD ведётся с нуля.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="XCONSOLE-FAILURE"></a><b>11.9.</b> При
+            запуске xconsole выдаётся сообщение ``<tt class=
+            "ERRORNAME">Couldn't open console</tt>''.</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Если вы запускаете <b class=
+            "APPLICATION">X</b> с использованием сценария <b class=
+            "APPLICATION">startx</b> права на устройство <tt class=
+            "DEVICENAME">/dev/console</tt> <span class=
+            "emphasis"><i class="EMPHASIS">не</i></span>
+            изменяются, поэтому такие программы, как <b class=
+            "APPLICATION">xterm -C</b> и <b class=
+            "APPLICATION">xconsole</b>, не будут работать.</p>
+
+            <p>Это зависит от прав доступа, установленных для
+            консоли по умолчанию. В многопользовательской системе
+            вовсе не нужно, чтобы любой пользователь мог выводить
+            информацию на системную консоль. Для пользователей,
+            вошедших в систему через VTY, для решения этой проблемы
+            существует файл <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">fbtab</span>(5)</span>.</p>
+
+            <p>В общем, раскомментируйте строчку вида</p>
+<pre class="PROGRAMLISTING">
+    /dev/ttyv0 0600 /dev/console
+
+</pre>
+
+            <p>в файле <tt class="FILENAME">/etc/fbtab</tt>
+            (посмотрите справку по <span class="CITEREFENTRY"><span
+            class="REFENTRYTITLE">fbtab</span>(5)</span>), и этого
+            будет достаточно для того, чтобы всякий, кто вошёл в
+            систему с терминала <tt class=
+            "DEVICENAME">/dev/ttyv0</tt>, имел доступ к
+            консоли.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="XFREE86-ROOT"></a><b>11.10.</b> Раньше я
+            запускал XFree86, работая как обычный пользователь, а
+            теперь при запуске выдается сообщение о том, что я
+            должен быть пользователем <tt class=
+            "USERNAME">root</tt>!</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Все X-серверы должны запускаться
+            пользователем <tt class="USERNAME">root</tt>, чтобы
+            иметь прямой доступ к вашему видеооборудованию. Более
+            старые версии XFree86 (&lt;= 3.3.6) устанавливали все
+            поставляемые серверы так, что они автоматически
+            запускались пользователем root (с установленным битом
+            смены владельца запускаемого процесса). Несомненно, это
+            рискованно, потому что X-серверы являются большими,
+            сложными программами. Более новые версии XFree86 не
+            устанавливают на серверах бит смены владельца на
+            пользователя <tt class="USERNAME">root</tt> именно по
+            этой причине.</p>
+
+            <p>Очевидно, что запускать X-сервер, работая как
+            пользователь root, неправильно и небезопасно. Есть два
+            способа использовать X, работая как обычный
+            пользователь. Первый способ заключается в использовании
+            <b class="APPLICATION">xdm</b> или другого менеджера
+            дисплеев (к примеру, <b class="APPLICATION">kdm</b>);
+            второй способ - в использовании программы <tt class=
+            "COMMAND">Xwrapper</tt>.</p>
+
+            <p><b class="APPLICATION">xdm</b> представляет собой
+            даемона, который обрабатывает входы в систему в
+            графическом режиме. Обычно он запускается во время
+            загрузки и отвечает за аутентификацию пользователей и
+            запуск их сеансов; практически это графический аналог
+            программ <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">getty</span>(8)</span> и <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">login</span>(1)</span>. Более подробная
+            информация о <b class="APPLICATION">xdm</b> находится в
+            <!--<a href="http://www.xfree86.org/support.html" target=
+            "_top">-->документации по XFree86<!--</a>--> и в <a href=
+            "x.html#XDM-BOOT">соответствующем разделе FAQ</a>.</p>
+
+            <p><tt class="COMMAND">Xwrapper</tt> является оболочкой
+            для X-сервера; это маленькая утилита. позволяющая
+            кому-либо запускать X-сервер и достаточно безопасная в
+            использовании. Она выполняет некоторую проверку
+            передаваемых ей в командной строке аргументов, и если
+            все в порядке, запускает соответствующий X-сервер. Если
+            по каким-либо причинам вы не хотите запускать менеджер
+            дисплеев, то эта утилита вам подойдет. Если у вас
+            установлена полная коллекция портов, вы можете найти
+            этот порт в каталоге <tt class=
+            "FILENAME">/usr/ports/x11/wrapper</tt>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="PS2-X"></a><b>11.11.</b> Моя мышь PS/2 в X
+            работает неправильно.</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Вполне может быть, что ваша мышь и её драйвер
+            рассинхронизировались.</p>
+
+            <p>В версиях 2.2.5 и более ранних это может произойти
+            при переключении из X в виртуальный терминал и
+            последующем возвращении в X. Если эта проблема
+            возникает достаточно часто, попробуйте добавить
+            следующую строку в файл конфигурации ядра и
+            перекомпилировать его.</p>
+<pre class="PROGRAMLISTING">
+    options PSM_CHECKSYNC
+
+</pre>
+
+            <p>Если у вас нет опыта перекомпиляции ядра, обратитесь
+            к <a href=
+            "kernelconfig.html#MAKE-KERNEL">соответствующему
+            разделу</a>.</p>
+
+            <p>С этой опцией проблем с синхронизацией мыши и её
+            драйвера должно быть меньше. Если, однако, эта проблема
+            всё же осталась, щёлкните любой кнопкой мыши, не двигая
+            ей, что заставит мышь и драйвер сделать попытку
+            синхронизироваться.</p>
+
+            <p>Заметьте, что в некоторых системах эта опция может
+            не работать и приводить к отключению функции <span
+            class="QUOTE">"tap"</span> устройства ALPS GlidePoint,
+            подключенного к порту мыши PS/2.</p>
+
+            <p>В версиях 2.2.6 и выше, проверка синхронизации
+            сделана гораздо лучше и включена в стандартный драйвер
+            мыши PS/2. Она должна работать даже с GlidePort. (Так
+            как код проверки стал стандартной функцией, опция
+            PSM_CHECKSYNC в этих версиях недоступна.) Однако в
+            редких случаях драйвер может ошибочно обнаруживать
+            проблемы с синхронизацией, и вы будете видеть такие
+            сообщения ядра:</p>
+<pre class="PROGRAMLISTING">
+    psmintr: out of sync (xxxx != yyyy)
+
+</pre>
+
+            <p>а также обнаружите, что мышь теперь работает
+            неправильно.</p>
+
+            <p>Если это случится, отмените проверку согласования,
+            установив значение флага для драйвера мыши PS/2 в
+            0x100. Войдите в конфигуратор <span class="emphasis"><i
+            class="EMPHASIS">UserConfig</i></span>, задав опцию <tt
+            class="OPTION">-c</tt> в приглашении загрузчика:</p>
+<pre class="SCREEN">
+    boot: <tt class="USERINPUT"><b>-c</b></tt>
+
+</pre>
+
+            <p>Затем в командной строке <span class="emphasis"><i
+            class="EMPHASIS">UserConfig</i></span> наберите:</p>
+<pre class="SCREEN">
+    UserConfig&gt; <tt class=
+"USERINPUT"><b>flags psm0 0x100</b></tt>
+    UserConfig&gt; <tt class="USERINPUT"><b>quit</b></tt>
+
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="PS2-MOUSESYSTEMS"></a><b>11.12.</b> Моя
+            мышь PS/2 от MouseSystems похоже, не работает.</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Было несколько сообщений, что некоторые
+            модели мышей PS/2 от MouseSystems работают только в
+            режиме <span class="QUOTE">"высокого
+            разрешения"</span>. В других режимах курсор мыши
+            постоянно прыгает в верхний левый угол экрана.</p>
+
+            <p>К сожалению, для версий 2.0.X и 2.1.X решения этой
+            проблемы не существует. Для версий от 2.2 до 2.2.5
+            приложите следующий патч к файлу <tt class=
+            "FILENAME">/sys/i386/isa/psm.c</tt> и перестройте ядро.
+            Если у вас нет опыта перекомпиляции ядра, обратитесь к
+            <a href=
+            "kernelconfig.html#MAKE-KERNEL">соответствующему
+            разделу</a>.</p>
+<pre class="PROGRAMLISTING">
+    @@ -766,6 +766,8 @@
+         if (verbose &gt;= 2)
+        log(LOG_DEBUG, "psm%d: SET_DEFAULTS return code:%04x\n",
+            unit, i);
+    +    set_mouse_resolution(sc-&gt;kbdc, PSMD_RES_HIGH);
+    +
+     #if 0
+         set_mouse_scaling(sc-&gt;kbdc);    /* 1:1 scaling */
+         set_mouse_mode(sc-&gt;kbdc);       /* stream mode */
+
+</pre>
+
+            <p>Для версий 2.2.6 и выше укажите флаг 0x04 драйверу
+            мыши PS/2 для перевода её в режим высокого разрешения.
+            Войдите в <span class="emphasis"><i class=
+            "EMPHASIS">UserConfig</i></span>, задав опцию <tt
+            class="OPTION">-c</tt> в приглашении загрузчика:</p>
+<pre class="SCREEN">
+    boot: <tt class="USERINPUT"><b>-c</b></tt>
+
+</pre>
+
+            <p>Затем в командной строке <span class="emphasis"><i
+            class="EMPHASIS">UserConfig</i></span> наберите:</p>
+<pre class="SCREEN">
+    UserConfig&gt; <tt class=
+"USERINPUT"><b>flags psm0 0x04</b></tt>
+    UserConfig&gt; <tt class="USERINPUT"><b>quit</b></tt>
+
+</pre>
+
+            <p>В предыдущем разделе описана возможная причина
+            проблем с мышью.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="IMAKE-TMPL"></a><b>11.13.</b> При
+            компиляции приложений для X программа <tt class=
+            "COMMAND">imake</tt> не может найти файл <tt class=
+            "FILENAME">Imake.tmpl</tt>. Где он находится?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Файл <tt class="FILENAME">Imake.tmpl</tt>
+            является частью пакета Imake, стандартного инструмента
+            для построения X-приложений. Он, также как ещё
+            несколько заголовочных файлов, требуемых для построения
+            X-приложений, содержится в дистрибутиве программ X. Вы
+            можете их проинсталлировать из <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">sysinstall</span>(8)</span> или взять
+            из дистрибутива X.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="MOUSE-BUTTON-REVERSE"></a><b>11.14.</b> Как
+            поменять местами кнопки мыши?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Поместите команду <tt class="COMMAND">xmodmap
+            -e "pointer = 3 2 1"</tt> в один из ваших скриптов <tt
+            class="FILENAME">.xinitrc</tt> или <tt class=
+            "FILENAME">.xsession</tt>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="INSTALL-SPLASH"></a><b>11.15.</b> Как
+            установить экранную заставку и где такие заставки можно
+            найти?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Перед самым выпуском релиза FreeBSD 3.1 в
+            систему была добавлена возможность вывода <span class=
+            "QUOTE">"заставки"</span> во время загрузки. На данный
+            момент экраны заставок должны быть 256-цветными файлами
+            формата BMP <tt class="FILENAME">*.BMP</tt> или ZSoft
+            PCX (<tt class="FILENAME">*.PCX</tt>). Кроме того, они
+            должны иметь разрешение 320x200 или меньше для работы
+            со стандартными адаптерами VGA. Если вы включили
+            поддержку VESA при компиляции ядра, то вы можете
+            использовать экраны размером до 1024x768. Заметьте, что
+            поддержка VESA требует указание опции <tt class=
+            "LITERAL">VM86</tt> при компиляции ядра. Реальная
+            поддержка VESA может быть вкомпилирована в ядро при
+            указании опции <tt class="LITERAL">VESA</tt> либо
+            загружена в виде kld-модуля ядра во время начальной
+            загрузки.</p>
+
+            <p>Чтобы использовать заставку, вам нужно изменить
+            файлы, управляющие процессом загрузки FreeBSD. Формат
+            этих файлов был изменён перед выпуском релиза FreeBSD
+            3.2, так что есть два способа загрузки экранных
+            заставок:</p>
+
+            <ul>
+              <li>
+                <p>FreeBSD 3.1</p>
+
+                <p>Первым делом нужно найти экранную заставку в
+                формате BMP. Релиз 3.1 поддерживает заставки только
+                в формате Windows. После того, как вы нашли
+                понравившуюся вам заставку, скопируйте её в файл
+                <tt class="FILENAME">/boot/splash.bmp</tt>. Затем
+                вам нужно поместить в файл <tt class=
+                "FILENAME">/boot/loader.rc</tt> следующие
+                строки:</p>
+<pre class="PROGRAMLISTING">
+    load kernel
+    load -t splash_image_data /boot/splash.bmp
+    load splash_bmp
+    autoboot
+
+</pre>
+              </li>
+
+              <li>
+                <p>FreeBSD 3.2+</p>
+
+                <p>Кроме поддержки заставок в формате PCX, FreeBSD
+                3.2 включает более гибкую систему конфигурации
+                процесса загрузки. Если вы хотите, вы можете
+                использовать метод, указанный выше для FreeBSD 3.1.
+                Если же вы хотите использовать формат PCX, замените
+                <tt class="LITERAL">splash_bmp</tt> на <tt class=
+                "LITERAL">splash_pcx</tt>. С другой стороны, если
+                вы хотите использовать новую систему конфигурации
+                процесса загрузки, вам нужно создать файл <tt
+                class="FILENAME">/boot/loader.rc</tt>, содержащий
+                следующие строки:</p>
+<pre class="PROGRAMLISTING">
+    include /boot/loader.4th
+    start
+
+</pre>
+
+                <p>и файл <tt class=
+                "FILENAME">/boot/loader.conf</tt> со строками:</p>
+<pre class="PROGRAMLISTING">
+    splash_bmp_load="YES"
+    bitmap_load="YES"
+
+</pre>
+
+                <p>Здесь предполагается, что в качестве заставки вы
+                используете файл <tt class=
+                "FILENAME">/boot/splash.bmp</tt>. Если вы
+                используете PCX-файл, скопируйте его под именем <tt
+                class="FILENAME">/boot/splash.pcx</tt>, создайте
+                файл <tt class="FILENAME">/boot/loader.rc</tt>, как
+                указано выше, и создайте файл <tt class=
+                "FILENAME">/boot/loader.conf</tt>, который содержит
+                следующее:</p>
+<pre class="PROGRAMLISTING">
+    splash_pcx_load="YES"
+    bitmap_load="YES"
+    bitmap_name="/boot/splash.pcx"
+
+</pre>
+              </li>
+            </ul>
+
+            <p>Теперь всё, что вам нужно - это сама заставка.
+            Поищите заставки в галерее по адресу <!--<a href=
+            "http://www.baldwin.cx/splash/" target=
+            "_top">-->http://www.baldwin.cx/splash/<!--</a>-->.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="WINDOWS-KEYS"></a><b>11.16.</b> Можно ли в
+            X использовать клавиши Windows(tm), которые есть на
+            клавиатуре?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Да. Всё, что вам нужно сделать, это с помощью
+            <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">xmodmap</span>(1)</span> задать
+            функции, которые вы хотите к этим клавишам
+            привязать.</p>
+
+            <p>Положим, что все клавиатуры <span class=
+            "QUOTE">"Windows(tm)"</span> стандартны и 3 клавиши
+            имеют следующие клавиатурные коды</p>
+
+            <ul>
+              <li>
+                <p>115 - клавиша Windows(tm), между клавишами Ctrl
+                и Alt с левой стороны</p>
+              </li>
+
+              <li>
+                <p>116 - клавиша Windows(tm), справа от клавиши
+                Alt-Gr</p>
+              </li>
+
+              <li>
+                <p>117 - клавиша вызова меню, слева от клавиши
+                Ctrl, находящейся справа</p>
+              </li>
+            </ul>
+
+            <p>Чтобы заставить левую клавишу Windows(tm) набирать
+            запятую, попробуйте выполнить такую команду:</p>
+<pre class="SCREEN">
+        <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>xmodmap -e "keycode 115 = comma"</b></tt>
+
+</pre>
+
+            <p>Чтобы увидеть результат, вам нужно будет
+            перезапустить ваш оконный менеджер.</p>
+
+            <p>Для того, чтобы переопределения клавиш Windows(tm)
+            выполнялось автоматически каждый раз при запуске X,
+            можно поместить вызов команд <tt class=
+            "COMMAND">xmodmap</tt> в ваш <tt class=
+            "FILENAME">~/.xinitrc</tt> либо, что предпочтительней,
+            создать файл <tt class="FILENAME">~/.xmodmaprc</tt> и
+            включить в него параметры для <tt class=
+            "COMMAND">xmodmap</tt>, по одному на строку, и добавить
+            строку</p>
+<pre class="PROGRAMLISTING">
+    xmodmap $HOME/.xmodmaprc
+</pre>
+
+            <p>в ваш <tt class="FILENAME">~/.xinitrc</tt>.</p>
+
+            <p>Например, вы можете переопределить эти 3 клавиши
+            так, чтобы они выполняли функции F13, F14 и F15
+            соответственно. Это позволит легко привязать их к
+            полезным функциям в приложениях или вашем менеджере
+            окон, как будет показано далее.</p>
+
+            <p>Чтобы сделать это, поместите в файл <tt class=
+            "FILENAME">~/.xmodmaprc</tt> вот такие строки:</p>
+<pre class="PROGRAMLISTING">
+        keycode 115 = F13
+        keycode 116 = F14
+        keycode 117 = F15
+
+</pre>
+
+            <p>Если, к примеру, вы используете <tt class=
+            "COMMAND">fvwm2</tt>, то можете переопределить клавиши
+            таким образом, что F13 сворачивает в иконку (или
+            восстанавливает предыдущие размеры) окна, на которое
+            указывает курсор, F14 перемещает окно с курсором на
+            передний план или, если оно уже впереди, возвращает
+            обратно, а F15 вызывает главное меню Рабочего места
+            (Workplace) (приложение), даже если курсор находится не
+            на рабочем столе, что бывает полезно, если нет ни
+            одного видимого кусочка рабочего стола (к тому же
+            логотип на клавише соответствует этой функции).</p>
+
+            <p>Вот строки из <tt class="FILENAME">~/.fvwmrc</tt>, с
+            помощью которых достигаются описанные выше функции:</p>
+<pre class="PROGRAMLISTING">
+        Key F13        FTIWS    A        Iconify
+        Key F14        FTIWS    A        RaiseLower
+        Key F15        A        A        Menu Workplace Nop
+
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="X-3D-ACCELERATION"></a><b>11.17.</b> Как
+            заставить работать аппаратное ускорение 3D-графики для
+            OpenGL?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Наличие 3D-ускорения зависит от версии
+            используемого вами XFree86 и типа графического
+            адаптера. Если у вас адаптер NVIDIA, то обратите
+            внимание на страницу <!--<a href=
+            "http://nvidia.netexplorer.org/" target="_top">-->FreeBSD
+            NVIDIA Driver Initiative<!--</a>--> , на которой обсуждается
+            3D-ускорение для наборов микросхем NVIDIA при
+            использовании XFree86-4. Относительно использования
+            аппаратного ускорения в XFree86-4 с другими адаптерами,
+            включая Matrox G200/G400, ATI Rage 128/Radeon, а также
+            3dfx Voodoo 3, 4, 5 и Banshee, дополнительную
+            информацию можно почерпнуть на страничке <!--<a href=
+            "http://gladstone.uoregon.edu/~eanholt/dri/" target=
+            "_top">-->XFree86-4 Direct Rendering on FreeBSD<!--</a>-->.
+            Пользователи XFree86 версии 3.3 могут воспользоваться
+            портом Utah-GLX, находящимся в <!--<a href=
+            "http://www.FreeBSD.org/cgi/url.cgi?ports/graphics/utah-glx/pkg-descr">-->
+            <tt class="PORT">graphics/utah-glx</tt><!--</a>-->, для
+            получения частичного ускорения OpenGL для наборов
+            микросхем Matrox Gx00, ATI Rage Pro, SiS 6326, i810,
+            Savage и старых адаптеров NVIDIA.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "admin.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "networking.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Системное
+          администрирование</td>
+
+          <td width="34%" align="center" valign="top">&nbsp;</td>
+
+          <td width="33%" align="right" valign="top">Работа в
+          сети</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

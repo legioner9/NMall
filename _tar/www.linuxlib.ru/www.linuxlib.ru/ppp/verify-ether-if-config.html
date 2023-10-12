@@ -1,0 +1,588 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Проверка конфигурации Ethernet-интерфейса — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Подробное руководство по
+          PPP</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "system-config.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">Chapter 2.
+          Конфигурирование FreeBSD-системы</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "x237.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="VERIFY-ETHER-IF-CONFIG">2.2.
+      Проверка конфигурации Ethernet-интерфейса</a></h1>
+
+      <p>Напомню Вам, что в данном руководстве подразумевается, что
+      Ethernet-интерфейс в системе FreeBSD называется '<span class=
+      "emphasis"><i class="EMPHASIS">ed0</i></span>'. Это
+      стандартное название для интерфейсов NE-1000, NE-2000, WD/SMC
+      (моделей 8003, 8013) и сетевых адаптеров Elite Ultra
+      (8216).</p>
+
+      <p>Другие модели сетевых адаптеров могут иметь различные
+      имена в системе FreeBSD. Обратитесь к сборнику часто
+      задаваемых вопросов (FAQ) по спецификации Вашего сетевого
+      адаптера. Если у Вас возникли сложности при определении имени
+      устройства для Вашего сетевого адаптера, обратитесь к FAQ по
+      FreeBSD, найдите правильного имя устройства и замените его в
+      случае необходимости (т.e. на: '<span class="emphasis"><i
+      class="EMPHASIS">de0</i></span>', '<span class="emphasis"><i
+      class="EMPHASIS">zp0</i></span>' и т.д.).</p>
+
+      <p>Как и в случае с именем узла, Ethernet-интерфейс
+      FreeBSD-системы уже может быть сконфигурирован в процессе
+      установки системы.</p>
+
+      <p>Для вывода конфигурации интерфейсов Вашей FreeBSD-системы
+      (Ethernet и других), введите следующую команду:</p>
+
+      <div class="INFORMALEXAMPLE">
+        <a name="AEN143"></a>
+<pre class="SCREEN">
+    # ifconfig -a
+
+</pre>
+      </div>
+      (Или простым человеческим языком: "Покажи мне <span class=
+      "emphasis"><i class="EMPHASIS">И</i></span> нтер<span class=
+      "emphasis"><i class="EMPHASIS">Ф</i></span>ейс <span class=
+      "ACRONYM">КОНФИГ</span>урацию для моих сетевых устройств.")
+      <br>
+      <br>
+
+      <p>Пример:</p>
+
+      <div class="INFORMALEXAMPLE">
+        <a name="AEN149"></a>
+<pre class="SCREEN">
+    # ifconfig -a
+     ed0: flags=8843&lt;UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST&gt; mtu 1500
+          inet 192.168.1.1 netmask 0xffffff00 broadcast 192.168.1.255
+          ether 01:02:03:04:05:06
+     lp0: flags=8810&lt;POINTOPOINT,SIMPLEX,MULTICAST&gt; mtu 1500
+     tun0: flags=8050&lt;POINTOPOINT,RUNNING, MULTICAST&gt; mtu 1500
+     sl0: flags=c010&lt;POINTOPOINT,LINK2,MULTICAST&gt; mtu 552
+     ppp0: flags=8010&lt;POINTOPOINT,MULTICAST&gt; mtu 1500
+     lo0: flags=8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; mtu 16384
+          inet 127.0.0.1 netmask 0xff000000
+    # _
+</pre>
+      </div>
+      <br>
+      <br>
+
+      <p>В этом примере, показаны следующие устройства:</p>
+
+      <p><span class="emphasis"><i class="EMPHASIS">ed0:</i></span>
+      Интерфейс Ethernet</p>
+
+      <p><span class="emphasis"><i class="EMPHASIS">lp0:</i></span>
+      Интерфейс параллельного порта (в данном руководстве не
+      рассматривается)</p>
+
+      <p><span class="emphasis"><i class=
+      "EMPHASIS">tun0:</i></span> "Туннельное" устройство; <span
+      class="emphasis"><i class="EMPHASIS">Это один из режимов
+      использования ppp!</i></span></p>
+
+      <p><span class="emphasis"><i class="EMPHASIS">sl0:</i></span>
+      SL/IP устройство (в данном руководстве не
+      рассматривается)</p>
+
+      <p><span class="emphasis"><i class=
+      "EMPHASIS">ppp0:</i></span> Еще одно устройство PPP (для ядра
+      ppp; в данном руководстве не рассматривается)</p>
+
+      <p><span class="emphasis"><i class="EMPHASIS">lo0:</i></span>
+      Устройство "локальной петли" (в данном руководстве не
+      рассматривается)</p>
+
+      <p>Как видно из примера, устройство 'ed0' в активном
+      состоянии и запущено. Параметры устройства:</p>
+
+      <ol type="1">
+        <li>
+          <p>Его состояние "<span class=
+          "ACRONYM">АКТИВНО</span>",</p>
+        </li>
+
+        <li>
+          <p>Имеет Интернет- ("<span class="emphasis"><i class=
+          "EMPHASIS">inet</i></span>") адрес, (в данном случае
+          192.168.1.1)</p>
+        </li>
+
+        <li>
+          <p>Указана допустимая маска подсети ("маска сети";
+          0xffffff00 то же самое, что и 255.255.255.0), and</p>
+        </li>
+
+        <li>
+          <p>Указан допустимый широковещательный адрес (в данном
+          случае 192.168.1.255).</p>
+        </li>
+      </ol>
+      <br>
+      <br>
+
+      <p>Если же информация для Ethernet-карты выглядит как
+      показано ниже:</p>
+
+      <div class="INFORMALEXAMPLE">
+        <a name="AEN178"></a>
+<pre class="SCREEN">
+    ed0: flags=8802&lt;BROADCAST,SIMPLEX,MULTICAST&gt; mtu 1500
+            ether 01:02:03:04:05:06
+</pre>
+      </div>
+      то она (карта) еще не была сконфигурировна.<br>
+      <br>
+
+      <p>Если конфигурация Ethernet-интерфейса верна, то Вы можете
+      перейти к <a href="list-lan-hosts.html">Section 2.4</a>.</p>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN182">2.2.1. Конфигурирование
+        Ethernet-интерфейса</a></h2>
+
+        <p><span class="emphasis"><i class="EMPHASIS"><span class=
+        "emphasis"><i class="EMPHASIS">Памятка: Вы должны быть
+        зарегистрированы в системе как пользователь 'root' для
+        редактирования системных конфигурационных
+        файлов!</i></span></i></span></p>
+
+        <p><span class="emphasis"><i class="EMPHASIS"><span class=
+        "emphasis"><i class="EMPHASIS">ПРЕДУПРЕЖДЕНИЕ: Если Вы
+        допустите ошибку при редактировании системных
+        конфигурационных файлов, может так случиться, что система
+        НЕ СМОЖЕТ ЗАГРУЗИТЬСЯ правильно! Будьте
+        осторожны!</i></span></i></span></p>
+
+        <p>Параметры для настройки сетевого интерфейса при загрузке
+        системы находятся в файле <tt class=
+        "FILENAME">/etc/rc.conf</tt>. Для редактирования этого
+        файла Вы можете использовать обычный текстовый редактор
+        ('ee') .</p>
+
+        <p>После того, как вы зарегистрируетесь в системе как
+        пользователь 'root', загрузите файл <tt class=
+        "FILENAME">/etc/rc.conf</tt> в редактор, используя
+        следующую команду:</p>
+
+        <p><tt class="COMMAND"># ee /etc/rc.conf</tt></p>
+
+        <p>Примерно в районе 20-й строки сверху в файле <tt class=
+        "FILENAME">/etc/rc.conf</tt> Вы заметите секцию, которая
+        описывает те сетевые интерфейсы, которые будут
+        задействованы при загрузке системы. В стандартном
+        конфигурационном файле эта строка выглядит так, как
+        показано ниже:</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN199"></a>
+<pre class="SCREEN">
+    network_interfaces="lo0"       # List of network interfaces (lo0 is loopback).
+</pre>
+        </div>
+        <br>
+        <br>
+
+        <p>Вам необходимо исправить эту строку, чтобы сообщить
+        FreeBSD о том, что Вы желаете добавить другое устройство,
+        имеющее имя '<span class="emphasis"><i class=
+        "EMPHASIS">ed0</i></span>'. Измените эту строку так, как
+        показано ниже:</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN204"></a>
+<pre class="SCREEN">
+    network_interfaces="lo0 ed0"   # List of network interfaces (lo0 is loopback).
+</pre>
+        </div>
+        <br>
+        <br>
+
+        <p>(Обратите внимание на пробел между определениями
+        устройства локальной петли ("<span class="emphasis"><i
+        class="EMPHASIS">lo0</i></span>") и устройством Ethernet
+        ("<span class="emphasis"><i class=
+        "EMPHASIS">ed0</i></span>")!</p>
+
+        <p><span class="emphasis"><i class="EMPHASIS"><span class=
+        "emphasis"><i class="EMPHASIS">Памятка: Если Ваша
+        Ethernet-карта имеет имя, отличное от '<span class=
+        "emphasis"><i class="EMPHASIS">ed0</i></span>', то вместо
+        него укажите имя, которое соответствует Вашему
+        устройству.</i></span></i></span></p>
+
+        <p>Если Вы устанавливали FreeBSD, используя сетевое
+        соединение, то строка '<tt class=
+        "LITERAL">network_interfaces=</tt>' уже должна включать
+        информацию о Вашем сетевом адаптере. И если это так, то еще
+        раз проверьте правильность установки имени устройства.</p>
+
+        <p>Установите найстроки для Ethernet-устройства ('<span
+        class="emphasis"><i class="EMPHASIS">ed0</i></span>'):</p>
+
+        <p>Под строкой, определяющей активные интерфейсы, находятся
+        строки, которые определяют текущие настройки для каждого
+        интерфейса. В стандартном файле <tt class=
+        "FILENAME">/etc/rc.conf</tt> есть строка, в которой
+        указано:</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN220"></a>
+<pre class="SCREEN">
+    ifconfig_lo0="inet 127.0.0.1"   # default loopback device configuration.
+</pre>
+        </div>
+        <br>
+        <br>
+
+        <p>Вам необходимо добавить другую строку, после нее, чтобы
+        определить настройки для устройства '<span class=
+        "emphasis"><i class="EMPHASIS">ed0</i></span>'.</p>
+
+        <p>Если Вы устанавливали FreeBSD, используя сетевое
+        соединение, то строка '<tt class=
+        "LITERAL">ifconfig_ed0=</tt>' уже должна присутствовать
+        после определения локальной петли. Если это так, то
+        проверьте правильность указанных параметров.</p>
+
+        <p>В нашем примере мы добавим строку сразу после
+        определения устройства локальной петли, которая будет
+        выглядеть так:</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN228"></a>
+<pre class="SCREEN">
+    ifconfig_ed0="inet 192.168.1.1 netmask 255.255.255.0"
+</pre>
+        </div>
+        <br>
+        <br>
+
+        <p>После окончания редактирование файла <tt class=
+        "FILENAME">/etc/rc.conf</tt> секция определения и настройки
+        сетевых интерфейсов будет выглядеть примерно так:</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN233"></a>
+<pre class="SCREEN">
+    ---
+    network_interfaces="ed1 lo0"    # List of network interfaces (lo0 is loopback).
+    ifconfig_lo0="inet 127.0.0.1"   # default loopback device configuration.
+    ifconfig_ed1="inet 192.168.1.1  netmask 255.255.255.0"
+    ---
+</pre>
+        </div>
+        <br>
+        <br>
+
+        <p>Как только все необходимые изменения в файл <tt class=
+        "FILENAME">/etc/rc.conf</tt> будут внесены, нажмите клавишу
+        'Esc' для вызова меню. Выберите "покинуть редактор" и
+        подтвердите запрос "сохранить изменения?".</p>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "system-config.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "x237.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">
+          Конфигурирование FreeBSD-системы</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "system-config.html" accesskey="U">Up</a></td>
+
+          <td width="33%" align="right" valign="top">Включение
+          режима отправки пакетов</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

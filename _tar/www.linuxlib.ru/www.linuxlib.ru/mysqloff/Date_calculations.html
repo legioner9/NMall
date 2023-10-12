@@ -1,0 +1,612 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 3.3.4.5  Вычисление  дат — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Date_calculations.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Date_calculations.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Tutorial.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3 Учебное пособие по MySQL
+</a><ul><li class="gp"><a href="Database_use.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.3 Создание и использование базы данных
+</a><ul><li class="p"><a href="Retrieving_data.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.3.4 Выборка информации из таблицы
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/Selecting_all.html">3.3.4.1 Выборка всех данных
+</a></li><li><a href="Selecting_rows.html">3.3.4.2 Выборка определенных строк
+</a></li><li><a href="Selecting_columns.html">3.3.4.3 Выборка определенных столбцов
+</a></li><li><a href="Sorting_rows.html">3.3.4.4 Сортировка строк
+</a></li><li class="self">3.3.4.5 Вычисление  дат
+</li><li><a href="Working_with_NULL.html">3.3.4.6 Работа с значениями NULL
+</a></li><li><a href="Pattern_matching.html">3.3.4.7 Сравнение по шаблонам
+</a></li><li><a href="Counting_rows.html">3.3.4.8 Подсчет строк
+</a></li><li><a href="Multiple_tables.html">3.3.4.9 Использование нескольких таблиц
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Sorting_rows.html" title="3.3.4.4  Сортировка строк">Previous</a> / <a rel="next" href="Working_with_NULL.html" title="3.3.4.6  Работа с значениями NULL">Next</a> / <a rel="up" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>3.3.4.5  Вычисление  дат</H4>
+
+<P>
+<A NAME="IDX381"></A>
+<A NAME="IDX382"></A>
+<A NAME="IDX383"></A>
+<A NAME="IDX384"></A>
+
+</P>
+<P>
+В MySQL имеется несколько функций, реализующих арифметические операции над
+датами. Эти функции позволяют, например, вычислять возраст или получать
+части даты.
+
+</P>
+<P>
+Определить возраст любого из животных в базе можно, если вычислить разницу
+между текущим годом и годом его рождения, а из результата вычесть единицу,
+если текущий день находится к началу календаря ближе, нежели день рождения
+животного. Приведенный ниже запрос выводит дату рождения каждого
+животного, его возраст и текущую дату.
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth, CURRENT_DATE,
+    -&#62; (YEAR(CURRENT_DATE)-YEAR(birth))
+    -&#62; - (RIGHT(CURRENT_DATE,5)&#60;RIGHT(birth,5))
+    -&#62; AS age
+    -&#62; FROM pet;
++----------+------------+--------------+------+
+| name     | birth      | CURRENT_DATE | age  |
++----------+------------+--------------+------+
+| Fluffy   | 1993-02-04 | 2001-08-29   |    8 |
+| Claws    | 1994-03-17 | 2001-08-29   |    7 |
+| Buffy    | 1989-05-13 | 2001-08-29   |   12 |
+| Fang     | 1990-08-27 | 2001-08-29   |   11 |
+| Bowser   | 1989-08-31 | 2001-08-29   |   11 |
+| Chirpy   | 1998-09-11 | 2001-08-29   |    2 |
+| Whistler | 1997-12-09 | 2001-08-29   |    3 |
+| Slim     | 1996-04-29 | 2001-08-29   |    5 |
+| Puffball | 1999-03-30 | 2001-08-29   |    2 |
++----------+------------+--------------+------+
+</pre>
+
+<P>
+В этом примере функция <code>YEAR()</code> выделяет из даты год, а <code>RIGHT()</code> - пять
+крайних справа символов, представляющих календарный день (MM-DD). Часть
+выражения, сравнивающая даты, выдает 1 или 0, что позволяет уменьшить
+результат на единицу, если текущий день (<code>CURRENT_DATE</code>) находится к началу
+календаря ближе, нежели день рождения животного. Все выражение смотрится
+несколько неуклюже, поэтому вместо него в заголовке соответствующего
+столбца результатов выводится псевдоним (<code>age</code> - "возраст").
+
+</P>
+<P>
+Запрос неплохо работает, но разобраться в результатах было бы проще, если
+бы строки располагались в определенном порядке. Этого можно достичь,
+добавив в запрос выражение <code>ORDER BY</code> name и отсортировав таким образом
+результаты по имени:
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth, CURRENT_DATE,
+    -&#62; (YEAR(CURRENT_DATE)-YEAR(birth))
+    -&#62; - (RIGHT(CURRENT_DATE,5)&#60;RIGHT(birth,5))
+    -&#62; AS age
+    -&#62; FROM pet ORDER BY name;
++----------+------------+--------------+------+
+| name     | birth      | CURRENT_DATE | age  |
++----------+------------+--------------+------+
+| Bowser   | 1989-08-31 | 2001-08-29   |   11 |
+| Buffy    | 1989-05-13 | 2001-08-29   |   12 |
+| Chirpy   | 1998-09-11 | 2001-08-29   |    2 |
+| Claws    | 1994-03-17 | 2001-08-29   |    7 |
+| Fang     | 1990-08-27 | 2001-08-29   |   11 |
+| Fluffy   | 1993-02-04 | 2001-08-29   |    8 |
+| Puffball | 1999-03-30 | 2001-08-29   |    2 |
+| Slim     | 1996-04-29 | 2001-08-29   |    5 |
+| Whistler | 1997-12-09 | 2001-08-29   |    3 |
++----------+------------+--------------+------+
+</pre>
+
+<P>
+Отсортировать результаты по возрасту также можно при помощи выражения
+<code>ORDER BY</code>:
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth, CURRENT_DATE,
+    -&#62; (YEAR(CURRENT_DATE)-YEAR(birth))
+    -&#62; - (RIGHT(CURRENT_DATE,5)&#60;RIGHT(birth,5))
+    -&#62; AS age
+    -&#62; FROM pet ORDER BY age;
++----------+------------+--------------+------+
+| name     | birth      | CURRENT_DATE | age  |
++----------+------------+--------------+------+
+| Chirpy   | 1998-09-11 | 2001-08-29   |    2 |
+| Puffball | 1999-03-30 | 2001-08-29   |    2 |
+| Whistler | 1997-12-09 | 2001-08-29   |    3 |
+| Slim     | 1996-04-29 | 2001-08-29   |    5 |
+| Claws    | 1994-03-17 | 2001-08-29   |    7 |
+| Fluffy   | 1993-02-04 | 2001-08-29   |    8 |
+| Fang     | 1990-08-27 | 2001-08-29   |   11 |
+| Bowser   | 1989-08-31 | 2001-08-29   |   11 |
+| Buffy    | 1989-05-13 | 2001-08-29   |   12 |
++----------+------------+--------------+------+
+</pre>
+
+<P>
+подобный же запрос поможет определить возраст, которого достигли умершие
+животные на момент смерти. Выделить умерших животных можно, проверив
+значение поля <code>death</code> на предмет равенства <code>NULL</code>. Затем для записей, значения
+поля <code>death</code> которых не равно <code>NULL</code>, можно вычислить разницу между датами
+смерти и рождения:
+
+</P>
+
+
+<pre>
+mysql&#62; SELECT name, birth, death,
+    -&#62; (YEAR(death)-YEAR(birth)) - (RIGHT(death,5)&#60;RIGHT(birth,5))
+    -&#62; AS age
+    -&#62; FROM pet WHERE death IS NOT NULL ORDER BY age;
++--------+------------+------------+------+
+| name   | birth      | death      | age  |
++--------+------------+------------+------+
+| Bowser | 1989-08-31 | 1995-07-29 |    5 |
++--------+------------+------------+------+
+</pre>
+
+<P>
+В этом запросе используется выражение <code>death IS NOT NULL</code>, а не death &#60;&#62;
+<code>NULL</code>, так как <code>NULL</code> - особое значение (более подробные пояснения приведены
+в разделе see section <A HREF="Working_with_NULL.html">3.3.4.6  Работа с значениями NULL</A>).
+
+</P>
+<P>
+А как поступать, если потребуется определить, дни рождения каких животных
+наступят в следующем месяце? Для таких расчетов день и год значения не
+имеют; из столбца, содержащего дату рождения, нас интересует только месяц.
+В MySQL предусмотрено несколько функций для получения частей дат - <code>YEAR()</code>,
+<code>MONTH()</code>, и <code>DAYOFMONTH()</code>. В данном случае нам подойдет функция <code>MONTH()</code>.
+Увидеть работу этой функции можно с помощью простого запроса, выводящего
+дату рождения <code>birth</code> и <code>MONTH(birth)</code>:
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth, MONTH(birth) FROM pet;
++----------+------------+--------------+
+| name     | birth      | MONTH(birth) |
++----------+------------+--------------+
+| Fluffy   | 1993-02-04 |            2 |
+| Claws    | 1994-03-17 |            3 |
+| Buffy    | 1989-05-13 |            5 |
+| Fang     | 1990-08-27 |            8 |
+| Bowser   | 1989-08-31 |            8 |
+| Chirpy   | 1998-09-11 |            9 |
+| Whistler | 1997-12-09 |           12 |
+| Slim     | 1996-04-29 |            4 |
+| Puffball | 1999-03-30 |            3 |
++----------+------------+--------------+
+</pre>
+
+<P>
+Найти животных, дни рождения которых наступят в следующем месяце, тоже
+несложно. Предположим, что сейчас на дворе апрель. Тогда номер текущего
+месяца - 4, а искать надо животных, родившихся в мае (5-м месяце), таким
+образом:
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth FROM pet WHERE MONTH(birth) = 5;
++-------+------------+
+| name  | birth      |
++-------+------------+
+| Buffy | 1989-05-13 |
++-------+------------+
+</pre>
+
+<P>
+Конечно, в декабре возникают некоторые осложнения. Если просто добавить
+единицу к номеру месяца (12) и поискать животных, родившихся в тринадцатом
+месяце, найти что-нибудь вряд ли удастся. Вместо этого нужно искать
+животных, родившихся в январе (1-м месяце).
+
+</P>
+<P>
+Можно даже написать небольшой запрос, который будет работать вне
+зависимости от того, какой нынче месяц. Функция <code>DATE_ADD()</code> позволяет
+прибавить к дате некоторый интервал времени. Если добавить к значению,
+возвращаемому функцией <code>NOW()</code>, месяц, а затем извлечь из получившейся даты
+номер месяца при помощи функции <code>MONTH()</code>, мы получим именно тот месяц,
+который нам нужен:
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth FROM pet
+    -&#62; WHERE MONTH(birth) = MONTH(DATE_ADD(NOW(), INTERVAL 1 MONTH));
+</pre>
+
+<P>
+Ту же задачу можно решить и другим методом - для этого нужно прибавить
+единицу к номеру месяца, следующего за текущим (воспользовавшись функцией
+расчета по модулю (MOD) для перехода к 0, если номер текущего месяца равен
+12):
+
+</P>
+
+<pre>
+mysql&#62; SELECT name, birth FROM pet
+    -&#62; WHERE MONTH(birth) = MOD(MONTH(NOW()), 12) + 1;
+</pre>
+
+<P>
+Функция <code>MONTH</code> возвращает число от 1 до 12, а выражение <code>MOD(число,12)</code> -
+число от 0 до 11. Поэтому операцию сложения нужно проводить после <code>MOD()</code>,
+иначе результат перепрыгнет с ноября (11) сразу на январь (1).
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c244" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Waylon Flinn on Monday June 24 2002, @9:00am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=244&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=244">Edit</a>]</td></tr></table><p class="commenttext">The tutorial writer uses the variable <br />
+CURRENT_DATE to extract the current date up until <br />
+the introduction of the MONTH() function. At this <br />
+point the writer switches to use of the NOW() <br />
+function. I found this confusing. If both of <br />
+these means of obtaining the date can be used <br />
+here it seems like a note is in order.</p><table id="c706" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Thursday March 14 2002, @3:16pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=706&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=706">Edit</a>]</td></tr></table><p class="commenttext">I have a TIMESTAMP (YYYYMMDDHHMMSS) field in my <br />
+table. How'd I find entries 1,3,5,10 days old <br />
+(from the current day)??</p><table id="c716" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Monday March 18 2002, @7:44am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=716&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=716">Edit</a>]</td></tr></table><p class="commenttext">Like this: SELECT something FROM table WHERE<br />
+TO_DAYS(NOW()) - TO_DAYS(timestamp_col) &lt;= 5;<br />
+<br />
+(see manual section 6.3.4 Date and Time Functions)</p><table id="c755" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Dan Fitzpatrick on Tuesday May 28 2002, @2:00pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=755&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=755">Edit</a>]</td></tr></table><p class="commenttext">In a business context, a more interesting query <br />
+for this sample db might be the one alluded to <br />
+earlier in the tutorial - select rows whose <br />
+birthdays are coming up soon to send out a <br />
+reminder...<br />
+<br />
+Here is the way I did that:<br />
+<br />
+SET @bdayThreshhold=150;<br />
+<br />
+SELECT name, birth, CONCAT(((RIGHT(birth,5) &lt; <br />
+RIGHT(CURRENT_DATE,5)) <br />
++ YEAR(CURRENT_DATE)), RIGHT(birth,6)) AS bday, <br />
+TO_DAYS(CONCAT(((RIGHT(birth,5) &lt; RIGHT<br />
+(CURRENT_DATE,5)) <br />
++ YEAR(CURRENT_DATE)), RIGHT(birth,6))) - TO_DAYS<br />
+(CURRENT_DATE) AS toBday <br />
+FROM pet <br />
+WHERE (TO_DAYS(CONCAT(((RIGHT(birth,5) &lt; RIGHT<br />
+(CURRENT_DATE,5)) <br />
++ YEAR(CURRENT_DATE)), RIGHT(birth,6))) - TO_DAYS<br />
+(CURRENT_DATE) &lt; @bdayThreshhold) <br />
+ORDER BY bday, RIGHT(birth,5);<br />
+<br />
+Note that I set the threshhold kind of high in <br />
+order to make sure that I matched something in <br />
+the limited tutorial dataset.  Normally you would <br />
+probably want 15-30 days.</p><table id="c1182" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#9df7f0f2effcf1ddf8f8f8b3e8edf9b3f8f9e8b3edf5"><span class="__cf_email__" data-cfemail="bad0d7d5c8dbd6fadfdfdf94cfcade94dfdecf94cad2">[email&#160;protected]</span></a> on Friday October 4 2002, @6:59am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1182&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1182">Edit</a>]</td></tr></table><p class="commenttext">It says in this section that there might be a <br />
+complication using the month() function if the <br />
+current month is December.  Actually there shouldn't <br />
+because month() just returns the month (in integer <br />
+form) of its date argument, regardless of the current <br />
+month.</p><table id="c1362" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Bryan Perry on Tuesday November 12 2002, @2:12pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1362&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1362">Edit</a>]</td></tr></table><p class="commenttext">Here is another useful way of calculating age that I <br />
+have used in some of my own work: SELECT DATE <br />
+FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS<br />
+(dob)), '%Y')+0 AS age FROM people;</p><table id="c1527" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Sunday December 22 2002, @10:13am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1527&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1527">Edit</a>]</td></tr></table><p class="commenttext">I need to schedule weekly and monthly event, and my two questions are:<br />
+How can I find next Friday's date?<br />
+How can I find this month, second Wednesday's date?<br />
+</p><table id="c1688" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#05646b6367776a726b4568646668646c692b666a68">Alex Brown</a> on Friday January 31 2003, @8:20am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1688&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1688">Edit</a>]</td></tr></table><p class="commenttext">current_date returns the just the date,<br />
+<br />
+now() gives now, to the nearest minute. ie. it also returns the cuurent time.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Date_calculations">Add your own comment.</a></p><div id="docnav"><a href="Date_calculations.html#">Top</a> / <a rel="prev" href="Sorting_rows.html" title="3.3.4.4  Сортировка строк">Previous</a> / <a rel="next" href="Working_with_NULL.html" title="3.3.4.6  Работа с значениями NULL">Next</a> / <a rel="up" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

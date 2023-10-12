@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.1.4  Запуск нескольких серверов MySQL на одном компьютере — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Multiple_servers.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Multiple_servers.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Configuring_MySQL.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.1 Конфигурирование MySQL
+</a><ul class="immediate"><li><a href="Command-line_options.html">4.1.1 Параметры командной строки <code>mysqld</code>
+</a></li><li><a href="Option_files.html">4.1.2 Файлы параметров <tt>`my.cnf'</tt>
+</a></li><li><a href="Installing_many_servers.html">4.1.3 Установка нескольких серверов на один компьютер
+</a></li><li class="self">4.1.4 Запуск нескольких серверов MySQL на одном компьютере
+</li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Installing_many_servers.html" title="4.1.3  Установка нескольких серверов на один компьютер">Previous</a> / <a rel="next" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Configuring_MySQL.html" title="4.1  Конфигурирование MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.1.4  Запуск нескольких серверов MySQL на одном компьютере</H3>
+
+<P>
+<A NAME="IDX435"></A>
+<A NAME="IDX436"></A>
+<A NAME="IDX437"></A>
+
+</P>
+<P>
+Иногда возникают обстоятельства, когда необходимо запустить несколько
+серверов на одном компьютере. Например, может понадобиться произвести
+тестирование новой версии MySQL, не изменяя текущей установки программы.
+Или еще вариант: вы являетесь поставщиком услуг Internet, который хочет
+предоставить независимые установки MySQL для различных клиентов.
+
+</P>
+<P>
+Если необходимо запустить несколько серверов, то проще всего
+скомпилировать серверы с различными портами TCP/IP и файлами сокетов (see section <A HREF="mysqld_multi.html">4.7.3  <code>Mysqld_multi</code>, программа для управления множеством серверов MySQL</A>).
+
+</P>
+<P>
+Предположим, что существующий сервер настроен на принятые по умолчанию
+номер порта и файл сокета. Настроим новый сервер при помощи команды
+<code>configure</code> следующим образом:
+
+</P>
+
+<pre>
+shell&#62; ./configure --with-tcp-port=port_number \
+             --with-unix-socket-path=file_name \
+             --prefix=/usr/local/mysql-3.22.9
+</pre>
+
+<P>
+Здесь <code>port_number</code> и <code>file_name</code> должны отличаться от принятого по умолчанию
+номера порта и пути файла сокета, а значение <code>--prefix</code> должно указывать
+каталог установки, который отличается от того, в котором установлен
+текущий MySQL.
+
+</P>
+<P>
+Проверить сокет, используемый установленным на данный момент сервером
+MySQL, можно при помощи следующей команды:
+
+</P>
+
+<pre>
+shell&#62; mysqladmin -h hostname --port=port_number variables
+</pre>
+
+<P>
+Обратите внимание: если указать ``<code>localhost</code>'' как имя удаленного компьютера,
+<code>mysqladmin</code> по умолчанию будет использовать сокеты Unix вместо TCP/IP.
+
+</P>
+<P>
+Если на используемом порту находится сервер MySQL, то будет выдан список
+самых важных настраиваемых переменных в MySQL, включая имя сокета.
+
+</P>
+<P>
+Повторно компилировать новый сервер MySQL нет необходимости, его просто
+нужно запустить с другими параметрами для порта и сокета. Используемые
+порт и сокет можно изменить, указав их как параметры запуска для
+<code>safe_mysqld</code>:
+
+</P>
+
+<pre>
+shell&#62; /path/to/safe_mysqld --socket=file_name --port=port_number
+</pre>
+
+<P>
+Модуль <code>mysqld_multi</code> может также в качестве аргумента принимать <code>safe_mysqld</code>
+(или <code>mysqld</code>) и передавать параметры из файла конфигурации для <code>safe_mysqld</code>
+и дальше для <code>mysqld</code>.
+
+</P>
+<P>
+Если новый сервер запускается на том же каталоге базы данных, что и другой
+сервер с включенной записью в журналы, необходимо также указать имена
+файлов журналов для <code>safe_mysqld</code> при помощи параметров <code>--log</code>, <code>--log-update</code>
+или <code>--log-slow-queries</code>. Иначе оба сервера могут попытаться осуществить
+запись в один и тот же файл журнала.
+
+</P>
+<P>
+<strong>Предупреждение</strong>: обычно нельзя допускать, чтобы два сервера одновременно
+заносили данные в одну и ту же базу данных! Если ваша операционная система
+не поддерживает безотказную блокировку доступа, это может привести к
+возникновению неприятных сюрпризов!
+
+</P>
+<P>
+Если для второго сервера понадобится использовать другой каталог базы
+данных, можно воспользоваться параметром <code>--datadir=path</code> для <code>safe_mysqld</code>.
+
+</P>
+<P>
+<strong>Обратите внимание</strong>: запуск нескольких серверов MySQL (<code>mysqlds</code>) на различных
+компьютерах с доступом к одному каталогу данных через сетевую файловую
+систему обычно  не приводит ни к чему хорошему! Проблема состоит в том,
+что сетевая файловая система становится узким местом для передачи данных.
+Она не предназначена для такого использования. И даже в этом случае
+придется искать решение, которое позволит обеспечить отсутствие конфликтов
+между двумя или более модулями <code>mysqld</code>. На данный момент не существует
+платформы, которая обеспечивает на 100% надежную блокировку доступа к
+файлам (обычно демон <code>lockd</code>) во всех возможных ситуациях. Кроме того,
+существует еще одна опасность при использовании сетевой файловой системы:
+эта система может еще больше усложнить работу программы <code>lockd</code>. Поэтому
+лучше смотреть на вещи проще и забыть об этой идее. Оптимальным решением
+будет использование одного компьютера с несколькими центральными
+процессорами и с операционной системой, которая эффективно управляет
+потоками.
+
+</P>
+<P>
+Если нужно подсоединиться к серверу MySQL, который работает с портом,
+отличным от того, с которым откомпилирован ваш клиент, можно
+воспользоваться одним из следующих методов:
+
+</P>
+
+<ul>
+<LI>
+
+Запустите клиент с параметрами <code>--host 'hostname' --port=port_number</code>,
+чтобы подсоединиться через TCP/IP, или <code>[--host localhost
+--socket=file_name]</code>, чтобы подсоединиться через сокет Unix.
+
+<LI>
+
+В своей программе на языке C или Perl можно задать аргументы порта или
+сокета при подсоединении к серверу MySQL.
+
+<LI>
+
+При использовании модуля Perl <code>DBD::mysql</code> можно прочитать параметры из
+файлов параметров MySQL (see section <A HREF="Option_files.html">4.1.2  Файлы параметров <tt>`my.cnf'</tt></A>).
+
+
+<pre>
+$dsn = "DBI:mysql:test;mysql_read_default_group=client;
+mysql_read_default_file=/usr/local/mysql/data/my.cnf"
+$dbh = DBI-&#62;connect($dsn, $user, $password);
+</pre>
+
+<A NAME="IDX438"></A>
+<A NAME="IDX439"></A>
+<A NAME="IDX440"></A>
+<A NAME="IDX441"></A>
+<LI>
+
+Задайте переменные окружения <code>MYSQL_UNIX_PORT</code> и <code>MYSQL_TCP_PORT</code>, чтобы
+указать на сокет Unix и порт TCP/IP до запуска клиентов. Если обычно
+используются конкретные сокет или порт, команды для задания этих
+переменных окружения необходимо поместить в свой файл <tt>`.login'</tt> (see section <A HREF="Environment_variables.html">F  Переменные окружения</A>).
+
+<LI>
+
+<A NAME="IDX442"></A>
+Укажите принятые по умолчанию сокет и порт TCP/IP в файле <tt>`.my.cnf'</tt> в своем
+домашнем каталоге (see section <A HREF="Option_files.html">4.1.2  Файлы параметров <tt>`my.cnf'</tt></A>).
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Multiple_servers">Add your own comment.</a></p><div id="docnav"><a href="Multiple_servers.html#">Top</a> / <a rel="prev" href="Installing_many_servers.html" title="4.1.3  Установка нескольких серверов на один компьютер">Previous</a> / <a rel="next" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Configuring_MySQL.html" title="4.1  Конфигурирование MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

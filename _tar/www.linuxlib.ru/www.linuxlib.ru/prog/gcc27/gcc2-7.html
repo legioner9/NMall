@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Компилятор языков C, C++, Objective C gcc 2.7 (часть 2): Файл конфигурации — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../index.htm#gl">графические библиотеки</a> |
+    <A HREF="../index.htm#tcl">Tcl</a> |
+    <A HREF="../index.htm#perl">Perl</a> |
+    <A HREF="../index.htm#php">PHP</a> |
+    <A HREF="../index.htm#java">Java &amp; C#</a> |
+    <A HREF="../index.htm#dbms">СУБД</a> |
+    <A HREF="../index.htm#cvs">CVS</a> |
+    <A HREF="../index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<A HREF="gcc2-8.html">Вперед</A>
+<A HREF="gcc2-6.html">Назад</A>
+<A HREF="gcc2.html#toc7">Содержание</A>
+<HR>
+<H2><A NAME="s7">7. Файл конфигурации</A></H2>
+
+<P>
+<P>Файл конфигурации `xm-MACHINE.h' содержит макроопределения,
+описывающие машину и систему, на которых производится трансляция,
+в отличии от определений в `MACHINE.h', которые описывают целевую
+машину. Большинство значений в `xm-MACHINE.h' в действительности
+одинаковы для всех машин, на которых работает GNU CC, поэтому все
+файлы конфигурации имеют большие одинаковые части. Но существуют
+макрокоманды, которые отличаются:
+<DL>
+<DT><B>`USG' </B><DD><P>Определите эту макрокоманду, если главная система - System V.
+<P>
+<DT><B>`VMS' </B><DD><P>Определите эту макрокоманду, если главная система - VMS.
+<P>
+<DT><B>`FATAL_EXIT_CODE' </B><DD><P>Выражение на C для кода состояния, который будет возвращен, при
+выходе транслятора после серьезных ошибок.
+<P>
+<DT><B>`SUCCESS_EXIT_CODE' </B><DD><P>Выражение на C для кода состояния, который будет возвращен, когда
+транслятор выходит без серьезных ошибок.
+<P>
+<DT><B>`HOST_WORDS_BIG_ENDIAN' </B><DD><P>Определите эту макрокоманду, если на главной машине слова
+в составном слове идут в обратном порядке. (GNU CC не
+зависит от упорядочения байтов внутри слова на главной машине.)
+<P>
+<DT><B>`HOST_FLOAT_WORDS_BIG_ENDIAN' </B><DD><P>Определите эту макрокоманду, которая должна быть 1 если на главной
+машине при сохранение вещественных чисел типов `DFmode', `XFmode' или
+`TFmode' бит знака записывается в самый маленький адрес. В противном
+случае она должна быть ноль.
+<P>Если упорядочивание такое же как и упорядочивание целых чисел в
+составном слове (тип из нескольких слов).
+<P>
+<DT><B>`HOST_FLOAT_FORMAT' </B><DD><P>Числовой код, отличающий вещественной формат главной машины. См.
+`TARGET_FLOAT_FORMAT' в  для различных возможных
+вариантов и значения по умолчанию.
+<P>
+<DT><B>`HOST_BITS_PER_CHAR' </B><DD><P>Выражение на C для числа битов в `char' на главной машине.
+<P>
+<DT><B>`HOST_BITS_PER_SHORT' </B><DD><P>Выражение на C для числа битов в `short' на главной машине.
+.
+<P>
+<DT><B>`HOST_BITS_PER_INT' </B><DD><P>Выражение на C для числа битов в `int' на главной машине.
+<P>
+<DT><B>`HOST_BITS_PER_LONG' </B><DD><P>Выражение на C для числа битов в `long' на главной машине.
+<P>
+<DT><B>`ONLY_INT_FIELDS' </B><DD><P>Определите эту макрокоманду, чтобы указать, что главный транслятор
+поддерживает битовые поля только для 'int', но не для других целых
+типов, включая `enum', как то делают большинство компиляторов С.
+<P>
+<DT><B>`OBSTACK_CHUNK_SIZE' </B><DD><P>Выражение на C для размера обычных obstack кусков. Если Вы не
+определяете, его по умолчанию используется разумное обычное значение.
+<P>
+<DT><B>`OBSTACK_CHUNK_ALLOC' </B><DD><P>Функция, используемая, чтобы распределить obstack куски. Если Вы не
+ее, то будет использоваться `xmalloc'.
+<P>
+<DT><B>`OBSTACK_CHUNK_FREE' </B><DD><P>Функция, используемая, чтобы освободить obstack куски. Если Вы не
+ее, то будет использоваться `free'.
+<P>
+<DT><B>`USE_C_ALLOCA' </B><DD><P>Определите эту макрокоманду, чтобы указать, что транслятор работает
+с 'alloca', выполненной на C. Эта версия 'alloca' может быть найдена в
+файле 'alloca.c'; чтобы использовать ее, Вы должны также измениться
+переменную 'Makefile'-а - 'ALLOCA'. (Для систем, для которых мы знаем,
+что это необходимо, это выполнено автоматически)
+<P>Если Вы определяете эту макрокоманду, Вы должны вероятно сделать это
+следующим образом:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+           #ifndef __GNUC__
+           #define USE_C_ALLOCA
+           #else
+           #define alloca __builtin_alloca
+           #endif
+</PRE>
+</CODE></BLOCKQUOTE>
+
+так, чтобы, когда транслятор компилировался с GNU CC, он использовал
+более эффективную встроенную функцию `alloca'.
+<P>
+<DT><B>`FUNCTION_CONVERSION_BUG' </B><DD><P>Определите эту макрокоманду, чтобы указать, что главный транслятор
+не правильно обрабатывает преобразование функционального значения к
+указатель-в-функцию, когда это используется в выражении.
+<P>
+<P>
+<DT><B>`HAVE_VPRINTF' </B><DD><P>Определите ее, если библиотечная функция `vprintf' является доступной
+на вашей системе.
+<P>
+<DT><B>`MULTIBYTE_CHARS' </B><DD><P>Определите эту макрокоманду, чтобы допустить поддержку для символов
+мультибайта во вводе GNU CC. Это требует, когда главная система
+поддерживала ANSI C библиотечными функциями для преобразования символов
+мультибайта к широким символам.
+<P>
+<P>
+<DT><B>`HAVE_PUTENV' </B><DD><P>Определите ее, если библиотечная функция `putenv' является доступной на
+вашей системе.
+<P>
+<DT><B>`POSIX' </B><DD><P>Определите ее, если ваша система - POSIX.1 совместима.
+<P>
+<DT><B>`NO_SYS_SIGLIST' </B><DD><P>Определите ее, если ваша система *не* поддерживает переменную
+`sys_siglist'.
+<P>
+<DT><B>`DONT_DECLARE_SYS_SIGLIST' </B><DD><P>Определите ее, если ваша система имеет переменную `sys_siglist', и
+она уже объявлена в системных файлах заголовков.
+<P>
+<DT><B>`USE_PROTOTYPES' </B><DD><P>Определите эту макрокоманду 1-ой, если Вы знаете, что главный транслятор
+поддерживает прототипы, даже если это не определяет __STDC__, или
+определите ее 0, если Вы не хотите, что бы в GNU CC использовались
+какие то ни было прототипы. Если `USE_PROTOTYPES' не определена,
+то это буде определяться автоматический с помощью проверки
+определено ли `__STDC__'.
+<P>
+<DT><B>`NO_MD_PROTOTYPES' </B><DD><P>Определите ее, если Вы же, что бы было подавление прототипов,
+сгенерированных их файла описания машины, но использовать другие
+прототипы внутри GNU CC. Если 'USE_PROTOTYPES' определен 0-ем,
+или главный транслятор не поддерживает прототипы, эта макрокоманда
+не будет иметь никакого эффекта.
+<P>
+<DT><B>`MD_CALL_PROTOTYPES' </B><DD><P>Определите ее, если Вы желаете генерировать прототипы для функции
+'gen_call' или `gen_call_value', сгенерированных из файла описания
+машины. Если 'USE_PROTOTYPES' определен 0-ем, или главный транслятор не
+поддерживает прототипы, или определен 'NO_MD_PROTOTYPES', то эта
+макрокоманда не воспринимается. Как только все машинные описания
+изменяются, чтобы иметь соответствующее число параметров, эта
+макрокоманда будет удалена.
+<P>В некоторые системах есть соответствующая переменная, но она
+может иметь разные имена, типа '_sys_siglist'. На этих системах,
+Вы можете определять 'sys_siglist' как макрокоманде,
+которая расширяется в фактическое переменной.
+<P>
+<DT><B>`NO_STAB_H' </B><DD><P>Определите ее, если ваша система не имеет инклюд файла 'stab.h'.
+Если 'USG' определен, то 'NO_STAB_H' определен.
+<P>
+<DT><B>`PATH_SEPARATOR' </B><DD><P>Эта макрокоманда должна быть определена символом, который используется
+для разделения в путях. По умолчанию используется символ двоеточия.
+<P>
+<DT><B>`DIR_SEPARATOR' </B><DD><P>Если Ваша система использует символ, отличный от слэша для разделения
+имен директорий в указании файла, то определите его в эту макрокоманду.
+Когда GNU CC отображает имя файла будет использоваться определенный
+символ. GNU CC проверит и слыш и вами определенный символ при разборе
+имени файла.
+<P>
+<DT><B>`OBJECT_SUFFIX' </B><DD><P>Определите эту макрокоманду, как расширение объектных файлов на вашей
+машине. По умолчанию используется `.o'.
+<P>
+<DT><B>`EXECUTABLE_SUFFIX' </B><DD><P>Определите эту макрокоманду, как расширение исполняемых файлов на вашей
+машине. По умолчанию используется пустая строка.
+<P>
+<P>
+<DT><B>`COLLECT_EXPORT_LIST' </B><DD><P>Если определено, `collect2' просмотрит индивидуальные объектные файлы,
+определенные в командной строке и создаст экспортный список для линкера.
+Определите эту макрокоманду для систем подобных AIX, где линкер
+отбрасывает объектные файлы, не вызванные из 'main' или пользовательского
+export-списка.
+</DL>
+
+Кроме того, файлы конфигурации для системы V определяют `bcopy', `bzero'
+и `bcmp' как псевдонимы. Некоторые файлы определяют 'alloca' как
+макрокоманду при компиляции GNU CC, чтобы воспользоваться
+преимуществом встроенного в GNU CC  'alloca'.
+<P>
+<P>
+<HR>
+<A HREF="gcc2-8.html">Вперед</A>
+<A HREF="gcc2-6.html">Назад</A>
+<A HREF="gcc2.html#toc7">Содержание</A>
+
+  </div>
+</div>
+</body>
+</html>

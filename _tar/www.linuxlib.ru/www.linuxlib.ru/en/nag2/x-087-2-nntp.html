@@ -1,0 +1,664 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>NNTP and thenntpd Daemon — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-cnews.maint.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-nntp.protocol.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="X-087-2-NNTP"
+>Chapter 22. NNTP and thenntpd Daemon</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>22.1. <A
+HREF="x-087-2-nntp.protocol.html"
+>The NNTP Protocol</A
+></DT
+><DD
+><DL
+><DT
+>22.1.1. <A
+HREF="x-087-2-nntp.protocol.html#AEN17812"
+>Connecting to the News Server</A
+></DT
+><DT
+>22.1.2. <A
+HREF="x-087-2-nntp.protocol.html#AEN17825"
+>Pushing a News Article onto a Server</A
+></DT
+><DT
+>22.1.3. <A
+HREF="x-087-2-nntp.protocol.html#AEN17849"
+>Changing to NNRP Reader Mode</A
+></DT
+><DT
+>22.1.4. <A
+HREF="x-087-2-nntp.protocol.html#AEN17863"
+>Listing Available Groups</A
+></DT
+><DT
+>22.1.5. <A
+HREF="x-087-2-nntp.protocol.html#AEN17880"
+>Listing Active Groups</A
+></DT
+><DT
+>22.1.6. <A
+HREF="x-087-2-nntp.protocol.html#AEN17892"
+>Posting an Article</A
+></DT
+><DT
+>22.1.7. <A
+HREF="x-087-2-nntp.protocol.html#AEN17912"
+>Listing New Articles</A
+></DT
+><DT
+>22.1.8. <A
+HREF="x-087-2-nntp.protocol.html#AEN17932"
+>Selecting a Group on Which to Operate</A
+></DT
+><DT
+>22.1.9. <A
+HREF="x-087-2-nntp.protocol.html#AEN17948"
+>Listing Articles in a Group</A
+></DT
+><DT
+>22.1.10. <A
+HREF="x-087-2-nntp.protocol.html#AEN17962"
+>Retrieving an Article Header Only</A
+></DT
+><DT
+>22.1.11. <A
+HREF="x-087-2-nntp.protocol.html#AEN17982"
+>Retrieving an Article Body Only</A
+></DT
+><DT
+>22.1.12. <A
+HREF="x-087-2-nntp.protocol.html#AEN17994"
+>Reading an Article from a Group</A
+></DT
+></DL
+></DD
+><DT
+>22.2. <A
+HREF="x-087-2-nntp.nntpd.html"
+>Installing the NNTP Server</A
+></DT
+><DT
+>22.3. <A
+HREF="x-087-2-nntp.access.html"
+>Restricting NNTP Access</A
+></DT
+><DT
+>22.4. <A
+HREF="x-087-2-nntp.authorize.html"
+>NNTP Authorization</A
+></DT
+><DT
+>22.5. <A
+HREF="x-087-2-nntp.interact.html"
+>nntpd Interaction with C News</A
+></DT
+></DL
+></DIV
+><P
+>Network News Transfer Protocol (NNTP) provides for a vastly different
+approach to news exchange from C News and other news servers without native
+NNTP support. Rather than rely on a batch technology like UUCP to transfer
+news articles between machines, it allows articles to be exchanged via an
+interactive network connection. NNTP is not a particular software package,
+but an Internet standard described in RFC-977. It is based on a
+stream-oriented connection, usually over TCP, between a client anywhere in
+the network and a server on a host that keeps Netnews on disk storage. The
+stream connection allows the client and server to interactively negotiate
+article transfer with nearly no turnaround delay, thus keeping the number of
+duplicate articles low. Together with the Internet's high-transfer rates,
+this adds up to a news transport that surpasses the original UUCP networks by
+far. While some years ago it was not uncommon for an article to take two
+weeks or more before it arrived in the last corner of Usenet; it is now often
+less than two days. On the Internet itself, it is even within the range of
+minutes.</P
+><P
+>Various commands allow clients to retrieve, send, and post articles. The
+difference between sending and posting is that the latter may involve articles
+with incomplete header information; it generally means that the user has just
+written the article.<A
+NAME="X-087-2-FNNN01"
+HREF="x-087-2-nntp.html#FTN.X-087-2-FNNN01"
+>[1]</A
+>
+Article retrieval may be used by news transfer clients as well as newsreaders.
+This makes NNTP an excellent tool for providing news access to many clients on
+a local network without going through the contortions that are necessary when
+using NFS.</P
+><P
+>&#13;
+
+
+
+
+NNTP also provides for an active and a passive way to transfer news,
+colloquially called &#8220;pushing&#8221; and &#8220;pulling.&#8221; Pushing
+is basically the same as the ihave/sendme protocol used by C News (described in
+<A
+HREF="x-087-2-cnews.html"
+>Chapter 21</A
+>). The client offers an article to the server
+through the <B
+CLASS="COMMAND"
+>IHAVE msgid</B
+>
+command, and the server returns a response code that indicates whether
+it already has the article or if it wants it. If the server wants the
+article, the client sends the article, terminated by a single dot on a
+separate line.</P
+><P
+>Pushing news has the single disadvantage that it places a heavy load on
+the server system, since the system has to search its history database for
+every single article.</P
+><P
+>&#13;
+The opposite technique is pulling news, in which the client requests a
+list of all (available) articles from a group that have arrived after a
+specified date. This query is performed by the
+<B
+CLASS="COMMAND"
+>NEWNEWS</B
+> command. From the returned
+list of message IDs, the client selects those articles it does not yet have,
+using the <B
+CLASS="COMMAND"
+>ARTICLE</B
+> command for
+each of them in turn.</P
+><P
+>Pulling news needs tight control by the server over which groups and
+distributions it allows a client to request. For example, it has to make
+sure that no confidential material from newsgroups local to the site is sent
+to unauthorized clients.</P
+><P
+>There are also a number of convenience commands for newsreaders that
+permit them to retrieve the article header and body separately, or even
+single header lines from a range of articles. This lets you keep all
+news on a central host, with all users on the (presumably local) network
+using NNTP-based client programs for reading and posting. This is an
+alternative to exporting the news directories via NFS, as described
+in <A
+HREF="x-087-2-cnews.html"
+>Chapter 21</A
+>.</P
+><P
+>&#13;
+An overall problem of NNTP is that it allows a knowledgeable person to insert
+articles into the news stream with false sender specification. This is
+called <I
+CLASS="EMPHASIS"
+>news faking</I
+> or
+<I
+CLASS="EMPHASIS"
+>spoofing</I
+>.<A
+NAME="X-087-2-FNNN02"
+HREF="x-087-2-nntp.html#FTN.X-087-2-FNNN02"
+>[2]</A
+>
+An extension to NNTP allows you to require user authentication for
+certain commands, providing some measure of protection against people abusing
+your news server in this way.</P
+><P
+>&#13;
+
+There are a number of NNTP packages. One of the more widely known is
+the NNTP daemon, also known as the
+<I
+CLASS="EMPHASIS"
+>reference implementation</I
+>.
+Originally, it was written by Stan Barber and Phil Lapsley to illustrate the
+details of RFC-977. As with much of the good software available today, you may
+find it prepackaged for your Linux distribution, or you can obtain the source
+and compile it yourself. If you choose to compile it yourself, you will need to
+be quite familiar with your distribution to ensure you configure all of the
+file paths correctly.</P
+><P
+>The <B
+CLASS="COMMAND"
+>nntpd</B
+> package has a server, two clients for
+pulling and pushing news, and an <B
+CLASS="COMMAND"
+>inews</B
+>
+replacement. They live in a B News environment, but with a little
+tweaking, they will be happy with C News, too.  However, if you plan to
+use NNTP for more than offering newsreaders access to your news server,
+the reference implementation is not really an option.  We will therefore
+discuss only the NNTP daemon contained in the <B
+CLASS="COMMAND"
+>nntpd</B
+> package
+and leave out the client programs.</P
+><P
+>&#13;
+If you wish to run a large news site, you should look at
+the <I
+CLASS="EMPHASIS"
+>InterNet News</I
+> package, or INN, that was written by
+Rich Salz. It provides both NNTP and UUCP-based news transport. News transport is definitely better than
+<B
+CLASS="COMMAND"
+>nntpd</B
+>. We discuss INN in detail in
+<A
+HREF="x-087-2-inn.html"
+>Chapter 23</A
+>.</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNNN01"
+HREF="x-087-2-nntp.html#X-087-2-FNNN01"
+>[1]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+> When posting an
+article over NNTP, the server always adds at least one header field, <TT
+CLASS="LITERAL"
+>NNTP-Posting-Host:</TT
+>. The field contains the client's hostname.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNNN02"
+HREF="x-087-2-nntp.html#X-087-2-FNNN02"
+>[2]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>The same problem exists with the Simple Mail Transfer Protocol (SMTP), although
+most mail transport agents now provide mechanisms to prevent spoofing.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-cnews.maint.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-nntp.protocol.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Maintenance Tools and Tasks</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The NNTP Protocol</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

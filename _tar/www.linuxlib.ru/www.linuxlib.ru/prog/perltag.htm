@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>lf269, Webdesign: Обработка HTML кода на Perl, HTML::TagReader — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="index.htm#gl">графические библиотеки</a> |
+    <A HREF="index.htm#tcl">Tcl</a> |
+    <A HREF="index.htm#perl">Perl</a> |
+    <A HREF="index.htm#php">PHP</a> |
+    <A HREF="index.htm#java">Java &amp; C#</a> |
+    <A HREF="index.htm#dbms">СУБД</a> |
+    <A HREF="index.htm#cvs">CVS</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!-- SHORT BIO ABOUT THE AUTHOR -->
+<table align="left" border="0" width="190" summary="about the author">
+<tbody><tr>
+<td>
+
+<img src="perltag_files/Guido-S.gif" alt="[Photo of the Author]" height="164" width="173">
+<br>автор  Guido Socher <!--<a href="http://linuxfocus.org/%7Eguido/">--><font size="1">(homepage)</font><!--</a>-->
+<br><br>
+<i>Об авторе:</i><br>
+<p>Guido нравится Perl за его мощь и скорость. Девиз Perl
+	"Есть более одного способа сделать это" - полностью отражает
+	возможности тех, кто пользуется свободно распространяемым
+	программным обеспечением.</p>
+<!-- TRANSLATED TO ru -->
+<br><br><i>Перевод на Русский:</i><br>
+Pukhlyakov Kirill <small>&lt;kirill(at)linuxfocus.org&gt;</small>
+<br>
+<!--
+ =LF=TRANSTO=ru: Pukhlyakov Kirill
+-->
+<!-- TRANSLATED TO STOP -->
+<br><i>Содержание</i>:
+<ul>
+  <li><a href="perltag.htm#269lfindex0">Вступление</a></li>
+  <li><a href="perltag.htm#269lfindex1">Возможное решение</a></li>
+  <li><a href="perltag.htm#269lfindex2">HTML::TagReader</a></li>
+  <li><a href="perltag.htm#269lfindex3">Ссылки</a></li>
+  <li><!--<a href="http://cgi.linuxfocus.org/cgi-bin/lftalkback?anum=269&amp;lang=en">-->Страница отзывов<!--</a>--></li>
+</ul>
+
+</td></tr></tbody></table>
+<!-- HEAD OF THE ARTICLE -->
+<br> 
+<h2>Обработка HTML кода на Perl, HTML::TagReader</h2>
+ <img src="perltag_files/html_trbutton.png" width="385" height="170" alt="[Illustration]" hspace="10">
+<!-- ABSTRACT OF THE ARTICLE -->
+<p><i>Резюме</i>:
+</p><p>
+
+	Если ваш сайт достаточно объемен, то рано или поздно приходит мысль
+	об автоматизации управления им, то есть о поиске какого-либо
+	инструмента или приложения.
+<br>
+	Большинство приложений работают с файлами построчно или посимвольно.
+	К сожалению строки не имеют никакого смысла в SGML/XML/HTML файлах.
+	Эти файлы основаны на тэгах. Модуль, о котором пойдет речь
+	в этой заметке, обрабатывает файлы по тэгам.<br><br>
+    Надеюсь, что вы знакомы с Perl достаточно хорошо. В любом случае
+	советую взглянуть на мои предыдущие заметки об этом
+    <!--<a href="http://www.linuxfocus.org/Russian/January2000/article136.shtml">-->языке (Январь 2000)<!--</a>-->.
+
+
+<br><!-- HR divider --></p><center><font color="#8282e0"><b>_________________ _________________ _________________</b></font></center><br>
+<!-- BODY OF THE ARTICLE -->
+
+
+    <a name="269lfindex0"> </a>
+<h2>Вступление</h2>
+
+	Обычно файлы имеют строковую структуру - например конфигурационные
+	файлы Unix - /etc/hosts, /etc/passwd ... Даже есть старые ОС,
+	в которых вы можете найти функции для построчного чтения/записи данных.<br>
+    Интересующие нас SGML/XML/HTML файлы основаны на тэгах, строки не имеют
+	никакого значения в них, но текстовые редакторы и люди до сих пор
+	ориентируются на строки.<br>
+     <br>
+	Например большие HTML файлы, возвращаемые сервером могут иметь большую
+	длину строк и тут мы можем сделать их более читаемыми например таким
+	инструментом как "Tidy". Мы используем строковую структуру, несмотря на
+	то, что HTML основан на тэгах. Вы можете сравнить это с С-кодом -
+	теоретически можно писать программу в одну строку, но так никто не делает -
+	код будет нечитаемым.<br>
+	Но с другой стороны любой инструмент для проверки HTML кода выдаст вам
+	сообщение об ошибке на основе отсчета строк, но не тэгов - вы наверное
+	не видели никогда такое сообщение как "ОШИБКА после тэга 4123". Это потому,
+	что ваш текстовый редактор легко перейдет на заданную вами строку.<br>
+    <br>
+	Идеальным инструментом был бы тот, который <b>обрабатывает HTML файл тэг
+	за тэгом и при этом запоминает еще номера строк</b>.
+
+    <a name="269lfindex1"> </a>
+<h2>Возможное решение</h2>
+
+	Обычно для чтения файла в Perl используют оператор
+    <i>while(&lt;FILEHANDLE&gt;)</i>. В результате файл будет читаться
+	построчно и очередная строка будет помещена в переменную $_.
+	Почему так делает Perl? Дело в том, что в Perl есть служебная переменная
+	INPUT_RECORD_SEPARATOR ($RS или $/), в которой определяется символ "\n"
+	как конец строки. Если вы определите $/="&gt;", то Perl будет считать
+	"&gt;" концом строки. Следующий однострочный Perl скрипт преобразует
+	html текст таким образом, что каждая строка будет заканчиваться на "&gt;":
+
+    <p class="code">perl -ne 'sub BEGIN{$/="&gt;";} s/\s+/ /g; print
+    "$_\n";' file.html</p>
+
+    <p>такой html файл</p>
+<pre>&lt;html&gt;&lt;p&gt;some text here&lt;/p&gt;&lt;/html&gt;
+</pre>
+    преобразуется к такому виду
+<pre>&lt;html&gt;
+&lt;p&gt;
+some text here&lt;/p&gt;
+&lt;/html&gt;
+</pre>
+	Но это по-прежнему не очень читаемо. Для разработчика важно, чтобы
+	данные передавались тэг за тэгом. Чтобы, например, можно было легко
+	найти "&lt;a href= ..." даже если "a" и "href" расположены на разных
+	строках.<br>
+    <br>
+	Замена переменной "$/" (INPUT_RECORD_SEPARATOR) не замедлит работу
+	приложения. Также можно воспользоваться регулярными выражениями -
+	это немного сложнее и может привести к замедлению приложения, но этот
+	способ широко используется.<br>
+    <br>
+    <b>В чем проблема??</b> В заголовке заметки говорится что-то про
+	HTML::TagReader, но я почему-то до сих пор говорю о каких-то других
+	способах без привлечения дополнительных модулей. Посмотрим где тут
+	может возникнуть проблема:
+
+    <ul>
+      <li>Можно сказать, что почти все HTML файлы в мире некорректны.
+	  Есть достаточно много файлов с примерами на "С", которые выглядят
+	  на HTML уровне так<br>
+<tt>
+       if ( limit &gt; 3) ....</tt><br>
+       вместо <br><tt>
+       if ( limit &amp;gt; 3) ....</tt><br>
+	   В HTML открывающий тэг должен быть "&lt;", а закрывающий "&gt;".
+	   Ни один из них не должен появляться как есть в тексте. Хотя
+	   многие браузеры отобразят их корректно, но ошибка от этого не
+	   исчезнет.<br>
+      <br>
+      </li>
+
+      <li>Замена "$/" конечно отразится на всей программе. И если вы
+	  разберете такой файл, то возникнут проблемы.<br>
+      <br>
+      </li>
+    </ul>
+	Так что делаем вывод, что только в некоторых случаях можно использовать
+	переменную  "$/" (INPUT_RECORD_SEPARATOR). <br><br>
+	У меня есть одна программка, которая использует то, что мы уже так
+	долго обсуждаем. В ней меняется "$/" на "&lt;". Браузеры не так хорошо
+	отслеживают некорректный "&lt;", как "&gt;", поэтому гораздо меньше
+	некорректных страниц с "&lt;", чем с "&gt;".
+    Программа называется <!--<a href="http://www.linuxfocus.org/common/src/article269/tr_tagcontentgrep.html">-->tr_tagcontentgrep
+    ( посмотреть )<!--</a>-->, вы можете по коду посмотреть как запоминать номер
+	строки. Это программа может быть использована для "grep'а" строки
+	( например "img" ) в тэге даже если тэг расположен на разных строках,
+	например:
+
+    <p class="code"><b>tr_tagcontentgrep -l img file.html</b><br>
+     index.html:53: &lt;IMG src="../images/transpix.gif" alt=""&gt;<br>
+     index.html:257: &lt;IMG SRC="../Logo.gif" width=128
+    height=53&gt;<br>
+    </p>
+
+    <a name="269lfindex2"> </a>
+<h2>HTML::TagReader</h2>
+
+    HTML::TagReader решает проблему с заменой INPUT_RECORD_SEPARATOR, а
+	также предлагает более красивый способ отделения текста от тэгов.
+	Он не так тяжеловесен как HTML::Parser и предлагает именно то, что
+	надо при обработке html кода - возможность чтения тэг за тэгом.<br>
+     <br>
+	Достаточно разговоров. Посмотрим как использовать модуль в реальной
+	жизни. Сначала объявляем его: <br>
+     <i>use HTML::TagReader;</i> <br>
+	Затем: <br>
+     <i>my $p=new HTML::TagReader "filename";</i> <br>
+	чтобы открыть файл и получить объектную ссылку на него в $p. Теперь
+	используя $p-&gt;gettag(0) или $p-&gt;getbytoken(0) получаем доступ
+	к следующему тэгу. gettag возвращает только названия тэгов, т.е. то,
+	что находится между &lt; и &gt;, а getbytoken также возвращает текст,
+	который присутствует между тэгами и сообщает вам, что это - текст или
+	тэг. Используя эти функции очень легко обрабатывать html файлы, что вообщем
+	и необходимо при поддержке больших сайтов. Полное описание синтаксиса
+	вы можете найти <!--<a href="http://www.linuxfocus.org/common/src/article269/man_HTML_TagReader.html">-->здесь (man страница
+    HTML::TagReader<!--</a>-->.
+     <br>
+	Приведем реальный пример использования модуля - выведем заголовки
+	некоторого количества документов:
+<pre>#!/usr/bin/perl -w
+use strict;
+use HTML::TagReader;
+#
+die "USAGE: htmltitle file.html [file2.html...]\n" unless($ARGV[0]);
+my $printnow=0;
+my ($tagOrText,$tagtype,$linenumber,$column);
+#
+for my $file (@ARGV){
+  my $p=new HTML::TagReader "$file";
+  # read the file with getbytoken:
+  while(($tagOrText,$tagtype,$linenumber,$column) = $p-&gt;getbytoken(0)){
+  if ($tagtype eq "title"){
+    $printnow=1;
+    print "${file}:${linenumber}:${column}: ";
+    next;
+  }
+  next unless($printnow);
+  if ($tagtype eq "/title" || $tagtype eq "/head" ){
+    $printnow=0;
+    print "\n";
+    next;
+  }
+  $tagOrText=~s/\s+/ /; #kill newline, double space and tabs
+  print $tagOrText;
+  }
+}
+# vim: set sw=4 ts=4 si et:
+</pre>
+	Как это работает? Читая html файл тэг за тэгом при помощи
+	$p-&gt;getbytoken(0) мы ищем &lt;title&gt; или &lt;Title&gt;
+	или &lt;TITLE&gt; ( $tagtype eq "title" ) и когда находим
+	устанавливаем флаг ( $printnow ) и начинаем выводить заголовок пока
+	не встретим &lt;/title&gt;.
+    <br>
+	Используем следующий вызов программы:
+
+    <p class="code"><b>htmltitle file.html somedir/index.html</b><br>
+     file.html:4: the cool perl page<br>
+     somedir/index.html:9: joe's homepage<br>
+    </p>
+
+	<p>Конечно можно использовать и tr_tagcontentgrep вместе с
+    HTML::TagReader. Тогда получится немного короче и проще:</p>
+<pre>#!/usr/bin/perl -w
+use HTML::TagReader;
+die "USAGE: taggrep.pl searchexpr file.html\n" unless ($ARGV[1]);
+my $expression = shift;
+my @tag;
+for my $file (@ARGV){
+  my $p=new HTML::TagReader "$file";
+  while(@tag = $p-&gt;gettag(0)){
+    # $tag[0] is the tag (e.g &lt;a href=...&gt;)
+    # $tag[1]=linenumber $tag[2]=column
+    if ($tag[0]=~/$expression/io){
+      print "$file:$tag[1]:$tag[2]: $tag[0]\n";
+    }
+  }
+}
+</pre>
+	Скрипт получился достаточно коротким, без избытка обработки ошибок,
+	но он полностью функционален. Чтобы найти тэги с вхождением строки
+	"gif" используем его следующим образом: <br>
+    <br>
+
+
+    <p class="code"><b>taggrep.pl gif file.html</b><br>
+    file.html:135:15: &lt;img src="images/2doc.gif" width=34
+    height=22&gt;<br>
+    file.html:140:1: &lt;img src="images/tst.gif" height="164"
+    width="173"&gt;</p>
+	Хотите еще пример? Напишем программу, которая вырежет все тэги
+    &lt;font...&gt; и &lt;/font&gt; из html файла. Эти тэги ( font )
+	используются в огромном количестве некачественными приложениями
+	для верстки html кода и потом возникают проблемы при просмотре
+	таких файлов браузерами. Это упрощенная версия программы - она
+	удаляет все тэги font, но вы можете немного усовершенствовать ее
+	и удалять только аттрибуты fontface или size, а color оставлять.
+<pre>#!/usr/bin/perl -w
+use strict;
+use HTML::TagReader;
+# strip all font tags from html code but leave the rest of the
+# code un-changed.
+die "USAGE: delfont file.html &gt; newfile.html\n" unless ($ARGV[0]);
+my $file = $ARGV[0];
+my ($tagOrText,$tagtype,$linenumber,$column);
+#
+my $p=new HTML::TagReader "$file";
+# read the file with getbytoken:
+while(($tagOrText,$tagtype,$linenumber,$column) = $p-&gt;getbytoken(0)){
+  if ($tagtype eq "font" || $tagtype eq "/font"){
+    print STDERR "${file}:${linenumber}:${column}: deleting $tagtype\n";
+    next;
+  }
+  print $tagOrText;
+}
+# vim: set sw=4 ts=4 si et:
+</pre>
+	Как видите достаточно легко написать полезную программу всего в
+	несколько строк. <br>
+	В пакете с исходниками HTML::TagReader ( см. ссылки ) приведены
+	несколько примеров использования модуля.
+
+    <ul>
+      <li>tr_blck -- поиск некорректных относительных ссылок в HTML страницах</li>
+
+      <li>tr_llnk -- вывод списка ссылок в HTML файлах</li>
+
+      <li>tr_xlnk -- замена ссылок на каталоги ссылками на index файлы</li>
+
+      <li>tr_mvlnk -- замена тэгов в HTML файлах командами perl.</li>
+
+      <li>tr_staticssi -- замена SSI директив #include virtual и
+      #exec cmd на статические html страницы.</li>
+
+      <li>tr_imgaddsize -- добавление width=... и height=... в тэг &lt;img
+      src=...&gt;</li>
+    </ul>
+    tr_xlnk и tr_staticssi полезны при копировании веб-сайта на CD. Веб сервер
+	выдаст вам страницу http://www.linuxfocus.org/index.html даже если вы просто
+	наберете http://www.linuxfocus.org/ ( без index.html ). Если в случае копирования
+	сайта на диск вы просто переносите все файлы и потом обращаетесь к
+	диску напрямую ( file:/mnt/cdrom ) то вы увидите просто список файлов
+	каталога вместо index.html. Это произошло в первый раз при создании
+	Linux<font color="#ff0000">Focus</font> CD - компания выполнявшая заказ так и сделала и пользоваться
+	диском стало очень неудобно. Теперь они используют tr_xlnk и все ОК.
+	<br clear="all">
+     <br>
+    Уверен, что HTML::TagReader будет полезен для вас. Удачного
+	программирования!
+
+    <a name="269lfindex3"> </a>
+<h2>Ссылки</h2>
+
+
+    <ul>
+      <li><!--<a href="http://www.linuxfocus.org/common/src/article269/man_HTML_TagReader.html">-->man страница
+      HTML::TagReader<!--</a>--></li>
+
+      <li>Руководство по Perl: <!--<a href="http://www.linuxfocus.org/Russian/January2000/article136.shtml">-->Perl
+      III (January 2000)<!--</a>--></li>
+
+      <li>Программа, использующая tr_tagcontentgrep ( без
+      HTML::TagReader): <!--<a href="http://www.linuxfocus.org/common/src/article269/tr_tagcontentgrep.txt">-->tr_tagcontentgrep
+      (txt)<!--</a>--> or <!--<a href="http://www.linuxfocus.org/common/src/article269/tr_tagcontentgrep.html">-->tr_tagcontentgrep
+      (html)<!--</a>--></li>
+
+      <li>Исходники HTML:TagReader:<br>
+      <!--<a href="http://cpan.org/authors/id/G/GU/GUS/">-->http://cpan.org/authors/id/G/GU/GUS/<!--</a>--><br>
+
+       или<br>
+       <!--<a href="http://main.linuxfocus.org/%7Eguido/index.html#TagReader">-->http://main.linuxfocus.org/~guido/<!--</a>--></li>
+
+      <li>Tidy вам необходим если вы занимаетесь веб дизайном : <!--<a href="http://www.w3.org/People/Raggett/tidy/">-->tidy - утилита для проверки
+	  корректности html кода<!--</a>--><br>
+      Как использовать tidy? Легко:<br>
+      <tt>tidy -e file.html</tt><br>
+      просто выведет список ошибок<br>
+      <tt>tidy -im -raw file.html</tt><br>
+      откорректирует файл.<br>
+      </li>
+    </ul>
+    <!-- vim: set sw=2 ts=2 et tw=80: -->
+
+  </div>
+</div>
+</body>
+</html>

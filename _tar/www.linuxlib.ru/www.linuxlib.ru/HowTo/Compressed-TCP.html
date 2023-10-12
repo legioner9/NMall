@@ -1,0 +1,680 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Сжатие TCP/IP-соединений при помощи ssh — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Сжатие TCP/IP-соединений при помощи ssh</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Sebastian Schreiber</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="792a1a110b1c101b392a002a2a571d1c">[email&#160;protected]</a></P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+>  Перевод: <A HREF="../cdn-cgi/l/email-protection.html#1e6e7f665e7f6d6e337277706b66307d7173" TARGET="_top">Павел Гашев</A
+>,
+  <!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>-->
+ </H3
+></DIV
+><P
+CLASS="PUBDATE"
+>2.2.2000<BR></P
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Compressed-TCP.html#AEN15"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="Compressed-TCP.html#AEN21"
+>Сжатие HTTP/FTP,...</A
+></DT
+><DT
+>3. <A
+HREF="Compressed-TCP.html#AEN36"
+>Сжатие электронной почты</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="Compressed-TCP.html#AEN38"
+>Входящая почта (POP3, IMAP4)</A
+></DT
+><DT
+>3.2. <A
+HREF="Compressed-TCP.html#AEN67"
+>Исходящая почта (SMTP)</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="Compressed-TCP.html#AEN85"
+>Быстродействие.</A
+></DT
+><DT
+>5. <A
+HREF="Compressed-TCP.html#AEN89"
+>Благодарности</A
+></DT
+><DT
+>6. <A
+HREF="Compressed-TCP.html#AEN94"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN15"
+>1. Введение</A
+></H1
+><P
+>Раньше мы использовали сжатые файлы для того, чтобы освободить место на
+диске. Сегодня дисковое пространство стало довольно дешево, но ограничены
+пропускные способности каналов. Сжатием потоков данных, мы достигаем
+следующих целей:</P
+><P
+>1) Уменьшаем размер передаваемых данных (это важно, если мы платим за трафик, или если сеть перегружена).</P
+><P
+>2) Ускоряем передачу по медленным каналам (Модем, GSM, ISDN).</P
+><P
+>Это HOWTO рассказывает, как достигнуть этих целей, используя такие утилиты,
+как SSH1, SSH2, OpenSSH или LSH.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN21"
+>2. Сжатие HTTP/FTP,...</A
+></H1
+><P
+>Мой офис подключен к Интернет через ISDN на скорости 64Кбит, так что
+максимальная скорость передачи является около 7Кб/сек. Можно повысить
+скорость соединения, путем сжатия передаваемой информации: теперь, когда я
+скачиваю файлы, Netscape показывает скорость до 40Кб/сек (файлы журналов
+сжимаются в 15 раз). SSH - это утилита, предназначенная для обеспечения
+безопасного соединения через небезопасные сети, при помощи шифрования
+данных. Но, кроме того, SSH способна сжимать информацию и осуществлять
+переадресацию портов (аналогично rinetd или redir). Так что она вполне
+подходит для сжатия простых TCP/IP соединений. "Простых" \- значит, что
+открывается только одно TCP-соединение. FTP-соединения или соединения между
+M$-Outlook и MS-Exchange не являются "простыми", т.к. открывается несколько
+соединений одновременно. SSH использует алгоритм сжатия LempleZiv (LZ77),
+обеспечивая такую же компрессию, как и в winzip/pkzip. Для того, чтобы
+сжимать все HTTP-соединения с Интернет, мне необходимо запустить одну
+команду на своей машине:</P
+><P
+><TT
+CLASS="LITERAL"
+>ssh -l &lt;login ID&gt; &lt;hostname&gt; -C -L8080:&lt;proxy_;at_;ISP&gt;:80
+-f sleep 10000</TT
+> </P
+><P
+>&lt;<TT
+CLASS="LITERAL"
+>hostname</TT
+>&gt; = машина
+моего провайдера, обеспечивающая доступ через SSH.</P
+><P
+>&lt;<TT
+CLASS="LITERAL"
+>login ID</TT
+>&gt; = мое имя входа на &lt;<TT
+CLASS="LITERAL"
+>hostname</TT
+>&gt;</P
+><P
+><TT
+CLASS="LITERAL"
+>&lt;proxy_;at_;ISP&gt; =</TT
+>веб-прокси-сервер моего провайдера</P
+><P
+>Обозреватель настроен на работу через прокси-сервер <TT
+CLASS="LITERAL"
+>localhost:8080</TT
+>. Портативный компьютер настроен на этот же порт моей машины. Соединения сжимаются и переназначаются реальному прокси-серверу сервером SSH. Инфраструктура выглядит примерно так:</P
+><PRE
+CLASS="SCREEN"
+>                      64KBit ISDN
+Мой компьютер--------------------------------Компьютер (Unix/Linux/Win-NT)
+SSH-клиент         сжато                     моего провайдера
+порт 8080                                    SSH-сервер, порт 22
+ |                                            |
+ |                                            |
+ |                                            |
+ |10МБит Ethernet                             |100МБит
+ |не сжато                                    |не сжато
+ |                                            |
+ |                                            |
+Мой второй компьютер                         WWW-прокси провайдера
+с Netscape,...                               порт 80
+(портативный)
+
+ </PRE
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN36"
+>3. Сжатие электронной почты</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN38"
+>3.1. Входящая почта (POP3, IMAP4)</A
+></H2
+><P
+>Большинство людей принимают электронную почту с почтового сервера при помощи POP3. POP3 - это протокол со многими недостатками.</P
+><P
+>&#13;<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>POP3 передает пароль, как обычный текст. (Хотя есть различные реализации SSL для POP/IMAP и аутентификация типа запрос/ответ, описанные в RFC-2095/2195).</P
+></LI
+><LI
+><P
+>POP3 - избыточный протокол: сначала клиент запрашивает сообщение, затем
+сервер посылает его. После этого клиент может дать серверу команды удаления
+принятых сообщений. Сервер подтверждает удаление. Далее сервер дает понять,
+что он готов к следующей команде. Таким образом, необходимо 4 команды, чтобы
+принять каждое письмо.</P
+></LI
+><LI
+><P
+>POP3 передает почту без сжатия, хотя она очень хорошо компрессируется (в 3.5 раза).</P
+></LI
+></OL
+>&#13;</P
+><P
+>Возможно осуществить сжатие POP3, перенаправляя соединения с адреса localhost:110 через сжатое соединение к вашему провайдеру на порт POP3. Для этого необходимо в почтовой программе установить сервер входящей почты в localhost:110. Это безопасное и быстрое соединение, но оно все еще зависит от недостатков протокола POP3.</P
+><P
+> </P
+><P
+>Имеет смысл заменить POP3 на более эффективный протокол. Идея заключается в том, чтобы перекачивать все содержимое почтового ящика, хранящегося на почтовом сервере, без какого-то ни было почтового протокола. SCP - хорошая утилита для выполнения этого. Вы можете скачать ваш почтовый ящик примерно так:</P
+><P
+> </P
+><P
+><TT
+CLASS="LITERAL"
+>scp -C -l имя:/var/spool/mail/loginid /tmp/newmail</TT
+></P
+><P
+> </P
+><P
+>Но есть проблема: что произойдет, если во время передачи на сервер придет новая почта? Новая почта будет потеряна. Таким образом, лучше всего использовать следующие команды:</P
+><P
+><TT
+CLASS="LITERAL"
+>ssh -l имя почтовый_сервер -f mv /var/spool/mail/имя /tmp/имя_fetchme</TT
+></P
+><P
+><TT
+CLASS="LITERAL"
+>scp -C -l имя:/tmp/my_;new_;mail /tmp/имя_fetchme</TT
+></P
+><P
+>mv - это простая операция, мгновенно переносящая файл в другое место, так
+что у вас не будет проблем, если придет новая почта. Но если каталоги /tmp/
+и /var/spool/mail находятся на разных дисках/разделах, у вас все-таки могут
+возникнуть некоторые трудности. Решение - это создать файл блокировки на
+сервере перед тем, как перекачивать почту: <TT
+CLASS="LITERAL"
+>touch
+/var/spool/mail/имя.lock</TT
+>. Вы должны убрать его после того, как
+закончите перекачку. А еще лучше, переименовать почтовый ящик внутри этого
+же каталога:</P
+><P
+><TT
+CLASS="LITERAL"
+>ssh -l имя почтовый_сервер -f mv /var/spool/mail/имя /var/spool/mail/имя_fetchme</TT
+></P
+><P
+>Затем обработайте полученный почтовый ящик /tmp/newmail, при помощи команд
+formail и procmail: <TT
+CLASS="LITERAL"
+>formail -s procmail &lt;
+/tmp/newmail</TT
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN67"
+>3.2. Исходящая почта (SMTP)</A
+></H2
+><P
+>Передача электронной почты через сжатое и шифрованное SSH-соединение обеспечивает:</P
+><P
+>&#13;<P
+></P
+><UL
+><LI
+><P
+>Уменьшение трафика сети</P
+></LI
+><LI
+><P
+>Безопасность (впрочем, это не имеет смысла, если далее почта идет по незащищенным сетям)</P
+></LI
+><LI
+><P
+>Аутентификация посылающего. Большинство почтовых серверов не принимают почту с других машин, предназначенную для внешней доставки (relay). Если вы посылаете почту через SSH-соединение, почтовый сервер (sendmail или MS-exchange) думает, что она посылается с локальной программы...</P
+></LI
+></UL
+>&#13;</P
+><P
+>Если на почтовом сервере установлен доступ SSH, используйте следующую команду:</P
+><P
+><TT
+CLASS="LITERAL"
+>ssh -C -l имя почтовый_сервер -L2525:почтовый_сервер:25</TT
+></P
+><P
+>Если у вас нет SSH-доступа к почтовому серверу, но есть сервер с SSH, которому разрешена связь с другими машинами, вы можете использовать его:</P
+><P
+><TT
+CLASS="LITERAL"
+>ssh -C -l имя другой_сервер -L2525:почтовый_сервер:25</TT
+></P
+><P
+>После этого вы можете настроить свою почтовую программу (или почтовый сервер: см. "smarthost") так, чтобы она посылала исходящую почту через localhost:2525.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN85"
+>4. Быстродействие.</A
+></H1
+><P
+>Конечно же, сжатие/шифрование занимает процессорное время. Например старый Пентиум-133 может сжимать и шифровать около 1Гб в час, а это достаточно много. Чтобы увеличить скорость, вы можете скомпилировать SSH с опцией "-with-none", и он не будет шифровать информацию. Следующая таблица дает сравнение между различными методами загрузки (файл 6МБ передавался с Pentium-133 на Pentium-233 через сеть 10Мбит).</P
+><PRE
+CLASS="SCREEN"
+>+-------------------+--------+----------+-----------+------------------------+
+|                   |  FTP   |шифрованый|   сжатый  |сжатый   &amp;   шифрованный|
++-------------------+--------+----------+-----------+------------------------+
++-------------------+--------+----------+-----------+------------------------+
+|       Время       |  7.6с  |   26с    |    9с     |          23с           |
++-------------------+--------+----------+-----------+------------------------+
+|      Скорость     | 790K/с |  232K/с  |  320K/с   |        264K/с          |
++-------------------+--------+----------+-----------+------------------------+
+|       Сжатие      |   1    |    1     |    3.8    |          3.8           |
++-------------------+--------+----------+-----------+------------------------+
+ </PRE
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN89"
+>5. Благодарности</A
+></H1
+><P
+>Выражаю благодарность Harald Koenig <TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#1972767c77707e596d786d376971606a7072376c7770346d6c7c7b70777e7c77377d7c"><span class="__cf_email__" data-cfemail="4e25212b2027290e3a2f3a603e26373d2725603b2027633a3b2b2c2720292b20602a2b">[email&#160;protected]</span></A
+>&#62;</TT
+>, который дал идею использования rcp при перекачке почтового ящика. Последняя версия этого документа находится на <TT
+CLASS="LITERAL"
+>http://www.syss.de/howto.</TT
+></P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN94"
+>6. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#fd9194938885d095928a8992bd9098899c919c9fd388939ed3989988"><span class="__cf_email__" data-cfemail="eb8782859e93c683849c9f84ab868e9f8a878a89c59e8588c58e8f9e">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#54383d3a212c793c3b23203b14352724383d3a212c7a2621"><span class="__cf_email__" data-cfemail="f89491968d80d590978f8c97b8998b889491968d80d68a8d">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

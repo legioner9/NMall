@@ -1,0 +1,571 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Creating Custom Partitions — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <th colspan="3" align="center">Иллюстрированное Руководство по
+          Установке FreeBSD</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "partitionauto.html">Предыдущая</a></td>
+
+          <td width="80%" align="center" valign="bottom">Глава 9.
+          FreeBSD Disklabel Редактор</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "inst-dist-set.html">Следующая</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="PARTITIONCHANGE">9.4. Создание
+      Партиций-Partitions с Собственными Параметрами</a></h1>
+
+      <p>Сохраните расчеты авто-конфигуратора для всех фаловых систем
+      (/,swap, /var, /usr). Затем, используя клавиши стрелок, выбирите
+      первую партицию ( / ) и удалите ее нажатием <b class="KEYCAP">D</b>.
+      Аналогично удалите все остальные партиции и ваш экран будет выглядеть
+      подобно нижнему с небольшими различиями, такими как значение в
+      поле "Free:".</p>
+
+      <div class="FIGURE">
+        <a name="SYSINSTALL-LABEL3"></a>
+
+        <p><b>Рисунок 9-4. Sysinstall Disklabel Редактор</b></p>
+
+        <div class="MEDIAOBJECT">
+          <p><img src="disklabel-ed1.png"></p>
+        </div>
+      </div>
+
+      <p>Теперь можно самостоятельно создать партиции, в том же порядке
+      что они были созданы авто-конфигуратором.</p>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN421">9.4.1. Создание Root
+        Партиции "/"</a></h2>
+
+        <p>Для создания root партиции, "/", сначала нажмите клавишу
+        <b class="KEYCAP">C</b> и появится диалоговое окно в котором
+        будет указан размер в блоках всего доступного свободного
+        дискового пространства:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD"></a>
+
+          <p><b>Рисунок 9-5. Свободное место для Root Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-root1.png"></p>
+          </div>
+        </div>
+
+        <p>Чтобы установить размер "/" партиции равный 100M, сначала
+        нужно с помощью клавиши <b class="KEYCAP">BACKSPACE</b> удалить
+        предложенное значение и ввести требуемое - 100M:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD2"></a>
+
+          <p><b>Рисунок 9-6. Изменение размера Root Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-root2.png"></p>
+          </div>
+        </div>
+
+        <p>Выбираем [OK] и нажимаем <b class="KEYCAP">ENTER</b>. После
+        чего появится следующее диалоговое окно:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-TYPE"></a>
+
+          <p><b>Рисунок 9-7. Выбор типа Root Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-fs.png"></p>
+          </div>
+        </div>
+
+        <p>Root Партиция должна быть файловой системой. Для этого
+        выбираем "FS", затем [OK] и нажимаем <b class="KEYCAP">ENTER</b>.</p>
+
+        <p>В следующем диалоговом окне, необходимо будет задать точку
+        монтирования root партиции - директорию куда она будет смонтирована.
+        Набираем "/", выбираем [OK] и нажимаем <b class="KEYCAP">ENTER</b>.</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-MOUNT"></a>
+
+          <p><b>Рисунок 9-8. Выбор точки монтирования Root Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-root3.png"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN453">9.4.2. Создание
+        "swap" Партиции</a></h2>
+
+        <p>Для создания партиции нажмите клавишу <b class="KEYCAP">C</b>,
+        появится диалоговое окно в котором будет указан размер в блоках всего
+        доступного свободного пространства:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD3"></a>
+
+          <p><b>Рисунок 9-9. Выделение свободного места под Swap</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-swap1.png"></p>
+          </div>
+        </div>
+
+        <p>Введите нужный вам размер для "SWAP" партиции. Обычно, значение
+        swap расчитывают как количество RAM памяти умноженное на два.
+        В данном примере, значение "SWAP" партиции установлено в 516M.
+        Сначала необходимо клавишей <b class="KEYCAP">BACKSPACE</b> удалить
+        предлагаемый размер и затем задать свой:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD4"></a>
+
+          <p><b>Рисунок 9-10. Редактирование размера Swap</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-swap2.png"></p>
+          </div>
+        </div>
+
+        <p>Затем выбрать [OK] и нажать <b class="KEYCAP">ENTER</b>. После чего
+        появится диалоговое окно выбора Типа партиции, для swap необходимо
+        выбрать SWAP, затем [OK] и нажать <b class="KEYCAP">ENTER</b>.
+        В отличие от FS, у нас не появится диалоговое окно для указания
+        точки монтирования, поскольку для SWAP она не нужна</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-TYPE2"></a>
+
+          <p><b>Рисунок 9-11. Выбор типа Партиции Swap</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-swap3.png"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN477">9.4.3. Создание
+        "/var" Партиции</a></h2>
+
+        <p>Для создания "/var" партиции, нажмите [C], появится следующее
+        диалоговое окно:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD14"></a>
+
+          <p><b>Рисунок 9-12. Выделение свободного места для /var
+          Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-var1.png"></p>
+          </div>
+        </div>
+
+        <p>Введите требуемый размер. В указанном примере, размер "/var"
+        установлен в 100M. Сперва удаляем заданный размер с помощью
+        [BACKSPACE] и затем вводим требуемый:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD5"></a>
+
+          <p><b>Рисунок 9-13. Редактирование размера /var Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-var2.png"></p>
+          </div>
+        </div>
+
+        <p>Затем выбираем [OK] и нажимаем [ENTER]. После чего появится
+        следующее диалоговое окно:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-TYPE3"></a>
+
+          <p><b>Рисунок 9-14. Выбор типа Партиции для /var</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-fs.png"></p>
+          </div>
+        </div>
+
+        <p>Выбираем нужный тип партиции FS, затем выбираем [OK] и нажимаем
+        [ENTER], а в следущем меню, в качестве точки монтирования задаем
+        директорию "/var"</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-MOUNT2"></a>
+
+          <p><b>Рисунок 9-15. Выбор точки монтирования /var</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-var3.png"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN503">9.4.4. Создание
+        "/usr" Партиции</a></h2>
+
+        <p>Для создания "/usr" партиции, нажмите [C], появится диалоговое
+        окно:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-ADD6"></a>
+
+          <p><b>Рисунок 9-16. Выделение свободного места для /usr
+          Партиции</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-usr1.png"></p>
+          </div>
+        </div>
+
+        <p>В данном примере отводим все оставшееся место под последнюю
+        нашу партицию "/usr", выбираем [OK] и нажимаем [ENTER].
+        После чего появится следующее диалоговое окно:</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-TYPE4"></a>
+
+          <p><b>Рисунок 9-17. Выбор типа Партиции для /usr</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-usr2.png"></p>
+          </div>
+        </div>
+
+        <p>в котором необходимо задать в качестве точки монтирования
+        имя директории. Набираем "/usr" для партиции usr, выбираем [OK]
+        и нажимаем [ENTER]</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL-MOUNT3"></a>
+
+          <p><b>Рисунок 9-18. Выбор точки монтирования /usr</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-fs.png"></p>
+          </div>
+        </div>
+
+        <p>После указанных операций окно  FreeBSD DiskLabel Редактора
+        будет выглядеть подобно нижнему, отличие будет лишь в размерах.
+        Диск размечен, для завершения необходимо нажать [Q].</p>
+
+        <div class="FIGURE">
+          <a name="SYSINSTALL-LABEL4"></a>
+
+          <p><b>Рисунок 9-19. Sysinstall Disklabel Редактор</b></p>
+
+          <div class="MEDIAOBJECT">
+            <p><img src="disklabel-ed2.png"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "partitionauto.html">Предыдущая</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html">Оглавление</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "inst-dist-set.html">Следующая</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Использование Параметров
+          по умолчанию для Партиций-Partitions</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "disklabel.html">Вверх</a></td>
+
+          <td width="33%" align="right" valign="top">Установка Выбранного
+          Дистрибутива</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

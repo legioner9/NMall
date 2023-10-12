@@ -1,0 +1,607 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 22 Процедуры резервирования и восстановления данных — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch21_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#22">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<H1>Часть V Рекомендации связанные с резервным копированием</H1>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 22 Процедуры резервирования и восстановления данных</H2><FONT
+      size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#1">-->Резервное
+      копирование и восстановление в Linux<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#2">-->Программа
+      резервного копирования tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#3">-->Создание
+      резервных копий с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#4">-->Автоматизация
+      задачи резервного копирования с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#5">-->Восстановление
+      файлов с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#6">-->Программа
+      резервного копирования dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#7">-->Создание
+      резервных копий с dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#8">-->Восстановление
+      файлов с dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#9">-->Резервное
+      копирование и восстановление через сеть<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=120
+      src="ch22_1.files/55.jpg" width=264></TD></TR></TBODY></TABLE>
+<H3><A name=1>Резервное копирование и восстановление в Linux</A></H3><B>Краткий
+обзор.</B>
+<P align=justify>Безопасность и надежность сервера вплотную связана с процедурой
+регулярного резервного копирования. Иногда могут возникать различные
+повреждения. Они могут быть следствием атак, ошибок аппаратного обеспечения,
+людских ошибок, перепадов напряжения и пр. Самый надежный метод резервного
+копирования это записать данные в место независимое от вашего Linux сервера,
+например, через сеть, на стример, сменный носитель, записываемый CD-ROM и
+пр.</P>
+<P align=justify>В Linux существует много методов выполнить резервное
+копирование, среди них такие, как "dump", "tar", "cpio" и "dd". Также доступны
+утилиты базирующиеся на текстовых файлах, например "Amanda", которая
+разработана, чтобы добавить дружественный пользовательский интерфейс к процедуре
+резервного копирования и восстановления данных. И наконец, коммерческие пакеты
+резервного копирования, например "BRU".</P>
+<P align=justify>Процедуры выполнения резервного копирования и восстановления
+данных будет отличаться в зависимости от выбранного вами решения. Из этих
+соображений, мы будем обсуждать здесь процедуру резервного копирования при
+помощи традиционных для UNIX утилит: "tar" и "dump".</P><B>Что такое резервное
+копирование</B>
+<P align=justify>Основная идея резервного копирования - это создание копий всего
+что установлено на вашей системе, но с некоторыми исключениями, о которых мы
+напишем ниже. Будет не логичным включать их в ваши резервные копии, так как это
+будет напрасная трата времени и пространства на носители. Основными
+исключениями, не включаемыми в ваши резервные копии, являются:</P>
+<UL>
+  <LI>Файловая система "/proc": так как она содержит только данные, которые ядро
+  генерирует автоматически, и нет никакого смысла сохранять их.
+  <LI>Файловой системы "/mnt", потому что в нее вы монтируете ваши сменные
+  носители, подобные CD-ROM, гибким дискам и пр.
+  <LI>Каталоги и носители, содержащие резервные копии, такие как стримеры, CD-
+  ROM, смонтированная файловая система NFS, удаленные/локальные каталоги и
+  прочие виды носителей.
+  <LI>Программное обеспечение, которое может быть легко повторно установлено,
+  хотя оно может иметь конфигурационные файлы, которые необходимо копировать,
+  чтобы не выполнять работы по их настройке позже. Я рекомендую сохранять их
+  (конфигурационные файлы программного обеспечения) на дискете.</LI></UL>
+<H3><A name=2>Программа резервного копирования tar</A></H3><B>Описание</B>
+<P align=justify>Программа резервного копирования tar - это программа
+архивирования, которая была создана для хранения и извлечения файлов из архива,
+известного как тарфайл. Тарфайл может быть создан на лентопротяжном устройстве;
+однако, чаще всего тарфайлы записываются как обычные файлы.</P><B>Простая схема
+резервного копирования</B>
+<P align=justify>Когда вы решили создавать резервные копии ваших файлов, вы
+должны выбрать схему резервного копирования до начала этой процедуры. Существует
+множество схем резервного копирования, зависящих от политики резервного
+копирования, которую вы хотите использовать. В дальнейшем, я покажу вам одну из
+схем, которую вы можете использовать, которая использует преимущественно
+возможности программы tar. Эта схема выглядит так: сперва копировать все, что
+возможно, а в дальнейшем все, что изменилось со времени создания последней
+резервной копии. Первая резервная копия называется полной, а остальные
+добавочными.</P>
+<H3><A name=3>Создание резервных копий с tar</A></H3>
+<P align=justify>С шестью лентами вы можете делать резервные копии каждый день;
+процедура использует ленту 1 для полного резервного копирования (Пятница 1), и
+ленты со 2 по 5 для добавочного резервного копирования (С понедельника по
+четверг). Затем, мы делаем новую полную резервную копию на ленту 6 (вторая
+пятница), и далее делаем добавочные копии на лентах со 2 по 5. Важно сохранить 1
+в неприкосновенности, пока мы не получим полную резервную копию на ленте 6. В
+следующем примере, мы подразумеваем, что записываем резервные копии на SCSI
+ленточное устройство с именем (/dev/st0), и создаем резервную копию домашнего
+каталога (/home) нашей системы.</P>
+<P align=justify>Первое, мы должны переместиться в корневой раздел. Когда "tar"
+создает архивные файлы, он удаляет начальный символ "/" (слеш) из пути к файлу.
+Это значит, что после восстановления файлы могут оказаться не на своем месте.
+Чтобы решить эту проблему, необходимо до изготовления резервных копий и
+восстановления данных переходить в корневой раздел вашей файловой системы.</P>
+<P align=justify>Переместитесь в корневой раздел:</P><FONT color=#008080
+size=-1>[root@deep]# cd /</FONT>
+<P align=justify>Важно всегда начинать с изготовления полной резервной копии,
+например, в пятницу:</P>
+<UL>
+  <LI>Пятница 1, (используйте ленту 1 для первой полной резервной
+  копии).<BR><FONT color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]#
+  tar cpf /dev/st0 --label=" full-backup created on `date '+%d-%B-%Y'`."
+  --directory / home</FONT>
+  <LI>Понедельник, (используется лента 2 для добавочной резервной
+  копии).<BR><FONT color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]#
+  tar cpNf /dev/st0 --label=" full-backup created on `date '+%d-%B-%Y'`."
+  --directory / home</FONT><BR>
+  <LI>Вторник, (используется лента 3 для добавочной резервной копии).<BR><FONT
+  color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]# tar cpNf /dev/st0
+  --label=" full-backup created on `date '+%d-%B-%Y'`." --directory /
+  home<BR></FONT>
+  <LI>Среда, (используется лента 4 для добавочной резервной копии).<BR><FONT
+  color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]# tar cpNf /dev/st0
+  --label=" full-backup created on `date '+%d-%B-%Y'`." --directory /
+  home<BR></FONT>
+  <LI>Четверг, (используется лента 5 для добавочной резервной копии).<BR><FONT
+  color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]# tar cpNf /dev/st0
+  --label=" full-backup created on `date '+%d-%B-%Y'`." --directory /
+  home<BR></FONT>
+  <LI>Пятница 2, (используется лента 6 для полной резервной копии).<BR><FONT
+  color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]# tar cpf /dev/st0
+  --label=" full-backup created on `date '+%d-%B-%Y'`." --directory /
+  home<BR></FONT></LI></UL>
+<P align=justify>Далее, делаем добавочные резервные копии на лентах со 2 по 5 и
+так далее.</P>
+<P align=justify>Опция "c" определяет, что мы создаем архивный файл.<BR>Опция
+"p" сохраняет права доступ.<BR>Опция "N" делает добавочную резервную копию и
+запоминает файлы новее чем DATE.<BR>Опция "f" говорит, что следующий аргумент
+будет либо имя архивного файла, либо имя устройства на которое производится
+запись.<BR></P>
+<P align=justify>Объясним как мы получили имя файла, который содержит текущую
+дату: просто поместите команду "date" между обратными кавычками. К основному
+имени добавляется суффикс "tar" для не сжатых архивов, и суффикс "tar.gz" для
+сжатых. Так как мы не определяем конкретное имя для файла резервной копии, то
+воспользуемся опцией "--label", которая позволяет записать некоторую информацию
+в архивный файл. В заключении мы определяем, что только файлы из каталога
+"/home" будут записаны на ленту.</P>
+<P align=justify>Так как лента это устройство посимвольного ввода, мы не можем
+определить имя файла. Поэтому, в качестве аргумента для опции "имя файла"
+программы tar используется просто имя устройства, "/dev/st0". Устройство
+"/dev/st0" не перематывается после создания резервной копии; поэтому, мы имеем
+возможность записать на одну ленту несколько сессий. Вы можете, также сказать
+устройству "/dev/st0", автоматически перемотать ленту после окончания записи
+резервной копии. При работы с лентой, вы можете использовать следующие команды
+для перематывания и извлечения ленты из устройства:</P><FONT color=#008080
+size=-1>[root@deep /]# mt -f /dev/st0 rewind<BR>[root@deep /]# mt -f /dev/st0
+offline<BR></FONT>
+<P align=justify><B>ПРЕДОСТЕРЕЖЕНИЕ</B>. Для уменьшения пространства занимаемого
+tar архивом, резервная копия может быть сжата при помощи опции "z" программы
+tar. К сожалению, использование этой опции может создать ряд проблем. Из природы
+работы сжатия следует, что если хотя бы один бит будет испорчен, то и все данные
+нужные для восстановления будут потеряны. Поэтому рекомендуется не использовать
+сжатие (опция "z") для создания резервной копии при помощи команды tar.</P>
+<P align=justify>Если ваша резервная копия не помещается на ленте, то вам надо
+использовать опцию --multi-volume (-M) для создания многотомных
+архивов:</P><FONT color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]#
+tar cMpf /dev/st0 /home<BR>Prepare volume #2 for /dev/st0 and hit
+return:<BR></FONT>
+<P align=justify>После того, как вы создали резервную копию, вы должны
+убедиться, что все OK, используя опцию --compare (-d):</P><FONT color=#008080
+size=-1>[root@deep /]# cd /<BR>[root@deep /]# tar dvf /dev/st0<BR></FONT>
+<P align=justify>Для резервного копирования всей системы используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# cd /<BR>[root@deep /]#
+tar cpf /archive/full-backup-`date '+%d-%B-%Y'`.tar \<BR>--directory /
+--exclude=proc --exclude=mnt --exclude=archive \<BR>--exclude=cache
+--exclude=*/lost+found .<BR></FONT>
+<P align=justify>Опция "--directory" говорит tar, что до начала резервного
+копирования надо перейти в следующий каталог (в нашем примере "/"). Опция
+"--exclude" говорит tar не создавать резервные копии заданных каталогов и
+файлов. Символ ".", находящийся в конце командной строки говорит tar, что он
+должен копировать все в текущем каталоге.</P>
+<P align=justify><B>ПРЕДУПРЕЖДЕНИЕ</B>. Когда вы создаете резервную копию вашей
+системы, не включайте в нее псевдофайловую систему "/proc"! Файлы "/proc" не
+настояшие файлы, это просто файлоподобные ссылки к структуре ядра. Также не
+включайте каталоги "/mnt", "/archive" и все "lost+found".</P>
+<H3><A name=4>Автоматизация задачи резервного копирования при помощи
+tar</A></H3>
+<P align=justify>Всегда интересно автоматизировать задачу резервного
+копирования. Автоматизация предлагает огромные возможности использования вашего
+Linux сервере для целей, которые вы поставили. Следующий пример, представляет из
+себя скрипт для резервного копирования, называемый "backup.cron". Этот скрипт
+написан для запуска на любом компьютере, при этом, вы должны поменять только
+четыре переменные: COMPUTER, DIRECTORIES, BACKUPDIR и TIMEDIR. Мы считаем, что
+вы устанавливаете этот сценарий для запуска его в начале месяца для получения
+полной резервной копии, а затем используете его в течении месяца для получения
+добавочных копий. В нашем примере, мы создаем резервную копию в каталоге на
+локальном сервере (BACKUPDIR), но вы можете изменить это для использования ленты
+на локальном сервере или смонтированной файловой системы NFS.</P><B>Шаг 1</B>
+<P align=justify>Создайте скрипт резервного копирования backup.cron (touch
+/etc/cron.daily/backup.cron) и добавьте в него следующие строки:</P><PRE>#!/bin/sh
+# скрипт полного и добавочного резервного копирования
+# создан 07 февраля 2000
+# Базируется на скрипте Daniel O'Callaghan &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="4d292c2323340d2b3f28282f3e2963223f2a">[email&#160;protected]</a>&gt;
+# и модифицирован Gerhard Mourani &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="06616b69737467686f46706f62636972746968286567">[email&#160;protected]</a>&gt;
+# Измените следующие пять переменных под вашу систему
+COMPUTER=deep # имя этого компьютера
+DIRECTORIES="/home" # каталог для резервного копирования
+BACKUPDIR=/backups # где храним резервные копии
+TIMEDIR=/backups/last-full # где сохраняем время полной резервной копи
+TAR=/bin/tar # имя и расположение tar
+#Вы не должны менять то, что написано ниже
+PATH=/usr/local/bin:/usr/bin:/bin
+DOW=`date +%a` # День недели, например Mon
+DOM=`date +%d` # Дата, например 27
+DM=`date +%d%b` # Дата и месяц, например 27Sep
+# 1-го числа каждого месяца постоянно делаем полную резервную копию
+# Каждое воскресенье делаем полную копию - переписываем копию от
+# последнего воскресенья
+# В остальное время делаем добавочную резервную копию. Каждая добавочная
+# резервная копия переписывает добавочную копию с предыдущей недели, с
+# тем же именем.
+#
+# если NEWER = "", тогда tar создает резервные копии всех файлов в каталог,
+# иначе только новее чем дата в NEWER. NEWER берет дату из файла
+# записываемого каждое воскресенье.
+# Ежемесячная полная резервная копия
+if [ $DOM = "01" ]; then
+  NEWER=""
+  $TAR $NEWER -cf $BACKUPDIR/$COMPUTER-$DM.tar $DIRECTORIES
+fi
+# Еженедельная полная резервная копия
+if [ $DOW = "Sun" ]; then
+  NEWER=""
+  NOW=`date +%d-%b`
+  # Обновление даты еженедельной полной резервной копии
+  echo $NOW &gt; $TIMEDIR/$COMPUTER-full-date
+  $TAR $NEWER -cf $BACKUPDIR/$COMPUTER-$DOW.tar $DIRECTORIES
+  # Создание добавочной резервной копии - переписывание аналогичной с
+  # последней недели
+else
+  # Берем дату последней полной резервной копии
+  NEWER="--newer `cat $TIMEDIR/$COMPUTER-full-date`"
+  $TAR $NEWER -cf $BACKUPDIR/$COMPUTER-$DOW.tar $DIRECTORIES
+fi
+</PRE>
+<P align=justify>Здесь приводится список файлов созданных после недели работы
+данного скрипта:</P><FONT color=#008080 size=-1>[root@deep /]# ls -l
+/backups/<BR>total 22217<BR>-rw-r--r-- 1 root root 10731288 Feb 7 11:24
+deep-01Feb.tar<BR>-rw-r--r-- 1 root root 6879 Feb 7 11:24
+deep-Fri.tar<BR>-rw-r--r-- 1 root root 2831 Feb 7 11:24
+deep-Mon.tar<BR>-rw-r--r-- 1 root root 7924 Feb 7 11:25
+deep-Sat.tar<BR>-rw-r--r-- 1 root root 11923013 Feb 7 11:24
+deep-Sun.tar<BR>-rw-r--r-- 1 root root 5643 Feb 7 11:25
+deep-Thu.tar<BR>-rw-r--r-- 1 root root 3152 Feb 7 11:25
+deep-Tue.tar<BR>-rw-r--r-- 1 root root 4567 Feb 7 11:25
+deep-Wed.tar<BR>drwxr-xr-x 2 root root 1024 Feb 7 11:20 last-full<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Каталог в котором вы планируете хранить
+резервные копии (BACKUPDIR) и каталог , где запоминаете время (TIMEDIR) должны
+быть созданы до запуска этого скрипта, иначе вы получите сообщение об
+ошибке.</P><B>Шаг 2</B>
+<P align=justify>Если вы не запустили этот скрипт вначале месяца (1 день
+месяца), добавочным резервным копиям для корректной работы будет нужно время
+полной воскресной резервной копии. Если вы запускаете скрипт в середине недели,
+вам нужно создать файл со временем в TIMEDIR. Для этого выполните следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# date +%d%b &gt;
+/backups/last-full/myserver-full-date</FONT>
+<P align=justify>где &lt;/backups/last-full&gt; ваша переменная TIMEDIR,
+описывающая место хранения даты последней полной резервной копии, а
+&lt;myserver-full-date&gt; - это имя вашего сервера (например, deep); наш файл
+времени состоит из одной строки содержащей дату (например 15-Feb).</P><B>Шаг
+3</B>
+<P align=justify>Сделайте скрипт исполняемым и измените права доступа к нему
+(755).</P><FONT color=#008080 size=-1>[root@deep /]# chmod 755
+/etc/cron.daily/backup.cron</FONT>
+<P align=justify>ЗАМЕЧАНИЕ. Так как этот скрипт расположен в каталоге
+"/etc/cron.daily", он будет автоматически выполняться в час ночи каждый
+день.</P>
+<H3><A name=5>Восстановление файлов с tar</A></H3>
+<P align=justify>Более важным, чем выполнение регулярных резервных копий,
+является их доступность в момент, когда надо восстановить информацию! Здесь мы
+рассмотрим методы восстановления файлов, которые были скопированы командой
+"tar".</P>
+<P align=justify>Следующая команда будет восстанавливать все файлы из архива
+"full-backup- Day-Month-Year.tar", который является примером резервной копии
+нашего каталога "home" и был создан в нашем примере описанном выше. Для
+восстановления полной резервной копии каталога "home" используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# cd / [root@deep /]# tar
+xpf /dev/st0/full-backup-Day-Month-Year.tar</FONT>
+<P align=justify>Вышеприведенная команда извлекает все файлы, содержащиеся в
+архиве, сохраняя оригинальные значения владельцев файлов и прав доступа к
+ним.</P>
+<P align=justify>Опция "x" обозначает извлечение файлов.<BR>Опция "p" сохраняет
+права доступа.<BR>Опция "f" указывает на то, что следующим аргументом является
+имя архива или устройства.<BR></P>
+<P align=justify>Если вам не надо извлекать все файлы и каталоги из архива, вы
+можете указать, что вам нужно.</P>
+<P align=justify>Для задания одного или более файлов, которые вы хотите извлечь
+из архива используйте следующую команду:</P><FONT color=#008080
+size=-1>[root@deep]# cd /<BR>[root@deep]# tar xpf
+/dev/st0/full-backup-Day-Month-Year.tar \<BR>home/wahib/Personal/Contents.doc
+home/quota.user<BR></FONT>
+<P align=justify>Вышеприведенная команда извлекает файлы
+"/home/wahib/Personal/Contents.doc" и "/home/quota.user" из архива. Если вы
+хотите посмотреть, какие файлы находятся в архиве, то используйте опцию --list
+(-t):</P><FONT color=#008080 size=-1>[root@deep /]# tar tf /dev/st0</FONT>
+<P align=justify><B>ПРЕДУПРЕЖДЕНИЕ</B>. Если вы имеете в своей системе файлы с
+установленным битом "постоянства", то используйте команду "chattr +i", так как
+этот бит не сохраняется при резервном копировании при помощи команды tar.</P>
+<H3>Тестирование возможности восстановления из резервных копий</H3>
+<P align=justify>Для многих системных администраторов, восстановление файлов из
+резервной копии редкое действие. Периодическое выполнение проверки возможности
+восстановления файлов из резервных копий поможет вам выявить проблемы с
+процедурами резервного копирования, чтобы вы могли скорректировать их до того,
+как потеряете данные. Некоторое программное обеспечение восстановления файлов
+некорректно восстанавливает права доступа и владельца файлов. Проверьте атрибуты
+восстановленных файлов, чтобы они были установлены правильно. Периодически
+тестируйте возможность полного восстановления системы из ваших резервных
+копий.</P>
+<H3>Дополнительная документация</H3>
+<P align=justify>Для получения больших деталей вы можете прочитать следующую
+страницу
+<P align=justify>руководства (man):</P>tar (1) - GNU версия утилиты
+архивирования данных tar
+<P></P>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch21_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#22">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

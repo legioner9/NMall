@@ -1,0 +1,621 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 6 Управление TCP/IP сетями — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch5_2.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#6">Оглавление</A></TD>
+    <TD align=right><A href="ch7_1.html">Вперед</A></TD></TR></TBODY></TABLE>
+<H1>Часть III Рекомендации связанные с сетью</H1><FONT size=+2>Управление TCP/IP
+сетями<BR>Сетевой брандмауэр<BR>Сетевой брандмауэр с поддержкой маскарадинга и
+маршрутизации<BR></FONT><BR>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 6 Управление TCP/IP сетями</H2><FONT size=+2>В этой
+      главе</FONT><BR><FONT size=+1><A href="ch6.html#1">Инсталляция более одной
+      Ethernet карты на одной машин</A>е<BR><A href="ch6.html#2">Файлы связанные с
+      функционированием сети</A><BR><A href="ch6.html#3">Настройка TCP/IP сети вручную
+      из командной строки</A><BR></FONT></TD>
+    <TD></TD></TR></TBODY></TABLE>
+<H3>Краткий обзор</H3>
+<P align=justify>Мы пока еще не поиграли с сетевыми возможностями Linux. Linux -
+это одна из самых лучших операционных систем в мире по поддерживаемым сетевым
+функциям. Большое количество серверов знают об этом и активно используют его.
+Понимание вашего сетевого оборудования и всех файлов связанных с сетью очень
+важно для полного контроля над тем с чем сталкивается сервер. Хорошее знание
+всех основных сетевых команд жизненно важно. Управление сетью охватывает
+обширный ряд тем. В общем, они включают сбор статистических данных о состоянии
+частей вашей сети и принятие мер в случае необходимости при возникновении сбоев
+или других причин. Наиболее примитивная техника сетевого мониторинга - это
+периодическое пингование проблемных хостов. Более сложная система контроля за
+сетью требует наличия возможности сбора состояний и статистической информации о
+работе различных устройств сети. В этой главе мы будем давать ответы на
+фундаментальные вопросы относительно сетевых устройств, файлов связанных с
+функционированием сети и важнейших сетевых команд.</P>
+<H3><A name=1>Инсталляция более одной Ethernet карты на одной машине</A></H3>
+<P align=justify>Вы можете использовать Linux как шлюз между двумя сетями. Для
+этого вы должны иметь на сервере две сетевые карты. Ядро Linux не определяет
+несколько сетевых карт автоматически при загрузке. Если вы хотите иметь больше
+одной сетевой карты, то надо определить параметры карт в "lilo.conf" для
+монолитного ядра и в "conf.modules" для модульного ядра. При работе с вашими
+сетевыми картами вы можете столкнуться со следующими проблемами.</P><B>Проблема
+1.</B>
+<P align=justify>Если драйвер(а) карты были созданы как загружаемые модули
+(модульное ядро), в случае PCI карт, модули определяют карты автоматически. Для
+ISA карт вам надо определить I/O адрес карты, чтобы модуль знал где ее смотреть.
+Эта информация хранится в "/etc/conf.modules".</P>
+<P align=justify>Например, мы рассмотрим две ISA карты 3c509, у первой
+I/O=0x300, а у второй I/O=320. Для ISA карт редактируем файл conf.modules (vi
+/etc/conf.modules) и добавляем в него:</P><FONT color=teal size=-1>alias eth0
+3c509<BR>alias eth1 3c509<BR>options 3c509 io=0x300,0x320<BR></FONT>
+<P align=justify>Это говорит, что драйвер 3c509 должен быть загружен для eth0 и
+eth1 и что при этом I/O=0x300 и 0x320 соответственно. Обратите внимание на
+запись. Прерывания записываются как 0x, а не как в DOS 300h. </P>
+<P align=justify>Для PCI карт обычно достаточно alias строк, определяющих связь
+между устройством (ethN) и драйвером (3c509), потому что, обычно, I/O спокойно
+определяется автоматически.</P>
+<P align=justify>Для PCI карт, редактируйте файл conf.modules (vi
+/etc/conf.modules) и добавьте в него:</P><FONT color=teal size=-1>alias eth0
+3c509<BR>alias eth1 3c509<BR></FONT><BR><B>Проблема 2.</B>
+<P align=justify>Если драйвера вкомпилированы в ядро (монолитное ядро), проверка
+PCI будет находить все карты автоматически. ISA карты также будут определяться
+автоматически, но в некоторых случаях нужно сделать следующее. Эта информация
+сохраняется в файле "/etc/lilo.conf". Метод заключается в передачи аргументов
+времени загрузки ядру, которое обычно делает LILO.</P>
+<P align=justify>Для ISA карт, редактируйте файл lilo.conf (vi /etc/lilo.conf) и
+добавьте в него:</P><FONT color=teal size=-1>append="ether=0,0,eth1"</FONT>
+<P align=justify><B>Замечание.</B> В первый раз попробуйте загрузиться без
+аргументов времени загрузки, и только если ничего не получится воспользуйтесь
+вышеприведенной строкой. В этом случае eth0 и eth1 будут назначаться в порядке
+котором карты будут определены. Так как мы перекомпилировали ядро, мы должны
+использовать второй метод (если драйвера встроены в ядро) для инсталляции второй
+Ethernet карты в нашей системе. Помните, что он нужен только в ряде случаев для
+ISA карт, PCI карты будут определяться автоматически.</P>
+<H3><A name=2>Файлы связанные с функционированием сети.</A></H3>
+<P align=justify>В Linux, TCP/IP сеть настраивается через несколько текстовых
+файлов, которые вы можете редактировать, чтобы заставить вашу сеть работать.
+Очень важно знать все конфигурационные файлы, связанные с TCP/IP, так чтобы вы
+могли редактировать их в случае необходимости. Помните, что ваш сервер не имеет
+Xwindow интерфейса для настройки этих файлов. Даже если вы используете
+графический пользовательский интерфейс в своей повседневной работе, важно знать
+как конфигурировать сеть в текстовом режиме. Следующие секции описывают базовые
+конфигурационные файлы TCP/IP.</P><B>Файл "/etc/HOSTNAME".</B>
+<P align=justify>В этом файле хранится полное доменное имя вашего компьютера,
+например, deep.openna.com. Ниже приведен пример содержимого этого
+файла:</P><FONT color=teal size=-1>deep.openna.com<BR></FONT>
+<P align=justify><B>Файл "/etc/sysconfig/network-scripts/ifcfg-ethN".</B></P>
+<P align=justify>Конфигурационный файл для каждого сетевого устройства, которое
+существует или вы планируете добавить (в Red Hat 6.1 и 6.2) находится в каталоге
+"/etc/sysconfig/network- scripts/" и называется ifcfg-eth0 для первого
+интерфейса, ifcfg-eth1 для второго и т.д. Ниже приведен пример конфигурационного
+файла "/etc/sysconfig/network-scripts/ifcfg- eth0":</P><FONT color=teal
+size=-1>DEVICE=eth0<BR>IPADDR=208.164.186.1<BR>NETMASK=255.255.255.0<BR>NETWORK=208.164.186.0<BR>BROADCAST=208.164.186.255<BR>ONBOOT=yes<BR>BOOTPROTO=none<BR>USERCTL=no<BR></FONT>
+<P align=justify>Если вы хотите модифицировать ваши сетевые адреса вручную или
+добавить новое устройство на новом интерфейсе, редактируйте этот файл
+(ifcfg-ethN), или создайте новый, и внесите в него соответствующие
+изменения.</P>
+<P align=justify>DEVICE=devicename, где devicename имя физического сетевого
+устройства. IPADDR=ipaddr, где ipaddr IP адрес.<BR>NETMASK=netmask, где netmask
+сетевая IP маска.<BR>NETWORK=network, где network IP адрес
+сети.<BR>BROADCAST=broadcast, где broadcast широковещательный IP
+адрес.<BR>ONBOOT=answer, где answer это yes или no (Будет ли интерфейс активным
+во время загрузки или нет).<BR>BOOTPROTO=proto, где proto одно из:
+<UL>
+  <LI>none - не использовать протоколов времени загрузки.
+  <LI>bootp - использовать протокол bootp (сейчас pump).
+  <LI>dhcp - использовать dhcp протокол. </LI></UL>USERCTL=answer, где answer одно
+из:
+<UL>
+  <LI>yes (Не только пользователь root может контролировать это устройство).
+  <LI>no (Только пользователь root может контролировать это устройство).
+</LI></UL>
+<P></P><B>Файл "/etc/resolv.conf".</B>
+<P align=justify>Этот еще одни текстовый файл, используемый определителем
+(resolver) - библиотекой, которая определяет IP адрес по имени.</P>
+<P align=justify>Пример этого файла:</P><FONT color=teal size=-1>search
+openna.com<BR>nameserver 208.164.186.1<BR>nameserver 208.164.186.2<BR></FONT>
+<P align=justify><B>Замечание</B>. Запросы посылаются на сервера имен в порядке
+перечисления в файле "/etc/resolv.conf" (primary, secondary и т.д).</P>
+<P align=justify><B>Файл "/etc/host.conf"</B>.</P>
+<P align=justify>Этот файл устанавливает как определяются имена. Linux
+использует библиотеку определителей для получения IP адреса по имени.</P>
+<P align=justify>Пример этого файла:</P><FONT color=teal size=-1># Поиск имени
+сперва через DNS а затем, в случае ошибки, в файле /etc/hosts.<BR>order
+bind,hosts<BR># У нас есть машины с несколькими адресами.<BR>multi on<BR>#
+Проверять подмену IP адресов (IP spoofing).<BR>nospoof on<BR></FONT>
+<P align=justify>Опция order используется для определения порядка использования
+сервисов. В примере установлено, что вначале библиотека определителя обращается
+к DNS серверу, а затем к файлу "/etc/hosts".<BR>Опция multi говорит, что
+компьютеры, описанные в файле /etc/hosts, могут иметь несколько IP адресов
+(несколько интерфейсов ethN). Например, шлюз всегда имеет несколько адресов и у
+них эта опция должна быть всегда определена в ON.<BR>Опция nospoof не разрешать
+подмену адресов. IP-Spoofing - это способ атаки при котором удаленный компьютер
+представляется кем-то, кем он не является на самом деле. </P>
+<P align=justify><B>Файл "/etc/sysconfig/network".</B></P>
+<P align=justify>Файл "/etc/sysconfig/network" описывает желательную сетевую
+конфигурацию сервера.</P>
+<P align=justify>Пример этого файла:</P><FONT color=teal
+size=-1>NETWORKING=yes<BR>FORWARD_IPV4=yes<BR>HOSTNAME=deep.
+openna.com<BR>GATEWAY=0.0.0.0<BR>GATEWAYDEV=<BR></FONT>
+<P align=justify>NETWORKING=answer, где answer это yes или no (Настраивать сеть
+или нет).<BR>FORWARD_IPV4=answer, где answer это yes или no (Выполнять IP
+маршрутизацию или нет).<BR>HOSTNAME=hostname, где hostname это имя вашего
+сервера.<BR>GATEWAY=gwip, где gwip это IP адрес удаленного маршрутизатора (если
+доступен).<BR>GATEWAYDEV=gwdev, где gwdev имя устройства (eth#) через которое вы
+имеете доступ к удаленному маршрутизатору.<BR></P>
+<P align=justify><B>Замечание</B>. Для совместимости со старым программным файл
+/etc/HOSTNAME должен содержать тоже имя, что и HOSTNAME= hostname. В новой
+версии Red Hat Linux 6.2 параметр "FORWARD_IPV4=" определяется в файле
+"/etc/sysctl.conf" вместо "/etc/sysconfig/network".</P>
+<P align=justify><B>Файл "/etc/sysctl.conf".</B></P>
+<P align=justify>В Red Hat Linux 6.2 многие опции ядра связанные с сетевой
+безопасностью такие как сбрасывать ли пакеты, которые приходят для другого
+интерфейса, или игнорировать ping/широковещательные запросы и т.д., могут быть
+определены в новом файле "/etc/sysctl.conf" вместо"/etc/rc.d/rc.local". Одним из
+самых важных параметров, задаваемых в этом файле это IPv4 forwarding, который
+сейчас включается программой sysctl. sysctl настройки хранятся в файле
+"/etc/sysctl.conf", который обрабатывается при каждой загрузке системы перед
+скриптом "/etc/rc.d/rc.local". Мы уже говорили обо всех сетевых настройках
+связанных с безопасностью в главе 3 <A href="https://www.linuxlib.ru/mouramy/ch3.html">"Общая системная
+безопасность"</A>, поэтому сейчас сконцентрируемся только на опции ядра IPv4
+forwarding. Для включения маршрутизации в Red Hat 6.2 используйте следующую
+команду.</P>
+<P align=justify>Редактируйте файл "/etc/sysctl.conf" и добавьте следующие
+строки:</P><FONT color=teal size=-1># Enable packet
+forwarding<BR>net.ipv4.ip_forward = 1<BR></FONT>
+<P align=justify>Вы должны перезагрузить ваши сетевые настройки, чтобы изменения
+вступили в силу:</P><FONT color=teal><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Setting network parameters		[ OK ]
+Bringing up interface lo		[ OK ]
+Bringing up interface eth0		[ OK ]
+Bringing up interface eth1		[ OK ]</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Включение маршрутизации через файл
+"sysctl.conf" работает только для Red Hat 6.2. Пользователям Red Hat 6.1 нужно
+устанавливать этот параметр через "/etc/sysconfig/network", как это было описано
+выше. </P>
+<P align=justify><B>Файл "/etc/hosts".</B></P>
+<P align=justify>Когда вы включаете компьютер, необходимо знать карту
+соответствия IP адресов и имен некоторых машин, пока DNS сервер не отвечает. Эта
+карта хранится в файле "/etc/hosts". При отсутствии сервера имен все программы
+будут узнавать у этого файла какой IP адрес отвечает на определенное имя.</P>
+<P align=justify>Ниже приводится пример файла "/etc/hosts":</P><FONT color=teal><PRE>IP Address		Hostname			Alias
+127.0.0.1		localhost			deep.openna.com
+208.164.186.1		deep.openna.com			deep
+208.164.186.2		mail.openna.com			mail
+208.164.186.3		web.openna.com			web</PRE></FONT>
+<P align=justify>В левой колонке записываются IP адреса, в средней
+соответствующий им имена машин, а в последней псевдонимы этих компьютеров.
+Например, адресу 208.164.186.1 соответствует машина deep.openna.com, называемая
+также deep.</P>
+<P align=justify>После окончания настройки этих файлов не забудьте перезагрузить
+сетевые настройки вашего сервера, чтобы изменения вступили в силу:</P><PRE><FONT color=teal>[root@deep /]# /etc/rc.d/init.d/network restart
+Setting network parameters	[ OK ]
+Bringing up interface lo	[ OK ]
+Bringing up interface eth0	[ OK ]
+Bringing up interface eth1	[ OK ]</FONT></PRE>
+<P align=justify><B>ВАЖНОЕ ЗАМЕЧАНИЕ.</B> Проблемы таймаута, возникающие при
+telnet и ftp соединениях, часто связаны с тем, что сервер не может определить IP
+адрес по DNS имени. Это бывает в двух случаях или не правильно сконфигурирован
+DNS сервер, или клиентская машина не знает о DNS. Если вы планируете запускать
+telnet или ftp сервисы на машине, не имеющей DNS сервера, не забудьте добавить
+имя клиентской машины и ее IP адрес в ваш файл "/etc/hosts", иначе, вы можете
+ждать несколько минут, пока lookup запрос не завершится по таймауту, до
+появления запроса "login:"</P>
+<H3><A name=3>Настройка TCP/IP сети вручную из командной строки.</A></H3>
+<P align=justify>Утилита ifconfig используется для включения и настройки сетевых
+карт. Вы должны разобраться в этой команду, если хотите настраивать сеть в
+ручную. Следует отметить, что когда вы используете ifconfig, вам не нужно
+перезагружать компьютер, изменения вступят в силу сразу.</P>
+<P align=justify>Для назначения интерфейсу eth0 IP адреса 208.164.186.2
+используйте команду:</P><FONT color=teal size=-1>[root@deep /]# ifconfig eth0
+208.164.186.2 netmask 255.255.255.0</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Обычно, люди настраивают сеть вручную, чтобы
+проверить как скажутся новые параметры на работе сервера. Если вы хотите
+сохранить новые настройки, то используйте для этого конфигурационные файлы,
+связанные с работой сети.</P>
+<P align=justify>Для отображения всех интерфейсов существующих на сервере
+введите команду:</P><FONT color=teal size=-1>[root@deep /]# ifconfig</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>eth0	Link encap:Ethernet HWaddr 00:E0:18:90:1B:56
+	inet addr:208.164.186.2 Bcast:208.164.186.255 Mask:255.255.255.0
+	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+	RX packets:1295 errors:0 dropped:0 overruns:0 frame:0
+	TX packets:1163 errors:0 dropped:0 overruns:0 carrier:0
+	collisions:0 txqueuelen:100
+	Interrupt:11 Base address:0xa800
+lo	Link encap:Local Loopback
+	inet addr:127.0.0.1 Mask:255.0.0.0
+	UP LOOPBACK RUNNING MTU:3924 Metric:1
+	RX packets:139 errors:0 dropped:0 overruns:0 frame:0
+	TX packets:139 errors:0 dropped:0 overruns:0 carrier:0
+	collisions:0 txqueuelen:0</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Если вы вызвали ifconfig без параметров, то
+она выдаст вам информацию обо всех интерфейсах. Опция "-a" покажет также
+неактивные интерфейсы.</P><FONT color=teal size=-1>[root@deep /]# ifconfig
+-a</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>eth0	Link encap:Ethernet HWaddr 00:E0:18:90:1B:56
+	inet addr:208.164.186.2 Bcast:208.164.186.255 Mask:255.255.255.0
+	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+	RX packets:1295 errors:0 dropped:0 overruns:0 frame:0
+	TX packets:1163 errors:0 dropped:0 overruns:0 carrier:0
+	collisions:0 txqueuelen:100
+	Interrupt:11 Base address:0xa800
+eth1	Link encap:Ethernet HWaddr 00:E0:18:90:1B:56
+	inet addr:192.168.1.1 Bcast:192.168.1.255 Mask:255.255.255.0
+	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+	RX packets:1295 errors:0 dropped:0 overruns:0 frame:0
+	TX packets:1163 errors:0 dropped:0 overruns:0 carrier:0
+	collisions:0 txqueuelen:100
+	Interrupt:5 Base address:0xa320
+lo	Link encap:Local Loopback
+	inet addr:127.0.0.1 Mask:255.0.0.0
+	UP LOOPBACK RUNNING MTU:3924 Metric:1
+	RX packets:139 errors:0 dropped:0 overruns:0 frame:0
+	TX packets:139 errors:0 dropped:0 overruns:0 carrier:0
+	collisions:0 txqueuelen:0</PRE></FONT>
+<P align=justify>Для назначения маршрутизатора по умолчанию используйте
+команду:</P><FONT color=teal size=-1>[root@deep /]# route add default gw
+208.164.186.1</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> В этом примере маршрутизатор по умолчанию
+имеет адрес 208.164.186.1. Если вы хотите зафиксировать этот адрес, то внесите
+его в файл /etc/sysconfig/network.</P>
+<P align=justify>Чтобы проверить, что компьютер присутствует в сети введите
+следующую команду (проверяется адрес 208.164.186.1).</P><FONT color=teal
+size=-1>[root@deep /]# ping 208.164.186.1</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>[root@deep networking]# ping 208.164.186.1
+PING 208.164.186.1 (208.164.186.1) from 208.164.186.2 : 56 data bytes
+64 bytes from 208.164.186.2: icmp_seq=0 ttl=128 time=1.0 ms
+64 bytes from 208.164.186.2: icmp_seq=1 ttl=128 time=1.0 ms
+64 bytes from 208.164.186.2: icmp_seq=2 ttl=128 time=1.0 ms
+64 bytes from 208.164.186.2: icmp_seq=3 ttl=128 time=1.0 ms
+--- 208.164.186.1 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 1.0/1.0/1.0 ms</PRE></FONT>
+<P align=justify>Вы должны просмотреть таблицу маршрутизации командой route,
+чтобы убедиться, что оба хоста имеют корректные вхождения в нее.</P><FONT
+color=teal size=-1>[root@deep /]# route -n</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>Kernel IP routing table
+Destination    Gateway        Genmask          Flags  Metric  Ref  Use  Iface
+208.164.186.2  0.0.0.0        255.255.255.255  UH     0       0	   0    eth0
+208.164.186.0  208.164.186.2  255.255.255.0    UG     0       0    0    eth0
+208.164.186.0  0.0.0.0        255.255.255.0    U      0       0    0    eth0
+127.0.0.0      0.0.0.0        255.0.0.0        U      0       0    0    lo
+</PRE></FONT>
+<P align=justify>Для быстрой проверки статуса интерфейсов используйте команду
+netstat -i:</P><FONT color=teal size=-1>[root@deep /]# netstat -i</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>Kernel Interface table
+Iface  MTU   Met  RX-OK  RX-ERR RX-DRP  RX-OVR  TX-OK  TX-ERR TX-DRP  TX-OVR Flg
+eth0   1500  0    4236   0      0       0       3700   0      0       0      BRU
+lo     3924  0    13300  0      0       0       13300  0      0       0      LRU
+ppp0   1500  0    14     1      0       0       16     0      0       0      PRU
+</PRE></FONT>
+<P align=justify>Другая чрезвычайно полезная опция программы netstat "-t",
+которая показывает все активные TCP соединения.</P><FONT color=teal
+size=-1>[root@deep /]# netstat -t</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>Active Internet connections (w/o servers)
+Proto  Recv-Q  Send-Q Local Address            Foreign Address       State
+Tcp    0       0      deep.openar:netbios-ssn  gate.openna.com:1045  ESTABLISHED
+Tcp    0       0      localhost:1032           localhost:1033        ESTABLISHED
+Tcp    0       0      localhost:1033           localhost:1032        ESTABLISHED
+Tcp    0       0      localhost:1030           localhost:1034        ESTABLISHED
+Tcp    0       0      localhost:1031           localhost:1030        ESTABLISHED
+Tcp    0       0      localhost:1028           localhost:1029        ESTABLISHED
+Tcp    0       0      localhost:1029           localhost:1028        ESTABLISHED
+Tcp    0       0      localhost:1026           localhost:1027        ESTABLISHED
+Tcp    0       0      localhost:1027           localhost:1026        ESTABLISHED
+Tcp    0       0      localhost:1024           localhost:1025        ESTABLISHED
+Tcp    0       0      localhost:1025           localhost:1024        ESTABLISHED
+	</PRE></FONT>
+<P align=justify>Для просмотра всех активных и прослушиваемых TCP соединений
+используйте опции "-vat"</P><FONT color=teal size=-1>[root@deep /]# netstat
+-vat</FONT>
+<P align=justify>В ответ вы получите следующую информацию.</P><FONT color=teal><PRE>Active Internet connections (servers and established)
+Proto  Recv-Q  Send-Q Local Address           Foreign Address      State
+tcp     0        0    deep.openna.co:domain   *:*                  LISTEN
+tcp     0        0    localhost:domain        *:*                  LISTEN
+tcp     0        0    deep.openna.com:ssh     gate.openna.com:1682 ESTABLISHED
+tcp     0        0    *:webcache              *:*                  LISTEN
+tcp     0        0    deep.openar:netbios-ssn *:*                  LISTEN
+tcp     0        0    localhost:netbios-ssn   *:*                  LISTEN
+Tcp     0        0    localhost:1032          localhost:1033       ESTABLISHED
+Tcp     0        0    localhost:1033          localhost:1032       ESTABLISHED
+Tcp     0        0    localhost:1030          localhost:1034       ESTABLISHED
+Tcp     0        0    localhost:1031          localhost:1030       ESTABLISHED
+Tcp     0        0    localhost:1028          localhost:1029       ESTABLISHED
+Tcp     0        0    localhost:1029          localhost:1028       ESTABLISHED
+Tcp     0        0    localhost:1026          localhost:1027       ESTABLISHED
+Tcp     0        0    localhost:1027          localhost:1026       ESTABLISHED
+Tcp     0        0    localhost:1024          localhost:1025       ESTABLISHED
+Tcp     0        0    localhost:1025          localhost:1024       ESTABLISHED
+tcp     0        0    deep.openna.com:www     *:*                  LISTEN
+tcp     0        0    deep.openna.com:https   *:*                  LISTEN
+tcp     0        0    *:389                   *:*                  LISTEN
+tcp     0        0    *:ssh                   *:*                  LISTEN</PRE></FONT>
+<P align=justify>Для остановки всех сетевых устройств вручную используйте
+команду:</P><FONT color=teal><PRE>[root@deep /]# /etc/rc.d/init.d/network stop
+Shutting down interface eth0 			[ OK ]
+Disabling IPv4 packet forwarding 		[ OK ]</PRE></FONT>
+<P align=justify>Для запуска всех сетевых устройств вручную используйте
+команду:</P><FONT color=teal><PRE>[root@deep /]# /etc/rc.d/init.d/network start
+Enabling IPv4 packet forwarding 	[ OK ]
+Bringing up interface lo 		[ OK ]
+Bringing up interface eth0 		[ OK ]</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch5_2.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#6">Оглавление</A></TD>
+    <TD align=right><A
+href="ch7_1.html">Вперед</A></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

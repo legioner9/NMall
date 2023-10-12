@@ -1,0 +1,1882 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Внутреннее устройство ядра Linux 2.4: Virtual Filesystem
+    (VFS) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <a
+     href="lki-4.html">Вперед</a> <a
+     href="lki-2.html">Назад</a> <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc3">Содержание</a>
+    <hr>
+
+    <h2><a
+     name="s3">3. Virtual Filesystem (VFS)</a></h2>
+
+    <h2><a
+     name="ss3.1">3.1 Кеш Inode и взаимодействие с Dcache</a></h2>
+
+    <p>Для поддержки различных файловых систем Linux предоставляет
+    специальный интерфейс уровня ядра, который называется VFS (Virtual
+    Filesystem Switch). Он подобен интерфейсу vnode/vfs, имеющемуся в
+    производных от SVR4 (изначально пришедшему из BSD и реализаций
+    Sun)</p>
+
+    <p>Реализация inode cache для Linux находится в единственном файле
+    <code>fs/inode.c</code>, длиной в 977 строк <em>(Следует понимать,
+    что размер файла может колебаться от версии к версии, так например
+    в ядре 2.4.18, длина этого файла составляет 1323 строки
+    <strong>прим. перев.</strong>)</em>. Самое интересное, что за
+    последние 5 - 7 лет этот файл претерпел незначительные изменения, в
+    нем до сих пор можно найти участки кода, дошедшие до наших дней с
+    версии, скажем, 1.3.42</p>
+
+    <p>Inode cache в Linux представляет из себя:</p>
+
+    <ol>
+      <li>Глобальный хеш-массив <code>inode_hashtable</code>, в котором
+      каждый inode хешируется по значению указателя на суперблок и
+      32-битному номеру inode. При отсутсвии суперблока
+      (<code>inode-&gt;i_sb == NULL</code>), вместо хеш-массива inode
+      добавляется к двусвязному списку <code>anon_hash_chain</code>.
+      Примером таких анонимных inodes могут служить сокеты, созданные
+      вызовом функции <code>net/socket.c:sock_alloc()</code>, которая
+      вызывает <code>fs/inode.c:get_empty_inode()</code>.</li>
+
+      <li>Глобальный список <code>inode_in_use</code>, который содержит
+      допустимые inodes (<code>i_count&gt;0</code> и
+      <code>i_nlink&gt;0</code>). Inodes вновь созданные вызовом
+      функций <code>get_empty_inode()</code> и
+      <code>get_new_inode()</code> добавляются в список
+      <code>inode_in_use</code></li>
+
+      <li>Глобальный список <code>inode_unused</code>, который содержит
+      допустимые inode с <code>i_count = 0</code>.</li>
+
+      <li>Список для каждого суперблока (<code>sb-&gt;s_dirty</code>) ,
+      который содержит inodes с <code>i_count&gt;0</code>,
+      <code>i_nlink&gt;0</code> и <code>i_state &amp; I_DIRTY</code>.
+      Когда inode помечается как &quot;грязный&quot; <em>(здесь и далее
+      под термином &quot;грязный&quot; подразумевается
+      &quot;измененный&quot; <strong>прим. перев.</strong>)</em>, он
+      добавляется к списку <code>sb-&gt;s_dirty</code> при условии, что
+      он (inode) хеширован. Поддержка такого списка позволяет уменьшить
+      накладные расходы на синхронизацию.</li>
+
+      <li>Inode cache суть есть - SLAB cache, который называется
+      <code>inode_cachep</code>. Объекты inode могут создаваться и
+      освобождаться, вставляться и изыматься из SLAB cache</li>
+    </ol>
+
+    <p>Через поле <code>inode-&gt;i_list</code> с inode вставляется в
+    список определенного типа, через поле <code>inode-&gt;i_hash</code>
+    - в хеш-массив. Каждый inode может входить в хеш-массив и в один и
+    только в один список типа (in_use, unused или dirty).</p>
+
+    <p>Списки эти защищаются блокировкой (spinlock)
+    <code>inode_lock</code>.</p>
+
+    <p>Подсистема inode cache инициализируется при вызове функции
+    <code>inode_init()</code> из
+    <code>init/main.c:start_kernel()</code>. Эта функция имеет один
+    входной параметр - число страниц физической памяти в системе. В
+    соответсвии с этим параметром inode cache конфигуририруется под
+    существующий объем памяти, т.е. при большем объеме памяти создается
+    больший хеш-массив.</p>
+
+    <p>Единственная информация о inode cache, доступная пользователю -
+    это количество неиспользованных inodes из
+    <code>inodes_stat.nr_unused</code>. Получить ее можно из файлов
+    <code>/proc/sys/fs/inode-nr</code> и
+    <code>/proc/sys/fs/inode-state</code>.</p>
+
+    <p>Можно исследовать один из списков с помощью
+    <strong>gdb</strong>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>(gdb) printf &quot;%d\n&quot;, (unsigned long)(&amp;((struct inode *)0)-&gt;i_list)
+8
+(gdb) p inode_unused
+$34 = 0xdfa992a8
+(gdb) p (struct list_head)inode_unused
+$35 = {next = 0xdfa992a8, prev = 0xdfcdd5a8}
+(gdb) p ((struct list_head)inode_unused).prev
+$36 = (struct list_head *) 0xdfcdd5a8
+(gdb) p (((struct list_head)inode_unused).prev)-&gt;prev
+$37 = (struct list_head *) 0xdfb5a2e8
+(gdb) set $i = (struct inode *)0xdfb5a2e0
+(gdb) p $i-&gt;i_ino
+$38 = 0x3bec7
+(gdb) p $i-&gt;i_count
+$39 = {counter = 0x0}
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Заметьте, что от адреса 0xdfb5a2e8 отнимается число 8, чтобы
+    получить адрес <code>struct inode</code> (0xdfb5a2e0), согласно
+    определению макроса <code>list_entry()</code> из
+    <code>include/linux/list.h</code>.</p>
+
+    <p>Для более точного понимания принципа работы inode cache, давайте
+    рассмотрим цикл жизни обычного файла в файловой системе ext2 с
+    момента его открытия и до закрытия.</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>fd = open(&quot;file&quot;, O_RDONLY);
+close(fd);
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Системный вызов <strong>open(2)</strong> реализован в виде
+    функции <code>fs/open.c:sys_open</code>, но основную работу
+    выполняет функция <code>fs/open.c:filp_open()</code>, которая
+    разбита на две части:</p>
+
+    <ol>
+      <li><code>open_namei()</code>: заполняет структуру nameidata,
+      содержащую структуры dentry и vfsmount.</li>
+
+      <li><code>dentry_open()</code>: с учетом dentry и vfsmount,
+      размещает новую <code>struct file</code> и связывает их между
+      собой; вызывает метод <code>f_op-&gt;open()</code> который был
+      установлен в <code>inode-&gt;i_fop</code> при чтении inode в
+      <code>open_namei()</code> (поставляет inode через
+      <code>dentry-&gt;d_inode</code>).</li>
+    </ol>
+
+    <p>Функция <code>open_namei()</code> взаимодействует с dentry cache
+    через <code>path_walk()</code>, которая, в свою очередь, вызывает
+    <code>real_lookup()</code>, откуда вызывается метод
+    <code>inode_operations-&gt;lookup()</code>. Назначение последнего -
+    найти вход в родительский каталог и получить соответствующий inode
+    вызовом <code>iget(sb, ino)</code> При считывании inode, значение
+    dentry присваивается посредством <code>d_add(dentry, inode)</code>.
+    Следует отметить, что для UNIX-подобных файловых систем,
+    поддерживающих концепцию дискового номера inode, в ходе выполнения
+    метода <code>lookup()</code>. производится преобразование порядка
+    следования байт числа (endianness) в формат CPU, например, если
+    номер inode хранится в 32-битном формате с обратным порядком
+    следования байт (little-endian), то выполняются следующие
+    действия:<br>
+     <em>(Считаю своим долгом подробнее остановиться на понятии
+    <strong>endianness</strong>. Под этим термином понимается порядок
+    хранения байт в машинном слове (или двойном слове). Порядок может
+    быть &quot;прямым&quot; (т.е. 32-битное число хранится так
+    0x12345678) и тогда говорят <strong>&quot;big
+    endianness&quot;</strong> (на отечественном жаргоне это звучит как
+    &quot;большой конец&quot;, т.е. младший байт лежит в старшем
+    адресе) или &quot;обратным&quot; (т.е. 32-битное число хранится так
+    0x78563412 - такой порядок следования байт принят в архитектуре
+    Intel x86) и тогда говорят <strong>&quot;little
+    endianness&quot;</strong> (на отечественном жаргоне это звучит как
+    &quot;маленький конец&quot;, т.е. младший байт лежит в младшем
+    адресе). <strong>прим. перев.</strong>)</em></p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>unsigned long ino = le32_to_cpu(de-&gt;inode);
+inode = iget(sb, ino);
+d_add(dentry, inode);
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Таким образом, при открытии файла вызывается <code>iget(sb,
+    ino)</code>, которая, фактически, называется <code>iget4(sb, ino,
+    NULL, NULL)</code>, эта функция:</p>
+
+    <ol>
+      <li>Пытается найти inode в хеш-таблице по номерам суперблока и
+      inode. Поиск выполняется под блокировкой <code>inode_lock</code>.
+      Если inode найден, то увеличивается его счетчик ссылок
+      (<code>i_count</code>); если счетчик перед инкрементом был равен
+      нулю и inode не &quot;грязный&quot;, то он удаляется из любого
+      списка (<code>inode-&gt;i_list</code>), в котором он находится
+      (это конечно же список <code>inode_unused</code>) и вставляется в
+      список <code>inode_in_use</code>; в завершение, уменьшается
+      счетчик <code>inodes_stat.nr_unused</code>.</li>
+
+      <li>Если inode на текущий момент заблокирован, то выполняется
+      ожидание до тех пор, пока inode не будет разблокирован, таким
+      образом, <code>iget4()</code> гарантирует возврат
+      незаблокированного inode.</li>
+
+      <li>Если поиск по хеш-таблице не увенчался успехом, то вызывается
+      функция <code>get_new_inode()</code>, которой передается
+      указатель на место в хеш-таблице, куда должен быть вставлен
+      inode.</li>
+
+      <li><code>get_new_inode()</code> распределяет память под новый
+      inode в SLAB кэше <code>inode_cachep</code>, но эта операция
+      может устанавливать блокировку (в случае
+      <code>GFP_KERNEL</code>), поэтому освобождается блокировка
+      <code>inode_lock</code>. Поскольку блокировка была сброшена то
+      производится повторный поиск в хеш-таблице, и если на этот раз
+      inode найден, то он возвращается в качестве результата (при этом
+      счетчик ссылок увеличивается вызовом <code>__iget</code>), а
+      новый, только что распределенный inode уничтожается. Если же
+      inode не найден в хеш-таблице, то вновь созданный inode
+      инициализируется необходимыми значениями и вызывается метод
+      <code>sb-&gt;s_op-&gt;read_inode()</code>, чтобы инициализировать
+      остальную часть inode Во время чтения метдом
+      <code>s_op-&gt;read_inode()</code>, inode блокируется
+      (<code>i_state = I_LOCK</code>), после возврата из
+      <code>s_op-&gt;read_inode()</code> блокировка снимается и
+      активируются все ожидающие его процессы.</li>
+    </ol>
+
+    <p>Теперь рассмотрим действия, производимые при закрытии файлового
+    дескриптора. Системный вызов <strong>close(2)</strong> реализуется
+    функцией <code>fs/open.c:sys_close()</code>, которая вызывает
+    <code>do_close(fd, 1)</code>. Функция <code>do_close(fd, 1)</code>
+    записывает NULL на место дескриптора файла в таблице дескрипторов
+    процесса и вызывает функцию <code>filp_close()</code>, которая и
+    выполняет большую часть действий. Вызывает интерес функция
+    <code>fput()</code>, которая проверяет была ли это последняя ссылка
+    на файл и если да, то через <code>fs/file_table.c:_fput()</code>
+    вызывается <code>__fput()</code>, которая взаимодействует с dcache
+    (и таким образом с inode cache - не забывайте, что dcache является
+    &quot;хозяином&quot; inode cache!). Функция
+    <code>fs/dcache.c:dput()</code> вызывает
+    <code>dentry_iput()</code>, которая приводит нас обратно в inode
+    cache через <code>iput(inode)</code>. Разберем
+    <code>fs/inode.c:iput(inode)</code> подробнее:</p>
+
+    <ol>
+      <li>Если входной параметр NULL, то абсолютно ничего не делается и
+      управление возвращается обратно.</li>
+
+      <li>Если входнй параметр определен, то вызывается специфичный для
+      файловой системы метод <code>sb-&gt;s_op-&gt;put_inode()</code>
+      без захвата блокировки (так что он может быть блокирован).</li>
+
+      <li>Устанавливается блокировка (spinlock) и уменьшается
+      <code>i_count</code>. Если это была не последняя ссылка, то
+      просто проверяется - поместится ли количество ссылок в 32-битное
+      поле и если нет - то выводится предупреждение. Отмечу, что
+      поскольку вызов производится под блокировкой
+      <code>inode_lock</code>, то для вывода предупреждения
+      используется функция <code>printk()</code>, которая никогда не
+      блокируется, поэтому ее можно вызывать абсолютно из любого
+      контекста исполнения (даже из обработчика прерываний!).</li>
+
+      <li>Если ссылка была последней, то выполняются дополнительные
+      действия.</li>
+    </ol>
+
+    <p>Дополнительные действия, выполняемые по закрытию в случае
+    последней ссылки функцией <code>iput()</code>, достаточно сложны,
+    поэтому они рассматриваются отдельно:</p>
+
+    <ol>
+      <li>Если <code>i_nlink == 0</code> (например файл был удален,
+      пока мы держали его открытым), то inode удаляется из хеш-таблицы
+      и из своего списка. Если имеются какие-либо страницы в кеше
+      страниц, связанные с данным inode, то они удаляются посредством
+      <code>truncate_all_inode_pages(&amp;inode-&gt;i_data)</code>.
+      Затем, если определен, то вызывается специфичный для файловой
+      системы метод <code>s_op-&gt;delete_inode()</code>, который
+      обычно удаляет дисковую копию inode. В случае отсутствия
+      зарегистрированного метода <code>s_op-&gt;delete_inode()</code>
+      (например ramfs), то вызывается <code>clear_inode(inode)</code>,
+      откуда производится вызов <code>s_op-&gt;clear_inode()</code>,
+      если этот метод зарегистрирован и inode соответствует блочному
+      устройству. Счетчик ссылок на это устройство уменьшается вызовом
+      <code>bdput(inode-&gt;i_bdev)</code>.</li>
+
+      <li>Если <code>i_nlink != 0</code>, то проверяется - есть ли
+      другие inode с тем же самым хеш-ключом (in the same hash bucket)
+      и если нет, и inode не &quot;грязный&quot;, то он удаляется из
+      своего списка типа, вставляется в список
+      <code>inode_unused</code>, увеличивая
+      <code>inodes_stat.nr_unused</code>. Если имеются inodes с тем же
+      самым хеш-ключом, то inode удаляется из списка типа и добавляется
+      к списку <code>inode_unused</code>. Если это анонимный inode
+      (NetApp .snapshot) то он удаляется из списка типа и
+      очищается/удаляется полностью.</li>
+    </ol>
+
+    <h2><a
+     name="ss3.2">3.2 Регистрация/Дерегистрация файловых
+    систем.</a></h2>
+
+    <p>Ядро Linux предоставляет механизм, минимизирующий усилия
+    разработчиков по написанию новых файловых систем. Исторически
+    сложилось так, что:</p>
+
+    <ol>
+      <li>В мире широко используются различные операционные системы и
+      чтобы люди не потеряли деньги, затреченные на покупку легального
+      программного обеспечения, Linux должен был предоставить поддержку
+      большого количества файловых систем, большинство из которых
+      реализовано исключительно для совместимости.</li>
+
+      <li>Интерфейс для новых файловых систем должен был быть очень
+      простым, чтобы разработчики могли легко перепроектировать
+      существующие файловые системы в их версии &quot;ТОЛЬКО ДЛЯ
+      ЧТЕНИЯ&quot;. Linux значительно облегчает создание таких версий,
+      95% работы над созданием новой файловой системы заключается в
+      добавлении поддержки записи. Вот конкретный пример, я написал
+      файловую систему BFS в версии &quot;ТОЛЬКО ДЛЯ ЧТЕНИЯ&quot; всего
+      за 10 часов, однако мне потребовалось несколько недель, чтобы
+      добавить в нее поддержку записи (и даже сегодня некоторые пуристы
+      говорят о ее незавершенности, поскольку в ней &quot;не
+      реализована поддержка компактификации&quot;). .</li>
+
+      <li>Интерфейс VFS является экспортируемым и поэтому все файловые
+      системы в Linux могут быть реализованы в виде модулей..</li>
+    </ol>
+
+    <p>Рассмотрим порядок добавления новой файловой системы в Linux.
+    Код, реализующий файловую систему, может быть выполнен либо в виде
+    динамически подгружаемого модуля, либо может быть статически связан
+    с ядром. Все, что требуется сделать - это заполнить <code>struct
+    file_system_type</code> и зарегистрировать файловую систему в VFS с
+    помощью функции <code>register_filesystem()</code>, как показано
+    ниже (пример взят из <code>fs/bfs/inode.c</code>):</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>#include &lt;linux/module.h&gt;
+#include &lt;linux/init.h&gt;
+
+static struct super_block *bfs_read_super(struct super_block *, void *, int);
+
+static DECLARE_FSTYPE_DEV(bfs_fs_type, &quot;bfs&quot;, bfs_read_super);
+
+static int __init init_bfs_fs(void)
+{
+        return register_filesystem(&amp;bfs_fs_type);
+}
+
+static void __exit exit_bfs_fs(void)
+{
+        unregister_filesystem(&amp;bfs_fs_type);
+}
+
+module_init(init_bfs_fs)
+module_exit(exit_bfs_fs)
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Макросы <code>module_init()/module_exit()</code>, в случае,
+    когда BFS компилируется как модуль, преобразуют функции
+    <code>init_bfs_fs()</code> и <code>exit_bfs_fs()</code> в
+    <code>init_module()</code> и <code>cleanup_module()</code>
+    соответственно. Если BFS компилируется статически, то код
+    <code>exit_bfs_fs()</code> исчезает, поскольку необходимость в нем
+    отпадает.</p>
+
+    <p>Структура <code>struct file_system_type</code> объявлена в
+    <code>include/linux/fs.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct file_system_type {
+        const char *name;
+        int fs_flags;
+        struct super_block *(*read_super) (struct super_block *, void *, int);
+        struct module *owner;
+        struct vfsmount *kern_mnt; /* For kernel mount, if it&#39;s FS_SINGLE fs */
+        struct file_system_type * next;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Поля структуры:</p>
+
+    <ul>
+      <li><strong>name</strong>: Удобочитаемое название файловой
+      системы, которое выводится в файле <code>/proc/filesystems</code>
+      и используется как ключ для поиска файловой системы по имени; это
+      же имя используется как аргумент в вызове
+      <strong>mount(2)</strong> и должно быть уникальным. Для модулей
+      имя указывает на адресное пространство модуля так, что в случае,
+      когда модуль уже выгружен, но файловая система еще остается
+      зарегистрированной, то команда <strong>cat
+      /proc/filesystems</strong> может вызвать oops.</li>
+
+      <li><strong>fs_flags</strong>: один или более флагов
+      (объединенных по OR): <code>FS_REQUIRES_DEV</code> для файловых
+      систем, которые могут быть смонтированы только с блочных
+      устройств, <code>FS_SINGLE</code> для файловых систем, имеющих
+      только один суперблок, <code>FS_NOMOUNT</code> для файловых
+      систем которые не могут быть смонтированы из пользовательского
+      пространства системным вызовом <strong>mount(2)</strong>, однако
+      такие файловые системы могут быть смонтированы ядром через вызов
+      <code>kern_mount()</code>, например pipefs.</li>
+
+      <li><strong>read_super</strong>: указатель на функцию, которая
+      считывает суперблок в процессе монтирования. Эта функция должна
+      быть определена обязательно. В случае ее отсутствия, операция
+      монтирования (независимо от того - из пользовательского ли
+      пространства или из ядра выполняется монтирование) всегда будет
+      терпеть неудачу, а в случае установленного флага
+      <code>FS_SINGLE</code> попытка монтирования будет приводить к
+      Oops в <code>get_sb_single()</code>, при попытке получить ссылку
+      <code>fs_type-&gt;kern_mnt-&gt;mnt_sb</code> (в то время как
+      <code>fs_type-&gt;kern_mnt = NULL</code>).</li>
+
+      <li><strong>owner</strong>: указатель на модуль реализации
+      файловой системы. Если файловая система связана в ядро
+      статически, то этот указатель содержит NULL. Нет необходимости
+      устанавливать его вручную, так как макрос
+      <code>THIS_MODULE</code> делает это автоматически.</li>
+
+      <li><strong>kern_mnt</strong>: только для файловых систем,
+      имеющих флаг <code>FS_SINGLE</code>. Устанавливается
+      <code>kern_mount()</code> (TODO: вызов <code>kern_mount()</code>
+      должен отвергать монтирование файловых систем если флаг
+      <code>FS_SINGLE</code> не установлен).</li>
+
+      <li><strong>next</strong>: поле связи в односвязном списке
+      <code>file_systems</code> (см. <code>fs/super.c</code>). Список
+      защищается &quot;read-write&quot; блокировкой
+      <code>file_systems_lock</code> и модифицируется функциями
+      <code>register/unregister_filesystem()</code>.</li>
+    </ul>
+
+    <p>Функция <code>read_super()</code> заполняет поля суперблока,
+    выделяет память под корневой inode и инициализирует специфичную
+    информацию, связанную с монтируемым экземпляром файловой системы.
+    Как правило <code>read_super()</code>:</p>
+
+    <ol>
+      <li>Считывает суперблок с устройства, определяемого аргументом
+      <code>sb-&gt;s_dev</code>, используя функцию
+      <code>bread()</code>. Если предполагается чтение дополнительных
+      блоков с метаданными, то имеет смысл воспользоваться функцией
+      <code>breada()</code>, чтобы прочитать дополнительные блоки
+      асинхронно.</li>
+
+      <li>Суперблок проверяется на корректность по
+      &quot;магическим&quot; последовательностям и другим
+      признакам.</li>
+
+      <li>Инициализируется указатель <code>sb-&gt;s_op</code> на
+      структуру <code>struct super_block_operations</code>. Эта
+      структура содержит указатели на функции, специфичные для файловой
+      системы, такие как &quot;read inode&quot;, &quot;delete
+      inode&quot; и пр.</li>
+
+      <li>Выделяет память под корневой inode и dentry вызовом функции
+      <code>d_alloc_root()</code>.</li>
+
+      <li>Если файловая система монтируется не как &quot;ТОЛЬКО ДЛЯ
+      ЧТЕНИЯ&quot;, то в <code>sb-&gt;s_dirt</code> записывается 1 и
+      буфер, содержащий суперблок, помечается как &quot;грязный&quot;
+      (TODO: зачем это делается? Я сделал так в BFS потому, что в MINIX
+      делается то же самое).</li>
+    </ol>
+
+    <h2><a
+     name="ss3.3">3.3 Управление файловыми дескрипторами</a></h2>
+
+    <p>В Linux между пользовательским файловым дескриптором и
+    структурой inode в ядре, существует несколько уровней косвенных
+    ссылок. Когда процесс открывает файл системным вызовом
+    <strong>open(2)</strong>, ядро возвращает положительное малое целое
+    число, которое затем используется в операциях ввода/вывода над
+    заданным файлом. Это целое число является индексом в массиве
+    указателей на <code>struct file</code>. Каждая <code>struct
+    file</code> содержит указатель на dentry
+    <code>file-&gt;f_dentry</code>. Каждая dentry имеет указатель на
+    inode <code>dentry-&gt;d_inode</code>.</p>
+
+    <p>Каждая задача содержит поле <code>tsk-&gt;files</code> которое
+    указывает на <code>struct files_struct</code>, определенную в
+    <code>include/linux/sched.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/*
+ * Структура таблицы открытых файлов
+ */
+struct files_struct {
+        atomic_t count;
+        rwlock_t file_lock;
+        int max_fds;
+        int max_fdset;
+        int next_fd;
+        struct file ** fd;      /* массив дескрипторов */
+        fd_set *close_on_exec;
+        fd_set *open_fds;
+        fd_set close_on_exec_init;
+        fd_set open_fds_init;
+        struct file * fd_array[NR_OPEN_DEFAULT];
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Поле <code>file-&gt;count</code> - это счетчик ссылок,
+    увеличивается в <code>get_file()</code> (обычно вызывается из
+    <code>fget()</code>) и уменьшается в <code>fput()</code> и в
+    <code>put_filp()</code>.Различие между <code>fput()</code> и
+    <code>put_filp()</code> состоит в том, что <code>fput()</code>
+    выполняет больший объем работы, необходимый для регулярных файлов,
+    т.е. освобождение блокировок, освобождение dentry и пр., в то время
+    как <code>put_filp()</code> работает только с таблицей файловых
+    структур, т.е. уменьшает счетчик, удаляет файл из
+    <code>anon_list</code> и добавляет его в <code>free_list</code>,
+    под блокировкой <code>files_lock</code>.</p>
+
+    <p>Таблица <code>tsk-&gt;files</code> может использоваться
+    совместно родителем и потомком, если потомок был создан системным
+    вызовом <code>clone()</code> с флагом <code>CLONE_FILES</code>. В
+    качестве примера можно привести
+    <code>kernel/fork.c:copy_files()</code> (вызывается из
+    <code>do_fork()</code>), где только лишь увеличивается счетчик
+    ссылок <code>file-&gt;count</code>. вместо обычного (для
+    классического <strong>fork(2)</strong> в UNIX) копирования таблицы
+    дескрипторов.</p>
+
+    <p>При открытии файла в памяти размещается новая файловая
+    структура, которая устанавливается в слот
+    <code>current-&gt;files-&gt;fd[fd]</code> и взводится бит
+    <code>fd</code> в <code>current-&gt;files-&gt;open_fds</code>.
+    Действия эти выполняются под защитой от записи read-write
+    блокировкой <code>current-&gt;files-&gt;file_lock</code>. При
+    закрытии дескриптора сбрасывается бит <code>fd</code> в
+    <code>current-&gt;files-&gt;open_fds</code>, а поле
+    <code>current-&gt;files-&gt;next_fd</code> устанавливается равным
+    <code>fd</code> на случай поиска первого неиспользуемого
+    дескриптора при следующем открытии файла.</p>
+
+    <h2><a
+     name="ss3.4">3.4 Управление файловой структурой</a></h2>
+
+    <p>Структура file объявлена в <code>include/linux/fs.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct fown_struct {
+        int pid;                /* pid или -pgrp процесса, которому должен передаваться SIGIO */
+        uid_t uid, euid;        /* uid/euid процесса-владельца */
+        int signum;             /* posix.1b rt signal to be delivered on IO */
+};
+
+struct file {
+        struct list_head        f_list;
+        struct dentry           *f_dentry;
+        struct vfsmount         *f_vfsmnt;
+        struct file_operations  *f_op;
+        atomic_t                f_count;
+        unsigned int            f_flags;
+        mode_t                  f_mode;
+        loff_t                  f_pos;
+        unsigned long           f_reada, f_ramax, f_raend, f_ralen, f_rawin;
+        struct fown_struct      f_owner;
+        unsigned int            f_uid, f_gid;
+        int                     f_error;
+
+        unsigned long           f_version;
+
+        /* требуется для драйвера tty, а возможно и для других */
+        void                    *private_data;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Остановимся подробнее на полях <code>struct file</code>:</p>
+
+    <ol>
+      <li><strong>f_list</strong>: поле связи с одним (и только одним)
+      из списков:<br>
+       а) <code>sb-&gt;s_files</code> - список всех открытых файлов в
+      данной файловой системе, если соответствующий inode не является
+      анонимным, то <code>dentry_open()</code> (вызываемая из
+      <code>filp_open()</code>) вставляет файл в этот список;<br>
+       б) <code>fs/file_table.c:free_list</code> - список
+      неиспользуемых структур;<br>
+       в) <code>fs/file_table.c:anon_list</code> - в этот список
+      включаются структуры, создаваемые в
+      <code>get_empty_filp()</code>.<br>
+       Доступ к этим спискам производится под блокировкой
+      <code>files_lock</code>.</li>
+
+      <li><strong>f_dentry</strong>: dentry файла. Создается в процессе
+      поиска nameidata в <code>open_namei()</code> (или точнее в
+      <code>path_walk()</code>), но в действительности поле
+      <code>file-&gt;f_dentry</code> заполняется в
+      <code>dentry_open()</code>.</li>
+
+      <li><strong>f_vfsmnt</strong>: указатель на структуру
+      <code>vfsmount</code> файловой системы, содержащей файл.
+      Заполняется функцией <code>dentry_open()</code> и является частью
+      nameidata, поиск которой производится в <code>open_namei()</code>
+      (или точнее в <code>path_init()</code>).</li>
+
+      <li><strong>f_op</strong>: указатель на список
+      <code>file_operations</code>, который содержит адреса методов для
+      работы с файлом. Копируется из <code>inode-&gt;i_fop</code>
+      методом <code>s_op-&gt;read_inode()</code>, вызываемым в процессе
+      поиска nameidata. Более подробно на списке
+      <code>file_operations</code> мы остановимся ниже в этом
+      разделе.</li>
+
+      <li><strong>f_count</strong>: счетчик ссылок, изменяется в
+      <code>get_file/put_filp/fput</code>.</li>
+
+      <li><strong>f_flags</strong>: флаги <code>O_XXX</code> системного
+      вызова <strong>open(2)</strong>, копируются функцией
+      <code>dentry_open()</code> (с небольшими изменениями в
+      <code>filp_open()</code>), при чем флаги <code>O_CREAT</code>,
+      <code>O_EXCL</code>, <code>O_NOCTTY</code>, <code>O_TRUNC</code>
+      сбрасываются, поскольку они не могут модифицироваться по
+      параметру <code>F_SETFL</code> (или <code>F_GETFL</code>) в
+      системном вызове <strong>fcntl(2)</strong>.</li>
+
+      <li><strong>f_mode</strong>: комбинация флагов состояния,
+      устанавливается в <code>dentry_open()</code>. Флаги режимов
+      доступа для чтения и записи выведены в отдельные биты, чтобы
+      облегчить контроль состояния: <code>(f_mode &amp;
+      FMODE_WRITE)</code> и <code>(f_mode &amp;
+      FMODE_READ)</code>.</li>
+
+      <li><strong>f_pos</strong>: текущая позиция чтения/записи в
+      файле. Для архитектуры i386 имеет тип <code>long long</code>,
+      т.е. 64 бита.</li>
+
+      <li><strong>f_reada, f_ramax, f_raend, f_ralen, f_rawin</strong>:
+      поддержка опережающего чтения (readahead) слишком сложна, чтобы
+      обсуждаться простыми смертными ;)</li>
+
+      <li><strong>f_owner</strong>: владелец файла, который будет
+      получать I/O уведомления посредством механизма <code>SIGIO</code>
+      (см. <code>fs/fcntl.c:kill_fasync()</code>).</li>
+
+      <li><strong>f_uid, f_gid</strong> - user id и group id процесса,
+      открывшего файл, заполняются во время создания структуры в
+      <code>get_empty_filp()</code>. Если файл является сокетом, то эти
+      поля могут быть использованы в ipv4 netfilter.</li>
+
+      <li><strong>f_error</strong>: используется клиентом NFS для
+      возврата ошибки записи. Поле устанавливается в
+      <code>fs/nfs/file.c</code> и проверяется в
+      <code>mm/filemap.c:generic_file_write()</code>.</li>
+
+      <li><strong>f_version</strong> - механизм контроля версий, служит
+      для синхронизации с кэшем. Увеличивается на единицу (используя
+      глобальный <code>event</code>) всякий раз, когда изменяется
+      <code>f_pos</code>.</li>
+
+      <li><strong>private_data</strong>: скрытая информация о файле,
+      может использоваться файловой системой (например coda хранит
+      здесь удостоверения) или драйверами устройств. Драйверы устройств
+      (при наличии devfs) могут использовать это поле для различения
+      нескольких экземпляров вместо классического анализа младшего
+      номера версии в
+      <code>file-&gt;f_dentry-&gt;d_inode-&gt;i_rdev</code>.</li>
+    </ol>
+
+    <p>Перейдем к рассмотрению списка методов управления файлом
+    <code>file_operations</code>. Позволю себе напомнить, что он
+    копируется из <code>inode-&gt;i_fop</code> методом
+    <code>s_op-&gt;read_inode()</code>. Структура (список методов)
+    объявлена в <code>include/linux/fs.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct file_operations {
+        struct module *owner;
+        loff_t (*llseek) (struct file *, loff_t, int);
+        ssize_t (*read) (struct file *, char *, size_t, loff_t *);
+        ssize_t (*write) (struct file *, const char *, size_t, loff_t *);
+        int (*readdir) (struct file *, void *, filldir_t);
+        unsigned int (*poll) (struct file *, struct poll_table_struct *);
+        int (*ioctl) (struct inode *, struct file *, unsigned int, unsigned long);
+        int (*mmap) (struct file *, struct vm_area_struct *);
+        int (*open) (struct inode *, struct file *);
+        int (*flush) (struct file *);
+        int (*release) (struct inode *, struct file *);
+        int (*fsync) (struct file *, struct dentry *, int datasync);
+        int (*fasync) (int, struct file *, int);
+        int (*lock) (struct file *, int, struct file_lock *);
+        ssize_t (*readv) (struct file *, const struct iovec *, unsigned long, loff_t *);
+        ssize_t (*writev) (struct file *, const struct iovec *, unsigned long, loff_t *);
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <ol>
+      <li><strong>owner</strong>: указатель на модуль рассматриваемой
+      подсистемы. Это поле устанавливается только драйверами устройств,
+      файловая система может игнорировать его, поскольку счетчик ссылок
+      модуля файловой системы изменяется во время
+      монтирования/демонтирования, в то время как для драйверов это
+      должно делаться во время открытия/закрытия устройства.</li>
+
+      <li><strong>llseek</strong>: реализация системного вызова
+      <strong>lseek(2)</strong>. Обычно опускается и используется
+      <code>fs/read_write.c:default_llseek()</code>. (TODO:
+      Принудительно устанавливать это поле в NULL, тем самым
+      сэкономится лишний <code>if()</code> в
+      <code>llseek()</code>)</li>
+
+      <li><strong>read</strong>: реализация системного вызова
+      <code>read(2)</code>. Файловые системы могут использовать
+      <code>mm/filemap.c:generic_file_read()</code> для обычных файлов
+      и <code>fs/read_write.c:generic_read_dir()</code> (которая просто
+      возвращает <code>-EISDIR</code>) для каталогов.</li>
+
+      <li><strong>write</strong>: реализация системного вызова
+      <strong>write(2)</strong>. Файловые системы могут использовать
+      <code>mm/filemap.c:generic_file_write()</code> для обычных файлов
+      и игнорировать его для каталогов.</li>
+
+      <li><strong>readdir</strong>: используется файловой системой.
+      Реализует системные вызовы <strong>readdir(2)</strong> и
+      <strong>getdents(2)</strong> для каталогов и игнорируется для
+      обычных файлов.</li>
+
+      <li><strong>poll</strong>: реализация системных вызовов
+      <strong>poll(2)</strong> и <strong>select(2)</strong></li>
+
+      <li><strong>ioctl</strong>: реализация специфичного для драйвера
+      или для файловой системы метода ioctl ( управление
+      вводом/выводом). Обратите внимание: общие методы ioctl типа
+      <code>FIBMAP</code>, <code>FIGETBSZ</code>, <code>FIONREAD</code>
+      реализуются на более высоком уровне, поэтому они никогда не
+      пользуются методом <code>f_op-&gt;ioctl()</code>.</li>
+
+      <li><strong>mmap</strong>: реализация системного вызова
+      <strong>mmap(2)</strong>. Файловая система может использовать
+      <strong>generic_file_mmap</strong> для обычных файлов и
+      игнорировать это поле для каталогов.</li>
+
+      <li><strong>open</strong>: вызывается во время выполнения
+      <strong>open(2)</strong> функцией <code>dentry_open()</code>.
+      Редко используется файловыми системами, например coda пытается
+      кэшировать файл во время открытия.</li>
+
+      <li><strong>flush</strong>: вызывается при каждом вызове
+      <strong>close(2)</strong> для заданного файла, не обязательно в
+      последнем (см. метод <code>release()</code> ниже). Единственная
+      файловая система, которая вызывает этот метод - это NFS клиент,
+      которая &quot;выталкивает&quot; все измененные страницы.
+      Примечательно, что этот метод может завершаться с кодом ошибки,
+      который передается обратно в пространство пользователя, откуда
+      делался системный вызов <strong>close(2)</strong>.</li>
+
+      <li><strong>release</strong>: метод вызывается в последнем вызове
+      <strong>close(2)</strong> для заданного файла, т.е. когда
+      <code>file-&gt;f_count</code> станет равным нулю. Хотя и
+      возвращает целое (int) значение, но VFS игнорирует его (см.
+      code&gt;fs/file_table.c:__fput()).</li>
+
+      <li><strong>fsync</strong>: преобразуется в системные вызовы
+      <strong>fsync(2)/fdatasync(2)</strong>, причем последний аргумент
+      определяет сам вызов - fsync или fdatasync. Не выполняет почти
+      никаких действий за исключением преобразования файлового
+      дескриптора в файловую структуру (<code>file = fget(fd)</code>) и
+      сброса/установки семафора <code>inode-&gt;i_sem</code>. Файловая
+      система Ext2, на сегодняшний день, игнорирует последний аргумент,
+      передаваемый методу и выполняет одни и те же действия как для
+      <strong>fsync(2)</strong> так и для
+      <strong>fdatasync(2)</strong>.</li>
+
+      <li><strong>fasync</strong>: этот метод вызывается при изменении
+      <code>file-&gt;f_flags &amp; FASYNC</code>.</li>
+
+      <li><strong>lock</strong>: специфичная для файловой системы часть
+      механизма блокировки области файла POSIX
+      <strong>fcntl(2)</strong>. Единственная неувязка состоит в том,
+      что этот метод вызывается перед независимой от типа файловой
+      системы <code>posix_lock_file()</code>, если метод завершается
+      успешно, а стандартный POSIX код блокировки терпит неудачу, то
+      блокировка не будет снята на зависимом от типа файловой системы
+      уровне..</li>
+
+      <li><strong>readv</strong>: реализация системного вызова
+      <strong>readv(2)</strong>.</li>
+
+      <li><strong>writev</strong>: реализация системного вызова
+      <strong>writev(2)</strong>.</li>
+    </ol>
+
+    <h2><a
+     name="ss3.5">3.5 Управление Суперблоком и точкой
+    монтирования</a></h2>
+
+    <p>В Linux, информация о смонтированных файловых системах хранится
+    в двух различных структурах - <code>super_block</code> и
+    <code>vfsmount</code>. Сделано это для того, чтобы имелась
+    возможность смонтировать одну и ту же файловую систему к нескольким
+    точкам монтирования одновременно, это означает, что одна и та же
+    структура <code>super_block</code> может соответствовать нескольким
+    структурам <code>vfsmount</code>.</p>
+
+    <p>В первую очередь рассмотрим структуру <code>struct
+    super_block</code>, объявленную в
+    <code>include/linux/fs.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct super_block {
+        struct list_head        s_list;         /* Хранится первым */
+        kdev_t                  s_dev;
+        unsigned long           s_blocksize;
+        unsigned char           s_blocksize_bits;
+        unsigned char           s_lock;
+        unsigned char           s_dirt;
+        struct file_system_type *s_type;
+        struct super_operations *s_op;
+        struct dquot_operations *dq_op;
+        unsigned long           s_flags;
+        unsigned long           s_magic;
+        struct dentry           *s_root;
+        wait_queue_head_t       s_wait;
+
+        struct list_head        s_dirty;        /* &quot;грязные&quot; inodes */
+        struct list_head        s_files;
+
+        struct block_device     *s_bdev;
+        struct list_head        s_mounts;       /* vfsmount(s) of this one */
+        struct quota_mount_options s_dquot;     /* параметры для Diskquota */
+
+       union {
+                struct minix_sb_info    minix_sb;
+                struct ext2_sb_info     ext2_sb;
+                ..... Информация sb-private, необходимая для всех файловых систем ...
+                void                    *generic_sbp;
+        } u;
+       /*
+         * Следующее поле предназначено *только* для VFS.
+         * Ни одна файловая система не должна изменять его,
+         * даже если она обращается к этому полю.
+         * Вас предупредили.
+         */
+        struct semaphore s_vfs_rename_sem;      /* Kludge */
+
+        /* Следующее поле используется демоном knfsd для преобразования(inode number based)
+         * file handle в dentry. Поскольку путь в дереве dcache строится снизу вверх
+         * то в течение некоторого времени путь является неполным, никак не связанным
+         * с главным деревом.  Этот семафор гарантирует существование единственного
+         * такого свободного пути в файловой системе.
+         * Заметьте, что такие &quot;несвязанные&quot; файлы допустимы
+         * но не каталоги.
+         */
+        struct semaphore s_nfsd_free_path_sem;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Более подробно о полях структуры <code>super_block</code>:</p>
+
+    <ol>
+      <li><strong>s_list</strong>: двусвязный список всех активных
+      суперблоков; Заметьте, что я не говорю &quot;всех смонтированных
+      файловых систем&quot;, потому что в Linux всем смонтированным
+      экземплярам файловой системы соответствует единственный
+      суперблок.</li>
+
+      <li><strong>s_dev</strong>: предназначено для файловых систем,
+      требующих наличие блочного устройства, т.е. для файловых систем,
+      зарегистрированных с флагом <code>FS_REQUIRES_DEV</code>, это
+      поле представляет собой копию <code>i_dev</code> блочного
+      устройства. Для других файловых систем (называемых анонимными)
+      представляет собой целое число <code>MKDEV(UNNAMED_MAJOR,
+      i)</code>, где <code>i</code> принадлежит диапазону от 0 до 255
+      включительно и является порядковым номером первого
+      неустановленного бита в массиве <code>unnamed_dev_in_use</code>.
+      Смотрите
+      <code>fs/super.c:get_unnamed_dev()/put_unnamed_dev()</code>.
+      Неоднократно предлагалось отказаться от использования поля
+      <code>s_dev</code> анонимными файловыми системами.</li>
+
+      <li><strong>s_blocksize, s_blocksize_bits</strong>: Размер блока
+      и количество бит, необходимое для хранения размера блока
+      (log2(blocksize)).</li>
+
+      <li><strong>s_lock</strong>: индикатор блокировки суперблока
+      функциями <code>lock_super()/unlock_super()</code>.</li>
+
+      <li><strong>s_dirt</strong>: устанавливается при внесении
+      изменений в суперблок и сбрасывается при записи его обратно на
+      диск.</li>
+
+      <li><strong>s_type</strong>: указатель на структуру <code>struct
+      file_system_type</code>, соответствующую файловой системе. Метод
+      файловой системы <code>read_super()</code> не должен
+      устанавливать это поле, так как это поле устанавливается VFS в
+      функции <code>fs/super.c:read_super()</code>, в случае успешного
+      вызова метода <code>read_super()</code> конкретной файловой, и
+      сбрасывется в NULL в противном случае.</li>
+
+      <li><strong>s_op</strong>: указатель на структуру (список)
+      <code>super_operations</code>, которая содержит специфичные для
+      заданной файловой системы методы, такие как чтение/запись inode и
+      пр. Корректное заполнение этой структуры - задача метода файловой
+      системы <code>read_super()</code>.</li>
+
+      <li><strong>dq_op</strong>: операции по дисковому
+      квотированию.</li>
+
+      <li><strong>s_flags</strong>: флаги суперблока.</li>
+
+      <li><strong>s_magic</strong>: &quot;магическое&quot; число
+      файловой системы. Используется файловой системой minix для
+      различения разных вариантов ее.</li>
+
+      <li><strong>s_root</strong>: dentry корня файловой системы. Метод
+      <code>read_super()</code> считывает корневой inode с диска и
+      передает его в <code>d_alloc_root()</code>, который выделяет
+      память под dentry и заполняет ее. Некоторые файловые системы
+      используют иное обозначение корня, нежели &quot;/&quot;, поэтому
+      используется более общая функция <code>d_alloc()</code> для
+      образования полного имени, например pipefs использует
+      &quot;pipe:&quot; для обозначения своего корня.</li>
+
+      <li><strong>s_wait</strong>: очередь ожидания, в которой нахдятся
+      процессы, ожидающие снятия блокировки с суперблока.</li>
+
+      <li><strong>s_dirty</strong>: список всех &quot;грязных&quot;
+      (измененных) inodes. Напомню, что если inode изменился (т.е.
+      <code>inode-&gt;i_state &amp; I_DIRTY</code>), то этот список
+      связуется через <code>inode-&gt;i_list</code>.</li>
+
+      <li><strong>s_files</strong>: список всех открытых файлов в
+      данном суперблоке. Полезен при принятии решения о
+      перемонтировании файловой системы в режиме &quot;только для
+      чтения&quot;, см.
+      <code>fs/file_table.c:fs_may_remount_ro()</code>, которая
+      просматривает список <code>sb-&gt;s_files</code> и отвергает
+      возможность перемонтирования если имеется хотя бы один файл,
+      открытый &quot;на запись&quot; (<code>file-&gt;f_mode &amp;
+      FMODE_WRITE</code>) или ожидающий удаления
+      (<code>inode-&gt;i_nlink == 0</code>).</li>
+
+      <li><strong>s_bdev</strong>: для случая
+      <code>FS_REQUIRES_DEV</code> указывает на структуру block_device,
+      описывающую блочное устройство, с которого смонтирована файловая
+      система.</li>
+
+      <li><strong>s_mounts</strong>: список всех структур
+      <code>vfsmount</code> для каждого смонтированного экземпляра
+      данного суперблока.</li>
+
+      <li><strong>s_dquot</strong>: используется при квотировании
+      диска.</li>
+    </ol>
+
+    <p>Методы управления суперблоком перечисляются в структуре
+    <code>super_operations</code>, объявленной в
+    <code>include/linux/fs.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct super_operations {
+        void (*read_inode) (struct inode *);
+        void (*write_inode) (struct inode *, int);
+        void (*put_inode) (struct inode *);
+        void (*delete_inode) (struct inode *);
+        void (*put_super) (struct super_block *);
+        void (*write_super) (struct super_block *);
+        int (*statfs) (struct super_block *, struct statfs *);
+        int (*remount_fs) (struct super_block *, int *, char *);
+        void (*clear_inode) (struct inode *);
+        void (*umount_begin) (struct super_block *);
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <ol>
+      <li><strong>read_inode</strong>: операция чтения inode из
+      файловой системы. Вызывается только в
+      <code>fs/inode.c:get_new_inode()</code> из <code>iget4()</code>
+      (и следовательно из <code>iget()</code>). Если файловая система
+      предполагает вызов <code>iget()</code> то метод
+      <code>read_inode()</code> должен быть реализован, в противном
+      случае <code>get_new_inode()</code> будет приводить к
+      &quot;впадению в панику&quot; (panic). Во время чтения inode
+      заблокирован (<code>inode-&gt;i_state = I_LOCK</code>). Когда
+      функция возвращает управление, все процессы из очереди
+      <code>inode-&gt;i_wait</code> пробуждаются. В задачу метода
+      <code>read_inode()</code> входит обнаружение дискового блока,
+      который содержит заданный inode и с помощью функйии буферного
+      кэша <code>bread()</code> прочитать его и инициализировать
+      различные поля в структуре inode, например
+      <code>inode-&gt;i_op</code> и <code>inode-&gt;i_fop</code>, чтобы
+      уровень VFS &quot;знал&quot; какие операции над inode и
+      соответствующим ему файлом, считаются допустимыми. Имеются
+      файловые системы, в которых метод <code>read_inode()</code> не
+      реализован - это ramfs и pipefs. Так ramfs имеет свою собственную
+      функцию генерации inode (<code>ramfs_get_inode()</code>).</li>
+
+      <li><strong>write_inode</strong>: операция записи inode на диск.
+      так же как и <code>read_inode()</code> отыскивает нужный дисковый
+      блок и вызывает функцию буферного кэша
+      <code>mark_buffer_dirty(bh)</code>. Этот метод вызывается для
+      &quot;грязных&quot; inode (которые были помечены вызовом
+      <code>mark_inode_dirty()</code>) при возникновении необходимости
+      синхронизации как отдельно взятого inode, так и файловой системы
+      в целом.</li>
+
+      <li><strong>put_inode</strong>: вызывается всякий раз при
+      уменьшении счетчика ссылок.</li>
+
+      <li><strong>delete_inode</strong>: вызывается всякий раз, когда
+      <code>inode-&gt;i_count</code> и <code>inode-&gt;i_nlink</code>
+      достигают нулевого значения. Файловая система удаляет дисковую
+      копию inode и вызывает <code>clear_inode()</code> для VFS inode,
+      чтобы &quot;прекратить его существование окончательно&quot;.</li>
+
+      <li><strong>put_super</strong>: вызывается на последней стадии
+      работы системного вызова <strong>umount(2)</strong>, чтобы
+      уведомить файловую систему о том, что любая приватная информация,
+      удерживаемая ею, должна быть освобождена. Обычно это
+      <code>brelse()</code> блока, содержащего суперблок, и
+      <code>kfree()</code> для освобождения всех ранее размещенных
+      блоков, inodes и т.п.</li>
+
+      <li><strong>write_super</strong>: вызывается в случае
+      необходимости записать суперблок на диск. Должен отыскать блок,
+      содержащий суперблок, (обычно хранится в области
+      <code>sb-private</code>) и вызвать
+      <code>mark_buffer_dirty(bh)</code>. А так же должен сбросить флаг
+      <code>sb-&gt;s_dirt</code> flag.</li>
+
+      <li><strong>statfs</strong>: реализация системного вызова
+      <strong>fstatfs(2)/statfs(2)</strong>. Заметьте, что указатель на
+      <code>struct statfs</code>, передаваемый в качестве аргумента,
+      является указателем пространства ядра а не пользовательского
+      пространства, поэтому не следует выполнять каких либо операций
+      ввода-вывода в пользовательском пространстве. В случае отсутствия
+      этого метода вызов <code>statfs(2)</code> будет возвращвть код
+      ошибки <code>ENOSYS</code>.</li>
+
+      <li><strong>remount_fs</strong>: вызывается всякий раз при
+      перемонтировании файловой системы.</li>
+
+      <li><strong>clear_inode</strong>: вызывается из функции
+      <code>clear_inode()</code> уровня VFS. Файловая система должна
+      освободить приватную информацию в структуре inode (присоединенную
+      через поле <code>generic_ip</code>).</li>
+
+      <li><strong>umount_begin</strong>: вызывается в случае
+      принудительно размонтирования для уведомления файловой системы
+      заранее, чтобы убедиться, что она не занята. В настоящее время
+      используется только NFS. Этот метод не имеет никакого отношения к
+      идее поддержки принудительного размонтирования на уровне
+      VFS.</li>
+    </ol>
+
+    <p>Теперь рассмотрим последовательность действий, выполняемых при
+    монтировании дисковой (<code>FS_REQUIRES_DEV</code>) файловой
+    системы. Реализация системного вызова <strong>mount(2)</strong>
+    находится в <code>fs/super.c:sys_mount()</code>, которая по сути
+    является лишь оберткой, которая передает опции монтирования, тип
+    файловой системы и название устройства в функцию
+    <code>do_mount()</code>.</p>
+
+    <ol>
+      <li>В случае необходимости, загружается модуль драйвера файловой
+      системы и увеличивается счетчик ссылок на этот модуль.
+      Примечательно, что в процессе монтирования счетчик ссылок на
+      модуль файловой системы увеличивается дважды - один раз в
+      <code>do_mount()</code>, вызываемой из
+      <code>get_fs_type()</code>, и один раз в
+      <code>get_sb_dev()</code>, вызываемой из
+      <code>get_filesystem()</code>, если <code>read_super()</code>
+      выполнилась успешно. Первое увеличение предотвращает выгрузку
+      модуля пока выполняется метод <code>read_super()</code> и второе
+      увеличение указывает на то, что модуль используется
+      смонтированным экземпляром. Вполне понятно, что перед завершением
+      <code>do_mount()</code> уменьшает счетчик ссылок на единицу,
+      таким образом суммарное приращение счетчика составляет единицу
+      после каждого монтирования.</li>
+
+      <li>Для нашего случая выражение <code>fs_type-&gt;fs_flags &amp;
+      FS_REQUIRES_DEV</code> истинно, поэтому далее инициализируется
+      суперблок, вызовом <code>get_sb_bdev()</code>, который получает
+      ссылку на блочное устройство и вызывом метода
+      <code>read_super()</code> заполняет поля суперблока. Если все
+      прошло гладко, то структура <code>super_block</code> считается
+      инициализированной и мы получаем дополнительно ссылку на модуль
+      файловой системы и ссылку на основное блочное устройство.</li>
+
+      <li>В памяти размещается новая структура <code>vfsmount</code> и
+      &quot;прицепляется&quot; к списку <code>sb-&gt;s_mounts</code> и
+      к глобальному списку <code>vfsmntlist</code>. С помощью поля
+      <code>mnt_instances</code> структуры <code>vfsmount</code> можно
+      найти все смонтированные экземпляры файловой системы для одного и
+      того же суперблока. С помощью списка <code>mnt_list</code> можно
+      отыскать все смонтированные экземпляры файловых систем для всех
+      суперблоков в системе. Поле <code>mnt_sb</code> указывает на
+      данный суперблок, а <code>mnt_root</code> получает новую ссылку
+      на <code>sb-&gt;s_root</code> dentry.</li>
+    </ol>
+
+    <h2><a
+     name="ss3.6">3.6 Пример виртуальной файловой системы:
+    pipefs</a></h2>
+
+    <p>В качестве простого примера файловой системы в Linux рассмотрим
+    pipefs, которая не требует наличия блочного устройства для своего
+    монтирования. Реализация pipefs находится в
+    <code>fs/pipe.c</code>.</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>static DECLARE_FSTYPE(pipe_fs_type, &quot;pipefs&quot;, pipefs_read_super,
+        FS_NOMOUNT|FS_SINGLE);
+
+static int __init init_pipe_fs(void)
+{
+        int err = register_filesystem(&amp;pipe_fs_type);
+        if (!err) {
+                pipe_mnt = kern_mount(&amp;pipe_fs_type);
+                err = PTR_ERR(pipe_mnt);
+                if (!IS_ERR(pipe_mnt))
+                        err = 0;
+        }
+        return err;
+}
+
+static void __exit exit_pipe_fs(void)
+{
+        unregister_filesystem(&amp;pipe_fs_type);
+        kern_umount(pipe_mnt);
+}
+
+module_init(init_pipe_fs)
+module_exit(exit_pipe_fs)
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Файловая система принадлежит к типу
+    <code>FS_NOMOUNT|FS_SINGLE</code> это означает, что она не может
+    быть смонтирована из пространства пользователя и в системе может
+    иметься только один суперблок этой файловой системы. Флаг
+    <code>FS_SINGLE</code> означает также что она должна монтироваться
+    через <code>kern_mount()</code> после того как будет выполнена
+    регистрация вызовом <code>register_filesystem()</code>, что
+    собственно и выполняется функцией <code>init_pipe_fs()</code>.
+    Единственная неприятность - если <code>kern_mount()</code>
+    завершится с ошибкой (например когда <code>kmalloc()</code>,
+    вызываемый из <code>add_vfsmnt()</code> не сможет распределить
+    память), то файловая система окажется зарегистрированной но модуль
+    не будет инициализирован. Тогда команда <strong>cat
+    /proc/filesystems</strong> повлечет за собой Oops. (передал Линусу
+    &quot;заплату&quot;, хотя это фактически не является ошибкой,
+    поскольку на сегодняшний день pipefs не может быть скомпилирована
+    как модуль, но в будущем вполне может быть добавлена взможность
+    вынесения pipefs в модуль).</p>
+
+    <p>В результате <code>register_filesystem()</code>,
+    <code>pipe_fs_type</code> добавляется к списку
+    <code>file_systems</code>, который содержится в
+    <code>/proc/filesystems</code>. Прочитав его, вы обнаружите
+    &quot;pipefs&quot; с флагом &quot;nodev&quot;, указывающим на то,
+    что флаг <code>FS_REQUIRES_DEV</code> не был установлен. Следовало
+    бы расширить формат файла <code>/proc/filesystems</code> с тем,
+    чтобы включить в него поддержку всех новых <code>FS_</code> флагов
+    (и я написал такую &quot;заплату&quot;), но это невозможно,
+    поскольку такое изменение может отрицательно сказаться на
+    пользовательских приложениях, которые используют этот файл.
+    Несмотря на то, что интерфейсы ядра изменяются чуть ли не
+    ежеминутно, тем не менее когда вопрос касается пространства
+    пользователя, Linux превращается в очень консервативную
+    операционную систему, которая позволяет использование программ в
+    течение длительного времени без необходимости их
+    перекомпиляции.</p>
+
+    <p>В результате выполнения <code>kern_mount()</code>:</p>
+
+    <ol>
+      <li>Создается новое неименованное (anonymous) устройство
+      установкой бита в <code>unnamed_dev_in_use</code>; если в этом
+      массиве не окажется свободного бита, то <code>kern_mount()</code>
+      вернется с ошибкой <code>EMFILE</code>.</li>
+
+      <li>Посредством <code>get_empty_super()</code> создается новая
+      структура суперблока. Функция <code>get_empty_super()</code>
+      проходит по списку суперблоков <code>super_block</code> в поисках
+      свободного места, т.е. <code>s-&gt;s_dev == 0</code>. Если
+      такового не обнаружилось, то резервируется память вызовом
+      <code>kmalloc()</code>, с приоритетом <code>GFP_USER</code>. В
+      <code>get_empty_super()</code> проверяется превышение максимально
+      возможного количества суперблоков, так что в случае появления
+      сбоев, при монтировании pipefs, можно попробовать
+      подкорректировать <code>/proc/sys/fs/super-max</code>.</li>
+
+      <li>Вызывается метод <code>pipe_fs_type-&gt;read_super()</code>
+      (т.е. <code>pipefs_read_super()</code>), который размещает
+      корневой inode и dentry <code>sb-&gt;s_root</code>, а также
+      записывает адрес <code>&amp;pipefs_ops</code> в
+      <code>sb-&gt;s_op</code>.</li>
+
+      <li>Затем вызывается <code>add_vfsmnt(NULL, sb-&gt;s_root,
+      &quot;none&quot;)</code>, которая размещает в памяти новую
+      структуру <code>vfsmount</code> и включает ее в список
+      <code>vfsmntlist</code> и <code>sb-&gt;s_mounts</code>.</li>
+
+      <li>В <code>pipe_fs_type-&gt;kern_mnt</code> заносится адрес
+      новой структуры <code>vfsmount</code>и он же и возвращается в
+      качестве результата. Причина, по которой возвращаемое значение
+      является указателем на <code>vfsmount</code> состоит в том, что
+      даже не смотря на флаг <code>FS_SINGLE</code>, файловая система
+      может быть смонтирована несколько раз, вот только их
+      <code>mnt-&gt;mnt_sb</code> будут указывать в одно и то же
+      место.</li>
+    </ol>
+
+    <p>После того как файловая система зарегистрирована и смонтирована,
+    с ней можно работать. Точкой входа в файловую систему pipefs
+    является системный вызов <strong>pipe(2)</strong>, реализованный
+    платформо-зависимой функцией <code>sys_pipe()</code>, которая в
+    свою очередь передает управление платформо-независимой функции
+    <code>fs/pipe.c:do_pipe()</code>. Взаимодействие
+    <code>do_pipe()</code> с pipefs начинается с размещения нового
+    inode вызовом <code>get_pipe_inode()</code>. В поле
+    <code>inode-&gt;i_sb</code> этого inode заносится указатель на
+    суперблок <code>pipe_mnt-&gt;mnt_sb</code>, в список
+    <code>i_fop</code> файловых операций заносится
+    <code>rdwr_pipe_fops</code>, а число &quot;читателей&quot; и
+    &quot;писателей&quot; (содержится в <code>inode-&gt;i_pipe</code>)
+    устанавливается равным 1. Причина, по которой имеется отдельное
+    поле <code>i_pipe</code>, вместо хранения этой информации в
+    приватной области <code>fs-private</code>, заключается в том, что
+    каналы (pipes) и FIFO (именованные каналы) совместно используют
+    один и тот же код, а FIFO могут существовать и в другой файловой
+    системе, которые используют другие способы доступа в пределах этого
+    объединения (<code>fs-private</code>) и могут работать, что
+    называется &quot;на удачу&quot;. Так, в ядре 2.2.x, все перестает
+    работать, стоит только слегка изменить порядок следования полей в
+    inode.</p>
+
+    <p>Каждый системный вызов <strong>pipe(2)</strong> увеличивает
+    счетчик ссылок в структуре <code>pipe_mnt</code>.</p>
+
+    <p>В Linux каналы (pipes) не являются симметричными, т.е. с каждого
+    конца канал имеет различный набор файловых операций
+    <code>file-&gt;f_op</code> - <code>read_pipe_fops</code> и
+    <code>write_pipe_fops</code>. При попытке записи со стороны канала,
+    открытого на чтение, будет возвращена ошибка <code>EBADF</code>, то
+    же произойдет и при попытке чтения с конца канала, открытого на
+    запись.</p>
+
+    <h2><a
+     name="ss3.7">3.7 Пример дисковой файловой системы: BFS</a></h2>
+
+    <p>В качестве примера дисковой файловой системы рассмотрим BFS.
+    Преамбула модуля BFS в файле <code>fs/bfs/inode.c</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>static DECLARE_FSTYPE_DEV(bfs_fs_type, &quot;bfs&quot;, bfs_read_super);
+
+static int __init init_bfs_fs(void)
+{
+        return register_filesystem(&amp;bfs_fs_type);
+}
+
+static void __exit exit_bfs_fs(void)
+{
+        unregister_filesystem(&amp;bfs_fs_type);
+}
+
+module_init(init_bfs_fs)
+module_exit(exit_bfs_fs)
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Макрокоманда <code>DECLARE_FSTYPE_DEV()</code> взводит флаг
+    <code>FS_REQUIRES_DEV</code> в <code>fs_type-&gt;flags</code>, это
+    означает, что BFS может быть смонтирована только с реального
+    блочного устройства.</p>
+
+    <p>Функция инициализации модуля регистрирует файловую систему в
+    VFS, а функция завершения работы модуля - дерегистрирует ее (эта
+    функция компилируется только когда поддержка BFS включена в ядро в
+    виде модуля).</p>
+
+    <p>После регистрации файловой системы, она становится доступной для
+    монтирования, в процессе монтирования вызывается метод
+    <code>fs_type-&gt;read_super()</code>, который выполняет следующие
+    действия:</p>
+
+    <ol>
+      <li><code>set_blocksize(s-&gt;s_dev, BFS_BSIZE)</code>: поскольку
+      предполагается взаимодействие с уровнем блочного устройства через
+      буферный кэш, следует выполнить некоторые действия, а именно
+      указать размер блока и сообщить о нем VFS через поля
+      <code>s-&gt;s_blocksize</code> и
+      <code>s-&gt;s_blocksize_bits</code>.</li>
+
+      <li><code>bh = bread(dev, 0, BFS_BSIZE)</code>: читается нулевой
+      блок с устройства <code>s-&gt;s_dev</code>. Этот блок является
+      суперблоком файловой системы.</li>
+
+      <li>Суперблок проверяется на наличие сигнатуры
+      (&quot;магической&quot; последовательности)
+      <code>BFS_MAGIC</code>, если все в порядке, то он сохраняется в
+      поле <code>s-&gt;su_sbh</code> (на самом деле это
+      <code>s-&gt;u.bfs_sb.si_sbh</code>).</li>
+
+      <li>Далее создается новая битовая карта inode вызовом
+      <code>kmalloc(GFP_KERNEL)</code> и все биты в ней сбрасываются в
+      0, за исключением двух первых, которые указывают на то, что 0-й и
+      1-й inode никогда не должны распределяться. Inode с номером 2
+      является корневым, установка соответствующего ему бита
+      производится несколькими строками ниже, в любом случае файловая
+      система должна получить корневой inode во время
+      монтирования!</li>
+
+      <li>Инициализируется <code>s-&gt;s_op</code>, и уже после этого
+      можно вызвать <code>iget()</code>, которая обратится к
+      <code>s_op-&gt;read_inode()</code>. Она отыщет блок, который
+      содержит заданный (по <code>inode-&gt;i_ino</code> и
+      <code>inode-&gt;i_dev</code>) inode и прочитает его. Если при
+      запросе корневого inode произойдет ошибка, то память, занимаемая
+      битовой картой inode, будет освобождена, буфер суперблока
+      возвратится в буферный кэш и в качестве результата будет
+      возвращен &quot;пустой&quot; указатель - NULL. Если корневой
+      inode был успешно прочитан, то далее размещается dentry с именем
+      <code>/</code> и связывается с этим inode.</li>
+
+      <li>После этого последовательно считываются все inode в файловой
+      системе и устанвливаются соответствующие им биты в битовой карте,
+      а так же подсчитываются некоторые внутренние параметры, такие как
+      смещение последнего inode и начало/конец блоков последнего файла.
+      Все прочитанные inode возвращаются обратно в кэш inode вызовом
+      <code>iput()</code> - ссылка на них не удерживается дольше, чем
+      это необходимо.</li>
+
+      <li>Если файловая система была смонтирована как
+      &quot;read/write&quot;, то буфер суперблока помечается как
+      &quot;грязный&quot; <em>(измененный <strong>прим.
+      перев.</strong>)</em> и устанавливается флаг
+      <code>s-&gt;s_dirt</code> (TODO: Для чего? Первоначально я сделал
+      это потому, что это делалось в <code>minix_read_super()</code>,
+      но ни minix ни BFS кажется не изменяют суперблок в
+      <code>read_super()</code>).</li>
+
+      <li>Все складывается удачно, так что далее функция возвращает
+      инициализированный суперблок уровню VFS, т.е.
+      <code>fs/super.c:read_super()</code>.</li>
+    </ol>
+
+    <p>После успешного завершения работы функции
+    <code>read_super()</code> VFS получает ссылку на модуль файловой
+    системы через вызов <code>get_filesystem(fs_type)</code> в
+    <code>fs/super.c:get_sb_bdev()</code> и ссылку на блочное
+    устройство.</p>
+
+    <p>Рассмотрим, что происходит при выполнении опреаций ввода/вывода
+    над файловой системой. Мы уже знаем, что inode читается функцией
+    <code>iget()</code> и что они освобождаются вызовом
+    <code>iput()</code>. Чтение inode приводит, кроме всего прочего, к
+    установке полей <code>inode-&gt;i_op</code> и
+    <code>inode-&gt;i_fop</code>; открытие файла вызывает копирование
+    <code>inode-&gt;i_fop</code> в <code>file-&gt;f_op</code>.</p>
+
+    <p>Рассмотрим последовательность действий системного вызова
+    <strong>link(2)</strong>. Реализация системного вызова находится в
+    <code>fs/namei.c:sys_link()</code>:</p>
+
+    <ol>
+      <li>Имена из пользовательского пространства копируются в
+      пространство ядра функцией <code>getname()</code>, которая
+      выполняет проверку на наличие ошибок.</li>
+
+      <li>Эти имена преобразуются в nameidata с помощью
+      <code>path_init()/path_walk()</code>. Результат сохраняется в
+      структурах <code>old_nd</code> и <code>nd</code></li>
+
+      <li>Если <code>old_nd.mnt != nd.mnt</code>, то возвращается
+      &quot;cross-device link&quot; <code>EXDEV</code> - невозможно
+      установить ссылку между файловыми системами, в Linux это означает
+      невозможность установить ссылку между смонтированными
+      экземплярами одной файловой системы (или, особенно, между
+      различными файловыми системами).</li>
+
+      <li>Для <code>nd</code> создается новый dentry вызовом
+      <code>lookup_create()</code> .</li>
+
+      <li>Вызывается универсальная функция <code>vfs_link()</code>,
+      которая проверяет возможность создания новой ссылки по заданному
+      пути и вызывает метод <code>dir-&gt;i_op-&gt;link()</code>,
+      который приводит нас в <code>fs/bfs/dir.c:bfs_link()</code>.</li>
+
+      <li>Внутри <code>bfs_link()</code>, производится проверка - не
+      делается ли попытка создать жесткую ссылку на директорию и если
+      это так, то возвращается код ошибки <code>EPERM</code>. Это как
+      стандарт (ext2).</li>
+
+      <li>Предпринимается попытка добавить новую ссылку в заданную
+      директорию вызовом вспомогательной функции
+      <code>bfs_add_entry()</code>, которая отыскивает неиспользуемый
+      слот (<code>de-&gt;ino == 0</code>) и если находит, то записывает
+      пару имя/inode в соответствующий блок и помечает его как
+      &quot;грязный&quot;.</li>
+
+      <li>Если ссылка была добавлена, то далее ошибки возникнуть уже не
+      может, поэтому увеличивается <code>inode-&gt;i_nlink</code>,
+      обновляется <code>inode-&gt;i_ctime</code> и inode помечается как
+      &quot;грязный&quot; твк же как и inode приписанный новому
+      dentry.</li>
+    </ol>
+
+    <p>Другие родственные операции над inode, подобные
+    <code>unlink()/rename()</code>, выполняются аналогичным образом,
+    так что не имеет большого смысла рассматривать их в деталях.</p>
+
+    <h2><a
+     name="ss3.8">3.8 Домены исполнения и двоичные форматы</a></h2>
+
+    <p>Linux поддерживает загрузку пользовательских приложений с диска.
+    Самое интересное, что приложения могут храниться на диске в самых
+    разных форматах и реакция Linux на системные вызовы из программ
+    тоже может быть различной (такое поведение является нормой в Linux)
+    как того требует эмуляция форматов, принятых в других UNIX системах
+    (COFF и т.п.), а так же эмуляция поведения системных вызовов
+    (Solaris, UnixWare и т.п.). Это как раз то, для чего служит
+    поддержка доменов исполнения и двоичных форматов.</p>
+
+    <p>Каждая задача в Linux хранит свою &quot;индивидуальность&quot;
+    (personality) в <code>task_struct</code>
+    (<code>p-&gt;personality</code>). В настоящее время существует
+    (либо официально в ядре, либо в виде &quot;заплат&quot;) поддержка
+    FreeBSD, Solaris, UnixWare, OpenServer и многих других популярных
+    операционных систем. Значение <code>current-&gt;personality</code>
+    делится на две части:</p>
+
+    <ol>
+      <li>старшие три байта - эмуляция &quot;ошибок&quot;:
+      <code>STICKY_TIMEOUTS</code>, <code>WHOLE_SECONDS</code> и
+      т.п.</li>
+
+      <li>младший байт - соответствующая &quot;индивидуальность&quot;
+      (personality), уникальное число.</li>
+    </ol>
+
+    <p>Изменяя значение personality можно добиться изменения способа
+    исполнения некоторых системных вызовов, например: добавление
+    <code>STICKY_TIMEOUT</code> в <code>current-&gt;personality</code>
+    приведет к тому, что последний аргумент (timeout), передаваемый в
+    <strong>select(2)</strong> останется неизменным после возврата, в
+    то время как в Linux в этом аргументе принято возвращать
+    неиспользованное время. Некоторые программы полагаются на
+    соответствующее поведение операционных систем (не Linux) и поэтому
+    Linux предоставляет возможность эмуляции &quot;ошибок&quot; в
+    случае, когда исходный код программы не доступен и такого рода
+    поведение программ не может быть исправлено.</p>
+
+    <p>Домен исполнения - это непрерывный диапазон
+    &quot;индивидуальностей&quot;, реализованных в одном модуле. Обычно
+    один домен исполнения соответствует одной
+    &quot;индивидуальности&quot;, но иногда оказывается возможным
+    реализовать &quot;близкие индивидуальности&quot; в одном модуле без
+    большого количества условий.</p>
+
+    <p>Реализация доменов исполнения находится в
+    <code>kernel/exec_domain.c</code> и была полностью переписана, по
+    сравнению с ядром 2.2.x. Список доменов исполнения и диапазоны
+    &quot;индивидуальностей&quot;, поддерживаемых доменами, можно найти
+    в файле <code>/proc/execdomains</code>. Домены исполнения могут
+    быть реализованы в виде подгружаемых модулей, кроме одного -
+    <code>PER_LINUX</code>.</p>
+
+    <p>Интерфейс с пользователем осуществляется через системный вызов
+    <strong>personality(2)</strong>, который изменяет
+    &quot;индивидуальность&quot; текущего процесса или возвращает
+    значение <code>current-&gt;personality</code>, если в качестве
+    аргумента передать значение несуществующей
+    &quot;индивидуальности&quot; 0xffffffff. Очевидно, что поведение
+    самого этого системного вызова не зависит от
+    &quot;индивидуальности&quot; вызывающего процесса.</p>
+
+    <p>Действия по регистрации/дерегистрации доменов исполнения в ядре
+    выполняются двумя функциями:</p>
+
+    <ul>
+      <li><code>int register_exec_domain(struct exec_domain *)</code>:
+      регистрирует домен исполнения, добавляя его в односвязный список
+      <code>exec_domains</code> под защитой от записи read-write
+      блокировкой <code>exec_domains_lock</code>. Возвращает 0 в случае
+      успеха и ненулевое в случае неудачи.</li>
+
+      <li><code>int unregister_exec_domain(struct exec_domain
+      *)</code>: дерегистрирует домен исполнения, удаляя его из списка
+      <code>exec_domains</code>, опять же под read-write блокировкой
+      <code>exec_domains_lock</code> полученной в режиме защиты от
+      записи. Возвращает 0 в случае успеха.</li>
+    </ul>
+
+    <p>Причина, по которой блокировка <code>exec_domains_lock</code>
+    имеет тип read-write, состоит в том, что только запросы на
+    регистрацию и дерегистрацию модифицируют список доменов, в то время
+    как команда <strong>cat /proc/filesystems</strong> вызывает
+    <code>fs/exec_domain.c:get_exec_domain_list()</code>, которой
+    достаточен доступ к списку в режиме &quot;только для чтения&quot;.
+    Регистрация нового домена определяет &quot;обработчик lcall7&quot;
+    и карту преобразования номеров сигналов. &quot;Заплата&quot; ABI
+    расширяет концепцию доменов исполнения, включая дополнительную
+    информацию (такую как опции сокетов, типы сокетов, семейство
+    адресов и таблицы errno (коды ошибок)).</p>
+
+    <p>Обработка двоичных форматов реализована похожим образом, т.е. в
+    виде односвязного списка форматов и определена в
+    <code>fs/exec.c</code>. Список защищается read-write блокировкой
+    <code>binfmt_lock</code>. Как и <code>exec_domains_lock</code>,
+    блокировка <code>binfmt_lock</code>, в большинстве случаев, берется
+    &quot;только на чтение&quot; за исключением
+    регистрации/дерегистрации двоичного формата. Регистрация нового
+    двоичного формата расширяет системный вызов
+    <strong>execve(2)</strong> новыми функциями
+    <code>load_binary()/load_shlib()</code> так же как и
+    <code>core_dump()</code> . Метод <code>load_shlib()</code>
+    используется только в устаревшем системном вызове
+    <strong>uselib(2)</strong>, в то время как метод
+    <code>load_binary()</code> вызывается функцией
+    <code>search_binary_handler()</code> из <code>do_execve()</code>,
+    который и является реализацией системного вызова
+    <strong>execve(2)</strong>.</p>
+
+    <p>&quot;Индивидуальность&quot; процесса определяется во время
+    загрузки двоичного формата соответствующим методом
+    <code>load_binary()</code> с использованием некоторых эвристик.
+    Например, формат UnixWare7 при создании помечается утилитой
+    <strong>elfmark(1)</strong>, которая заносит &quot;магическую&quot;
+    последовательность 0x314B4455 в поле <code>e_flags</code>
+    ELF-заголовка. Эта последовательность затем определяется во время
+    загрузки приложения и в результате
+    <code>current-&gt;personality</code> принимает значение PER_UW7.
+    Если эта эвристика не подходит, то более универсальная обрабатывает
+    пути интерпретатора ELF, подобно <code>/usr/lib/ld.so.1</code> или
+    <code>/usr/lib/libc.so.1</code> для указания используемого формата
+    SVR4 и personality принимает значение PER_SVR4. Можно написать
+    небольшую утилиту, которая использовала бы возможности
+    <strong>ptrace(2)</strong> Linux для пошагового прохождения по коду
+    и принудительно запускать программы в любой
+    &quot;индивидуальности&quot;.</p>
+
+    <p>Поскольку &quot;индивидуальность&quot; (а следовательно и
+    <code>current-&gt;exec_domain</code>) известна, то и системные
+    вызовы обрабатываются соответственно. Предположим, что процесс
+    производит системный вызов через шлюз lcall7. Такой вызов передает
+    управление в точку <code>ENTRY(lcall7)</code> в файле
+    <code>arch/i386/kernel/entry.S</code>, поскольку она задается в
+    <code>arch/i386/kernel/traps.c:trap_init()</code>. После
+    преобразования размещения стека, <code>entry.S:lcall7</code>
+    получает указатель на <code>exec_domain</code> из
+    <code>current</code> и смещение обработчика lcall7 внутри
+    <code>exec_domain</code> (которое жестко задано числом 4 в
+    ассемблерном коде, так что вы не сможете изменить смещение поля
+    <code>handler</code> в C-объявлении <code>struct
+    exec_domain</code>) и переходит на него. Так на C это выглядело бы
+    как:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>static void UW7_lcall7(int segment, struct pt_regs * regs)
+{
+       abi_dispatch(regs, &amp;uw7_funcs[regs-&gt;eax &amp; 0xff], 1);
+}
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>где <code>abi_dispatch()</code> - это обертка вокруг таблицы
+    указателей на функции, реализующих системные вызовы для personality
+    <code>uw7_funcs</code>.</p>
+    <hr>
+    <a
+     href="lki-4.html">Вперед</a> <a
+     href="lki-2.html">Назад</a> <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc3">Содержание</a>
+
+  </div>
+</div>
+</body>
+</html>

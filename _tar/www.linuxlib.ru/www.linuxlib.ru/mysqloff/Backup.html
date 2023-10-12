@@ -1,0 +1,543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.4.1  Резервное копирование баз данных — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Backup.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Backup.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.4 Предотвращение катастроф и восстановление
+</a><ul class="immediate"><li class="self">4.4.1 Резервное копирование баз данных
+</li><li><a href="BACKUP_TABLE.html">4.4.2 Синтаксис <code>BACKUP TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/RESTORE_TABLE.html">4.4.3 Синтаксис <code>RESTORE TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/CHECK_TABLE.html">4.4.4 Синтаксис <code>CHECK TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/REPAIR_TABLE.html">4.4.5 Синтаксис <code>REPAIR TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Table_maintenance.html">4.4.6 Использование <code>myisamchk</code> для профилактики таблиц и послеаварийного
+</a></li><li><a href="Maintenance_regimen.html">4.4.7 Настройка режима профилактики таблиц
+</a></li><li><a href="Table-info.html">4.4.8 Получение информации о таблице
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Previous</a> / <a rel="next" href="BACKUP_TABLE.html" title="4.4.2  Синтаксис BACKUP TABLE">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.4.1  Резервное копирование баз данных</H3>
+
+<P>
+<A NAME="IDX541"></A>
+<A NAME="IDX542"></A>
+
+</P>
+<P>
+Поскольку таблицы MySQL хранятся в виде файлов, то резервное копирование
+выполняется легко. Чтобы резервная копия была согласованной, выполните на
+выбранных таблицах <code>LOCK TABLES</code>, а затем <code>FLUSH TABLES</code> для этих таблиц (см.
+разделы section <A HREF="https://www.linuxlib.ru/mysqloff/LOCK_TABLES.html">6.7.2  Синтаксис команд <code>LOCK TABLES/UNLOCK TABLES</code></A> и see section <A HREF="FLUSH.html">4.5.3  Синтаксис команды <code>FLUSH</code></A>). При этом
+требуется блокировка только на чтение; поэтому другие потоки смогут
+продолжать запросы на таблицах в то время, пока будут создаваться копии
+файлов из каталога базы данных. Команда <code>FLUSH TABLE</code> обеспечивает гарантию
+того, что все активные индексные страницы будут записаны на диск прежде,
+чем начнется резервное копирование.
+
+</P>
+<P>
+Если есть необходимость провести резервное копирование на уровне SQL, то
+можно воспользоваться <code>SELECT INTO OUTFILE</code> или <code>BACKUP TABLE</code> (см. разделы
+section <A HREF="https://www.linuxlib.ru/mysqloff/SELECT.html">6.4.1  Синтаксис оператора <code>SELECT</code></A> и see section <A HREF="BACKUP_TABLE.html">4.4.2  Синтаксис <code>BACKUP TABLE</code></A>).
+
+</P>
+<P>
+Существует еще один способ создать резервную копию базы данных -
+использовать программу <code>mysqldump</code> или сценарий <code>mysqlhotcopy</code> (см. разделы
+section <A HREF="mysqldump.html">4.8.5  <code>mysqldump</code>, Получение дампов данных и структуры таблицы</A> и see section <A HREF="mysqlhotcopy.html">4.8.6  <code>mysqlhotcopy</code>, Копирование баз данных и таблиц MySQL</A>).  Для этого нужно выполнить следующие действия:
+
+</P>
+
+<ol>
+<LI>
+
+Сделать полное резервное копирование баз данных:
+
+
+<pre>
+shell&#62; mysqldump --tab=/path/to/some/dir --opt --full
+
+или
+
+shell&#62; mysqlhotcopy database /path/to/some/dir
+</pre>
+
+Можно также просто скопировать табличные файлы (файлы <tt>`*.frm'</tt>, <tt>`*.MYD'</tt> и
+<tt>`*.MYI'</tt>) в тот момент, когда сервер не проводит никаких обновлений. Этот
+метод используется в сценарии <code>mysqlhotcopy</code>.
+
+<LI>
+
+<A NAME="IDX543"></A>
+Если <code>mysqld</code> выполняется, остановить его, и затем запустить с опцией
+<code>--log-update[=file_name]</code> (see section <A HREF="Update_log.html">4.9.3  Журнал обновлений (update)</A>). В файлах журнала
+обновлений находится информация, необходимая для того, чтобы повторить
+в базе данных последовательность изменений, внесенных с момента
+выполнения <code>mysqldump</code>.
+</ol>
+
+<P>
+Если дело дошло до восстановления, сначала надо попробовать восстановить
+таблицы с помощью <code>REPAIR TABLE</code> или <code>myisamchk -r</code> - это должно сработать в
+99,9% случаев. Если <code>myisamchk</code> не даст результата, попробуйте применить
+следующую процедуру (эти действия применимы только в случае, если MySQL
+запускался с <code>--log-update</code> (see section <A HREF="Update_log.html">4.9.3  Журнал обновлений (update)</A>)):
+
+</P>
+
+<ol>
+<LI>
+
+Восстановите исходный вариант по копии, сделанной в <code>mysqldump</code>.
+
+<LI>
+
+Выполните следующую команду, чтобы повторить обновления из бинарного
+журнала:
+
+
+<pre>
+shell&#62; mysqlbinlog hostname-bin.[0-9]* | mysql
+</pre>
+
+Если используется журнал обновлений, то можно применить:
+
+
+<pre>
+shell&#62; ls -1 -t -r hostname.[0-9]* | xargs cat | mysql
+</pre>
+
+</ol>
+
+<P>
+<code>ls</code> используется для того, чтобы расположить все файлы журнала обновлений в
+правильном порядке.
+
+</P>
+<P>
+Можно проводить избирательное резервное копирование посредством <code>SELECT *
+INTO OUTFILE 'file_name' FROM tbl_name</code>, а восстановление - при помощи <code>LOAD
+DATA INFILE 'file_name' REPLACE ...</code> Чтобы избежать повторения записей, в
+таблице должен быть <code>первичный</code> или <code>уникальный ключ</code>. Ключевое слово <code>REPLACE</code>
+задает замену старых записей новыми в случае, когда новая запись в
+значении уникального ключа повторяет старую.
+
+</P>
+<P>
+Если в системе, где выполняется резервное копирование, возникают проблемы
+с производительностью, то решить их можно, установив репликацию и выполняя
+резервное копирование на подчиненном сервере вместо головного (see section <A HREF="https://www.linuxlib.ru/mysqloff/Replication_Intro.html">4.10.1  Введение</A>).
+
+</P>
+<P>
+Пользователи файловой системы Veritas могут поступить следующим образом:
+
+</P>
+
+<ol>
+<LI>
+
+Из  клиента (или Perl) выполнить: <code>FLUSH TABLES WITH READ LOCK</code>.
+
+<LI>
+
+Из другого shell выполнить: <code>mount vxfs snapshot</code>.
+
+<LI>
+
+Из первого клиента выполнить: <code>UNLOCK TABLES</code>.
+
+<LI>
+
+Скопировать файлы из образа.
+
+<LI>
+
+Демонтировать образ.
+</ol>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c372" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#5a3f37393d1a373f28332e2f293b74343f2e">Ed McGuigan</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=372&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=372">Edit</a>]</td></tr></table><p class="commenttext">I found that when using the &quot;SELECT * FROM %<br />
+TABLE% INTO OUTFILE '%filename%' &quot; syntax, my <br />
+access privileges to the directory structure <br />
+where based on the user under which the mySQL <br />
+database server was running, not the mysql client.<br />
+<br />
+A filename without a fully qualified path was <br />
+saved in the /usr/local/var directory - the <br />
+location for my database files.<br />
+<br />
+Also, if you connect to the database server from <br />
+a remote host, the files are created on the <br />
+server as opposed to the connecting client.</p><table id="c845" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Saturday June 1 2002, @6:52am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=845&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=845">Edit</a>]</td></tr></table><p class="commenttext">Remember - MySQL operates over sockets and so <br />
+sending the entire database to the client is what <br />
+SELECT is for. If the client wants the data then <br />
+they should SELECT it and save it.</p><table id="c869" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=869&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=869">Edit</a>]</td></tr></table><p class="commenttext">Isn't backing up to a local drive what you would<br />
+usually do? Imagine dialing in from your laptop to<br />
+manually run a backup and having mysqld trying to<br />
+dump many mb of data across the dialup connection.<br />
+If you want to backup to a different machine's<br />
+drive, just mount the intended destination drive via<br />
+SMB/NFS/AFS/whatever and then backup to that drive. </p><table id="c883" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Kevin Fleming on Wednesday December 18 2002, @5:28pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=883&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=883">Edit</a>]</td></tr></table><p class="commenttext">We use the following script to backup <br />
+all databases on our Linux/MySQL server to a <br />
+remote Windows machine using Samba.  It works well <br />
+ and run as a cron job requires minimial <br />
+administration.<br />
+------------------<br />
+&lt;PRE&gt;<br />
+#!/bin/sh<br />
+<br />
+# Define some variables.<br />
+BackupServer=&quot;SMBServer&quot;<br />
+BackupShare=&quot;SMBShare&quot;<br />
+BackupUser=&quot;SMBUser&quot;<br />
+BackupPW=&quot;SMBPassword&quot;<br />
+<br />
+# Create the temporary copy directory<br />
+mkdir /tmp/mysql<br />
+<br />
+# Get the list of MySQL Databases &amp; copy them<br />
+<br />
+for var in `find /var/lib/mysql/ -type d | \<br />
+sed -e &quot;s/\/var\/lib\/mysql\///&quot;`; do<br />
+        mysqlhotcopy -q &quot;$var&quot; /tmp/mysql<br />
+done<br />
+<br />
+# Tar/gzip data<br />
+<br />
+date=`date -I`<br />
+tar czf /tmp/mysql-$date.tar.gz -C /tmp/ mysql/<br />
+<br />
+# Move the data to FS1<br />
+smbclient //$BackupServer/$BackupShare \<br />
+$BackupPW -d0 -W WORKGROUP -U $BackupUser \<br />
+-c &quot;put /tmp/mysql-$date.tar.gz \ <br />
+mysql-$date.tar.gz&quot;<br />
+<br />
+# Delete temp files<br />
+<br />
+rm -fR /tmp/mysql/<br />
+rm -f /tmp/mysql-$date.tar.gz<br />
+&lt;/PRE&gt;</p><table id="c1021" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jeremy Tinley on Friday August 30 2002, @12:09pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1021&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1021">Edit</a>]</td></tr></table><p class="commenttext">The command above, &quot;mysqldump --<br />
+tab=/path/to/some/dir --opt --full&quot;<br />
+doesn't work with .52.<br />
+<br />
+--full is not recognized<br />
+--all-databases which is part of --opt, can't be used <br />
+with --tab</p><table id="c1266" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Christof Kaelin on Friday October 25 2002, @10:11am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1266&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1266">Edit</a>]</td></tr></table><p class="commenttext">The &quot;mysqlhotcopy&quot; does not seem to work with <br />
+innodb-tables, as it needs *MYI or other table-files for <br />
+copying. only the *FRM of my innoDB-tables were copied.</p><table id="c1824" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#bbd1decbcbdefbd2d4c8d7d495d5decf"><span class="__cf_email__" data-cfemail="630906131306230a0c100f0c4d0d0617">[email&#160;protected]</span></a> on Wednesday February 19 2003, @2:49am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1824&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1824">Edit</a>]</td></tr></table><p class="commenttext">On large databases, use -q when doing a mysqldump. Otherwise, the mysqldump process will buffer the data, and you'll end up with a larger process than need be.</p><table id="c1825" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#701a1500001530191f031c1f5e1e1504"><span class="__cf_email__" data-cfemail="d2b8b7a2a2b792bbbda1bebdfcbcb7a6">[email&#160;protected]</span></a> on Wednesday February 19 2003, @2:53am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1825&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1825">Edit</a>]</td></tr></table><p class="commenttext">One more thing. You can speed up restore by dumping table definition and table data into different files. When your database needs a restore, drop the database, recreate table definitions, drop all indices, load data, recreate indeces using &quot;alter table&quot; syntax. Be sure to add all indeces for a table in one alter table statement, since altering indices involves temporary tables. </p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Backup">Add your own comment.</a></p><div id="docnav"><a href="Backup.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Previous</a> / <a rel="next" href="BACKUP_TABLE.html" title="4.4.2  Синтаксис BACKUP TABLE">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

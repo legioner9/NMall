@@ -1,0 +1,577 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 8 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 8.</h2>
+<br><h3>Первоисточник: <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs8.html">-->http://www-106.ibm.com/developerworks/library/l-fs8.html<!--</a>--></h3>
+<br><h2>Неожиданности от ext3.</h2>
+<p><a href="l-fs8_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#a2c6d0cdc0c0cbccd1e2c5c7ccd6cdcd8ccdd0c5"><span class="__cf_email__" data-cfemail="b2d6c0ddd0d0dbdcc1f2d5d7dcc6dddd9cddc0d5">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>December 2001</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования
+filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и других.
+Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно
+они могут делать, насколько они хороши и насколько оправдано их использование
+в промышленной Linux среде. В этой статье  Daniel продолжает рассматривать ext3,
+новую улучшенную версию файловой системы ext2 с возможностью journaling.
+В статье вы найдете описание режимов ext3 и демонстрацию некоторых неожиданных
+ext3 data=journal показателей интерактивной производительности.</blockquote>
+<p>Я хочу быть честным. В этой статье я планировал описать установку и настройку ext3
+на вашей системе. Хотя такая цель была обозначена, это не совсем то, о чем пойдет
+разговор. У Andrew Morton's имеется превосходная "Using the ext3 filesystem in
+2.4 kernels" страница (смотри <a href="l-fs8_ru.html#resources">Resources</a> далее), что
+делает простое объяснение перехода на ext3-enable излишним (зачем повторять то,
+что прекрасно описано у других). Вместо этого я собираюсь обратить ваше внимание
+на неожиданные стороны использования ext3 и, думаю, это будет полезным для вас.
+После прочтения этой статьи вы будете готовы к более осознанному переходу на ext3,
+чем в случае "пересказа" Andrew's page. По крайней мере, я на это надеюсь.
+</p><p>
+<a name="2"><h2>Новые модификации ядра 2.4.</h2></a>
+</p><p>Давайте начнем с ядра. Я обсуждал стабильную 2.4 ветку, когда описывал ReiserFS.
+При написании той (часть 2) статьи я рекомендовал остановиться на одной из последних
+к тому времени 2.4.4-ac9 версии ядра. В то время эту версию можно было рекомендовать
+ как наиболее приемлемую для использования ReiserFS в промышленной среде. Поскольку с того
+времени утекло много воды и 2.4.4-ac9 уже не новость, пришло время сказать несколько
+слов о более современных версиях.</p>
+<p>С появлением 2.4.10 серия 2.4 вышла на новый уровень производительности и
+универсальности (а вопросы были). Что же такое принципиальное случилось, что
+позволило Linux 2.4 выйти из кризиса? В акрониме к VM Linus признал, что
+серия 2.4 не оправдала надежд, и, прежде всего, из-за проблематичного кода VM.
+Первоначальный код поменяли на неотработанную и среднюю VM реализацию от
+Andrea Archangeli. Новая VM реализация от Andrea (впервые появилась в 2.4.10)
+стала действительно большим шагом вперед. Производительность ядра реально
+увеличилось, а система стала более чувствительной. 2.4.10 определенно поворотный
+пункт в развитии ядра 2.4 Linux. До этого момента оптимизм понемногу таял, и
+возникали вопросы, а не примкнуть ли к команде FreeBSD developers. Нужно отдать
+должное Linus за его решительность к таким серьезным (но необходимым) изменениям
+в стабильной ветке.</p>
+<p>
+После такого поворота событий и включения нового VM кода от Andrea требуется
+немало времени для "затирания швов" (вопросы стабильности вышли на первый план).
+Используйте ядра 2.4.13+, а лучше 2.4.16+ (но не между ними) для rock-solid ext3.
+Код был интегрирован в ядро (без patch) начиная с версии 2.4.15-pre2. Нет
+оснований избегать использования 2.4.16+ ядра, с ним реализация ext3 будет полной.
+Когда будете читать Andrew's page (смотри <a href="l-fs8_ru.html#resources">Resources</a>
+дальше), имейте в виду, начиная с 2.4.16 нет надобности накладывать patch на ядро
+(это уже сделано).</p>
+<p>Обратите внимание, я рекомендую использовать 2.4.16+ (даже 2.4.13+), но
+не 2.4.15+. На это есть серьезные основания. В релизе 2.4.15-pre9 был обнаружен
+ugly filesystem corruption bug. Выбор 2.4.16+ ядра избавит вас от возможных
+проблем.</p>
+<p>
+<a name="3"><h2>Предостережение пользователям laptops.</h2></a>
+</p><p>
+Ext3 имеет твердую репутацию rock-solid filesystem, и я с удивлением узнал,
+что у нескольких пользователей laptop возникли проблемы при переходе на ext3.
+Был соблазн, как реакция на подобные сообщения, отказаться от использования ext3.
+Однако, разбираясь в причинах таких явлений, я обнаружил, что проблемы не связаны
+непосредственно с ext3, а были вызваны laptop hard drives.</p>
+<p>
+<a name="foobar"><h3>Кэш записи.</h3></a>
+</p><p>
+Вы можете этого и не знать, но самые современные hard drives имеет нечто,
+называемое "write cache". Он используется hard drive для сбора ожидающих
+обработки операций записи. Помещая ожидающие обработку записи в кэш, hard drive
+firmware может переупорядочивать и группировать их так, чтобы они были записаны
+на диск самым быстрым из возможных способов. Кэш записи с такой позиции очень
+полезная вещь (читайте объяснение Линуса и его мнение о write caching в разделе
+<a href="l-fs8_ru.html#resources">Resources</a>).</p>
+<p>
+К сожалению, некоторые laptop hard drives имеют сомнительную возможность
+игнорирования любого "официального" ATA request с требованием сброса на диск
+их write cache. Возразить нечего, такая "замечательная" feature до недавнего
+времени не была запрещена ATA спецификацией. При взаимодействии с такими типами
+дисков у ядра нет возможности гарантировать, что специфический блок был
+"фактически" сброшен на диск. Хотя это необходимая причина вдруг возникшей
+проблемы с нарушением целостности данных, но еще не достаточная.</p>
+<p>
+Ситуация оказалась еще хуже. Некоторые современные laptop hard drives имеют еще
+более "вредную" привычку без команды сбрасывать свой write cache, когда система
+перезагружается или "засыпает". Если hard drive наделен обеими features, а
+файловая система поддерживает журнализацию, происходит периодическое разрушение
+данных и нельзя ничего предпринять для предотвращения этого.</p>
+<p>
+Где решение? Если вы имеете laptop, действуйте осторожно. Сохраните важные файлы
+перед внесением больших изменений в файловую систему. Если возникнут проблемы с
+нарушением целостности данных после перехода на ext3, возможно причина в
+"продвинутости" вашего диска. В таком случае можно войти в контакт с изготовителем
+вашего laptop hard drive по вопросу о его замене. Есть надежда, что уже в ближайшее
+время эти диски уйдут с рынка (или переместятся на рынки третьих стран -
+прим. переводчика) и о проблеме можно будет забыть.</p>
+<p>
+Теперь, после испуга, вы готовы к обсуждению различных ext3 опций journaling
+данных.</p>
+<p>
+<a name="4"><h2>Опции journaling и производительность.</h2></a>
+</p><p>
+Ext3 предлагает на выбор три режима journaling при монтировании файловой системы:
+<code>data=writeback</code>, <code>data=ordered</code> и <code>data=journal</code>.</p>
+<p>
+Для указания journal mode можно добавить соответствующую строку (например,
+<code>data=journal</code>) в поле опций записи в <i>/etc/fstab</i> или
+непосредственно в командной строке указать <code>-o data=journal</code> при вводе
+команды <code>mount</code>. Для указания метода journaling на root файловой
+системе (по умолчанию <code>data=ordered</code>) можно использовать специальную
+kernel boot option, называемую <code>rootflags</code>. Например, для указания
+монтирования корневой файловой системы в режим full data journaling, добавьте
+<code>rootflags=data=journal</code> к kernel boot options.</p>
+<p>
+<a name="writeback"><h3>data=writeback mode</h3></a>
+</p><p>
+В режиме <code>data=writeback</code>, файловая система ext3 не выполняет какого
+либо журналирования data. С подобным видом журналирования вы имеете дело в
+файловых системах XFS, JFS и ReiserFS (metadata only). Как объяснялось в
+<!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->предыдущих<!--</a>--> статьях, это не защитит от разрушения
+данные в обновляемых файлах в случае неожиданной перезагрузки. Несмотря на этот
+недостаток, режим <code>data=writeback</code> обеспечивает самую высокую
+производительность ext3 при всех условиях.</p>
+<p>
+<a name="ordered"><h3>data=ordered mode</h3></a>
+</p><p>
+В режиме <code>data=ordered</code> файловая система ext3 "официально" журналирует
+только метаданные, но логически metadata и data блоки группируются в единый
+модуль, называемый transaction. Перед записью новых метаданных на диск, связанные
+data блоки записываются первыми. Режим <code>data=ordered</code> эффективно
+(хотя без гарантии) решает проблему c разрушением данных, свойственную режиму
+<code>data=writeback</code> и большинству других journaled файловых систем.
+Заметьте, делается это без full data journaling. По производительности следует
+заметить, что <code>data=ordered</code> в ext3 работает несколько медленнее
+<code>data=writeback</code>, но заметно быстрее full data journaling.</p>
+<p>
+Что касается гарантии от разрушения данных. При добавлении данных в конец файла
+режим <code>data=ordered</code> гарантированно обеспечивает целостность (как при
+full data journaling mode). Однако если данные в файл пишутся поверх существующих,
+то есть вероятность перемешивания "оригинальных" блоков с модифицированными.
+Это результат того, что <code>data=ordered</code> не отслеживает записи, при
+которых новый блок ложится поверх существующего и не вызывает модификации
+метаданных. В режиме <code>data=ordered</code> порядок записи отслеживается только
+до попадания в hard drive's write cache. Такое ограничение не должно огорчать
+пользователей, так как операция добавления в конец файла более обычна, чем
+наложение записи. По этой причине режим <code>data=ordered</code> хорошая
+альтернатива для full data journaling.</p>
+<p>
+<a name="ordered"><h3>data=journal mode</h3></a>
+</p><p>
+Режим <code>data=journal</code> обеспечивает полное журналирование и метаданных,
+и самих данных. Все новые данные сначала пишутся в журнал и только после этого
+переносятся на свое постоянное место. В случае аварийного отказа журнал можно
+повторно перечитать, приведя данные и метаданные в непротиворечивое состояние.</p>
+<p>
+Теоретически, режим <code>data=journal</code> самый медленный из всех journaling
+режимов, так как данные записываются на диск два раза. Однако было доказано, что
+в отдельных случаях режим <code>data=journal</code> показывает неплохие результаты.
+Andrew Morton, после знакомства с отчетами LKML о том, что в ext3
+<code>data=journal</code> иногда неожиданно выдает высокую производительность,
+решил провести небольшое тестирование. Сначала он написал простой <i>shell script</i>,
+предназначенный для записи данных на тестируемую файловую систему с максимально
+возможной скоростью:</p>
+<a name="code1"><b>Быстрая запись.</b></a>
+<pre><code>
+while true
+do
+        dd if=/dev/zero of=largefile bs=16384 count=131072
+done
+</code></pre><br>
+<p>
+Одновременно с записью данных на тестируемую файловую систему, он попытался
+прочесть 16Mb данных с другой ext2 файловой системы того же диска, подсчитав
+результаты:</p>
+<a name="code2"><b>Чтение 16Mb файла.</b></a>
+<pre><code>
+time cat 16-meg-file &gt; /dev/null
+</code></pre><br>
+<p>
+Результат оказался поразительным. Режим <code>data=journal</code> позволил
+прочесть 16Mb файл в 9 - 13 раз быстрее, чем при других ext3 режимах, ReiserFS и
+даже ext2 (в которой журналирование вообще отсутствует):</p>
+<b>Written-to-filesystem</b>
+<b>16-meg-read-time (seconds)</b>
+ext2
+78
+ReiserFS
+67
+ext3 <code type="inline">data=ordered</code>
+93
+
+ext3 <code type="inline">data=writeback</code>
+74
+ext3 <code type="inline">data=journal</code>
+<b>7</b>
+<p>
+Эндрю повторил тестирование, изменив условия. Чтение 16Mb файла происходило с
+тестируемой файловой системы. Результат оказался аналогичным. Что из этого
+следует? Так или иначе, но режим <code>data=journal</code> очень хорошо подходит
+для случаев, когда данные должны одновременно читаться и записываться. Поэтому
+режим <code>data=journal</code>, который теоретически считался самым медленным,
+оказывается, имеет преимущество в среде, сильно нагруженной интерактивными
+операциями IO. По крайней мере, режим <code>data=journal</code> не настолько вял,
+как казалось бы!</p>
+<p>
+Andrew еще не нашел объяснений, почему так происходит. Возможно, ответ на этот
+вопрос поможет в совершенствовании ext3 так, чтобы режимы <code>data=writeback
+</code> и <code>data=ordered</code> стали более производительными.</p>
+<p>
+<a name="4"><h3>data=journal tweaks</h3></a>
+</p><p>
+Сообщалось о специфической проблеме при использовании ext3 в режиме
+<code>data=journal</code> на нагруженных серверах и нагруженных NFS серверах в
+частности. Каждые тридцать секунд сервер испытывает "шторм записей" на диск,
+прекращая реагировать на все остальное. Если вы столкнулись с такой проблемой,
+ее можно устранить. Введите следующую команду (с привилегиями root) для
+"подстегивания" Linux's dirty buffer-flushing algorithm:</p>
+<a name="code3"><b>Tweaking bdflush</b></a>
+<pre><code>
+echo 40 0 0 0 60 300 60 0 0 &gt; /proc/sys/vm/bdflush
+</code></pre><br>
+<p>
+Такая настройка bdflush заставит kupdate выполняться каждые 0.6 секунд, а не
+через 5 секунд (по умолчанию). Кроме того, ядру сообщается необходимость сброса
+на диск dirty буфера через 3 секунды, а не через 30 (значение по умолчанию).
+Регулярно и часто сбрасывая на диск недавно измененные данные, можно избежать
+затяжных "штормов записи". Помните, это снизит эффективность работы (особенно
+при небольшой загрузке системы), так как у ядра будет меньше возможностей для
+объединения операций записи. Нагруженному серверу снижение эффективности не
+грозит, а интерактивность будет улучшена.</p>
+<p>
+<a name="4"><h2>Заключение.</h2></a>
+</p><p>
+Об ext3 хватит. Приглашаю к чтению моей следующей статьи, поскольку речь пойдет
+о многих чудесах ... XFS!</p>
+<p><a name="resources"><h3>Resources</h3></a>
+</p><ul>
+
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul>
+<br>
+<br>
+</li>
+
+<li> Visit Andrew Morton's <!--<a href="http://www.zip.com.au/%7Eakpm/linux/ext3/ext3-usage.html">-->ext3 and 2.4
+usage page<!--</a>--> to complete your ext3 setup.<br>
+<br>
+</li>
+<li>Find out more about using ext3 with 2.4 kernels at Andrew Morton's <!--<a href="http://www.zip.com.au/%7Eakpm/linux/ext3/">-->ext3
+for 2.4<!--</a>--> page.<br>
+<br>
+</li>
+<li>Learn more about the strange laptop hard drive corruption problems by
+reading <!--<a href="http://kt.zork.net/kernel-traffic/kt20011015_137.html#1">-->Kernel Traffic's
+summary<!--</a>-->.<br>
+<br>
+</li>
+<li>Read <!--<a href="http://www.uwsg.indiana.edu/hypermail/linux/kernel/0110.0/0925.html">-->Linus'
+explanation and opinion of write caching<!--</a>-->.<br>
+<br>
+</li>
+<li> Read a <!--<a href="http://olstrans.sourceforge.net/release/OLS2000-ext3/OLS2000-ext3.html">-->complete
+transcript<!--</a>--> of Dr. Stephen Tweedie's <i>Ext3, Journaling
+Filesystem</i> presentation, which was featured at the <!--<a href="http://www.ottawalinuxsymposium.org/">-->Ottawa Linux
+Symposium<!--</a>--> in July
+2000.<br>
+<br>
+</li>
+<li>To keep abreast of the latest ext3 developments, be sure to visit the <!--<a href="https://listman.redhat.com/pipermail/ext3-users/">-->ext3-users mailing list
+archive<!--</a>-->.  Of course, you can also <!--<a href="https://listman.redhat.com/mailman/listinfo/ext3-users">-->subscribe<!--</a>-->.<br>
+<br>
+</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on
+<i>developerWorks</i>.<br>
+<br>
+</li>
+<li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on
+<i>developerWorks</i>.</li>
+</ul>
+<p></p>
+
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs8_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of
+</a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->, an advanced Linux for the
+ PC, and the <b>Portage</b> system, a
+next-generation ports system for
+ Linux. He has also served as a contributing author for the Macmillan books
+ <i>Caldera
+OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba Unleashed</i>. Daniel has been involved with computers in
+some
+ fashion since the second grade, when he was first exposed to the Logo
+ programming language as well as a potentially
+dangerous dose of Pac Man.
+ This probably explains why he has since served as a Lead Graphic Artist at
+ <b>SONY Electronic
+Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his new baby daughter,
+ Hadassah. You can contact
+Daniel at <a href="../cdn-cgi/l/email-protection.html#2642544944444f48556641434852494908495441"><span class="__cf_email__" data-cfemail="fc988e939e9e95928fbc9b9992889393d2938e9b">[email&#160;protected]</span></a>.
+
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#8ef8e5e6e1e2e3cefee7e0e1ede6ebfaa0ede7faf7e2e7e0eba0fcfb">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

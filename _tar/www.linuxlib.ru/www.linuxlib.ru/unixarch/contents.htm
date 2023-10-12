@@ -1,0 +1,589 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Архитектура операционной системы UNIX — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://www.danco-studio.ru/price/" target="_blank">постановка первого свадебного танца</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Архитектура операционной системы UNIX</h1>
+
+<ul>
+  <li><a href="glava_1.htm#_1">ПРЕДИСЛОВИЕ</a></li>
+  <li>
+    <a href="glava_2.htm#_2">ГЛАВА 1. ОБЩИЙ ОБЗОР ОСОБЕННОСТЕЙ СИСТЕМЫ</a>    <ul>
+      <li><a href="glava_3.htm#_2_1">1.1 ИСТОРИЯ</a></li>
+      <li><a href="glava_4.htm#_2_2">1.2 СТРУКТУРА СИСТЕМЫ</a></li>
+      <li>
+        <a href="glava_5.htm#_2_3">1.3 ОБЗОР С ТОЧКИ ЗРЕНИЯ ПОЛЬЗОВАТЕЛЯ</a>        <ul>
+          <li><a href="glava_5.htm#_2_3_1">1.3.1 Файловая система</a></li>
+          <li><a href="glava_5.htm#_2_3_2">1.3.2 Среда выполнения процессов</a></li>
+          <li><a href="glava_5.htm#_2_3_3">1.3.3 Элементы конструкционных блоков</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_6.htm#_2_4">1.4 ФУНКЦИИ ОПЕРАЦИОННОЙ СИСТЕМЫ</a></li>
+      <li>
+        <a href="glava_7.htm#_2_5">1.5 ПРЕДПОЛАГАЕМАЯ АППАРАТНАЯ СРЕДА</a>        <ul>
+          <li><a href="glava_7.htm#_2_5_1">1.5.1 Прерывания и особые ситуации</a></li>
+          <li><a href="glava_7.htm#_2_5_2">1.5.2 Уровни прерывания процессора</a></li>
+          <li><a href="glava_7.htm#_2_5_3"> 1.5.3 Распределение памяти</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_8.htm#_2_6">1.6 ВЫВОДЫ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_9.htm#_3">ГЛАВА 2. ВВЕДЕНИЕ В АРХИТЕКТУРУ ЯДРА ОПЕРАЦИОННОЙ СИСТЕМЫ</a>    <ul>
+      <li><a href="glava_9.htm#_3_1">2.1 АРХИТЕКТУРА ОПЕРАЦИОННОЙ СИСТЕМЫ UNIХ</a></li>
+      <li>
+        <a href="glava_11.htm#_3_2">2.2 ВВЕДЕНИЕ В ОСНОВНЫЕ ПОНЯТИЯ СИСТЕМЫ</a>        <ul>
+          <li><a href="glava_11.htm#_3_2_1">2.2.1 Обзор особенностей подсистемы управления файлами</a></li>
+          <li><a href="glava_11.htm#_3_2_2">2.2.2 Процессы</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_12.htm#_3_3">2.3 СТРУКТУРЫ ДАННЫХ ЯДРА</a></li>
+      <li><a href="glava_13.htm#_3_4">2.4 УПРАВЛЕНИЕ СИСТЕМОЙ</a></li>
+      <li><a href="glava_14.htm#_3_5">2.5 ВЫВОДЫ И ОБЗОР ПОСЛЕДУЮЩИХ ГЛАВ</a></li>
+      <li><a href="glava_15.htm#_3_6">2.6 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_16.htm#_4">ГЛАВА 3. БУФЕР СВЕРХОПЕРАТИВНОЙ ПАМЯТИ (КЕШ)</a>    <ul>
+      <li><a href="glava_17.htm#_4_1">3.1 ЗАГОЛОВКИ БУФЕРА</a></li>
+      <li><a href="glava_18.htm#_4_2">3.2 СТРУКТУРА ОБЛАСТИ БУФЕРОВ (БУФЕРНОГО ПУЛА)</a></li>
+      <li><a href="glava_19.htm#_4_3">3.3 МЕХАНИЗМ ПОИСКА БУФЕРА</a></li>
+      <li><a href="glava_20.htm#_4_4">3.4 ЧТЕНИЕ И ЗАПИСЬ ДИСКОВЫХ БЛОКОВ</a></li>
+      <li><a href="glava_21.htm#_4_5">3.5 ПРЕИМУЩЕСТВА И НЕУДОБСТВА БУФЕРНОГО КЕША</a></li>
+      <li><a href="glava_22.htm#_4_6">3.6 ВЫВОДЫ</a></li>
+      <li><a href="glava_23.htm#_4_7">3.7 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_24.htm#_5">ГЛАВА 4. ВНУТРЕННЕЕ ПРЕДСТАВЛЕНИЕ ФАЙЛОВ</a>    <ul>
+      <li>
+        <a href="glava_25.htm#_5_1">4.1 ИНДЕКСЫ</a>        <ul>
+          <li><a href="glava_25.htm#_5_1_1">4.1.1 Определение</a></li>
+          <li><a href="glava_25.htm#_5_1_2">4.1.2 Обращение к индексам</a></li>
+          <li><a href="glava_25.htm#_5_1_3">4.1.3 Освобождение индексов</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_26.htm#_5_2">4.2 СТРУКТУРА ФАЙЛА ОБЫЧНОГО ТИПА</a></li>
+      <li><a href="glava_27.htm#_5_3">4.3 КАТАЛОГИ</a></li>
+      <li><a href="glava_28.htm#_5_4">4.4 ПРЕВРАЩЕНИЕ СОСТАВНОГО ИМЕНИ ФАЙЛА (ПУТИ ПОИСКА) В ИДЕНТИФИКАТОР ИНДЕКСА</a></li>
+      <li><a href="glava_29.htm#_5_5">4.5 СУПЕРБЛОК</a></li>
+      <li><a href="glava_30.htm#_5_6">4.6 НАЗНАЧЕНИЕ ИНДЕКСА НОВОМУ ФАЙЛУ</a></li>
+      <li><a href="glava_31.htm#_5_7">4.7 ВЫДЕЛЕНИЕ ДИСКОВЫХ БЛОКОВ</a></li>
+      <li><a href="glava_32.htm#_5_8">4.8 ДРУГИЕ ТИПЫ ФАЙЛОВ</a></li>
+      <li><a href="glava_33.htm#_5_9">4.9 ВЫВОДЫ</a></li>
+      <li><a href="glava_34.htm#_5_10">4.10 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_35.htm#_6">ГЛАВА 5. СИСТЕМНЫЕ ОПЕРАЦИИ ДЛЯ РАБОТЫ С ФАЙЛОВОЙ СИСТЕМОЙ</a>    <ul>
+      <li><a href="glava_36.htm#_6_1">5.1 OPEN</a></li>
+      <li><a href="glava_37.htm#_6_2">5.2 READ</a></li>
+      <li><a href="glava_38.htm#_6_3">5.3 WRIТЕ</a></li>
+      <li><a href="glava_39.htm#_6_4">5.4 ЗАХВАТ ФАЙЛА И ЗАПИСИ</a></li>
+      <li><a href="glava_40.htm#_6_5">5.5 УКАЗАНИЕ МЕСТА В ФАЙЛЕ, ГДЕ БУДЕТ ВЫПОЛНЯТЬСЯ ВВОД-ВЫВОД - LSEEК</a></li>
+      <li><a href="glava_41.htm#_6_6">5.6 CLOSЕ</a></li>
+      <li><a href="glava_42.htm#_6_7">5.7 СОЗДАНИЕ ФАЙЛА</a></li>
+      <li><a href="glava_43.htm#_6_8">5.8 СОЗДАНИЕ СПЕЦИАЛЬНЫХ ФАЙЛОВ</a></li>
+      <li><a href="glava_44.htm#_6_9"> 5.9 СМЕНА ТЕКУЩЕГО И КОРНЕВОГО КАТАЛОГА</a></li>
+      <li><a href="glava_45.htm#_6_10">5.10 СМЕНА ВЛАДЕЛЬЦА И РЕЖИМА ДОСТУПА К ФАЙЛУ</a></li>
+      <li><a href="glava_46.htm#_6_11">5.11 STAT И FSTАТ</a></li>
+      <li>
+        <a href="glava_47.htm#_6_12">5.12 КАНАЛЫ</a>        <ul>
+          <li><a href="glava_47.htm#_6_12_1">5.12.1 Системная функция pipе</a></li>
+          <li><a href="glava_47.htm#_6_12_2">5.12.2 Открытие поименованного канала</a></li>
+          <li><a href="glava_47.htm#_6_12_3">5.12.3 Чтение из каналов и запись в каналы</a></li>
+          <li><a href="glava_47.htm#_6_12_4">5.12.4 Закрытие каналов</a></li>
+          <li><a href="glava_47.htm#_6_12_5">5.12.5 Примеры</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_48.htm#_6_13">5.13 DUР</a></li>
+      <li>
+        <a href="glava_49.htm#_6_14">5.14 МОНТИРОВАНИЕ И ДЕМОНТИРОВАНИЕ ФАЙЛОВЫХ СИСТЕМ</a>        <ul>
+          <li><a href="glava_49.htm#_6_14_1">5.14.1 Пересечение точек монтирования в маршрутах поиска имен файлов</a></li>
+          <li><a href="glava_49.htm#_6_14_2">5.14.2 Демонтирование файловой системы</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_50.htm#_6_15">5.15 LINК</a></li>
+      <li>
+        <a href="glava_51.htm#_6_16">5.16 UNLINК</a>        <ul>
+          <li><a href="glava_51.htm#_6_16_1">5.16.1 Целостность файловой системы</a></li>
+          <li><a href="glava_51.htm#_6_16_2">5.16.2 Поводы для конкуренции</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_52.htm#_6_17">5.17 АБСТРАКТНЫЕ ОБРАЩЕНИЯ К ФАЙЛОВЫМ СИСТЕМАМ</a></li>
+      <li><a href="glava_53.htm#_6_18">5.18 СОПРОВОЖДЕНИЕ ФАЙЛОВОЙ СИСТЕМЫ</a></li>
+      <li><a href="glava_54.htm#_6_19">5.19 ВЫВОДЫ</a></li>
+      <li><a href="glava_55.htm#_6_20">5.20 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_56.htm#_7">ГЛАВА 6. СТРУКТУРА ПРОЦЕССОВ</a>    <ul>
+      <li><a href="glava_57.htm#_7_1">6.1 СОСТОЯНИЯ ПРОЦЕССА И ПЕРЕХОДЫ МЕЖДУ НИМИ</a></li>
+      <li>
+        <a href="glava_58.htm#_7_2">6.2 ФОРМАТ ПАМЯТИ СИСТЕМЫ</a>        <ul>
+          <li><a href="glava_58.htm#_7_2_1">6.2.1 Области</a></li>
+          <li><a href="glava_58.htm#_7_2_2">6.2.2 Страницы и таблицы страниц</a></li>
+          <li><a href="glava_58.htm#_7_2_3">6.2.3 Размещение ядра</a></li>
+          <li><a href="glava_58.htm#_7_2_4">6.2.4 Пространство процесса</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_59.htm#_7_3">6.3 КОНТЕКСТ ПРОЦЕССА</a></li>
+      <li>
+        <a href="glava_60.htm#_7_4">6.4 СОХРАНЕНИЕ КОНТЕКСТА ПРОЦЕССА</a>        <ul>
+          <li><a href="glava_60.htm#_7_4_1">6.4.1 Прерывания и особые ситуации</a></li>
+          <li><a href="glava_60.htm#_7_4_2">6.4.2 Взаимодействие с операционной системой через вызовы системных функций</a></li>
+          <li><a href="glava_60.htm#_7_4_3">6.4.3 Переключение контекста</a></li>
+          <li><a href="glava_60.htm#_7_4_4">6.4.4 Сохранение контекста на случай аварийного завершения</a></li>
+          <li><a href="glava_60.htm#_7_4_5">6.4.5 Копирование данных между адресным пространством системы и адресным пространством задачи</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="glava_61.htm#_7_5">6.5 УПРАВЛЕНИЕ АДРЕСНЫМ ПРОСТРАНСТВОМ ПРОЦЕССА</a>        <ul>
+          <li><a href="glava_61.htm#_7_5_1">6.5.1 Блокировка области и снятие блокировки</a></li>
+          <li><a href="glava_61.htm#_7_5_2">6.5.2 Выделение области</a></li>
+          <li><a href="glava_61.htm#_7_5_3">6.5.3 Присоединение области к процессу</a></li>
+          <li><a href="glava_61.htm#_7_5_4">6.5.4 Изменение размера области</a></li>
+          <li><a href="glava_61.htm#_7_5_5">6.5.5 Загрузка области</a></li>
+          <li><a href="glava_61.htm#_7_5_6">6.5.6 Освобождение области</a></li>
+          <li><a href="glava_61.htm#_7_5_7">6.5.7 Отсоединение области от процесса</a></li>
+          <li><a href="glava_61.htm#_7_5_8">6.5.8 Копирование содержимого области</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="glava_62.htm#_7_6">6.6 ПРИОСТАНОВКА ВЫПОЛНЕНИЯ</a>        <ul>
+          <li><a href="glava_62.htm#_7_6_1">6.6.1 События, вызывающие приостанов выполнения, и их адреса</a></li>
+          <li><a href="glava_62.htm#_7_6_2">6.6.2 Алгоритмы приостанова и возобновления выполнения</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_63.htm#_7_7">6.7 ВЫВОДЫ</a></li>
+      <li><a href="glava_64.htm#_7_8">6.8 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_65.htm#_8">ГЛАВА 7. УПРАВЛЕНИЕ ПРОЦЕССАМИ</a>    <ul>
+      <li><a href="glava_66.htm#_8_1">7.1 СОЗДАНИЕ ПРОЦЕССА</a></li>
+      <li>
+        <a href="glava_67.htm#_8_2">7.2 СИГНАЛЫ</a>        <ul>
+          <li><a href="glava_67.htm#_8_2_1">7.2.1 Обработка сигналов</a></li>
+          <li><a href="glava_67.htm#_8_2_2">7.2.2 Группы процессов</a></li>
+          <li><a href="glava_67.htm#_8_2_3">7.2.3 Посылка сигналов процессами</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_68.htm#_8_3">7.3 ЗАВЕРШЕНИЕ ВЫПОЛНЕНИЯ ПРОЦЕССА</a></li>
+      <li><a href="glava_69.htm#_8_4">7.4 ОЖИДАНИЕ ЗАВЕРШЕНИЯ ВЫПОЛНЕНИЯ ПРОЦЕССА</a></li>
+      <li><a href="glava_70.htm#_8_5">7.5 ВЫЗОВ ДРУГИХ ПРОГРАММ</a></li>
+      <li><a href="glava_71.htm#_8_6">7.6 КОД ИДЕНТИФИКАЦИИ ПОЛЬЗОВАТЕЛЯ ПРОЦЕССА</a></li>
+      <li><a href="glava_72.htm#_8_7">7.7 ИЗМЕНЕНИЕ РАЗМЕРА ПРОЦЕССА</a></li>
+      <li><a href="glava_73.htm#_8_8">7.8 КОМАНДНЫЙ ПРОЦЕССОР SHELL</a></li>
+      <li><a href="glava_74.htm#_8_9">7.9 ЗАГРУЗКА СИСТЕМЫ И НАЧАЛЬНЫЙ ПРОЦЕСС</a></li>
+      <li><a href="glava_75.htm#_8_10">7.10 ВЫВОДЫ</a></li>
+      <li><a href="glava_76.htm#_8_11">7.11 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_77.htm#_9">ГЛАВА 8. ДИСПЕТЧЕРИЗАЦИЯ ПРОЦЕССОВ И ЕЕ ВРЕМЕННЫЕ ХАРАКТЕРИСТИКИ</a>    <ul>
+      <li>
+        <a href="glava_78.htm#_9_1">8.1 ПЛАНИРОВАНИЕ ВЫПОЛНЕНИЯ ПРОЦЕССОВ</a>        <ul>
+          <li><a href="glava_78.htm#_9_1_1">8.1.1 Алгоритм</a></li>
+          <li><a href="glava_78.htm#_9_1_2">8.1.2 Параметры диспетчеризации</a></li>
+          <li><a href="glava_78.htm#_9_1_3">8.1.3 Примеры диспетчеризации процессов</a></li>
+          <li><a href="glava_78.htm#_9_1_4">8.1.4 Управление приоритетами</a></li>
+          <li><a href="glava_78.htm#_9_1_5">8.1.5 Планирование на основе справедливого раздела</a></li>
+          <li><a href="glava_78.htm#_9_1_6">8.1.6 Работа в режиме реального времени</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_79.htm#_9_2">8.2 СИСТЕМНЫЕ ОПЕРАЦИИ, СВЯЗАННЫЕ СО ВРЕМЕНЕМ</a></li>
+      <li>
+        <a href="glava_80.htm#_9_3">8.3 ТАЙМЕР</a>        <ul>
+          <li><a href="glava_80.htm#_9_3_1">8.3.1 Перезапуск часов</a></li>
+          <li><a href="glava_80.htm#_9_3_2">8.3.2 Внутренние системные тайм-ауты</a></li>
+          <li><a href="glava_80.htm#_9_3_3">8.3.3 Построение профиля</a></li>
+          <li><a href="glava_80.htm#_9_3_4">8.3.4 Учет и статистика</a></li>
+          <li><a href="glava_80.htm#_9_3_5">8.3.5 Поддержание времени в системе</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_81.htm#_9_4">8.4 ВЫВОДЫ</a></li>
+      <li><a href="glava_82.htm#_9_5">8.5 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_83.htm#_10">ГЛАВА 9. АЛГОРИТМЫ УПРАВЛЕНИЯ ПАМЯТЬЮ</a>    <ul>
+      <li>
+        <a href="glava_84.htm#_10_1">9.1 СВОПИНГ</a>        <ul>
+          <li><a href="glava_84.htm#_10_1_1">9.1.1 Управление пространством на устройстве выгрузки</a></li>
+          <li><a href="glava_84.htm#_10_1_2">9.1.2 Выгрузка процессов</a></li>
+          <li><a href="glava_84.htm#_10_1_3">9.1.3 Загрузка (подкачка) процессов</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="glava_85.htm#_10_2">9.2 ПОДКАЧКА ПО ЗАПРОСУ</a>        <ul>
+          <li><a href="glava_85.htm#_10_2_1">9.2.1 Структуры данных, используемые подсистемой замещения страниц</a></li>
+          <li><a href="glava_85.htm#_10_2_2">9.2.2 &quot;Сборщик&quot; страниц</a></li>
+          <li><a href="glava_85.htm#_10_2_3">9.2.3 Отказы при обращениях к страницам</a></li>
+          <li><a href="glava_85.htm#_10_2_4">9.2.4 Замещение страниц на менее сложной технической базе</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_86.htm#_10_3">9.3 СИСТЕМА СМЕШАННОГО ТИПА СО СВОПИНГОМ И ПОДКАЧКОЙ ПО ЗАПРОСУ</a></li>
+      <li><a href="glava_87.htm#_10_4">9.4 ВЫВОДЫ</a></li>
+      <li><a href="glava_88.htm#_10_5">9.5 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_89.htm#_11">ГЛАВА 10. ПОДСИСТЕМА УПРАВЛЕНИЯ ВВОДОМ-ВЫВОДОМ</a>    <ul>
+      <li>
+        <a href="glava_90.htm#_11_1">10.1 ВЗАИМОДЕЙСТВИЕ ДРАЙВЕРОВ С ПРОГРАММНОЙ И АППАРАТНОЙ СРЕДОЙ</a>        <ul>
+          <li><a href="glava_90.htm#_11_1_1">10.1.1 Конфигурация системы</a></li>
+          <li><a href="glava_90.htm#_11_1_2">10.1.2 Системные функции и взаимодействие с драйверами</a></li>
+          <li><a href="glava_90.htm#_11_1_3">10.1.3 Программы обработки прерываний</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_91.htm#_11_2">10.2 ДИСКОВЫЕ ДРАЙВЕРЫ</a></li>
+      <li>
+        <a href="glava_92.htm#_11_3">10.3 ТЕРМИНАЛЬНЫЕ ДРАЙВЕРЫ</a>        <ul>
+          <li><a href="glava_92.htm#_11_3_1">10.3.1 Символьные списки</a></li>
+          <li><a href="glava_92.htm#_11_3_2">10.3.2 Терминальный драйвер в каноническом режиме</a></li>
+          <li><a href="glava_92.htm#_11_3_3">10.3.3 Терминальный драйвер в режиме без обработки символов</a></li>
+          <li><a href="glava_92.htm#_11_3_4">10.3.4 Опрос терминала</a></li>
+          <li><a href="glava_92.htm#_11_3_5">10.3.5 Назначение операторского терминала</a></li>
+          <li><a href="glava_92.htm#_11_3_6">10.3.6 Драйвер косвенного терминала</a></li>
+          <li><a href="glava_92.htm#_11_3_7">10.3.7 Вход в систему</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="glava_93.htm#_11_4">10.4 ПОТОКИ</a>        <ul>
+          <li><a href="glava_93.htm#_11_4_1">10.4.1 Более детальное рассмотрение потоков</a></li>
+          <li><a href="glava_93.htm#_11_4_2">10.4.2 Анализ потоков</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_94.htm#_11_5">10.5 ВЫВОДЫ</a></li>
+      <li><a href="glava_95.htm#_11_6">10.6 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_96.htm#_12">ГЛАВА 11. ВЗАИМОДЕЙСТВИЕ ПРОЦЕССОВ</a>    <ul>
+      <li><a href="glava_97.htm#_12_1">11.1 ТРАССИРОВКА ПРОЦЕССОВ</a></li>
+      <li>
+        <a href="glava_98.htm#_12_2">11.2 ВЗАИМОДЕЙСТВИЕ ПРОЦЕССОВ В ВЕРСИИ V СИСТЕМЫ</a>        <ul>
+          <li><a href="glava_98.htm#_12_2_1">11.2.1 Сообщения</a></li>
+          <li><a href="glava_98.htm#_12_2_2">11.2.2 Разделение памяти</a></li>
+          <li><a href="glava_98.htm#_12_2_3">11.2.3 Семафоры</a></li>
+          <li><a href="glava_98.htm#_12_2_4">11.2.4 Общие замечания</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_99.htm#_12_3">11.3 ВЗАИМОДЕЙСТВИЕ В СЕТИ</a></li>
+      <li><a href="glava_100.htm">11.4 ГНЕЗДА</a></li>
+      <li><a href="glava_101.htm">11.5 ВЫВОДЫ</a></li>
+      <li><a href="glava_102.htm">11.6 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_103.htm">ГЛАВА 12. МНОГОПРОЦЕССОРНЫЕ СИСТЕМЫ</a>    <ul>
+      <li><a href="glava_104.htm">12.1 ПРОБЛЕМЫ, СВЯЗАННЫЕ С МНОГОПРОЦЕССОРНЫМИ СИСТЕМАМИ</a></li>
+      <li><a href="glava_105.htm">12.2 ГЛАВНЫЙ И ПОДЧИНЕННЫЙ ПРОЦЕССОРЫ</a></li>
+      <li>
+        <a href="glava_106.htm">12.3 СЕМАФОРЫ</a>        <ul>
+          <li><a href="glava_106.htm#_13_3_1">12.3.1 Определение семафоров</a></li>
+          <li><a href="glava_106.htm#_13_3_2">12.3.2 Реализация семафоров</a></li>
+          <li><a href="glava_106.htm#_13_3_3">12.3.3 Примеры алгоритмов</a></li>
+        </ul>
+      </li>
+      <li><a href="glava_107.htm">12.4 СИСТЕМА TUNIS</a></li>
+      <li><a href="glava_108.htm">12.5 УЗКИЕ МЕСТА В ФУНКЦИОНИРОВАНИИ МНОГОПРОЦЕССОРНЫХ СИСТЕМ</a></li>
+      <li><a href="glava_109.htm">12.6 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="glava_110.htm">ГЛАВА 13. РАСПРЕДЕЛЕННЫЕ СИСТЕМЫ</a>    <ul>
+      <li><a href="glava_111.htm">13.1 ПЕРИФЕРИЙНЫЕ ПРОЦЕССОРЫ</a></li>
+      <li><a href="glava_112.htm">13.2 СВЯЗЬ ТИПА NEWCASTLЕ</a></li>
+      <li><a href="glava_113.htm">13.3 &quot;ПРОЗРАЧНЫЕ&quot; РАСПРЕДЕЛЕННЫЕ ФАЙЛОВЫЕ СИСТЕМЫ</a></li>
+      <li><a href="glava_114.htm">13.4 РАСПРЕДЕЛЕННАЯ МОДЕЛЬ БЕЗ ПЕРЕДАТОЧНЫХ ПРОЦЕССОВ</a></li>
+      <li><a href="glava_115.htm">13.5 ВЫВОДЫ</a></li>
+      <li><a href="glava_116.htm">13.6 УПРАЖНЕНИЯ</a></li>
+    </ul>
+  </li>
+  <li><a href="glava_117.htm">ПРИЛОЖЕНИЕ. СИСТЕМНЫЕ ОПЕРАЦИИ</a></li>
+  <li><a href="glava_118.htm">БИБЛИОГРАФИЯ</a></li>
+</ul>
+<p align=center>
+<b>THE DESIGN OF THE UNIX OPERATING SYSTEM by Maurice J. Bach
+</b><p align=center>
+(Перевод с английского к.т.н. Крюкова А.В.)
+<p>
+Copyright 1986 Корпорация Bell Telephone Laboratories.
+<p>
+Издано корпорацией Prentice-Hall.
+<p>
+Отделение Simon &amp; Schuster
+<p>
+Энглвуд Клиффс, Нью-Джерси 07632
+<p>
+Серия книг по программному обеспечению издательства Prentice Hall.
+<p>
+Консультант Брайан В. Керниган
+<p>
+Настоящее издание предназначено для распространения в тех странах, которые получили на это право от корпорации Prentice-Hall International. Не подлежит вывозу и распространению в США, Мексике и Канаде.
+<p>
+UNIX - зарегистрированная торговая марка корпорации AT&amp;T. DEC, PDP и VAX - торговые марки корпорации Digital Equipment Corp. Series 32000 - торговая марка корпорации National Semiconductor Corp. Ada - зарегистрированная торговая марка правительства США (Ada Joint Program Office). UNIVAC - торговая марка корпорации Sperry Corp.
+<p>
+В процессе подготовки книги ее автором и издателем было приложено немало усилий. Эти усилия были связаны с проведением теоретических разработок и исследований и с всесторонней проверкой действенности теоретических выкладок и программ. Автор и издатель не дают никаких гарантий, как ясно выраженных, так и подразумевающихся, относительно включенных в книгу программ и документации. Автор и издатель не отвечают за случайные или производные неполадки, возникающие в связи или в результате установки, выполнения или использования этих программ.
+<p>
+Все права сохраняются. Запрещается воспроизведение отдельных частей книги без письменного разрешения издателя.
+
+  </div>
+</div>
+</body>
+</html>

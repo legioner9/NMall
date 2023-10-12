@@ -1,0 +1,697 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>&#13;      Advanced Topics - Linux Boot Process — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Linux Kernel HOWTO</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="kernel_files_info.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="other_formats.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="linux_boot_process"
+></A
+>11. Advanced Topics - Linux Boot Process</H1
+><P
+>&#13;      This section may not be interesting for 'average Joe home PC user' but
+      will be more directed towards someone with computer science background.
+    </P
+><P
+>&#13;      The chain of events at boot are: CPU-&#62; VGA-&#62; Power-On-Self-Test-&#62; SCSI-&#62;
+      Boot Manager-&#62; Lilo boot loader-&#62; kernel-&#62; init-&#62; bash. The firmware and
+      software programs output various messages as the computer and Linux come
+      to life.
+    </P
+><P
+>&#13;      A guided tour of a Linux Boot process:
+      <P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>&#13;            The Motherboard BIOS Triggers the Video Display Card BIOS
+            Initialization
+          </P
+></LI
+><LI
+><P
+>&#13;            Motherboard BIOS Initializes Itself
+          </P
+></LI
+><LI
+><P
+>&#13;            SCSI Controller BIOS Initializes
+          </P
+></LI
+><LI
+><P
+>&#13;            Hardware Summary: The motherboard BIOS then displays the following
+            summary of its hardware inventory. And runs its Virus checking
+            code that looks for changed boot sectors.
+          </P
+></LI
+><LI
+><P
+>&#13;            BootManager Menu : The Master Boot Record (MBR) on the first hard
+            disk is read, by DOS tradition, into address 0x00007c00, and the
+            processor starts executing instructions there. This MBR boot code
+            loads the first sector of code on the active DOS partition.
+          </P
+></LI
+><LI
+><P
+>&#13;            Lilo is started: If the Linux selection is chosen and if Linux has
+            been installed with Lilo, Lilo is loaded into address 0x00007c00.
+            Lilo prints LILO with its progress revealed by individually
+            printing the letters. The first "L" is printed after Lilo moves
+            itself to a better location at 0x0009A000. The "I" is printed just
+            before it starts its secondary boot loader code. Lilo's secondary
+            boot loader prints the next "L", loads descriptors pointing to
+            parts of the kernel, and then prints the final "O". The
+            descriptors are placed at 0x0009d200. The boot message and a
+            prompt line, if specified, are printed. The pressing "Tab" at the
+            prompt, allows the user to specify a system and to provide
+            command-line specifications to the Linux Kernel, its drivers, and
+            the "init" program. Also, environment variables may be defined at
+            this point.
+            <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;The following line is from /boot/message:
+&#62;
+&#62;
+&#62;
+ Press  to list available boot image labels.
+The following line is the prompt from /sbin/lilo:
+boot:
+Note: If Lilo is not used, then the boot code built into the head
+      of the Linux kernel, linux/arch/i386/boot/bootsect.S
+	  prints "Loading" and continues.
+Lilo displays the following as it loads the kernel code. It gets the
+text "Linux-2.2.12" from the "label=..." specification in lilo.conf.
+Loading linux-2.2.12..........
+		  	</PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+          </P
+></LI
+><LI
+><P
+>&#13;            The kernel code in /linux/arch/i386/boot/setup.S arranges the
+            transition from the processor running in real mode (DOS mode) to
+            protected mode (full 32-bit mode). Blocks of code named
+            Trampoline.S and Trampoline32.S help with the transition. Small
+            kernel images (zImage) are decompressed and loaded at 0x00010000.
+            Large kernel images (bzImage) are loaded instead at 0x00100000.
+            This code sets up the registers, decompresses the compressed
+            kernel (which has linux/arch/i386/head.S at its start), printing
+            the following 2 lines from linux/arch/i386/boot/compressed/misc.c
+            Uncompressing Linux... Ok. Booting the kernel. The i386-specific
+            setup.S code has now completed its job and it jumps to 0x00010000
+            (or 0x00100000) to start the generic Linux kernel code.
+            <P
+></P
+><UL
+><LI
+><P
+>&#13;                  Processor, Console, and Memory Initialization : This runs
+                  linux/arch/i386/head.S which in turn jumps to
+                  start_kernel(void) in linux/init/main.c where the interrupts
+                  are redefined. linux/kernel/module.c then loads the drivers
+                  for the console and pci bus. From this point on the kernel
+                  messages are also saved in memory and available using
+                  /bin/dmesg. They are then usually transferred to
+                  /var/log/message for a permanent record.
+                </P
+></LI
+><LI
+><P
+>&#13;                  PCI Bus Initialization : mpci_init() in linux/init/main.c
+                  causes the following lines from
+                  linux/arch/i386/kernel/bios32.c to be printed:
+                </P
+></LI
+><LI
+><P
+>&#13;                  Network Initialization: socket_init() in linux/init/main.c
+                  causes the following network initializations:
+                  <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;linux/net/socket.c prints:
+Linux NET4.0 for Linux 2.2
+Based upon Swansea University Computer Society NET3.039
+linux/net/unix/af_unix.c prints:
+NET4: Unix domain sockets 1.0 for Linux NET4.0.
+linux/net/ipv4/af_inet.c prints:
+NET4: Linux TCP/IP 1.0 for NET4.0
+IP Protocols: ICMP, UDP, TCP
+linux/net/ipv4/ip_gre.c prints:
+GRE over IPv4 tunneling driver
+linux/net/core/dev.c prints:
+early initialization of device gre0 is deferred
+linux/net/core/rtnetlink.c prints:
+Initializing RT netlink socket
+					</PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+                </P
+></LI
+><LI
+><P
+>&#13;                  The Kernel Idle Thread (Process 0) is Started : At this
+                  point a kernel thread is started running init() which is one
+                  of the routines defined in linux/init/main.c. This init()
+                  must not be confused with the program /sbin/init that will
+                  be run after the Linux kernel is up and running.
+                  mkswapd_setup() in linux/init/main.c causes the following
+                  line from linux/mm/vmscan.c to be printed: Starting kswapd v
+                  1.5
+                </P
+></LI
+><LI
+><P
+>&#13;                  Device Driver Initialization : The kernel routine
+                  linux/arch/i386/kernel/setup.c then initializes devices and
+                  file systems (built into the kernel??). It produces the
+                  following lines and then forks to run /sbin/init:
+                  <P
+></P
+><UL
+><LI
+><P
+>&#13;                        Generic Parallel Port Initialization : The parallel
+                        port initialization routine
+                        linux/drivers/misc/parport_pc.c prints the following:
+                      </P
+></LI
+><LI
+><P
+>&#13;                        Character Device Initializations : The following 3
+                        lines are from linux/drivers/char/serial.c:
+                      </P
+></LI
+><LI
+><P
+>&#13;                        Block Device Initializations :
+                        linux/drivers/block/rd.c prints: RAM disk driver
+                        initialized: 16 RAM disks of 8192K size
+                        linux/drivers/block/loop.c prints: loop: registered
+                        device at major 7 linux/drivers/block/floppy.c prints:
+                        Floppy drive(s): fd0 is 1.44M, fd1 is 1.44M FDC 0 is a
+                        post-1991 82077
+                      </P
+></LI
+><LI
+><P
+>&#13;                        SCSI Bus Initialization: The following lines are from
+                        aic7xxx.c, scsi.c, sg.c, sd.c or sr.c in the
+                        subdirectory linux/drivers/scsi:
+                      </P
+></LI
+></UL
+>
+                </P
+></LI
+><LI
+><P
+>&#13;                  Initialization of Kernel Support for Point-to-Point Protocol
+                  : The following initialization is done by
+                  linux/drivers/net/ppp.c.
+                </P
+></LI
+><LI
+><P
+>&#13;                  Examination of Fixed Disk Arrangement : The following lines
+                  are from linux/drivers/block/genhd.c:
+                </P
+></LI
+></UL
+>
+          </P
+></LI
+><LI
+><P
+>&#13;            Init Program (Process 1) Startup : The program /sbin/init is
+            started by the "idle" process (Process 0) code in
+            linux/init/main.c and becomes process 1. /sbin/init then completes
+            the initialization by running scripts and forking additional
+            processes as specified in /etc/inittab. It starts by printing:
+            INIT: version 2.76 booting and reads /etc/inittab.
+          </P
+></LI
+><LI
+><P
+>&#13;            The Bash Shell is Started : The bash shell, /bin/bash is then
+            started up. Bash initialization begins by executing script in
+            /etc/profile which set the system-wide environment variables:
+          </P
+></LI
+></OL
+>
+    </P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="bootprocess_urls"
+></A
+>11.1. References for Boot Process</H2
+><P
+>&#13;        Refer to following resources :
+        <P
+></P
+><UL
+><LI
+><P
+>&#13;              <!--<A
+HREF="http://www.tldp.org/HOWTO/Bootdisk-HOWTO/x1440.html"
+TARGET="_top"
+>-->&#13;                The Linux Boot Process
+              <!--</A
+>-->
+            </P
+></LI
+><LI
+><P
+>&#13;              <!--<A
+HREF="http://www.tldp.org/HOWTO/Bootdisk-HOWTO/x88.html"
+TARGET="_top"
+>-->&#13;                Bootdisks and Boot Process
+              <!--</A
+>-->
+            </P
+></LI
+><LI
+><P
+>&#13;              <!--<A
+HREF="http://ourworld.compuserve.com/homepages/KanjiFlash/SGVLUG.htm"
+TARGET="_top"
+>-->&#13;                Linux Boot Process - by San Gabreil LUG
+              <!--</A
+>-->
+            </P
+></LI
+><LI
+><P
+>&#13;              <!--<A
+HREF="http://www.linuxnetmag.com/en/issue4/m4boot1.html"
+TARGET="_top"
+>-->&#13;                Boot Process (Netmag)
+              <!--</A
+>-->
+            </P
+></LI
+><LI
+><P
+>&#13;              <!--<A
+HREF="http://oldfield.wattle.id.au/luv/boot.html"
+TARGET="_top"
+>-->&#13;                Boot Process (LUG Victoria)
+              <!--</A
+>-->
+            </P
+></LI
+></UL
+>
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="kernel_files_info.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="https://www.linuxlib.ru/en/kern/index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="other_formats.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Kernel Files Information</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Other Formats of this Document</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

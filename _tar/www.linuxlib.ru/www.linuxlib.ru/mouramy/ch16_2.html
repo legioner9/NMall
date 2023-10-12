@@ -1,0 +1,989 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования)
+      - FreeS/WAN VPN (часть 1)</H2><FONT size=+2>В этой главе</FONT><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#1">-->Linux OPENSSL
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#3">-->Команды<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#4">-->Организация
+      защиты Openssl<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#5">-->Linux
+      FreeS/WAN VPN<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#6">-->Настройка RSA
+      private keys secrets<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#7">-->Требования по
+      настройке сети для IPSec<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#8">-->Тестирование
+      инсталляции<!--</A>--><BR><FONT size=+1></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=163
+      src="ch16_2.files/27.jpg" width=210></TD></TR></TBODY></TABLE>
+<H3><A name=5>Linux FreeS/WAN VPN</A></H3><B>Краткий обзор</B>
+<P align=justify>Защита клиент-серверных соединений при помощи SSL отличный
+выбор, но иногда требуется безопасный канал, обеспечивающий полную
+конфиденциальность, аутентификацию и целостность данных между двумя межсетевыми
+экранами через Интернет. Для этого был создан IPSEC.</P>
+<P align=justify>IPSEC &#8211; это Internet Protocol SECurity. Он использует сильную
+криптографию для обоих сервисов: аутентификации и шифрации. Аутентификация
+гарантирует что пакеты идут от правильного отправителя и не будут изменены при
+пересылке. Шифрование предотвращает неавторизованное чтение содержимого пакетов.
+IPSEC может защищать любые протоколы работающие поверх IP и любые среды передачи
+используемые под IP. IPSEC может также предоставлять некоторые сервисы
+безопасности в фоновом режиме, с невидимым для пользователя влиянием. Более
+того, он может защищать смешанные протоколы, запускаемы через комплексную
+комбинацию сред передачи (например, IMAP/POP и т.д.) без внесения в них
+изменений, так как шифрование идет на уровне IP.</P>
+<P align=justify>Сервис IPSEC позволяет вам создавать безопасные туннели через
+небезопасные сети. Каждая передача через небезопасную сеть шифруется шлюзом
+IPSEC и расшифровывается шлюзом на другом конце. В результате возникает
+Виртуальная Приватная Сеть (Virtual Private Network) или VPN. Эта сеть является
+частной даже при том, что включает несколько машин объединенных небезопасным
+Интернет.</P><IMG alt="" border=0 height=333 src="ch16_2.files/29.jpg"
+width=503><BR><BR>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>Ядро версии
+2.2.14.<BR>FreeS/WAN VPN версии 1.3<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница ядра Linux: <!--<A
+href="http://www.kernelnotes.org/"
+target=_blank>-->http://www.kernelnotes.org/<!--</A>--><BR>Вы должны скачать:
+linux-2_2_14_tar.gz<BR>Домашняя страница FreeS/WAN VPN: <!--<A
+href="http://www.freeswan.org/"
+target=_blank>-->http://www.freeswan.org/<!--</A>--><BR>FTP сервер FreeS/WAN VPN: <!--<A
+href="ftp://194.109.6.26/" target=_blank>-->194.109.6.26<!--</A>--><BR>Вы должны скачать:
+freeswan-1.3.tar.gz<BR></P>
+<P align=justify>Тарболы.<BR>Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции FreeS/WAN и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Freeswan1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Freeswan2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Freeswan1 Freeswan2 &gt;
+Freeswan-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp freeswan-version.tar.gz /usr/src/<BR>[root@deep /]# cd /usr/src<BR>[root@deep
+src]# tar xzpf freeswan-version.tar.gz<BR>[root@deep src]# chown -R 0.0
+/usr/src/freeswan-version<BR></FONT>
+<H3>Предварительные требования.</H3>
+<P align=justify>Инсталляция IPSEC FreeS/WAN Virtual Private Network требует
+некоторой модификации в вашем оригинальном ядре, так как FreeS/WAN должен быть
+включен и зарегистрирован в вашем ядре перед тем как вы его используете. Из этих
+соображений первым шагом инсталляции FreeS/WAN будет переход в секцию &#8220;Ядро
+Linux&#8221; этой книги и следование инструкциям о том, как инсталлировать ядро на
+вашей и вернуться назад к секции &#8220;Linux FreeS/WAN VPN&#8221; (эта секция) после
+выполнения команд &#8220;make dep; make clean&#8221;, но перед выполнение &#8220;make
+bzImage&#8221;.</P>
+<P align=justify><B>ПРЕДУПРЕЖДЕНИЕ:</B> Очень рекомендуем, чтобы вы не
+компилировали что- нибудь в ядре с оптимизационными флагами, если вы планируете
+инсталлировать программное обеспечение FreeSWAN. Любые оптимизационные флаги
+добавленные в ядро Linux будут создавать сообщения об ошибках в FreeSWAN IPSEC.
+Все флаги документированные в главе 5, &#8220;Конфигурирование и Создание безопасного
+и оптимизированного ядра&#8221; применимы без каких-либо проблем со всем программным
+обеспечением описанном в книге за единственным исключением - FreeSWAN IPSEC. Так
+что повторюсь еще раз, не используйте оптимизационные опции и флаги в вашем ядре
+Linux, когда компилируете или патчите его для поддержки FreeSWAN.</P>
+<H3>Компиляция и добавление FreeS/WAN в ядро</H3>
+<P align=justify>Вы должны модифицировать &#8220;Makefile&#8221; в каталоге с исходными
+кодами FreeS/WAN и подкаталогах &#8220;utils&#8221;, &#8220;klips/utils&#8221;, &#8220;Pluto&#8221; и &#8220;lib&#8221;, чтобы
+определить пути для инсталляции. Мы должны модифицировать эти файлы, чтобы
+расположение файлов соответствовало структуре файловой системы Red Hate и чтобы
+после инсталляции они попадали под нашу переменную окружения PATH.</P><B>Шаг
+1</B>
+<P align=justify>Переместитесь в верхний уровень нового каталога с исходными
+кодами FreeS/WAN и введите следующие команды на вашем терминале:<BR>Редактируйте
+файл Makefile (vi Makefile) и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>PUBDIR=/usr/local/sbin</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>PUBDIR=/usr/sbin</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>PRIVDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>PRIVDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>FINALPRIVDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>FINALPRIVDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>MANTREE=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANTREE=/usr/man</FONT><BR></P><B>Шаг 2</B>
+<P align=justify>Редактируйте файл Makefile в подкаталоге &#8220;utils&#8221; (vi
+utils/Makefile) и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>PUBDIR=/usr/local/sbin</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>PUBDIR=/usr/sbin</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>PRIVDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>PRIVDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>FINALPRIVDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>FINALPRIVDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>MANTREE=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANTREE=/usr/man</FONT><BR></P><B>Шаг 3</B>
+<P align=justify>Редактируйте файл Makefile в подкаталоге &#8220;klips/utils&#8221; (vi
+klips/utils/Makefile) и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>BINDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>BINDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>MANTREE=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANTREE=/usr/man</FONT><BR></P><B>Шаг 4</B>
+<P align=justify>Редактируйте файл Makefile в подкаталоге &#8220;pluto&#8221; (vi
+pluto/Makefile) и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>BINDIR=/usr/local/lib/ipsec</FONT><BR>Должен быть:<BR><FONT
+color=#008080 size=-1>BINDIR=/usr/lib/ipsec</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>MANTREE=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANTREE=/usr/man</FONT><BR></P><B>Шаг 5</B>
+<P align=justify>Редактируйте файл Makefile в подкаталоге &#8220;lib&#8221; (vi
+lib/Makefile) и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>MANTREE=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANTREE=/usr/man</FONT><BR></P><B>Шаг 6</B>
+<P align=justify>Редактируйте файл Makefile в подкаталоге &#8220;libdes&#8221; (vi
+libdes/Makefile и сделайте в нем следующие изменения:</P>
+<P align=justify><FONT color=#008080
+size=-1>LIBDIR=/usr/local/lib</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>LIBDIR=/usr/lib</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>BINDIR=/usr/local/bin</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>BINDIR=/usr/bin</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>INCDIR=/usr/local/include</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>INCDIR=/usr/include</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>MANDIR=/usr/local/man</FONT><BR>Должен быть:<BR><FONT color=#008080
+size=-1>MANDIR=/usr/man</FONT><BR></P><B>Шаг 7</B>
+<P align=justify>Сейчас мы должны скомпилировать и проинсталлировать FreeSWAN на
+сервере:</P><FONT color=#008080 size=-1>[root@deep freeswan-1.3]# make
+insert<BR>[root@deep freeswan-1.3]# make programs<BR>[root@deep freeswan-1.3]#
+make install</FONT><BR>
+<P align=justify>Команды &#8220;make insert&#8221; создает символическую ссылку
+&#8220;/usr/src/linux/net/ipsec&#8221; на подкаталог с исходными кодами KLIPS, патчит
+некоторых файлов ядра, добавляет конфигурацию по умолчанию в конфигурационный
+файл ядра и в заключении создает коммуникационный файл KLIPS - &#8220;/dev/ipsec&#8221;,
+если его еще нет. Команда &#8220;make programs&#8221; создает библиотеки, Pluto и различные
+пользовательские утилиты. &#8220;make install&#8221; будет инсталлировать демон Pluto и
+утилиты и делать их запускаемыми при загрузке системы.</P>
+<H3>Переконфигурирование и инсталляция ядра с поддержкой FreeS/WAN VPN</H3>
+<P align=justify>Сейчас, мы должны вернуться в каталог &#8220;/usr/src/linux&#8221; и
+выполнить следующие команды для реконфигурирования ядра с поддержкой
+FreeS/WAN:</P><FONT color=#008080 size=-1>[root@deep freeswan-1.3]# cd
+/usr/src/linux<BR>[root@deep linux]# make config<BR></FONT>
+<P align=justify>Первое, что надо сделать &#8211; это включить поддержку FreeS/WAN в
+ядре. В версии 2.2.14 ядра, новая секция, связанная с frees/WAN VPN, называется
+&#8220;IPSec options (FreeS/WAN)&#8221;. Вам нужно ответить Y на следующие вопросы.</P><FONT
+color=#008080 size=-1>IPSec options (FreeS/WAN)<BR>IP Security Protocol
+(FreeS/WAN IPSEC) (CONFIG_IPSEC) [Y/n/?]<BR>IPSEC: IP-in-IP encapsulation
+(CONFIG_IPSEC_IPIP) [Y/n/?]<BR>IPSEC: PF_KEYv2 kernel/user interface
+(CONFIG_IPSEC_PFKEYv2) [Y/n/?]<BR>IPSEC: Enable ICMP PMTU messages
+(CONFIG_IPSEC_ICMP) [Y/n/?]<BR>IPSEC: Authentication Header (CONFIG_IPSEC_AH)
+[Y/n/?]<BR>HMAC-MD5 authentication algorithm (CONFIG_IPSEC_AUTH_HMAC_MD5)
+[Y/n/?]<BR>HMAC-SHA1 authentication algorithm (CONFIG_IPSEC_AUTH_HMAC_SHA1)
+[Y/n/?]<BR>IPSEC: Encapsulating Security Payload (CONFIG_IPSEC_ESP)
+[Y/n/?]<BR>3DES encryption algorithm (CONFIG_IPSEC_ENC_3DES) [Y/n/?]<BR>IPSEC
+Debugging Option (DEBUG_IPSEC) [Y/n/?]<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Все настройки, которые вы сделали в различных
+секциях ядра до первого запуска команд &#8220;make config&#8221;, &#8220;make dep&#8221; и &#8220;make clean&#8221;
+будут сохранены. Поэтому необходимо настроить только раздел &#8220;IPSec options
+(FreeS/WAN)&#8221; так, как это описано выше.</P>
+<P align=justify>Некоторые параметры настройки сети включаются автоматически,
+даже если вы выключили их. Это связано с тем, что IPSEC нуждается в них. Какой
+бы ни была программа конфигурирования ядра, вы должны обратить внимание на
+некоторые проблемы. В частности, проверьте чтобы не были отключены следующие
+опции из секции &#8220;Сетевые опции&#8221;:</P><FONT color=#008080 size=-1>Kernel/User
+netlink socket (CONFIG_NETLINK) [Y/n/?]<BR>Netlink device emulation
+(CONFIG_NETLINK_DEV) [Y/n/?]<BR></FONT>
+<P align=justify>Компиляция и инсталляция нового ядра с поддержкой FreeS/WAN</P>
+<P align=justify>Сейчас мы включили поддержку FreeS/WAN VPN в ядре и мы можем
+его компилировать и инсталлировать.</P>
+<P align=justify>Возвращаемся в каталог &#8220;/usr/src/linux&#8221; и запускаем следующие
+команды:</P><FONT color=#008080 size=-1>[root@deep linux]# make dep; make clean;
+make bzImage</FONT>
+<P align=justify>После окончания их работы, следуйте за инструкциями,
+приведенными в главе 5 &#8220;Конфигурирование и создание безопасного и
+оптимизированного ядра&#8221; для нормальной инсталляции нового ядра. После того, как
+вы проинсталлируете новый образ ядра, system.map, модули (если нужно) и
+определите в файл lilo.conf загрузку нового ядра, нужно редактировать и
+настроить конфигурационные файлы связанные с FreeS/WAN &#8220;ipsec.conf&#8221; и
+&#8220;ipsec.secrets&#8221; перед перезагрузкой системы.</P>
+<H3>Очистка после работы</H3><FONT color=#008080 size=-1>[root@deep /]# cd
+/usr/src<BR>[root@deep src]# rm -rf freeswan-version/
+freeswan-version.tar.gz<BR></FONT>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции FreeS/WAN. Также будет
+удален сжатый архив FreeS/WAN из каталога &#8220;/var/tmp&#8221;.</P>
+<H3>Конфигурации.</H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файл связанные с FreeSWAN из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска FreeSWAN следующие файлы должны быть созданы или
+скопированы в нужный каталог:</P>
+<P align=justify>Копируйте файл ipsec.conf в каталог &#8220;/etc&#8221;.<BR>Копируйте файл
+ipsec.secrets в каталог &#8220;/etc&#8221;.</P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz.</P>
+<H3>Настройка файла &#8220;/etc/ipsec.conf&#8221;</H3>
+<P align=justify>Конфигурационный файл FreeS/WAN &#8220;/etc/ipsec.conf&#8221; позволяет вам
+настраивать вашу конфигурацию IPSEC, контролируя информацию и типы соединений.
+IPSEC сейчас поддерживает два типа соединений: снабжаемые ключами вручную и
+автоматически снабжаемые ключами. Соединения снабжаемые ключами вручную
+используют ключи, хранящиеся в файле &#8220;/etc/ipsec.conf&#8221;. Этот тип соединений
+менее безопасен чем соединения автоматически снабжаемые ключами, которые
+используют ключи автоматически создаваемые демоном согласования ключей Pluto.
+Протокол согласования ключей, используемый по умолчанию и называемый IKE,
+устанавливает подлинность других систем используя совместный секрет, хранящийся
+в файле &#8220;/etc/ipsec.secrets&#8221;. Мы будем использовать соединения автоматически
+снабжаемые ключами, так как они более безопасные чем их ручной аналог.</P>
+<P align=justify>В нашем примерном конфигурационном файле приведенном ниже, мы
+настраиваем проходящий через брандмауэр туннель, и принимаем, что сетевой
+брандмауэр корректно работает на обоих концах туннеля. Мы выбрали эту
+конфигурацию, так как она представляется нам наиболее универсальной, пригодной
+для большинства пользователей. Также, она позволяет нам поиграться с большим
+числом опций конфигурационного файла &#8220;ipsec.conf&#8221;. </P>
+<P align=justify>Существуют другие конфигурации и вы можете прочитать файлы из
+подкаталога &#8220;doc/examples&#8221; для получения большей информации о них.</P><PRE>SubnetDeep==Deep--Deepgate.................Mailgate--Mail==SubnetMail
+                            Untrusted net</PRE>
+<P align=justify><B>leftsubnet</B> = SubnetDeep (192.168.1.0/24)<BR><B>left</B>
+= Deep (deep.openna.com)<BR><B>leftnexthop</B> = Deepgate (первый маршрутизатор
+в направлении или маршрутизатор провайдера для
+deep.openna.com)<BR><B>Internet</B> = Untrusted net<BR><B>rightnexthop</B> =
+Mailgate (первый маршрутизатор в направлении или маршрутизатор провайдера для
+mail.openna.com)<BR><B>right</B> = Mail (mail.openna.com)<BR><B>rightsubnet</B>
+= SubnetMail (192.168.1.0/24)<BR></P><PRE>      SubnetDeep
+\   192.168.1.0/24   /
++--------------------+
+          |
+         Deep
+\   208.164.186.1    /
++--------------------+
+          |
+       Deepgate
+\   205.151.222.250  /
++--------------------+
+          |
+    I N T E R N E T
+          |
+       Mailgate
+/  205.151.222.251 \
++-------------------+
+          |
+         Mail
+/  208.164.186.2  \
++------------------+
+          |
+      SubnetMail
+ /  192.168.1.0/24 \
++-------------------+</PRE>
+<P align=justify><B>SubnetDeep</B> &#8211; это IP адрес вашей внутренней приватной
+сети за первым шлюзом. eth1 подсоединен в внутренней сети.<BR><B>Deep</B> &#8211; это
+IP адрес первого шлюза. eth0 подсоединен к Интернет.<BR><B>Deepgate</B> &#8211; это IP
+адрес первого маршрутизатора в направлении вашего второго шлюза
+(mail.openna.com) или маршрутизатора вашего провайдера.<BR><B>INTERNET</B> &#8211;
+небезопасная сеть.<BR><B>Mailgate</B> - это IP адрес второго маршрутизатора в
+направлении вашего первого шлюза (deep.openna.com) или маршрутизатора вашего
+провайдера.<BR><B>Mail</B> &#8211; это IP адрес второго шлюза. eth0 подсоединен к
+Интернет.<BR><B>SubnetMail</B> &#8211; это IP адрес вашей внутренней приватной сети за
+вторым шлюзом. eth1 подсоединен в внутренней сети.</P>
+<P align=justify>Мы должны редактировать файл ipsec.conf (vi /etc/ipsec.conf) и
+изменить значения принятые по умолчанию на то, что нам нужно. Существует два
+типа секций в этом файле (/etc/ipsec.conf): секция &#8220;config&#8221;, которая определяет
+общую информацию для IPSEC, и секция &#8220;conn&#8221;, которая определяет параметры IPSEC
+соединений. Он не содержит информации связанной с безопасностью если не
+используется ручное снабжение ключами (напоминаем, ручное снабжение ключами не
+рекомендуется из соображений безопасности).</P>
+<P align=justify>Секции первого типа, называемые config setup, является
+единственным разделом содержащим полные параметры установки для IPSEC, которые
+применяются ко всем соединениям, и информацию используемую при запуске
+программного обеспечения.</P>
+<P align=justify>Второй тип, называемый conn, содержит технические требования
+сетевых соединений осуществляемых при помощи IPSEC. Имя данное этому разделу
+произвольно, и просто используется для идентификации соединений с ipsec_auto(8)
+и ipsec_manual(8).</P><PRE># /etc/ipsec.conf &#8211; конфигурационный файл FreeS/WAN IPSEC
+# Более детальные и более разнообразные примеры конфигураций могут
+# быть найдены в doc/examples.
+# Общая конфигурация
+config setup
+   interfaces="ipsec0=eth0"
+   klipsdebug=none
+   plutodebug=none
+   plutoload=%search
+   plutostart=%search
+# образцы соединений
+conn deep-mail
+   left=208.164.186.1
+   leftsubnet=192.168.1.0/24
+   leftnexthop=205.151.222.250
+   right=208.164.186.2
+   rightsubnet=192.168.1.0/24
+   rightnexthop=205.151.222.251
+   keyingtries=0
+   auth=ah
+   auto=start
+</PRE>
+<P align=justify>где:</P>
+<P align=justify><B>interfaces="ipsec0=eth0"</B><BR>Эта опция определяет какие
+соответствующие виртуальные и физические интерфейсы используются для IPSEC.
+Установка по умолчанию, &#8220;interfaces=%defaultroute&#8221;, будет определять ваше
+соединение с Интернет или с вашей корпоративной сетью. Также, вы можете
+именовать один или больше интерфейсов для использования с FreeS/WAN.
+Например:<BR><FONT color=#008080
+size=-1>interfaces="ipsec0=eth0"<BR>interfaces="ipsec0=eth0
+ipsec1=ppp0"</FONT><BR>Обе строки определяют интерфейс eth0 как ipsec0. Кроме
+того, вторая также устанавливает поддержку IPSEC через интерфейс PPP. Если
+установка по умолчанию &#8220;interfaces=%defaultroute&#8221; не используется, тогда
+заданный интерфейс будет только один &#8211; это шлюзовая машина, которая используется
+для обмена информации с другим IPSEC шлюзом.</P>
+<P align=justify><B>klipsdebug=none</B><BR>Эта опция определяет отладочный вывод
+для KLIPS (ядро кода IPSEC). Значение по умолчанию - none, означающее отсутствие
+вывода отладочной информации, all обозначает вывод всей отладочной
+информации.</P>
+<P align=justify><B>plutodebug=none</B><BR>Это опция определяет вывод отладочной
+информации для демона согласования ключей Pluto. Значения принимаемые этой
+опцией аналогичны klipsdebug.</P>
+<P align=justify><B>plutoload=%search</B><BR>Эта опция определяет какие
+соединения (по именам) загружаются автоматически в память, когда запускается
+Pluto. По умолчанию &#8211; none, значение %search загружает все соединения с auto=add
+или auto=start.</P>
+<P align=justify><B>plutostart=%search</B><BR>Эта опция определяет какие
+соединения (по именам) устанавливаются автоматически, когда запускается Pluto.
+По умолчанию &#8211; none, значение %search устанавливает все соединения с
+auto=start.</P>
+<P align=justify><B>conn deep-mail</B><BR>Эта опция задает имя, выступающее
+идентификатором соединения, которое может быть использовано IPSEC. Хорошим
+решением будет именовать соединения по их конечным точкам для предотвращения
+ошибок. Например, связь между deep.openna.com и mail.openna.com может быть
+названа "deep-mail", или связь между вашими офисам в Монреале и Париже -
+"montreal-paris". Заметим, что имя &#8220;deep-mail&#8221; или то, что вы выбрали в качестве
+имени должно совпадать на обоих шлюзах. Другими словами, единственным
+изменением, которое вы должны сделать в файле &#8220;/etc/ipsec.conf&#8221; на втором шлюзе
+должно быть изменение строки &#8220;interfaces=&#8221; на соответствующий интерфейс второго
+шлюза, использующего IPSEC соединение, если, конечно, это отличается от первого
+шлюза. Например, если интерфейс eth0 используется на обоих шлюзах для IPSEC, вам
+не нужно изменять строку &#8220;interfaces=&#8221; на втором шлюзе. С другой стороны, если
+первый шлюз использует eth0, а второй eth1, то вы должны изменить строку
+&#8220;interfaces=&#8221; на втором шлюзе на eth1.</P>
+<P align=justify><B>left=208.164.186.1</B><BR>Эта опция задает IP адрес внешнего
+интерфейса шлюза, используемого для общения с другим шлюзом.</P>
+<P align=justify><B>leftsubnet=192.168.1.0/24</B><BR>Эта опция определяет IP
+адрес приватной подсети находящейся за шлюзом.</P>
+<P align=justify><B>leftnexthop=205.151.222.250</B><BR>Эта опция определяет IP
+адрес первого маршрутизатора в требуемом направлении или маршрутизатора
+провайдера.</P>
+<P align=justify><B>right=208.164.186.2</B><BR>Это тоже, что и &#8220;left=&#8221;, но для
+правого пункта назначения.</P>
+<P align=justify><B>rightsubnet=192.168.1.0/24</B><BR>Это тоже, что и
+&#8220;leftsubnet=&#8221;, но для правого пункта назначения.</P>
+<P align=justify><B>rightnexthop=205.151.222.251</B><BR>Это тоже, что и
+&#8220;leftnexthop=&#8221;, но для правого пункта назначения.</P>
+<P align=justify><B>keyingtries=0</B><BR>Эта опция определяет как много попыток
+(целое число) может быть сделано при переговорах об используемых ключах. По
+умолчанию равно 0 (постоянный повтор), что рекомендуется и оставить.</P>
+<P align=justify><B>auth=ah</B><BR>Эта опция определяет должна ли аутентификация
+осуществляться независимо, используя AH (Authentication Header), или включается
+как часть ESP (Encapsulated Security Payload) сервиса. Это предпочтительно,
+когда IP заголовки незащищены для предотвращения атак типа
+man-in-the-middle.</P>
+<P align=justify><B>auto=start</B><BR>Эта опция определяет должна ли быть
+выполнена автоматически операция запуска, когда запускается IPSEC.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Несоответствие данных в этом конфигурационном
+файле &#8220;ipsec.conf&#8221; будет заставлять FreeS/WAN фиксировать различные сообщения об
+ошибках.</P>
+<H3>Настройка файла &#8220;/etc/ipsec.secrets&#8221;</H3>
+<P align=justify>В файле &#8220;ipsec.secrets&#8221; хранятся секреты используемые демоном
+pluto для установления подлинности передачи между шлюзами. Может быть настроено
+два типа секретов preshared секреты и приватные ключи RSA. Вы должны проверить,
+чтобы владельцем файла был &#8220;root&#8221; и только он должен иметь право доступа к
+файлу.</P><B>Шаг 1</B>
+<P align=justify>Пример секрета поставляется в файле &#8220;ipsec.secrets&#8221; по
+умолчанию. Вы должны изменить его на свой собственный. С автоматической
+поддержкой ключей вы можете разделять секрет до 256 бит, которые затем
+используются во время обмена ключами, чтобы не происходили атаки
+man-in-the-middle.<BR>Для создания общего секрета используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# ipsec ranbits 256 &gt; temp</FONT>
+<P align=justify>Сейчас будут созданы случайные ключи при помощи утилиты
+ranbits(8) в файл с именем &#8220;temp&#8221;. Утилита ranbits может приостанавливаться на
+несколько секунд если не было доступно немедленно достаточно энтропии.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Не забудьте удалить временный файл как только
+закончите все манипуляции с ним.</P><B>Шаг 2</B>
+<P align=justify>Сейчас, наш общий секретный ключ созданный в файле &#8220;temp&#8221;, мы
+должны положить в файл &#8220;/etc/ipsec.secrets&#8221;. Когда вы редактируете файл
+&#8220;ipsec.secrets&#8221; вы должны видеть нечто подобное в вашем текстовом редакторе.
+Каждая строка содержит IP адреса двух шлюзов и секрет:</P><PRE># Этот файл хранит общий секрет, который сейчас используется только для
+# внутреннего механизма аутентификации Pluto. Смотрите страницу
+# руководства ipsec_pluto(8). Каждый секрет (немного упрощенный) для одной
+# пары договаривающихся хостов. Общий секрет это длинная и сложная для
+# угадывания произвольная символьная строка
+# Заметим, что все секреты должны быть заключены в кавычки, даже если они
+# не имеют в своем составе пробелов.
+10.0.0.1 11.0.0.1 &#8220;jxVS1kVUTTulkVRRTnTujSm444jRuU1mlkklku2nkW3nnVuV2
+WjjRRnulmlkmU1Run5VSnnRT"
+</PRE>
+<P align=justify>Редактируйте файл ipsec.secrets (vi /etc/ipsec.secrets) и
+измените секретный ключ принятый по умолчанию:</P>
+<P align=justify><FONT color=#008080 size=-1>10.0.0.1 11.0.0.1
+"jxVS1kVUTTulkVRRTnTujSm444jRuU1mlkklku2nkW3nnVuV2WjjRRnulmlkmU1Run5VSnnRT"</FONT><BR>Должен
+быть:<BR><FONT color=#008080 size=-1>208.164.186.1 208.164.186.2
+"0x9748cc31_2e99194f_d230589b_cd846b57_dc070b01_74b66f34_19c40a1a_804906ed"</FONT></P>
+<P align=justify>где &#8220;208.164.186.1" и &#8220;208.164.186.2" IP адреса двух шлюзов и
+"0x9748cc31_2e99194f_d230589b_cd846b57_dc070b01_74b66f34_19c40a1a_8049 06ed"
+(кавычки обязательно нужны) &#8211; общий ключ, который мы создали командой &#8220;ipsec
+ranbits 256 &gt; temp&#8221; в файле &#8220;temp&#8221;.</P><B>Шаг 3</B>
+<P align=justify>Файлы &#8220;ipsec.conf&#8221; и &#8220;ipsec.secrets&#8221; должны быть скопированы на
+второй шлюз, так, чтобы они были идентичны на обоих концах. Только одно
+исключение может быть в секции с меткой config setup, где должен быть указан
+правильный интерфейс. Файл &#8220;ipsec.secrets&#8221; должен иметь абсолютно одинаковые
+секреты на обоих шлюзах.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Файл &#8220;/etc/ipsec.secrets&#8221; должен иметь права
+доступа rw------- (600) и его владельцем должен быть пользователь &#8220;root&#8221;. Файл
+&#8220;/etc/ipsec.conf&#8221; инсталлируется с правами rw-r--r&#8212; (644) и его владельцем также
+является суперпользователь &#8220;root&#8221;.</P>
+<H3><A name=6>Настройка тайного секретного ключа RSA</A></H3>
+<P align=justify>Напомним, что сейчас FreeSWAN имеет два типа секретов:
+предварительно разделенные секреты и приватные ключи RSA. Предварительно
+разделенные секреты, которые настраиваются в наших файлах &#8220;ipsec.conf&#8221; и
+&#8220;ipsec.secrets&#8221;, мы рассмотрели выше. Некоторые люди предпочитают использовать
+приватные ключи RSA для аутентификации других хостов через Pluto демон. Если вы
+находитесь в этой ситуации, то надо будет сделать некоторые изменения в файлах
+&#8220;ipsec.conf&#8221; и &#8220;ipsec.secrets&#8221;, как описано ниже:</P>
+<P align=justify>Вам нужно создать независимый RSA ключ для каждого шлюза.
+Каждый из них хранит этот ключ в своем файле &#8220;ipsec.secrets&#8221;, а публичный ключ
+перемещается в параметры &#8220;leftrsasigkey&#8221; и &#8220;rightrsasigkey&#8221; секции conn файла
+&#8220;ipsec.conf&#8221;, который одинаков для обоих шлюзах.</P><B>Шаг 1</B>
+<P align=justify>Создайте независимый ключ RSA для каждого из шлюзов.<BR>На
+первом шлюзе (например, deep) используйте команду:</P><FONT color=#008080
+size=-1>[root@deep /]# cd /<BR>[root@deep /]# ipsec rsasigkey --verbose 1024
+&gt; deep-keys<BR>computing primes and modulus...<BR>getting 64 random bytes
+from /dev/random<BR>looking for a prime starting there<BR>found it after 30
+tries<BR>getting 64 random bytes from /dev/random<BR>looking for a prime
+starting there<BR>found it after 230 tries<BR>swapping primes so p is the
+larger<BR>computing (p-1)*(q-1)...<BR>computing d...<BR>computing exp1, exp1,
+coeff...<BR>output...<BR></FONT>
+<P align=justify>На втором шлюзе (например, mail) используйте команду:</P><FONT
+color=#008080 size=-1>[root@mail /]# cd /<BR>[root@mail /]# ipsec rsasigkey
+--verbose 1024 &gt; mail-keys<BR>computing primes and modulus...<BR>getting 64
+random bytes from /dev/random<BR>looking for a prime starting there<BR>found it
+after 30 tries<BR>getting 64 random bytes from /dev/random<BR>looking for a
+prime starting there<BR>found it after 230 tries<BR>swapping primes so p is the
+larger<BR>computing (p-1)*(q-1)...<BR>computing d...<BR>computing exp1, exp1,
+coeff...<BR>output...<BR></FONT>
+<P align=justify>Утилита rsasigkey создает пару RSA ключей (публичный и
+приватный) из 1024- bit сигнатуры, и помещает их в файл deep-keys (mail-keys для
+второй команды на втором шлюзе). Приватный ключ может быть дословно вставлен в
+файл &#8220;ipsec.secrets&#8221;, а публичный ключ в файл &#8220;ipsec.conf&#8221;.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Утилита rsasigkey во время своей работы может
+остановиться на несколько секунд если ей не хватает энтропии. Вы можете добавить
+ее перемещая случайным образом мышь.</P>
+<P align=justify>Временные файлы RSA &#8220;deep-keys&#8221; и &#8220;mail-keys&#8221; должны быть
+удалены, как только вы закончите работать с ними.</P><B>Шаг 2</B>
+<P align=justify>Изменим ваш файл &#8220;/etc/ipsec.conf&#8221; для использования публичного
+ключа RSA на каждом шлюзе.<BR>Редактируйте оригинальный файл ipsec.conf (vi
+/etc/ipsec.conf) и добавьте в него следующие параметры связанные с RSA в секцию
+conn на обоих шлюзах:</P><PRE># образец соединения
+conn deep-mail
+   left=208.164.186.1
+   leftsubnet=192.168.1.0/24
+   leftnexthop=205.151.222.250
+   right=208.164.186.2
+   rightsubnet=192.168.1.0/24
+   rightnexthop=205.151.222.251
+   keyingtries=0
+   auth=ah
+   authby=rsasig
+   leftrsasigkey=&lt;Public key of deep&gt;
+   rightrsasigkey=&lt;Public key of mail&gt;
+   auto=start</PRE>
+<P align=justify><B>authby=rsasig</B><BR>Этот параметр определяет как два шлюза
+безопасности должны устанавливать подлинность друг друга. Значение по умолчанию
+этого параметра - shared secrets. Мы должны определить rsasig для RSA, так как
+мы решили использовать цифровые подписи RSA.</P>
+<P align=justify><B>leftrsasigkey=&lt;Public key of deep&gt;</B><BR>Этот
+параметр определяет публичный ключ для RSA сигнатуры левого участника. В нашем
+примере, левый - 208.164.186.1, и представляет deep.openna.com, так что мы
+должны поместить публичный ключ RSA для deep в этой строке.</P>
+<P align=justify><B>rightrsasigkey=&lt;Public key of mail&gt;</B><BR>Этот
+параметр определяет публичный ключ для RSA сигнатуры правого участника. В нашем
+примере, правый - 208.164.186.2, и представляет mail.openna.com, , так что мы
+должны поместить публичный ключ RSA для mail в этой строке.</P>
+<P align=justify>Мы можем найти публичный ключ для deep в файле &#8220;deep-keys&#8221;, а
+для mail в &#8220;mail-keys&#8221;. Эти файлы мы получили на первом шаге. Их содержимое
+выглядит следующим образов:<BR>Ключи RSA для шлюза deep (deep-keys):</P><PRE>[root@deep /]# cd /
+[root@deep /]# vi deep-keys
+      # 1024 bits, Fri Feb 4 05:05:19 2000
+      # for signatures only, UNSAFE FOR ENCRYPTION
+      #pubkey=0x010395daee1be05f3038ae529ef2668afd79f5ff1b16203c9ceaef801cea9cb74bcfb51a6e
+cc08890d3eb4b5470c0fc35465c8ba2ce9d1145ff07b5427e04cf4a38ef98a7f29edcb4d7689f2da7a69199e
+4318b4c8d0ea25d33e4f084186a2a54f4b4cec12cca1a5deac3b19d561c16a76bab772888f1fd71aa08f085
+02a141b611f
+       Modulus:
+0x95daee1be05f3038ae529ef2668afd79f5ff1b16203c9ceaef801cea9cb74bcfb51a6ecc08890d3eb4b5470c0
+fc35465c8ba2ce9d1145ff07b5427e04cf4a38ef98a7f29edcb4d7689f2da7a69199e4318b4c8d0ea25d33e4f0
+84186a2a54f4b4cec12cca1a5deac3b19d561c16a76bab772888f1fd71aa08f08502a141b611f
+        PublicExponent: 0x03
+        # everything after this point is secret
+        PrivateExponent:
+0x63e74967eaea2025c98c69f6ef0753a6a3ff6764157dbdf1f50013471324dd352366f48805b0b37f232384b2
+b52ce2ee85d173468b62eaa052381a9588a317b3a1324d01a531a41fa7add6c5efbdd88f4718feed2bc0246b
+e924e81bb90f03e49ceedf7af0dd48f06f265b519600bd082c6e6bd27eaa71cc0288df1ecc3b062b
+        Prime1:
+0xc5b471a88b025dd09d4bd7b61840f20d182d9b75bb7c11eb4bd78312209e3aee7ebfe632304db6df5e211d
+21af7fee79c5d45546bea3ccc7b744254f6f0b847f
+        Prime2:
+0xc20a99feeafe79767122409b693be75f15e1aef76d098ab12579624aec708e85e2c5dd62080c3a64363f2f4
+5b0e96cb4aef8918ca333a326d3f6dc2c72b75361
+        Exponent1:
+0x83cda11b0756e935be328fcebad5f6b36573bcf927a80bf2328facb6c0697c9eff2a9976cade79ea3ec0be16
+74fff4512e8d8e2f29c2888524d818df9f5d02ff
+       Exponent2:
+0x815c66a9f1fefba44b6c2b124627ef94b9411f4f9e065c7618fb96dc9da05f03ec83e8ec055d7c42ced4ca2e7
+5f0f3231f5061086ccd176f37f9e81da1cf8ceb
+       Coefficient:
+0x10d954c9e2b8d11f4db1b233ef37ff0a3cecfffad89ba5d515449b007803f577e3bd7f0183ceddfd805466d62f
+767f3f5a5731a73875d30186520f1753a7e325</PRE>
+<P align=justify>Ключи RSA для шлюза mail (mail-keys):</P><PRE>[root@mail /]# cd /
+[root@mail /]# vi mail-keys
+      # 1024 bits, Fri Feb 4 04:46:59 2000
+      # for signatures only, UNSAFE FOR ENCRYPTION
+      #pubkey=0x01037631b81f00d5e6f888c542d44dbb784cd3646f084ed96f942d341c7c4686cbd405b8
+05dc728f8697475f11e8b1dd797550153a3f0d4ff0f2b274b70a2ebc88f073748d1c1c8821dc6be6a2f0064f
+3be7f8e4549f8ab9af64944f829b014788dd202cf7d2e320cab666f5e7a197e64efe0bfee94e92ce4dad82d5
+230c57b89edf
+      Modulus:
+0x7631b81f00d5e6f888c542d44dbb784cd3646f084ed96f942d341c7c4686cbd405b805dc728f8697475f11e8
+b1dd797550153a3f0d4ff0f2b274b70a2ebc88f073748d1c1c8821dc6be6a2f0064f3be7f8e4549f8ab9af64944f
+829b014788dd202cf7d2e320cab666f5e7a197e64efe0bfee94e92ce4dad82d5230c57b89edf
+     PublicExponent: 0x03
+     # everything after this point is secret
+     PrivateExponent:
+0x4ecbd014ab3944a5b08381e2de7cfadde242f4b03490f50d737812fd8459dd3803d003e84c5faf0f84ea0bf0
+7693a64e35637c2a08dff5f721a324b1747db09f62c871d5e11711251b845ae76753d4ef967c494b0def4f5d07
+62f65da603bc04c41b4c6cab4c413a72c633b608267ae2889c162a3d5bc07ee083b1c6e038400b
+      Prime1:
+0xc7f7cc8feaaac65039c39333b878bffd8f95b0dc22995c553402a5b287f341012253e9f25b83983c936f6ca51
+2926bebee3d5403bf9f4557206c6bbfd9aac899
+      Prime2:
+0x975015cb603ac1d488dc876132d8bc83079435d2d3395c03d5386b5c004eadd4d7b01b3d86aad0a2275d2
+d6b791a2abe50d7740b7725679811a32ca22db97637
+      Exponent1:
+0x854fddb5471c84357bd7b777d0507ffe5fb92092c1bb92e37801c3cc5aa22b5616e29bf6e7ad1028624a486
+e0c619d47f428e2ad2a6a2e3a159d9d2a911c85bb
+      Exponent2:
+0x64e00e87957c81385b3daf9621e5d302050d7937377b92ad38d04792aadf1e8de52012290471e06c1a3e1
+e47a61171d435e4f807a4c39a6561177316c9264ecf
+      Coefficient:
+0x6f087591becddc210c2ee0480e30beeb25615a3615203cd3cef65e5a1d476fd9602ca0ef10d9b858edb22db
+42c975fb71883a470b43433a7be57df7ace4a0a3f
+</PRE>
+<P align=justify>Извлеките и скопируйте публичный RSA ключ для deep и mail в
+ваши файлы &#8220;ipsec.conf&#8221;, как это показано ниже. Вы можете определит строки
+связанные с публичным ключом как начинающиеся с закомментированной строки:
+&#8220;#pubkey=&#8221;.</P><PRE># образец соединения
+conn deep-mail
+   left=208.164.186.1
+   leftsubnet=192.168.1.0/24
+   leftnexthop=205.151.222.250
+   right=208.164.186.2
+   rightsubnet=192.168.1.0/24
+   rightnexthop=205.151.222.251
+   keyingtries=0
+   auth=ah
+   authby=rsasig
+   leftrsasigkey=0x010395daee1be05f3038ae529ef2668afd79f5ff1b16203c9ceaef801cea9cb74bcfb5
+   1a6ecc08890d3eb4b5470c0fc35465c8ba2ce9d1145ff07b5427e04cf4a38ef98a7f29edcb4d7689f2d
+   a7a69199e4318b4c8d0ea25d33e4f084186a2a54f4b4cec12cca1a5deac3b19d561c16a76bab77288
+   8f1fd71aa08f08502a141b611f
+   rightrsasigkey=0x01037631b81f00d5e6f888c542d44dbb784cd3646f084ed96f942d341c7c4686cbd
+   405b805dc728f8697475f11e8b1dd797550153a3f0d4ff0f2b274b70a2ebc88f073748d1c1c8821dc6b
+   e6a2f0064f3be7f8e4549f8ab9af64944f829b014788dd202cf7d2e320cab666f5e7a197e64efe0bfee94
+   e92ce4dad82d5230c57b89edf
+   auto=start
+</PRE>
+<P align=justify>Не забудьте, что в нашем примере, параметр &#8220;leftrsasigkey=&#8221;
+содержит публичный ключ для и параметр &#8220;rightrsasigkey=&#8221; содержит публичный ключ
+для mail.</P><B>Шаг 3</B>
+<P align=justify>Модифицируйте ваш файл &#8220;/etc/ipsec.secrets&#8221; для использования
+приватного ключа RSA на каждом шлюзе.<BR>Редактируйте оригинальный файл
+ipsec.secrets (vi /etc/ipsec.secrets) и добавьте в него приватный ключ RSA для
+подтверждения подлинности обоих шлюзов:<BR>Файл &#8220;ipsec.secrets&#8221; для шлюза
+deep:<BR></P><PRE>[root@deep /]# vi /etc/ipsec.secrets
+208.164.186.1 208.164.186.2
+"0x9748cc31_2e99194f_d230589b_cd846b57_dc070b01_74b66f34_19c40a1a_804906ed"</PRE>
+<P align=justify>Вы должны изменить ваш оригинальный файл &#8220;ipsec.secrets&#8221; как
+это показано ниже на обоих шлюзах. Важно заметить, что приватные ключи не
+совпадают на deep и mail. Приватный ключ для deep берем из файла &#8220;deep-keys&#8221;, а
+приватный ключ для mail из &#8220;mail-keys&#8221;:</P><PRE>208.164.186.1 208.164.186.2: RSA {
+       Modulus:
+0x95daee1be05f3038ae529ef2668afd79f5ff1b16203c9ceaef801cea9cb74bcfb51a6ecc08890d3eb4b5470c0
+fc35465c8ba2ce9d1145ff07b5427e04cf4a38ef98a7f29edcb4d7689f2da7a69199e4318b4c8d0ea25d33e4f0
+84186a2a54f4b4cec12cca1a5deac3b19d561c16a76bab772888f1fd71aa08f08502a141b611f
+       PublicExponent: 0x03
+       # everything after this point is secret
+       PrivateExponent:
+0x63e74967eaea2025c98c69f6ef0753a6a3ff6764157dbdf1f50013471324dd352366f48805b0b37f232384b2
+b52ce2ee85d173468b62eaa052381a9588a317b3a1324d01a531a41fa7add6c5efbdd88f4718feed2bc0246b
+e924e81bb90f03e49ceedf7af0dd48f06f265b519600bd082c6e6bd27eaa71cc0288df1ecc3b062b
+       Prime1:
+0xc5b471a88b025dd09d4bd7b61840f20d182d9b75bb7c11eb4bd78312209e3aee7ebfe632304db6df5e211d
+21af7fee79c5d45546bea3ccc7b744254f6f0b847f
+       Prime2:
+0xc20a99feeafe79767122409b693be75f15e1aef76d098ab12579624aec708e85e2c5dd62080c3a64363f2f4
+5b0e96cb4aef8918ca333a326d3f6dc2c72b75361
+       Exponent1:
+0x83cda11b0756e935be328fcebad5f6b36573bcf927a80bf2328facb6c0697c9eff2a9976cade79ea3ec0be16
+74fff4512e8d8e2f29c2888524d818df9f5d02ff
+       Exponent2:
+0x815c66a9f1fefba44b6c2b124627ef94b9411f4f9e065c7618fb96dc9da05f03ec83e8ec055d7c42ced4ca2e7
+5f0f3231f5061086ccd176f37f9e81da1cf8ceb
+       Coefficient:
+0x10d954c9e2b8d11f4db1b233ef37ff0a3cecfffad89ba5d515449b007803f577e3bd7f0183ceddfd805466d62f
+767f3f5a5731a73875d30186520f1753a7e325
+       }
+</PRE>
+<P align=justify>Файл &#8220;ipsec.secrets&#8221; для шлюза mail:</P><PRE>[root@mail /]# vi /etc/ipsec.secrets
+208.164.186.1 208.164.186.2: RSA {
+        Modulus:
+0x95daee1be05f3038ae529ef2668afd79f5ff1b16203c9ceaef801cea9cb74bcfb51a6ecc08890d3eb4b5470c0
+fc35465c8ba2ce9d1145ff07b5427e04cf4a38ef98a7f29edcb4d7689f2da7a69199e4318b4c8d0ea25d33e4f0
+84186a2a54f4b4cec12cca1a5deac3b19d561c16a76bab772888f1fd71aa08f08502a141b611f
+        PublicExponent: 0x03
+        # everything after this point is secret
+        PrivateExponent:
+0x63e74967eaea2025c98c69f6ef0753a6a3ff6764157dbdf1f50013471324dd352366f48805b0b37f232384b2
+b52ce2ee85d173468b62eaa052381a9588a317b3a1324d01a531a41fa7add6c5efbdd88f4718feed2bc0246b
+e924e81bb90f03e49ceedf7af0dd48f06f265b519600bd082c6e6bd27eaa71cc0288df1ecc3b062b
+        Prime1:
+0xc5b471a88b025dd09d4bd7b61840f20d182d9b75bb7c11eb4bd78312209e3aee7ebfe632304db6df5e211d
+21af7fee79c5d45546bea3ccc7b744254f6f0b847f
+        Prime2:
+0xc20a99feeafe79767122409b693be75f15e1aef76d098ab12579624aec708e85e2c5dd62080c3a64363f2f4
+5b0e96cb4aef8918ca333a326d3f6dc2c72b75361
+        Exponent1:
+0x83cda11b0756e935be328fcebad5f6b36573bcf927a80bf2328facb6c0697c9eff2a9976cade79ea3ec0be16
+74fff4512e8d8e2f29c2888524d818df9f5d02ff
+        Exponent2:
+0x815c66a9f1fefba44b6c2b124627ef94b9411f4f9e065c7618fb96dc9da05f03ec83e8ec055d7c42ced4ca2e7
+5f0f3231f5061086ccd176f37f9e81da1cf8ceb
+        Coefficient:
+0x10d954c9e2b8d11f4db1b233ef37ff0a3cecfffad89ba5d515449b007803f577e3bd7f0183ceddfd805466d62f
+767f3f5a5731a73875d30186520f1753a7e325
+        }
+</PRE>
+<P align=justify>Аутентификация с использованием RSA сигнатур требует, чтобы
+каждый хост имел собственный приватный ключ. Начальная часть ключа может
+содержать признак, характеризующий тип ключа. &#8220;RSA&#8221; обозначает приватный ключ
+RSA и &#8220;PSK&#8221; (который принят по умолчанию) обозначает PreShared ключ. Так как
+&#8220;PSK&#8221; принимается по умолчанию, мы должны задать &#8220;RSA&#8221;, определяя использования
+приватного ключа RSA в этом файле (ipsec.secrets). Только суперпользователь
+&#8220;root&#8221; должен владеть файлом &#8220;ipsec.secrets&#8221;, и для всех остальных любой доступ
+к нему должен быть заблокирован.</P>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

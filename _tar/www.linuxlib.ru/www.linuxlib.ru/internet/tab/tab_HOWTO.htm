@@ -1,0 +1,3411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Traffic Accounting Billing HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<font face="courier" size="4"><pre>
+  <u>Данный документ это - <font color="#109200" size="5"><b>Traffic-Accounting-Billing-HOWTO</b></font></u>
+
+
+  Оглавление
+
+  1. <a href="tab_HOWTO.htm#p1" style="text-decoration:none;color:#000000;">Введение</a>
+
+    1.1 <a href="tab_HOWTO.htm#p1_1" style="text-decoration:none;color:#000000;">Что?</a>
+    1.2 <a href="tab_HOWTO.htm#p1_2" style="text-decoration:none;color:#000000;">Почему?</a>
+    1.3 <a href="tab_HOWTO.htm#p1_3" style="text-decoration:none;color:#000000;">Где?</a>
+
+  2. <a href="tab_HOWTO.htm#p2" style="text-decoration:none;color:#000000;">Синтаксис файлов конфигурации</a>
+    2.1 <a href="tab_HOWTO.htm#p2_1" style="text-decoration:none;color:#000000;">Общий синтаксис</a>
+      2.1.1 <a href="tab_HOWTO.htm#p2_1_1" style="text-decoration:none;color:#000000;">Синтаксис переменных</a>
+      2.1.2 <a href="tab_HOWTO.htm#p2_1_2" style="text-decoration:none;color:#000000;">Синтаксис параметров</a>
+    2.2 <a href="tab_HOWTO.htm#p2_2" style="text-decoration:none;color:#000000;">Специальные символы</a>
+      2.2.1 <a href="tab_HOWTO.htm#p2_2_1" style="text-decoration:none;color:#000000;">Примеры использования</a>
+
+  3. <a href="tab_HOWTO.htm#p3" style="text-decoration:none;color:#000000;">Переменные главного файла конфигурации</a>
+    3.1 <a href="tab_HOWTO.htm#p3_1" style="text-decoration:none;color:#000000;">Предназначение</a>
+    3.2 <a href="tab_HOWTO.htm#p3_2" style="text-decoration:none;color:#000000;">Описание каждой переменной</a>
+
+  4. <a href="tab_HOWTO.htm#p4" style="text-decoration:none;color:#000000;">Переменные управления трафиком</a>
+    4.1 <a href="tab_HOWTO.htm#p4_1" style="text-decoration:none;color:#000000;">Предназначение</a>
+    4.2 <a href="tab_HOWTO.htm#p4_2" style="text-decoration:none;color:#000000;">Группы переменных</a>
+      4.2.1 <a href="tab_HOWTO.htm#p4_2_1" style="text-decoration:none;color:#000000;">Группа статистики</a>
+      4.2.2 <a href="tab_HOWTO.htm#p4_2_2" style="text-decoration:none;color:#000000;">Группа ведения лога</a>
+      4.2.3 <a href="tab_HOWTO.htm#p4_2_3" style="text-decoration:none;color:#000000;">Группа доступа</a>
+      4.2.4 <a href="tab_HOWTO.htm#p4_2_4" style="text-decoration:none;color:#000000;">Группа ведения отчетов</a>
+      4.2.5 <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">Вспомогательная группа</a>
+      4.2.6 <a href="tab_HOWTO.htm#p4_2_6" style="text-decoration:none;color:#000000;">Группа лимитов</a>
+      4.2.7 <a href="tab_HOWTO.htm#p4_2_7" style="text-decoration:none;color:#000000;">Переменные TA Billing</a>
+
+  5. <a href="tab_HOWTO.htm#p5" style="text-decoration:none;color:#000000;">Модуль Netflow</a>
+    5.1 <a href="tab_HOWTO.htm#p5_1" style="text-decoration:none;color:#000000;">Поддерживаемые версии Netflow</a>
+    5.2 <a href="tab_HOWTO.htm#p5_2" style="text-decoration:none;color:#000000;">Работа с модулем Netflow</a>
+    5.3 <a href="tab_HOWTO.htm#p5_3" style="text-decoration:none;color:#000000;">Исключительные ситуации</a>
+
+  6. <a href="tab_HOWTO.htm#p6" style="text-decoration:none;color:#000000;">Модуль Server</a>
+    6.1 <a href="tab_HOWTO.htm#p6_1" style="text-decoration:none;color:#000000;">Информация</a>
+    6.2 <a href="tab_HOWTO.htm#p6_2" style="text-decoration:none;color:#000000;">Необходимые настройки</a>
+    6.3 <a href="tab_HOWTO.htm#p6_3" style="text-decoration:none;color:#000000;">Исключительные ситуации</a>
+    6.4 <a href="tab_HOWTO.htm#p6_4" style="text-decoration:none;color:#000000;">Создание аккаунта</a>
+    6.5 <a href="tab_HOWTO.htm#p6_5" style="text-decoration:none;color:#000000;">Запуск клиента</a>
+
+  7. <a href="tab_HOWTO.htm#p7" style="text-decoration:none;color:#000000;">Оптимизация конфигурации</a>
+    7.1 <a href="tab_HOWTO.htm#p7_1" style="text-decoration:none;color:#000000;">Оптимизация по скорости</a>
+
+  8. <a href="tab_HOWTO.htm#p8" style="text-decoration:none;color:#000000;">Тесты работы TA Billing</a>
+    8.1 <a href="tab_HOWTO.htm#p8_1" style="text-decoration:none;color:#000000;">Размер базы данных</a>
+    8.2 <a href="tab_HOWTO.htm#p8_2" style="text-decoration:none;color:#000000;">Скорость работы</a>
+
+  9. <a href="tab_HOWTO.htm#p9" style="text-decoration:none;color:#000000;">Дополнительные возможности TA</a>
+    9.1 <a href="tab_HOWTO.htm#p9_1" style="text-decoration:none;color:#000000;">Параметры командной строки</a>
+    9.2 <a href="tab_HOWTO.htm#p9_2" style="text-decoration:none;color:#000000;">Опустошение буфера</a>
+
+  10. <a href="tab_HOWTO.htm#p10" style="text-decoration:none;color:#000000;">Утилиты</a>
+    10.1 <a href="tab_HOWTO.htm#p10_1" style="text-decoration:none;color:#000000;">Подробное описание</a>
+
+  --------------------------------------------------------------------------------------
+
+
+  1. <a name="p1"></a><font color="#109200"><b>Введение</b></font>
+
+    Данный документ предоставляет исчерпывающую информацию о способах работы
+    и функциональных возможностях программы Traffic Accounting в режиме биллинга.
+    В разделе <a href="tab_HOWTO.htm#p1_3" style="text-decoration:none;color:#000000;">1.3</a> указан адрес по которому можно получить последнюю
+    версию данного документа.
+
+  1.1 <a name="p1_1"></a><font color="#109200"><b>Что?</b></font>
+
+     Программа Traffic Accounting значительно расширила свои возможности
+     в сфере подсчета трафика. Теперь Traffic Accounting может использоваться
+     как биллинговая система. TA Billing имеет множество различных функциональных
+     возможностей, которые включают в себя стандартные функции биллингования
+     и так же множество дополнительных функциональных возможностей относящихся
+     к биллингу.
+
+  1.2 <a name="p1_2"></a><font color="#109200"><b>Почему?</b></font>
+
+     В процессе создания программы Traffic Accounting было поставлено
+     множество задач в области подсчета трафика. Traffic Accounting
+     решает практически любые поставленные задачи в области подсчета трафика.
+     Проект TA далее расширил свои задачи от системы подсчета трафика до
+     биллинговой системы которая умеет решать практически любые задачи
+     в указанной области. Биллинг обязан был не только решать те задачи
+     к которым его функциональные возможности были адаптированы, но и
+     быть гибким на столько что бы решить остальные задачи которые изначально
+     для TA Billing не поставлены.
+     В TA Billing используется распределенная структура работы функций,
+     каждая чать работает независимо от другой, это значит что для работы
+     какой либо части системы необходимо присутствие только требуемой части
+     и никакой другой.
+
+  1.3 <a name="p1_3"></a><font color="#109200"><b>Где?</b></font>
+
+    Официальная страница проекта Traffic Accounting:
+    	<!--<a href="http://traflinux.sourceforge.net" style="text-decoration:none;color:#000000;">-->http://traflinux.sourceforge.net<!--</a>-->
+
+    По указанному выше ресурсу можно получить всю последнюю
+    информацию о разработках проекта Traffic Accounting.
+    Также существует e-mail адрес <a href="../../cdn-cgi/l/email-protection.html#3f4b5e5356514a477f4f564c5a5211515a4b" style="text-decoration:none;color:#000000;"><span class="__cf_email__" data-cfemail="a0d4c1ccc9ced5d8e0d0c9d3c5cd8ecec5d4">[email&#160;protected]</span></a>,
+    по которому возможно получить ответы на любые
+    вопросы касающиеся проекта Traffic Accounting.
+
+  2. <a name="p2"></a><font color="#109200"><b>Синтаксис файлов конфигурации</b></font>
+
+    Синтаксис для TA Billing не изменился и
+    остается таким же каким был изначально
+    для программы Traffic Accounting.
+
+  2.1 <a name="p2_1"></a><font color="#109200"><b>Общий синтаксис</b></font>
+
+    Общие правила для любых строк в файлах конфигурации.
+    Каждая строка заканчивается символом возврата каретки.
+    В одной строке может быть указано описание только для одной функции.
+    Для каждой строки предусмотрены комментарии, это значит что если
+    перед любой строкой стоит знак '#' то строка игнорируется.
+    Перед знаком '#' стоять не может ничего.
+
+  2.1.1 <a name="p2_1_1"></a><font color="#109200"><b>Синтаксис переменных</b></font>
+
+    Переменная должна начинаться с имени и заканчиваться символом '=' .
+    Это главное правило для всех переменных.
+    Пример:
+
+    variable=
+
+  2.1.2 <a name="p2_1_2"></a><font color="#109200"><b>Синтаксис параметров</b></font>
+
+    Каждый параметр в описании переменной должен указываться
+    после символа '=' .
+    Каждый параметр должен быть заключен в скобки '()'.
+    Все параметры отделяются друг от друга символом '+'.
+    Пример:
+
+    variable=(parameter1)+(parameter2)+(parameter3)+(parameter4)
+
+    Если внутри какого-либо параметра должны находиться перечисления,
+    то перечисления отделяются друг от друга символом ',' .
+    Пример:
+
+    variable=(parameter1)+(parameter2)+(e1,e2,e3,e4,e5)+(parameter4)
+
+  2.2 <a name="p2_2"></a><font color="#109200"><b>Специальные символы</b></font>
+
+    Во всех файлах конфигурации, существуют специальные символы,
+    к ним относятся: + ( ) = \
+    пробел так же является специальным символом и
+    пробелы, найденные в параметре, удаляются.
+    Как управлять специальными символами описано в <a href="tab_HOWTO.htm#p2_2_1" style="text-decoration:none;color:#000000;">п. 2.2.1</a>
+
+  2.2.1 <a name="p2_2_1"></a><font color="#109200"><b>Примеры использования</b></font>
+
+    Использование специальных символов может быть необходимо в следующем:
+    если указывается имя файла для какой то из переменной,
+    и имя файла должно содержать символ '+',
+    Пример:
+
+    /var/trafacct/eth1+eth4-traffic
+
+    данная строка должна вызвать ошибку, но если перед символом '+' поставить
+    символ '\' то ошибки не будет, так же с остальными спец. символами.
+    Любой символ следующий за символом '\' воспринимается как обычный символ.
+    Пример:
+
+    /var/trafacct/eth1\+eth4-traffic
+    /var/trafacct/eth1\\eth4-traffic
+    /var/trafacct/eth1\ eth4-traffic
+    /var/trafacct/eth1\(traffic\)
+
+  3. <a name="p3"></a><font color="#109200"><b>Переменные главного файла конфигурации</b></font>
+
+  3.1 <a name="p3_1"></a><font color="#109200"><b>Предназначение</b></font>
+
+    Так как все описанные в <a href="tab_HOWTO.htm#p3" style="text-decoration:none;color:#000000;">п. 3</a> переменные принадлежат
+    к главному файлу конфигурации то и предназначены они
+    только для главного файла конфигурации.
+    Главный файл конфигурации называется "ta.conf".
+    Расположение данного файла определяется расположением
+    инсталляции TA Billing, если инсталляция находится
+    в каталоге /var/trafacct, то файл "ta.conf" расположен
+    в /var/trafacct/etc .
+
+  3.2 <a name="p3_2"></a><font color="#109200"><b>Описание каждой переменной</b></font>
+
+    Перед тем как начать описание каждой из переменных,
+    необходимо знать имена тех переменных которые _обязательно_
+    должны находиться в главном файле конфигурации.
+    К таким переменным относятся:
+    <a href="tab_HOWTO.htm#dev" style="text-decoration:none;color:#000000;">dev</a>, <a href="tab_HOWTO.htm#dir" style="text-decoration:none;color:#000000;">dir</a>, <a href="tab_HOWTO.htm#mlog" style="text-decoration:none;color:#000000;">mlog</a>, <a href="tab_HOWTO.htm#TApidfile" style="text-decoration:none;color:#000000;">TApidfile</a>
+
+    Описание каждой из переменных.
+
+    1. <a name="dev"></a><font color="#a62828"><b>dev</b></font>
+
+      В данной переменной перечисляются названия интерфейсов
+      которые должны заносится в лог, или же
+      перечисляются названия конфигураций.
+      Названия интерфейсов должны быть общими т.е.
+      если нужно заносить в лог интерфейсы eth1, eth2, eth3
+      то нужно записать первые буквы до перечисления т.е. "eth".
+      Так же и для "ppp", "plip", и т.д.
+      Если используются названия конфигураций, например
+      gateway-1, office-888, myhomenet, то такие названия
+      так же должны быть занесены в переменную <a href="tab_HOWTO.htm#promisc_dev" style="text-decoration:none;color:#000000;">promisc_dev</a>.
+      Пример:
+      dev=(eth,lo,ppp)
+
+    2. <a name="dir"></a><font color="#a62828"><b>dir</b></font>
+
+      В данной переменной указывается название каталога
+      для конфигурации управления логом для каждого из интерфейсов
+      т.е. к примеру если указаны в переменной dev интерфейсы
+      "eth", "ppp" то в этом каталоге должны находится файлы
+      "eth-conf", "ppp-conf". Переменные для таких файлов конфигурации
+      описаны ниже. Тоже относится и к названиям конфигураций,
+      т.е. если указана конфигурация my_home_net то настроечный
+      файл будет называться "my_home_net-conf".
+      Пример:
+      dir=(/etc/ta/)
+
+    3. <a name="mlog"></a><font color="#a62828"><b>mlog</b></font>
+
+      В данной переменной указывается имя файла в который будут
+      заноситься различного рода отладочные сообщения
+      в процессе работы программы.
+      Пример:
+      mlog=(/var/log/ta.log)
+
+    4. <font color="#a62828"><b>spec_ch</b></font>
+
+      В данной переменной указывается _один_ символ,
+      этот символ будет использоваться для разделения
+      полей в различных логах.
+      Пример:
+      spec_ch=(|)
+
+    5. <font color="#a62828"><b>skin_path</b></font>
+
+      Данная переменная сообщает для Traffic Accounting,
+      где искать скины для функций ведения отчетов.
+      Данную переменную необходимо использовать если используются
+      функции ведения отчетов.
+      Пример:
+      skin_path=(/etc/ta/skins)
+
+    6. <a name="TApidfile"></a><font color="#a62828"><b>TApidfile</b></font>
+
+      Данная переменная сообщает Traffic Accounting
+      расположение pid файла, это необходимо для
+      контролирования ситуаций в которых TA может запуститься
+      более одного раза. В данной переменной можно использовать
+      строку %DV которая укажет TA что в этом месте необходимо
+      ставить имя интерфейса или конфигурации, это нужно для
+      того если в одной конфигурации используется более одно
+      интерфейса т.е. в dev= указаны интерфейсы
+      например eth и ppp, то тогда одного pid файла будет не
+      достаточно для двух процессов и автоматически %DV
+      преобразуется в имя того процесса файл которого создается
+      в следующем примере будут созданы два файла eth.pid и ppp.pid
+      в каталоге /var/trafacct/run .
+
+      Пример:
+      TApidfile=(/var/trafacct/run/%DV.pid)
+
+    7. <a name="promisc_dev"></a><font color="#a62828"><b>promisc_dev</b></font>
+
+      Данная переменная сообщает Traffic Accounting
+      какие конфигурации необходимо переключить в
+      режим сбора всех проходящих пакетов с любых
+      интерфейсов.
+      Указывать конфигурацию в этой переменной необходимо
+      в том случае когда в dev= указаны имена конфигурации
+      отличные от префиксов имен интерфейсов т.е. указано
+      dev=(nf-collector, gateway), если указывается какое либо
+      имя конфигурации например eth то по умолчанию в указанную
+      конфигурацию попадут все пакеты интерфейс которых начинается
+      с префиксом eth т.е. eth1, eth2, eth3 и т.д., но если
+      имя конфигурации не совпадает с префиксом т.е. если используется
+      имя collector и если интерфейсов с префиксом collector не существует
+      то в данную конфигурацию не попадет ни один пакет, и поэтому
+      название такой конфигурации необходимо занести в список
+      переменной <a href="tab_HOWTO.htm#promisc_dev" style="text-decoration:none;color:#000000;">promisc_dev</a>. Или же если требуется чтобы через
+      указанную конфигурацию проходили пакеты со всех интерфейсов,
+      то так же нужно занести имя конфигурации в этот список.
+      Пример:
+      promisc_dev=(nf-collector, ppp, office905)
+
+    8. <font color="#a62828"><b>module_sleep</b></font>
+
+      Данная переменная указывает время ожидания,
+      в секундах, ответа от модуля.
+      Пример:
+      module_sleep=(1)
+
+    9. <font color="#a62828"><b>MODserver_port</b></font>
+
+      Данная переменная используется для указания
+      конфигурациям порты для использования модуля Server.
+      Например если используется несколько конфигураций
+      eth, ppp, localnet, и в каждой конфигурации
+      используется модуль Server то необходимо для каждой указать
+      на каком порту будут слушаться пакеты от клиентов.
+      Пример:
+      MODserver_port=(eth:3003,ppp:3004,localnet:3005)
+
+    10. <font color="#a62828"><b>MODnetflow_port</b></font>
+
+      Данная переменная используется для указания
+      конфигурациям порты на которых будут слушаться
+      netflow пакеты.
+      Пример:
+      MODnetflow_port=(nf-collector:4004,anothernet:4005)
+
+    11. <font color="#a62828"><b>Системные переменные.</b></font>
+
+      Ниже перечислены системные переменные
+      настраиваемые при инсталляции.
+      Переменные:
+      MODeth_full_log, MODeth_time_log,
+      MODeth_pid_file, MODeth_run_file,
+      MODserver_full_log, MODserver_time_log,
+      MODserver_pid_file, MODserver_run_file,
+      MODnetflow_full_log, MODnetflow_time_log,
+      MODnetflow_pid_file, MODnetflow_run_file.
+
+  4. <a name="p4"></a><font color="#109200"><b>Переменные управления трафиком</b></font>
+
+  4.1 <a name="p4_1"></a><font color="#109200"><b>Предназначение</b></font>
+
+    Все переменные описанные в <a href="tab_HOWTO.htm#p4" style="text-decoration:none;color:#000000;">п. 4</a>, относятся только
+    к файлам конфигурации управления трафиком, и могут
+    находится только в файлах конфигурации управления трафиком.
+    Путь к такому файлу складывается так:
+    в главное конфигурационном файле из переменной dir
+    берется имя каталога, далее для каждой конфигурации,
+    указанной в переменной dev имя файла будет имя конфигурации+"-conf",
+    к примеру dev=(eth,mylocalnet), из этого значит что файлы будут называться
+    eth-conf,mylocalnet-conf и лежать они должны в каталоге указанном
+    в переменной dir, если dir=(/var/trafacct/etc) то для каждого путь будет
+    /var/trafacct/etc/eth-conf
+    /var/trafacct/etc/mylocalnet-conf
+    и именно для таких файлов как mylocalnet-conf
+    ниже в <a href="tab_HOWTO.htm#p4_2" style="text-decoration:none;color:#000000;">п. 4.2</a> описываются переменные.
+
+  4.2 <a name="p4_2"></a><font color="#109200"><b>Группы переменных</b></font>
+
+    Все существующие переменные можно подразделить на отдельные
+    группы, группы различаются результатом выполнения той или иной
+    переменной.
+
+  4.2.1 <a name="p4_2_1"></a><font color="#109200"><b>Группа статистики</b></font>
+
+    В данную группу входят такие переменные как:
+
+    <a href="tab_HOWTO.htm#stat_global" style="text-decoration:none;color:#000000;">stat_global</a>, <a href="tab_HOWTO.htm#stat_by_dev" style="text-decoration:none;color:#000000;">stat_by_dev</a>, <a href="tab_HOWTO.htm#stat_by_ip_global" style="text-decoration:none;color:#000000;">stat_by_ip_global</a>,
+    <a href="tab_HOWTO.htm#stat_by_ip_dev" style="text-decoration:none;color:#000000;">stat_by_ip_dev</a>, <a href="tab_HOWTO.htm#bin_stat_global" style="text-decoration:none;color:#000000;">bin_stat_global</a>, <a href="tab_HOWTO.htm#bin_stat_by_dev" style="text-decoration:none;color:#000000;">bin_stat_by_dev</a>,
+    <a href="tab_HOWTO.htm#bin_stat_by_ip_global" style="text-decoration:none;color:#000000;">bin_stat_by_ip_global</a>, <a href="tab_HOWTO.htm#bin_stat_by_ip_dev" style="text-decoration:none;color:#000000;">bin_stat_by_ip_dev</a>,
+    <a href="tab_HOWTO.htm#full_stat_global" style="text-decoration:none;color:#000000;">full_stat_global</a>, <a href="tab_HOWTO.htm#full_stat_by_dev" style="text-decoration:none;color:#000000;">full_stat_by_dev</a>,
+    <a href="tab_HOWTO.htm#full_stat_by_ip_global" style="text-decoration:none;color:#000000;">full_stat_by_ip_global</a>, <a href="tab_HOWTO.htm#full_stat_by_ip_dev" style="text-decoration:none;color:#000000;">full_stat_by_ip_dev</a>
+    <a href="tab_HOWTO.htm#bin_full_stat_global" style="text-decoration:none;color:#000000;">bin_full_stat_global</a>, <a href="tab_HOWTO.htm#bin_full_stat_by_dev" style="text-decoration:none;color:#000000;">bin_full_stat_by_dev</a>
+    <a href="tab_HOWTO.htm#bin_full_stat_by_ip_global" style="text-decoration:none;color:#000000;">bin_full_stat_by_ip_global</a>, <a href="tab_HOWTO.htm#bin_full_stat_by_ip_dev" style="text-decoration:none;color:#000000;">bin_full_stat_by_ip_dev</a>
+
+    Описание каждой из переменных.
+
+    1. <a name="stat_global"></a><font color="#a62828"><b>stat_global</b></font>
+
+	Переменная обязательно имеет 2 параметра.
+	Параметры:
+	    1)	Указывает на файл, в этот файл заносится
+		каждый пакет, тип которого указан вторым
+		параметром.
+	    2)	Перечисление типов заносимых в лог пакетов.
+	Тип пакетов может принимать значения i,o,f,b,m,a:
+	i = input
+	o = output
+	f = forward
+	b = broadcast
+	m = multicast
+	a = any
+
+	В лог данной переменной заносится каждый пакет
+	в соответствии с указанным типом.
+	т.е. если указать несколько строк такой переменной
+	то каждая будет вести себя по указанному типу, например
+	если указать две строки:
+	stat_global=(/var/trafacct/lo-stat-input)+(i)
+	stat_global=(/var/trafacct/lo-stat-output)+(o)
+	то в файл /var/trafacct/lo-stat-input будут заносится
+	пакеты, которые имеют тип "i"(input), а во второй файл
+	/var/trafacct/lo-stat-output будут заносится пакеты
+	с типом "o"(output).
+	Но можно использовать и по одной строке:
+	Пример:
+	stat_global=(/var/trafacct/lo-stat)+(a)
+	    или
+	stat_global=(/var/trafacct/lo-stat)+(i,m)
+
+    2. <a name="stat_by_dev"></a><font color="#a62828"><b>stat_by_dev</b></font>
+
+	Переменная имеет 4 параметра, но обязательными
+	являются только 3.
+	Параметры:
+	    1)	Перечисление интерфейсов которые нужно заносить в лог.
+	    2)	Файл в который заносится лог.
+	    3)	Перечисление типов заносимых в лог пакетов.
+	    4)	Имя для данной переменной, оно используется
+		другой переменной пример этого приведен
+		ниже(см. описание <a href="tab_HOWTO.htm#deny_ip_in_name" style="text-decoration:none;color:#000000;">deny_ip_in_name</a>).
+	Функция предназначена для ведения лога, по определенным
+	интерфейсам.
+	Пример:
+	stat_by_dev=(eth0,eth3,eth5)+(/var/trafacct/eth-dev-stat)+(o)+(name1)
+	    или
+	stat_by_dev=(eth0,eth3,eth5)+(/var/trafacct/eth-dev-stat)+(o)
+
+    3. <a name="stat_by_ip_global"></a><font color="#a62828"><b>stat_by_ip_global</b></font>
+
+	Переменная имеет 4 параметра, но обязательными
+	являются только 3.
+	Параметры:
+	    1)	Перечисление IP адресов для занесения их в лог-файл,
+		который указан вторым параметром.
+		IP адреса, перечисляются в следующем виде:
+		первым символом ставится один из следующих:
+		"a" - IP адрес может быть как source так и
+		      destination.
+		"s" - IP адрес может быть только как source.
+		"d" - IP адрес может быть только как destination.
+		"b" - IP адреса source и destination должны быть
+		      равны, т.е. если указывается
+		      b192.168.1.0/24 то будут учитываться
+		      только те пакеты у которых и source
+		      IP адрес и destination IP адрес
+		      из одной и той же сети 192.168.1.0/24.
+		если нужно заносить в лог source IP,
+		то нужно указывать строку например s134.45.67.98
+		для destination d134.45.67.98, если нужно
+		заносить в лог IP с любым типом
+		то можно указать a134.76.34.21.
+		Тип IP адреса всегда должен присутствовать.
+		К тому же можно указывать диапазоны IP адресов,
+		например s168.34.65.1-254, a200.21.45.23-87.
+	    2)	Файл в который будет заноситься статистика.
+	    3)	Перечисление типов пакетов заносимых в статистику.
+	    4)	Имя для данной переменной.
+	Функция предназначенная для ведения лога статистики
+	по определенным IP адресам.
+	Пример:
+	stat_by_ip_global=(s127.0.0.1-10,s127.0.0.34)+(/var/trafacct/lo-ip-stat)+(i,f)+(name2)
+
+    4. <a name="stat_by_ip_dev"></a><font color="#a62828"><b>stat_by_ip_dev</b></font>
+
+	Переменная имеет 5 параметров, но обязательными являются
+	только 4.
+	Параметры:
+	    1)	Перечисление интерфейсов по которым будет
+		вестись статистика.
+	    2)	Перечисление IP адресов для интерфейсов, по которым
+		будет вестись статистика.
+	    3)	Фай статистики.
+	    4)	Перечисление типов пакетов, для которых будет вестись
+		статистика.
+	    5) Имя переменной.
+	Функция предназначена для ведения статистики для определенных
+	интерфейсов, по IP адресам.
+	Пример:
+	stat_by_ip_dev=(eth3,eth1)+(s192.168.0.1-10,s192.168.0.34,d192.168.0.58)+(/var/trafacct/eth-dip-stat)+(f,o)+(test)
+
+    5. <a name="bin_stat_global"></a><font color="#a62828"><b>bin_stat_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_global" style="text-decoration:none;color:#000000;">stat_global</a>, разница только
+	в формате статистики.
+
+    6. <a name="bin_stat_by_dev"></a><font color="#a62828"><b>bin_stat_by_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_dev" style="text-decoration:none;color:#000000;">stat_by_dev</a>, разница только
+	в формате статистики.
+
+    7. <a name="bin_stat_by_ip_global"></a><font color="#a62828"><b>bin_stat_by_ip_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_global" style="text-decoration:none;color:#000000;">stat_by_ip_global</a>, разница только
+	в формате статистики.
+
+    8. <a name="bin_stat_by_ip_dev"></a><font color="#a62828"><b>bin_stat_by_ip_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_dev" style="text-decoration:none;color:#000000;">stat_by_ip_dev</a>, разница только
+	в формате статистики.
+
+    9. <a name="full_stat_global"></a><font color="#a62828"><b>full_stat_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_global" style="text-decoration:none;color:#000000;">stat_global</a>, разница только
+	в формате статистики.
+
+    10. <a name="full_stat_by_dev"></a><font color="#a62828"><b>full_stat_by_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_dev" style="text-decoration:none;color:#000000;">stat_by_dev</a>, разница только
+	в формате статистики.
+
+    11. <a name="full_stat_by_ip_global"></a><font color="#a62828"><b>full_stat_by_ip_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_global" style="text-decoration:none;color:#000000;">stat_by_ip_global</a>, разница только
+	в формате статистики.
+
+    12. <a name="full_stat_by_ip_dev"></a><font color="#a62828"><b>full_stat_by_ip_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_dev" style="text-decoration:none;color:#000000;">stat_by_ip_dev</a>, разница только
+	в формате статистики.
+
+    13. <a name="bin_full_stat_global"></a><font color="#a62828"><b>bin_full_stat_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_global" style="text-decoration:none;color:#000000;">stat_global</a>, разница только
+	в формате статистики.
+
+    14. <a name="bin_full_stat_by_dev"></a><font color="#a62828"><b>bin_full_stat_by_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_dev" style="text-decoration:none;color:#000000;">stat_by_dev</a>, разница только
+	в формате статистики.
+
+    15. <a name="bin_full_stat_by_ip_global"></a><font color="#a62828"><b>bin_full_stat_by_ip_global</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_global" style="text-decoration:none;color:#000000;">stat_by_ip_global</a>, разница только
+	в формате статистики.
+
+    16. <a name="bin_full_stat_by_ip_dev"></a><font color="#a62828"><b>bin_full_stat_by_ip_dev</b></font>
+
+	Данная функция аналогична к <a href="tab_HOWTO.htm#stat_by_ip_dev" style="text-decoration:none;color:#000000;">stat_by_ip_dev</a>, разница только
+	в формате статистики.
+
+  4.2.2 <a name="p4_2_2"></a><font color="#109200"><b>Группа ведения лога</b></font>
+
+    В данную группу входят такие переменные как:
+
+    <a href="tab_HOWTO.htm#log_file" style="text-decoration:none;color:#000000;">log_file</a>, <a href="tab_HOWTO.htm#log_by_ip" style="text-decoration:none;color:#000000;">log_by_ip</a>, <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>,
+    <a href="tab_HOWTO.htm#log_by_port" style="text-decoration:none;color:#000000;">log_by_port</a>, <a href="tab_HOWTO.htm#log_by_each_port" style="text-decoration:none;color:#000000;">log_by_each_port</a>, <a href="tab_HOWTO.htm#log_by_proto" style="text-decoration:none;color:#000000;">log_by_proto</a>,
+    <a href="tab_HOWTO.htm#log_by_each_proto" style="text-decoration:none;color:#000000;">log_by_each_proto</a>, <a href="tab_HOWTO.htm#log_by_port_ip" style="text-decoration:none;color:#000000;">log_by_port_ip</a>, <a href="tab_HOWTO.htm#log_by_port_ip_each" style="text-decoration:none;color:#000000;">log_by_port_ip_each</a>,
+    <a href="tab_HOWTO.htm#log_by_eport_eip" style="text-decoration:none;color:#000000;">log_by_eport_eip</a>, <a href="tab_HOWTO.htm#log_by_each_ip_local" style="text-decoration:none;color:#000000;">log_by_each_ip_local</a>,
+    <a href="tab_HOWTO.htm#log_by_ip_local" style="text-decoration:none;color:#000000;">log_by_ip_local</a>, <a href="tab_HOWTO.htm#log_by_proto_ip" style="text-decoration:none;color:#000000;">log_by_proto_ip</a>, <a href="tab_HOWTO.htm#log_by_proto_ip_each" style="text-decoration:none;color:#000000;">log_by_proto_ip_each</a>,
+    <a href="tab_HOWTO.htm#log_by_eproto_eip" style="text-decoration:none;color:#000000;">log_by_eproto_eip</a>, <a href="tab_HOWTO.htm#full_log_by_each_ip" style="text-decoration:none;color:#000000;">full_log_by_each_ip</a>.
+
+    Описание каждой из переменных.
+
+    1. <a name="log_file"></a><font color="#a62828"><b>log_file</b></font>
+
+	Переменная, обязательно, имеет 2 параметра.
+	Параметры:
+	    1) указывает на имя файла.
+		В указанный файл, заносится кол-во
+		байт, каждого пакета, для каждого типа пакета.
+	    2) перечисление типов учитываемых пакетов.
+		Типы могут быть:
+		"i" - приходящий на интерфейс (input)
+		"o" - исходящий с интерфейса (output)
+		"f" - проходящий на другой интерфейс (forward)
+		"b" - broadcast
+		"m" - multicast
+		"a" - Учитывать все (any)
+		Каждый тип содержит только _один_ символ,
+		т.е. нельзя указывать вместо "i", "input".
+		Все эти типы могу быть перечислены одновременно,
+		или же заменены на тип "a", так же
+		типа "a" не может быть перечислен с другими типами,
+		т.е. если присутствует тип "a" то он должен быть
+		единственным указанным типом.
+	    3) Имя для данной переменной
+
+	Пример:
+	log_file=(/var/trafacct/lo-log)+(i,o,f,b,m)
+	    или
+	log_file=(/var/trafacct/lo-log)+(a)
+	    или
+	log_file=(/var/trafacct/lo-log)+(i,f,m)
+	    или
+	log_file=(/var/trafacct/log_file)+(a)+(log_file_name)
+	deny_dev_in_name=(log_file_name)+(eth5)
+
+    2. <a name="log_by_ip"></a><font color="#a62828"><b>log_by_ip</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Перечисление IP адресов и/или диапазонов IP адресов.
+	    2)	Строка c именем файла.
+	    3)	Перечисление типов пакетов.
+	    4)	Строка с именем.
+	С помощью данной ф-ции можно суммировать трафик
+	для отдельных ip адресов, т.е.
+	данная функция почти аналогична функции <a href="tab_HOWTO.htm#log_file" style="text-decoration:none;color:#000000;">"log_file"</a> за тем исключением,
+	что ЛОГ создается для отдельных и/или диапазонов IP адресов.
+	Пример:
+	log_by_ip=(s127.0.0.5,d127.0.0.10-56)+(/var/trafacct/lo-bip-log)+(i,o)+(name4)
+
+	В файле результата "/var/trafacct/lo-bip-log" возможно увидеть ЛОГ
+	подобный следующему:
+	    +++
+		lo|s127.0.0.5,d127.0.0.10-56|i:2268|b:0|m:0|f:0|o:2268
+	    +++
+
+    3. <a name="log_by_each_ip"></a><font color="#a62828"><b>log_by_each_ip</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Перечисление IP адресов и/или диапазонов.
+	    2)	Строка с именем файла.
+	    3)	Перечисление типов пакетов.
+	    4)	Имя для данной переменной.
+	Данная ф-ция практический клон к <a href="tab_HOWTO.htm#log_by_ip" style="text-decoration:none;color:#000000;">log_by_ip</a>,
+	но с одной лишь только разницей, что это лог
+	каждого IP адреса в указанном диапазоне,
+	т.е. ЛОГ распространяется и создается для каждого
+	IP адреса соответствующего указанному диапазону.
+	Весь ЛОГ пишется в файл указанный параметром под номером 2.
+	Записываются IP адреса совпадающие с диапазоном указанным
+	в параметре номер 1, и проверяется совпадение на типы пакетов
+	в параметре номер 3.
+	В данной переменной нужно использовать IP адреса и/или диапазоны
+	_только_ с типом "a"(any), например a127.0-12.45.20, a192.168.1.0/28,
+	a192.168.2.255/255.255.255.0 .
+	Пример:
+	log_by_each_ip=(a127.0.0.5,a127.0.0.10-56,a127.0.0.1/30)+(/var/trafacct/lo-IE-log)+(i,o)+(nameIE)
+
+	Для данной строки ЛОГ будет выглядеть так:
+	    +++
+		lo|127.0.0.1|i:168|b:0|m:0|f:0|o:168
+		lo|127.0.0.5|i:168|b:0|m:0|f:0|o:168
+		lo|127.0.0.11|i:840|b:0|m:0|f:0|o:840
+		lo|127.0.0.12|i:168|b:0|m:0|f:0|o:168
+		lo|127.0.0.13|i:168|b:0|m:0|f:0|o:168
+		lo|127.0.0.14|i:168|b:0|m:0|f:0|o:168
+		lo|127.0.0.15|i:924|b:0|m:0|f:0|o:924
+	    +++
+
+    4. <a name="log_by_port"></a><font color="#a62828"><b>log_by_port</b></font>
+
+	Переменная имеет 5 параметров.
+	Параметры:
+	    1) Номер протокола, по портам которого будет вестись
+	       лог. Стандартные номера это 17 для UDP и 6 для TCP.
+	       Для того чтобы считать порты с UDP данный параметр
+	       должен быть равен 17 .
+	    2) В данном параметре указывается либо диапазон портов либо,
+	       отдельный порт, но целесообразнее указать диапазон так как
+	       для лога по отдельным портам существует другая переменная.
+	       Порты указываются как :
+	       первый символ это a(any), s(source) , d(destination)
+	       или b(both).
+	       тип any:
+		   он означает, что указанный порт может быть как
+		   source так и destination.
+	       тип source:
+		   означает у пакета исходящий порт (порт откуда он прибыл).
+	       тип destination:
+		   означает у пакета порт назначения (порт на который прибыл).
+	       тип both:
+		   означает что указанный порт должен быть как в
+		   source так и в destination т.е. если указан порт
+		   b80 то такой порт должен быть равен source и равен
+		   destination, с диапазонами так же, если указано
+		   b100-200 то такой диапазон должен соответствовать
+		   как source port так и destination port, и тогда пакет
+		   будет учтен.
+
+	       после первого символа идет номер порта, если диапазон то
+	       указывается он так: a12-45
+	       можно также в одном параметре совмещать: a12-45,d59,s34,d90-100
+	    3) Файл в который будет записываться результат лога.
+	    4) Перечисление типов пакетов.
+	    5) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Данная переменная используется для ведения лога по диапазону портов,
+	т.е. по нескольким портам сразу. Результаты этой переменной будут
+	колличество байт переданных с/на диапазон портов.
+	Пример:
+	log_by_port=(17)+(a1-65535)+(/var/trafacct/log_by_port)+(b,f,m,i,o)+(lbp_name)
+
+    5. <a name="log_by_each_port"></a><font color="#a62828"><b>log_by_each_port</b></font>
+
+	Переменная имеет 5 параметров.
+	Параметры:
+	    1) Номер протокола, по портам которого будет вестись
+	       лог.
+	    2) В данном параметре указывается диапазон портов.
+	    3) Файл в который будет записываться результат лога.
+	    4) Перечисление типов пакетов.
+	    5) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Данная переменная используется для ведения лога по каждому порту
+	который входит в диапазон/перечисление указанное параметром 2.
+	В результате лога, будет видно сколько ушло/пришло с/на каждый порт
+	входящий в диапазон.
+	Пример:
+	log_by_each_port=(6)+(a1-65535)+(/var/trafacct/log_by_each_port)+(a)+(asdfg_name)
+
+    6. <a name="log_by_proto"></a><font color="#a62828"><b>log_by_proto</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1) В данном параметре указывается перечисление и/или диапазоны
+	       протоколов. Пример: 12-10,6,17,1-5
+	    2) Файл в который будет заноситься результат работы переменной.
+	    3) Перечисление типов пакетов.
+	    4) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Данная переменная используется для ведения лога по диапазону
+	протоколов, например если в первом параметре указать перечисления вида:
+	1,6,17 то в результате можно увидеть сколько байт пришло/ушло
+	по протоколам ICMP,TCP,UDP .
+	Пример:
+	log_by_proto=(1,17)+(/var/trafacct/log_by_proto)+(a)+(lbprot_name)
+	в результате возможно наблюдать трафик для протоколов ICMP и UDP.
+
+    7. <a name="log_by_each_proto"></a><font color="#a62828"><b>log_by_each_proto</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1) В данном параметре указывается перечисление и/или диапазоны
+	       протоколов.
+	    2) Файл в который будет заносится результат работы переменной.
+	    3) Перечисление типов пакетов.
+	    4) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результат работы данной переменной - лог в котором возможно наблюдать
+	трафик для каждого из протоколов входящих в диапазон/перечисление.
+	Пример:
+	log_by_each_proto=(1,17)+(/var/trafacct/log_by_each_proto)+(i,o,b,f,m)+(log_by_each_proto)
+
+    8. <a name="log_by_port_ip"></a><font color="#a62828"><b>log_by_port_ip</b></font>
+
+	Переменная имеет 6 параметров.
+	Параметры:
+	    1) Номер протокола, по портам которого будет вестись
+	       лог.
+	    2) Перечисление диапазонов IP адресов.
+	    3) В данном параметре указывается либо диапазон портов либо
+	       отдельный порт но целесообразнее указывать диапазон так как
+	       для лога по отдельному порту существует другая переменная.
+	    4) Файл в который будет записываться результат лога.
+	    5) Перечисление типов пакетов.
+	    6) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результатом работы данной переменной будет трафик по диапазону
+	портов, для определенной группы IP адресов указываемых
+	в диапазоне (2-й параметр).
+	Пример:
+	log_by_port_ip=(6)+(a127.0.0.20-40)+(a1-65535)+(/var/trafacct/log_by_port_ip)+(i,o,b,f,m)+(log_by_port_ip)
+
+    9. <a name="log_by_port_ip_each"></a><font color="#a62828"><b>log_by_port_ip_each</b></font>
+
+	Переменная имеет 6 параметров.
+	Параметры:
+	    1) Номер протокола, по портам которого будет вестись
+	       лог.
+	    2) Перечисление диапазонов IP адресов.
+	    3) В данном параметре указывается диапазон портов.
+	    4) Файл в который будет записываться результат лога.
+	    5) Перечисление типов пакетов.
+	    6) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результатом работы данной переменной будет трафик по портам входящим
+	в диапазон/перечисление	портов, указанных 3-м параметром,
+	для каждого IP адреса входящего	в диапазон/перечисление
+	IP адресов(2-й параметр).
+	Пример:
+	log_by_port_ip_each=(6)+(a127.0.0.1-10)+(a1-65535)+(/var/trafacct/log_by_port_ip_each)+(i,o,b,f,m)+(log_by_port_ip_each)
+
+    10. <a name="log_by_eport_eip"></a><font color="#a62828"><b>log_by_eport_eip</b></font>
+
+	Переменная имеет 6 параметров.
+	Параметры:
+	    1) Номер протокола, по портам которого будет вестись
+	       лог.
+	    2) Перечисление диапазонов IP адресов.
+	    3) В данном параметре указывается либо диапазон портов.
+	    4) Файл в который будет записываться результат лога.
+	    5) Перечисление типов пакетов.
+	    6) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результатом работы данной переменной будет лог в котором возможно
+	наблюдать траффик по каждому IP адресу входящему в диапазон и по
+	каждому порту(входящему	в диапазон, указанный 3-м параметром)
+	для каждого IP адреса.
+	Пример:
+	log_by_eport_eip=(6)+(a127.0.0.1-10)+(a1-65535)+(/var/trafacct/log_by_eport_eip)+(i,o,b,f,m)+(log_by_eport_eip)
+
+    11. <a name="log_by_each_ip_local"></a><font color="#a62828"><b>log_by_each_ip_local</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Перечисление IP адресов, или/и диапазонов.
+	    2)	Строка с именем файла.
+	    3)	Перечисление типов пакетов.
+	    4)	Имя для данной переменной.
+
+	Данная функция практически клон к <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>, но исключение
+	лишь то, что этой функцией нужно пользоваться только если существует
+	необходимость считать траффик для каждого IP адреса расположенного
+	локально на той машине на которой запущен TA, или клиент к модулю Server.
+	Данная переменная это более ранняя реализация к <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>.
+	Данной переменной нельзя подсчитать траффик для IP адресов не
+	принадлежащих машине на которой запущен TA. Поэтому если требуется
+	подсчитать траффик для IP адресов в общей сети(например локальной)
+	необходимо использовать <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>.	Данные функциональные
+	возможности доступны только с версии TA 1.1.0, переменная <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>
+	из более ранних версий не могла считать траффик для IP адресов не
+	принадлежащих машине на которой запущен TA, а только локально
+	находящихся на машине функционирующей c TA или клиентом к модулю Server.
+	Пример:
+	log_by_each_ip_local=(a127.0.0.1-10)+(/var/trafacct/log_by_each_ip_local)+(i,o,b,f,m)+(log_by_each_ip_local)
+
+    12. <a name="log_by_ip_local"></a><font color="#a62828"><b>log_by_ip_local</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Перечисление IP адресов и/или диапазонов IP адресов.
+	    2)	Строка c именем файла.
+	    3)	Перечисление типов пакетов.
+	    4)	Строка с именем.
+
+	Данная переменная практически одинакова к <a href="tab_HOWTO.htm#log_by_each_ip_local" style="text-decoration:none;color:#000000;">log_by_each_ip_local</a>,
+	за тем исключением, что на выходе формируется лог не из IP адресов
+	входящих в указанный диапазон, а из всего указанного диапазона.
+	Пример:
+	log_by_ip_local=(a127.0.0.1-10)+(/var/trafacct/log_by_ip_local)+(a)+(log_by_ip_local)
+
+    13. <a name="log_by_proto_ip"></a><font color="#a62828"><b>log_by_proto_ip</b></font>
+
+	Переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление диапазонов IP адресов.
+	    2) В данном параметре указывается перечисление и/или диапазоны
+	       протоколов. Пример: 12-10,6,17,1-5
+	    3) Файл в который будет заноситься результат работы переменной.
+	    4) Перечисление типов пакетов.
+	    5) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результат работы данной переменной будет траффик по диапазону
+	протоколов для группы IP адресов перечисленных 1-м параметром.
+	Пример:
+	log_by_proto_ip=(a127.0.0.1-10)+(1,17)+(/var/trafacct/log_by_proto_ip)+(i,o,b,f,m)+(log_by_proto_ip)
+
+    14. <a name="log_by_proto_ip_each"></a><font color="#a62828"><b>log_by_proto_ip_each</b></font>
+
+	Переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление диапазонов IP адресов.
+	    2) В данном параметре указывается перечисление и/или диапазоны
+	       протоколов. Пример: 12-10,6,17,1-5
+	    3) Файл в который будет заноситься результат работы переменной.
+	    4) Перечисление типов пакетов.
+	    5) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результатом работы данной функции будет лог в котором возможно наблюдать
+	трафик по диапазону протоколов для каждого отдельного IP адреса
+	входящего в диапазон/перечисление IP адресов(1-й параметр).
+	Пример:
+	log_by_proto_ip_each=(a127.0.0.1-10)+(1,17)+(/var/trafacct/log_by_proto_ip_each)+(i,o,b,f,m)+(log_by_proto_ip_each)
+
+    15. <a name="log_by_eproto_eip"></a><font color="#a62828"><b>log_by_eproto_eip</b></font>
+
+	Переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление диапазонов IP адресов.
+	    2) В данном параметре указывается перечисление и/или диапазоны
+	       протоколов. Пример: 12-10,6,17,1-5
+	    3) Файл в который будет заноситься результат работы переменной.
+	    4) Перечисление типов пакетов.
+	    5) Имя данной переменной, этот параметр необязателен если он
+	       не требуется.
+
+	Результатом работы данной переменной будет трафик по каждому
+	протоколу для каждого IP адреса, если таковые входят в указанные
+	перечисления и диапазоны.
+	Пример:
+	log_by_eproto_eip=(a127.0.0.1-10)+(1,17)+(/var/trafacct/log_by_eproto_eip)+(a)+(log_by_eproto_eip)
+
+    16. <a name="full_log_by_each_ip"></a><font color="#a62828"><b>full_log_by_each_ip</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Перечисление IP адресов, или/и диапазонов.
+	    2)	Строка с именем файла.
+	    3)	Перечисление типов пакетов.
+	    4)	Имя для данной переменной.
+
+	Данная ф-ция практический клон к <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>,
+	но за тем исключением что данный ЛОГ для
+	функции <a href="tab_HOWTO.htm#full_log_by_each_ip" style="text-decoration:none;color:#000000;">full_log_by_each_ip</a> показывает обмен трафиком
+	между адресами из диапазона и теми адресами с кем указанные IP
+	адреса обменивались.
+	Весь ЛОГ пишется в файл указанный параметром под номером 2.
+	Записываются IP адреса входящие в диапазон указанный
+	параметром номер 1, и проверяется совпадение типов пакетов,
+	перечисленных параметром номер 3.
+	В данной переменной нужно использовать IPадреса и/или диапазоны
+	_только_ с типом "a"(any), например a127.0-12.45.20.
+	Пример:
+	full_log_by_each_ip=(a127.0.0.5,a127.0.0.10-56,a127.0.0.1/30)+(/var/trafacct/lo-IE-log)+(i,o)+(nameIE)
+
+	Для данной строки ЛОГ будет выглядеть так:
+	    +++
+		lo|127.0.0.1-&gt;127.0.0.8|i:176|b:0|m:0|f:0|o:176
+		lo|127.0.0.1-&gt;127.0.0.1|i:40|b:0|m:0|f:0|o:40
+		lo|127.0.0.8-&gt;127.0.0.1|i:132|b:0|m:0|f:0|o:132
+		lo|127.0.0.10-&gt;127.0.0.10|i:200|b:0|m:0|f:0|o:200
+		lo|127.0.0.8-&gt;127.0.0.8|i:100|b:0|m:0|f:0|o:100
+		lo|127.0.0.9-&gt;127.0.0.9|i:100|b:0|m:0|f:0|o:100
+		lo|127.0.0.7-&gt;127.0.0.7|i:100|b:0|m:0|f:0|o:100
+		lo|127.0.0.6-&gt;127.0.0.6|i:100|b:0|m:0|f:0|o:100
+		lo|127.0.0.5-&gt;127.0.0.5|i:100|b:0|m:0|f:0|o:100
+		lo|127.0.0.4-&gt;127.0.0.4|i:100|b:0|m:0|f:0|o:100
+	    +++
+	можно видеть что строка
+	    lo|127.0.0.1-&gt;127.0.0.8|i:176|b:0|m:0|f:0|o:176
+	показывает обмен между IP 127.0.0.1 и 127.0.0.8,
+	и здесь можно видеть что на 127.0.0.8 с адреса 127.0.0.1 пришло
+	176 байт (".. i:176") и ушло с 127.0.0.1 на 127.0.0.8
+	176 байт (".. o:176").
+
+  4.2.3 <a name="p4_2_3"></a><font color="#109200"><b>Группа доступа</b></font>
+
+    В данную группу входят следующие переменные:
+
+    <a href="tab_HOWTO.htm#deny_ip_global" style="text-decoration:none;color:#000000;">deny_ip_global</a>, <a href="tab_HOWTO.htm#deny_ip_in_type" style="text-decoration:none;color:#000000;">deny_ip_in_type</a>, <a href="tab_HOWTO.htm#deny_ip_in_name" style="text-decoration:none;color:#000000;">deny_ip_in_name</a>, <a href="tab_HOWTO.htm#deny_ip_in_dev" style="text-decoration:none;color:#000000;">deny_ip_in_dev</a>,
+    <a href="tab_HOWTO.htm#deny_dev" style="text-decoration:none;color:#000000;">deny_dev</a>, <a href="tab_HOWTO.htm#rs_by_proto_global" style="text-decoration:none;color:#000000;">rs_by_proto_global</a>, <a href="tab_HOWTO.htm#al_only_proto_global" style="text-decoration:none;color:#000000;">al_only_proto_global</a>, <a href="tab_HOWTO.htm#rs_by_proto_idev" style="text-decoration:none;color:#000000;">rs_by_proto_idev</a>,
+    <a href="tab_HOWTO.htm#rs_by_proto_name" style="text-decoration:none;color:#000000;">rs_by_proto_name</a>, <a href="tab_HOWTO.htm#al_by_proto_idev" style="text-decoration:none;color:#000000;">al_by_proto_idev</a>, <a href="tab_HOWTO.htm#al_by_proto_name" style="text-decoration:none;color:#000000;">al_by_proto_name</a>,
+    <a href="tab_HOWTO.htm#rs_by_port_global" style="text-decoration:none;color:#000000;">rs_by_port_global</a>, <a href="tab_HOWTO.htm#al_by_port_global" style="text-decoration:none;color:#000000;">al_by_port_global</a>, <a href="tab_HOWTO.htm#al_by_port_itype" style="text-decoration:none;color:#000000;">al_by_port_itype</a>,
+    <a href="tab_HOWTO.htm#rs_by_port_itype" style="text-decoration:none;color:#000000;">rs_by_port_itype</a>, <a href="tab_HOWTO.htm#rs_by_proto_itype" style="text-decoration:none;color:#000000;">rs_by_proto_itype</a>, <a href="tab_HOWTO.htm#rs_by_port_idev" style="text-decoration:none;color:#000000;">rs_by_port_idev</a>, <a href="tab_HOWTO.htm#al_by_port_idev" style="text-decoration:none;color:#000000;">al_by_port_idev</a>,
+    <a href="tab_HOWTO.htm#al_by_proto_itype" style="text-decoration:none;color:#000000;">al_by_proto_itype</a>, <a href="tab_HOWTO.htm#rs_by_port_name" style="text-decoration:none;color:#000000;">rs_by_port_name</a>, <a href="tab_HOWTO.htm#al_by_port_name" style="text-decoration:none;color:#000000;">al_by_port_name</a>,
+    <a href="tab_HOWTO.htm#deny_ip_ptype_iname" style="text-decoration:none;color:#000000;">deny_ip_ptype_iname</a>, <a href="tab_HOWTO.htm#alo_ip_global" style="text-decoration:none;color:#000000;">alo_ip_global</a>, <a href="tab_HOWTO.htm#alo_ip_in_type" style="text-decoration:none;color:#000000;">alo_ip_in_type</a>, <a href="tab_HOWTO.htm#alo_ip_in_name" style="text-decoration:none;color:#000000;">alo_ip_in_name</a>,
+    <a href="tab_HOWTO.htm#alo_ip_in_dev" style="text-decoration:none;color:#000000;">alo_ip_in_dev</a>, <a href="tab_HOWTO.htm#alo_dev" style="text-decoration:none;color:#000000;">alo_dev</a>, <a href="tab_HOWTO.htm#alo_ip_ptype_iname" style="text-decoration:none;color:#000000;">alo_ip_ptype_iname</a>, <a href="tab_HOWTO.htm#deny_dev_in_name" style="text-decoration:none;color:#000000;">deny_dev_in_name</a>,
+    <a href="tab_HOWTO.htm#alo_dev_in_name" style="text-decoration:none;color:#000000;">alo_dev_in_name</a>, <a href="tab_HOWTO.htm#deny_dev_tp_ip" style="text-decoration:none;color:#000000;">deny_dev_tp_ip</a>, <a href="tab_HOWTO.htm#alo_dev_tp_ip" style="text-decoration:none;color:#000000;">alo_dev_tp_ip</a>,
+    <a href="tab_HOWTO.htm#deny_dev_tp_ip_iname" style="text-decoration:none;color:#000000;">deny_dev_tp_ip_iname</a>, <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">deny_dev_prefix</a>,
+    <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">rs_by_proto_idev_prefix</a>,<a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">al_by_proto_idev_prefix</a>,
+    <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">rs_by_port_idev_prefix</a>, <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">al_by_port_idev_prefix</a>,
+    <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">alo_ip_in_dev_prefix</a>,<a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">alo_dev_prefix</a>,<a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">deny_dev_prefix_in_name</a>,
+    <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">alo_dev_prefix_in_name</a>,<a href="tab_HOWTO.htm#deny_icmp_type" style="text-decoration:none;color:#000000;">deny_icmp_type</a>,<a href="tab_HOWTO.htm#deny_icmp_type_idev" style="text-decoration:none;color:#000000;">deny_icmp_type_idev</a>,
+    <a href="tab_HOWTO.htm#deny_icmp_type_by_ip" style="text-decoration:none;color:#000000;">deny_icmp_type_by_ip</a>,<a href="tab_HOWTO.htm#deny_icmp_type_by_ip_idev" style="text-decoration:none;color:#000000;">deny_icmp_type_by_ip_idev</a>,<a href="tab_HOWTO.htm#deny_icmp_type_name" style="text-decoration:none;color:#000000;">deny_icmp_type_name</a>,
+    <a href="tab_HOWTO.htm#prefix_v" style="text-decoration:none;color:#000000;">deny_icmp_type_idev_prefix_name</a>.
+
+    Данные переменные определяют будет ли учтен пакет или нет,
+    это можно определять как глобально(сразу же для всех функций),
+    так и для отдельной взятой функции.
+
+    Описание каждой из переменных.
+
+    1. <a name="deny_ip_global"></a><font color="#a62828"><b>deny_ip_global</b></font>
+
+	Переменная имеет 1 параметр.
+	Параметры:
+	    1)	Перечисление IP адресов.
+	Функция предназначена для игнорирования указанных IP адресов,
+	глобально(всеми функциями).
+	Пример:
+	deny_ip_global=(s127.0.0.89,a127.0.0.107)
+
+    2. <a name="deny_ip_in_type"></a><font color="#a62828"><b>deny_ip_in_type</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)	Перечисление типов пакетов.
+	    2)	Перечисление IP адресов.
+	Если, пришел пакет и его тип совпадает с перечисленным
+	в данной переменной, и его IP также совпадает с перечисленным,
+	тогда пакет отбрасывается глобально, и не учитывается ни одной
+	из функций.
+	Пример:
+	deny_ip_in_type=(i,o)+(a127.0.0.54,d218.45.19.1-90)
+
+    3. <a name="deny_ip_in_dev"></a><font color="#a62828"><b>deny_ip_in_dev</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)	Перечисление типов интерфейсов.
+	    2)	Перечисление IP адресов.
+	Если, пакет пришел с интерфейса имя которого совпадает
+	с перечисленным, и IP адрес пакета тоже совпадает с перечисленным
+	то пакет не учитывается ни одной из функций.
+	Пример:
+	deny_ip_in_dev=(ppp1,ppp5)+(s219.23.57.8,d137.51.28.3)
+
+    4. <a name="deny_dev"></a><font color="#a62828"><b>deny_dev</b></font>
+
+	Переменная имеет 1 параметр.
+	Параметры:
+	    1)	Перечисление интерфейсов.
+	Функция предназначена для отбрасывания любого пакета,
+	пришедшего с любого перечисленного в данной переменной
+	интерфейса.
+	Пример:
+	deny_dev=(ppp5,ppp10,ppp2)
+
+    5. <a name="deny_ip_in_name"></a><font color="#a62828"><b>deny_ip_in_name</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)	Строка с именем.
+	    2)	Перечисление IP адресов.
+	Функция предназначена для игнорирования пакетов,
+	IP адрес которых совпадает с перечисленными в данной переменной,
+	для функций имена которых совпадают с указанным именем в данной переменной.
+	Пример:
+	stat_by_ip_global=(s127.0.0.1-10,s127.0.0.34)+(/var/trafacct/lo-ip-stat)+(a)+(name2)
+	deny_ip_in_name=(name2)+(s127.0.0.3)
+
+	В данном примере можно видеть, что все пакеты указанные в stat_by_ip_global
+	будут заносится в лог-файл, кроме тех пакетов, source IP которых
+	равен 127.0.0.3 (так как используется функция игнорирования по IP адресам).
+
+    6. <a name="rs_by_proto_global"></a><font color="#a62828"><b>rs_by_proto_global</b></font>
+
+	Переменная имеет 1 параметр.
+	Параметры:
+	    1) Перечисление/диапазоны протоколов.
+
+	Если протокол пакета совпадает с одним из перечисленных,
+	или входит в диапазон, то такой пакет игнорируется
+	глобально(пакет не получит, на обработку, ни одна из функций).
+	Пример:
+	rs_by_proto_global=(17,1,6)
+	    Здесь запрещаются протоколы 6(TCP), 17(UDP) и 1(ICMP)
+	    Все остальные будут учитываться.
+
+	rs_by_proto_global=(4-10)
+	    Здесь исключаются пакеты, с номерами с 4-го по 10-ый.
+
+	rs_by_proto_global=(8-27,1,6)
+	    Здесь исключаются с 8 по 27 + ICMP(1) и TCP(6).
+
+	IP=0	- Dummy protocol for TCP
+	ICMP=1	- Internet Control Message Protocol
+	IGMP=2	- Internet Group Management Protocol
+	IPIP=4	- IPIP tunnels (older KA9Q tunnels use 94)
+	TCP=6	- Transmission Control Protocol
+	EGP=8	- Exterior Gateway Protocol
+	PUP=12	- PUP protocol
+	UDP=17	- User Datagram Protocol
+	IDP=22	- XNS IDP protocol
+	RSVP=46	- RSVP protocol
+	GRE=47	- Cisco GRE tunnels (rfc 17011702)
+	IPV6=41	- IPv6-in-IPv4 tunnelling
+	PIM=103	- Protocol Independent Multicast
+	ESP=50  - Encapsulation Security Payload protocol
+	AH=51   - Authentication Header protocol
+	COMP=108 - Compression Header protocol
+	RAW=255	- Raw IP packets
+
+    7. <a name="al_only_proto_global"></a><font color="#a62828"><b>al_only_proto_global</b></font>
+
+	Переменная имеет 1 параметр.
+	Параметры:
+	    1) Перечисление/диапазоны протоколов.
+
+	Эта функция полностью аналогична <a href="tab_HOWTO.htm#rs_by_proto_global" style="text-decoration:none;color:#000000;">rs_by_proto_global</a>
+	за тем исключением, что она разрешает учитывать только
+	те пакеты протоколы которых совпадают с перечисленными
+	в параметре.
+	Пример:
+	al_only_proto_global=(6,1,17)
+	    Здесь разрешается учитывать, глобально, только те
+	    пакеты протоколы которых равны TCP, ICMP или UDP.
+
+	al_only_proto_global=(1-4,231)
+	    Здесь разрешается учет пакетов только с протоколами
+	    c 1-4 и 231.
+
+    8. <a name="rs_by_proto_idev"></a><font color="#a62828"><b>rs_by_proto_idev</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)	Перечисление интерфейсов.
+	    2)	Перечисление/диапазоны протоколов.
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_proto_global" style="text-decoration:none;color:#000000;">rs_by_proto_global</a> только
+	распространяется на отдельные интерфейсы.
+	Пример:
+	rs_by_proto_idev=(eth7,eth2)+(17,1)
+	    Здесь если появился пакет с интерфейса eth7 или eth2
+	    и у протокол пакета равен UDP(17) или ICMP(1) то он не
+	    учитывается.
+
+    9. <a name="rs_by_proto_name"></a><font color="#a62828"><b>rs_by_proto_name</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)	Строка с именем.
+	    2)	Перечисление/диапазоны протоколов.
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_proto_global" style="text-decoration:none;color:#000000;">rs_by_proto_global</a> только
+	влияет на переменную с именем указанным первым параметром.
+	Пример:
+	stat_global=(/var/trafacct/global_stat.log)+(o,i)+(nameSG)
+	rs_by_proto_name=(nameSG)+(1,17,20-45)
+	    Здесь для функции stat_global будут игнорированы
+	    все те пакеты протокол которых равен UDP, ICMP
+	    или диапазон протокола от 20 до 45.
+
+    10. <a name="al_by_proto_idev"></a><font color="#a62828"><b>al_by_proto_idev</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1) Строка с перечислением интерфейсов.
+	    2) Перечисление/диапазоны.
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_proto_idev" style="text-decoration:none;color:#000000;">rs_by_proto_idev</a>, но с той лишь разницей, что
+	пропускаются все те пакеты протоколы которых совпадают с перечисленными
+	или входят в указанный диапазон, при этом интерфейс пакета тоже должен
+	совпадать с одним из перечисленных первым параметром, остальные пакеты
+	отбрасываются.
+	Пример:
+	al_by_proto_idev=(eth3,eth1)+(6,17)
+	    В данном примере на интерфейсах eth3 и eth1 разрешается
+	    учитывать только те пакеты протоколы которых равны 6 или 17
+	    т.е. TCP или UDP.
+
+    11. <a name="al_by_proto_name"></a><font color="#a62828"><b>al_by_proto_name</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Перечисление/диапазоны протоколов.
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_proto_name" style="text-decoration:none;color:#000000;">rs_by_proto_name</a>, но с той лишь разницей,
+	что разрешает только те пакеты протоколы которых равны перечисленным
+	или входят в указанный диапазон. При этом данная переменная влияет
+	только на те функции имя которых совпадает с указанным именем в
+	первом параметре.
+	Пример:
+	stat_global=(/var/trafacct/global_stat.log)+(o,i)+(nameSG)
+	al_by_proto_name=(nameSG)+(1,17,20-45)
+	    Из данного примера можно видеть, что в файл "/var/trafacct/global_stat.log"
+	    будут записываться только те пакеты протоколы которых равны
+	    ICMP(1), UDP(17) или равные диапазону от 20 до 45.
+
+    12. <a name="rs_by_port_global"></a><font color="#a62828"><b>rs_by_port_global</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1) Номер со значением протокола.
+	    2) Перечисление/диапазоны портов.
+
+	Функция глобально отбрасывает все те пакеты указанного протокола
+	порты которых совпадают с перечисленными или входят в указанные
+	диапазоны.
+	Протокол(1-й параметр) может принимать значение исходя из
+	номера протокола TCP и UDP, для TCP должно быть равным 6,
+	для UDP равным 17.
+	Порты перечисляются так:
+	    первый символ это a(any), s(source) или d(destination)
+	    тип any:
+		он означает, что указанный порт может быть как
+		source так и destination.
+	    тип source:
+		означает у пакета исходящий порт (порт откуда он прибыл).
+	    тип destination:
+		означает у пакета порт назначения (порт на который прибыл).
+	Пример:
+	rs_by_port_global=(6)+(d20-21,d110)
+	    В данном примере отбрасываются пакеты протокола TCP которые
+	    направляются на порты 20,21(FTP) и на порт 110(POP3).
+	    Для UDP будет так:
+	rs_by_port_global=(17)+(d5128)
+	    Из данного примера можно видеть, что отбрасываются
+	    все те пакеты протокол которых равен UDP и порт
+	    назначения которых равен 5128.
+
+    13. <a name="al_by_port_global"></a><font color="#a62828"><b>al_by_port_global</b></font>
+
+	Функция аналогична вышеуказанной <a href="tab_HOWTO.htm#rs_by_port_global" style="text-decoration:none;color:#000000;">rs_by_port_global</a>
+	но она не отбрасывает совпавшие пакеты а наоборот
+	разрешает только только те пакеты значения которых
+	подходят под указанные параметры.
+	Пример:
+	al_by_port_global=(6)+(d20-21,d110)
+	    Будут учитываться только те пакеты протокол которых
+	    равен TCP и порт назначения которых равен FTP(20-21)
+	    или POP3(110).
+
+    14. <a name="al_by_port_itype"></a><font color="#a62828"><b>al_by_port_itype</b></font>
+
+	Переменная имеет 3 параметра.
+	Параметры:
+	    1) Перечисление типов пакетов.
+	    2) Номер со значением протокола.
+	    3) Перечисление/диапазоны портов.
+
+	Данная функция разрешает учитывать только те пакеты
+	тип которых перечислен 1-ым параметром и порт которого
+	совпадает с одним из перечисленных, остальные пакеты
+	отбрасываются.
+	Пример:
+	al_by_port_itype=(i,o)+(6)+(a20-21)
+	    В данном примере учитываются только те пакеты
+	    тип которых равен input(i) или output(o),
+	    протокол которых равен TCP и порты которых входят
+	    в диапазон 20-21(FTP).
+
+    15. <a name="rs_by_port_itype"></a><font color="#a62828"><b>rs_by_port_itype</b></font>
+
+	Функция полностью аналогична вышеописанной <a href="tab_HOWTO.htm#al_by_port_itype" style="text-decoration:none;color:#000000;">al_by_port_itype</a>,
+	за тем лишь исключением, что функция <a href="tab_HOWTO.htm#rs_by_port_itype" style="text-decoration:none;color:#000000;">rs_by_port_itype</a> занимается
+	тем, что отвергает те пакеты значения параметров которых совпадают
+	с перечисленными в переменной.
+	Пример:
+	rs_by_port_itype=(o)+(17)+(d5128)
+	    В данном примере отвергаются все UDP пакеты,
+	    имеющие тип output (исходящие) и порт назначения
+	    равный 5128.
+
+    16. <a name="rs_by_proto_itype"></a><font color="#a62828"><b>rs_by_proto_itype</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1) Перечисление типов пакетов.
+	    2) Перечисление/диапазоны протоколов.
+
+	Функция позволяет отвергать глобально все те пакеты,
+	тип которых и протокол совпадают со значениями
+	перечисленными в параметрах.
+	Пример:
+	rs_by_proto_itype=(i)+(17)
+	    Данный пример отвергает все пакеты которые
+	    имеют тип input(входящие) и протокол UDP(17).
+
+    17. <a name="al_by_proto_itype"></a><font color="#a62828"><b>al_by_proto_itype</b></font>
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_proto_itype" style="text-decoration:none;color:#000000;">rs_by_proto_itype</a>, но только за
+	тем лишь исключением, что <a href="tab_HOWTO.htm#al_by_proto_itype" style="text-decoration:none;color:#000000;">al_by_proto_itype</a> занимается
+	тем, что разрешает учитывать только те пакеты значения
+	параметров которых совпадают с перечисленными в переменной.
+	Пример:
+	al_by_proto_itype=(o)+(6)
+	    В данном примере видно, что учитываются только те
+	    пакеты тип которых равен output(исходящие) и
+	    протокол которых равен TCP(6).
+
+    18. <a name="rs_by_port_idev"></a><font color="#a62828"><b>rs_by_port_idev</b></font>
+
+	Переменная имеет 3 параметра.
+	Параметры:
+	    1) Перечисление интерфейсов.
+	    2) Номер со значением протокола.
+	    3) Перечисление/диапазоны портов.
+
+	Функция позволяет отвергать с перечисленных интерфейсов
+	все те пакеты порты которых совпадают с указанными в параметре.
+	Пример:
+	rs_by_port_idev=(eth7,eth2)+(6)+(a20-12)
+	    Из данного примера можно видеть, что пакеты на интерфейсах
+	    eth7,eth2 с протоколом TCP(6) и с портами входящими в
+	    диапазон 20-21(FTP) будут отвергаться.
+
+    19. <a name="al_by_port_idev"></a><font color="#a62828"><b>al_by_port_idev</b></font>
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_port_idev" style="text-decoration:none;color:#000000;">rs_by_port_idev</a>, но с той лишь разницей,
+	что al_by_port_idev разрешает только те пакеты значения
+	параметров которых совпадают с перечисленными в переменной.
+	Пример:
+	al_by_port_idev=(ppp3,ppp0)+(6)+(a80)
+	    На интерфейсах ppp0, ppp3 учитывать только пакеты
+	    протокол которых равен TCP(6) и сервис которых
+	    равен http(80).
+
+    20. <a name="rs_by_port_name"></a><font color="#a62828"><b>rs_by_port_name</b></font>
+
+	Переменная имеет 3 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Номер со значением протокола.
+	    3) Перечисление портов.
+
+	Функция позволяет отвергать все те пакеты параметры
+	которых совпадают с перечисленными в данной переменной.
+	Пример:
+	stat_global=(/var/trafacct/loRStest)+(a)+(nameRStest)
+	rs_by_port_name=(nameRStest)+(6)+(a20-21)
+	    В данном примере в файл "/var/trafacct/loRStest"
+	    будут добавляться все пакеты кроме тех
+	    протокол которых равен 6(TCP) и
+	    порты которых входят в диапазон 20-21(FTP).
+
+    21. <a name="al_by_port_name"></a><font color="#a62828"><b>al_by_port_name</b></font>
+
+	Функция аналогична <a href="tab_HOWTO.htm#rs_by_port_name" style="text-decoration:none;color:#000000;">rs_by_port_name</a> за тем лишь исключением,
+	что данная функция разрешает только те пакеты значения
+	параметров которых совпадают с перечисленными в переменной.
+	Пример:
+	stat_global=(/var/trafacct/loRStest)+(a)+(nameRStest)
+	al_by_port_name=(nameRStest)+(17)+(d5128)
+	    В данном примере файл "/var/trafacct/loRStest" будет
+	    заполняться только теми пакетами протокол которых равен
+	    17(UDP) и порт назначения равный 5128.
+
+    22. <a name="deny_ip_ptype_iname"></a><font color="#a62828"><b>deny_ip_ptype_iname</b></font>
+
+	Данная переменная имеет 3 параметра.
+	Параметры:
+	    1) Строка с именем
+	    2) Перечисление IP адресов
+	    3) Перечисление типов пакетов
+
+	Функция запрещает те пакеты тип которых совпадает с
+	параметром 3 и IP адреса которого совпадают с параметром 2.
+	При этом данная переменная влияет только на те функции
+	имя которых совпадает с именем указанным в параметре 1
+	данной переменной.
+	Пример:
+	stat_global=(/var/trafacct/loRStest)+(a)+(nameRStest)
+	deny_ip_ptype_iname=(nameRStest)+(d127.0.0.8)+(i)
+	    В данном примере можно видеть, что пакеты тип которых
+	    равен input(входящий) и destination IP которых
+	    равен 127.0.0.8, отвергаются для функции stat_global
+	    с именем nameRStest.
+
+    23. <a name="alo_ip_global"></a><font color="#a62828"><b>alo_ip_global</b></font>
+
+	Данная переменная имеет 1 параметр.
+	Параметры:
+	    1) Перечисление/диапазоны IP адресов.
+
+	Функция предназначена ограничивать трафик
+	по IP адресам перечисленным в первом параметре.
+	Пример:
+	alo_ip_global=(a127.0.0.89-100)
+
+	Данный пример ограничивает сетевой трафик по
+	диапазону IP адресов 127.0.0.89-100.
+
+    24. <a name="alo_ip_in_type"></a><font color="#a62828"><b>alo_ip_in_type</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Перечисление типов пакетов.
+	    2) Перечисление/диапазоны IP адресов.
+
+	Функция предназначена для ограничения пакетов
+	по указанному типу и по указанным IP адресам.
+	Пример:
+	alo_ip_in_type=(i,f)+(a192.78.11.20-10)
+
+	Данный пример ограничивает трафик по пакетам с типом
+	i(входящие) и f(FORWARD), и диапазону IP адресов
+	192.78.11.20-10. Остальные пакеты отбрасываются.
+
+    25. <a name="alo_ip_in_name"></a><font color="#a62828"><b>alo_ip_in_name</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Перечисление/диапазоны IP адресов.
+
+	Функция предназначена для ограничения переменной,
+	имя которой совпадает с первым параметром, по пакетам
+	IP адреса которых совпадают с перечисленными во втором
+	параметре. Остальные пакеты отбрасываются.
+	Пример:
+	stat_global=(/var/trafacct/loRStest)+(a)+(nameRStest)
+	alo_ip_in_name=(nameRStest)+(a200.200.1-10.1)
+
+	После этого функция stat_global будет учитывать только те
+	пакеты диапазон IP адресов которых равен 200.200.1-10.1 .
+
+    26. <a name="alo_ip_in_dev"></a><font color="#a62828"><b>alo_ip_in_dev</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Перечисление интерфейсов.
+	    2) Перечисление диапазонов IP адресов.
+
+	Функция предназначена для ограничения трафика по
+	пакетам интерфейс которых равен перечисленному
+	в первом параметре и по IP адресам перечисленным
+	вторым параметром.
+	Пример:
+	alo_ip_in_dev=(eth8,eth4)+(a192.168.0.30-50,a60.40.10.1-20)
+
+	После этого для интерфейсов eth8, eth4 будут учитываться
+	только те пакеты IP адреса которых совпадают с диапазонами
+	192.168.0.30-50, 60.40.10.1-20 .
+
+    27. <a name="alo_dev"></a><font color="#a62828"><b>alo_dev</b></font>
+
+	Данная переменная имеет 1 параметр.
+	Параметры:
+	    1) Перечисление интерфейсов.
+
+	Функция ограничивает трафик по определенным интерфейсам.
+	Пример:
+	alo_dev=(eth0,eth5)
+
+	После этого будут учитываться только те пакеты интерфейс
+	которых равен eth0 или eth5. Остальные будут отбрасываться.
+
+    28. <a name="alo_ip_ptype_iname"></a><font color="#a62828"><b>alo_ip_ptype_iname</b></font>
+
+	Данная переменная имеет 3 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Перечисление IP адресов.
+	    3) Перечисление типов пакетов.
+
+	Функция предназначена для ограничения переменной, имя
+	которой совпадает с первым параметром, по пакетам IP адреса
+	которых совпадают с перечисленными во втором параметре и
+	типы которых совпадают с перечисленными в третьем параметре.
+	Пример:
+	stat_global=(/var/trafacct/loRStest)+(a)+(nameRStest)
+	alo_ip_ptype_iname=(nameRStest)+(a192.168.0.1-5)+(i)
+
+	После этого функция <a href="tab_HOWTO.htm#stat_global" style="text-decoration:none;color:#000000;">stat_global</a> будет учитывать только те
+	пакеты тип которых равен i(входящие) и IP адреса которых
+	входят в диапазон 192.168.0.1-5.
+
+    29. <a name="deny_dev_in_name"></a><font color="#a62828"><b>deny_dev_in_name</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Перечисление интерфейсов.
+
+	Функция предназначена для того чтобы отбрасывать
+	все те пакеты интерфейс которых совпадает с перечисленным
+	во втором параметре данной переменной.
+	При этом данная переменная влияет только на те функции
+	имя которых совпадает с именем указанным в параметре 1
+	данной переменной.
+	Пример:
+	full_stat_global=(/var/trafacct/stat_global)+(a)+(stat_global)
+	deny_dev_in_name=(stat_global)+(eth5, eth1)
+
+	Из данного примера можно видеть, что пакеты с интерфейсами
+	eth5, eth1 не будут записаны в статистику для
+	функции <a href="tab_HOWTO.htm#full_stat_global" style="text-decoration:none;color:#000000;">full_stat_global</a>.
+
+    30. <a name="alo_dev_in_name"></a><font color="#a62828"><b>alo_dev_in_name</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Строка с именем.
+	    2) Перечисление интерфейсов.
+
+	Функция предназначена для ограничения трафика
+	по пакетам интерфейс которых совпадает с
+	интерфейсом перечисленным во втором параметре.
+	При этом данная переменная влияет только на те функции
+	имя которых совпадает с именем указанным в параметре 1
+	данной переменной.
+	Пример:
+	full_stat_global=(/var/trafacct/stat_global)+(a)+(stat_global)
+	alo_dev_in_name=(stat_global)+(eth5, eth1)
+
+	После этого функция <a href="tab_HOWTO.htm#full_stat_global" style="text-decoration:none;color:#000000;">full_stat_global</a> будет обрабатывать
+	только те пакеты интерфейс которых равен eth5 или eth1.
+
+    31. <a name="deny_dev_tp_ip"></a><font color="#a62828"><b>deny_dev_tp_ip</b></font>
+
+	Данная переменная имеет 3 параметра.
+	Параметры:
+	    1) Перечисление интерфейсов.
+	    2) Перечисление типов пакетов.
+	    3) Перечисление/диапазоны IP адресов.
+
+	Функция предназначена для ограничения трафика по пакетам
+	интерфейс которых совпадает с одним из перечисленных
+	первым параметром, тип которых совпадает с одним из перечисленных
+	вторым параметром, IP адреса которых совпадают с IP адресами
+	перечисленными в третьем параметре.
+	Пример:
+	deny_dev_tp_ip=(lo3,lo4,lo5,lo,lo7,lo9)+(i)+(d127.0.0.8)
+
+	Так во входящем трафике для перечисленных интерфейсов,
+	не будут учитываться пакеты IP адрес назначения которых
+	равен 127.0.0.8 .
+
+    32. <a name="alo_dev_tp_ip"></a><font color="#a62828"><b>alo_dev_tp_ip</b></font>
+
+	Данная переменная имеет 3 параметра.
+	Параметры:
+	    1) Перечисление интерфейсов.
+	    2) Перечисление типов пакетов.
+	    3) Перечисление/диапазоны IP адресов.
+
+	Функция предназначена для ограничения трафика
+	по пакетам интерфейс которых совпадает с
+	интерфейсом перечисленным во втором параметре.
+	При этом данная переменная влияет только на те функции
+	имя которых совпадает с именем указанным в параметре 1
+	данной переменной.
+	Пример:
+	alo_dev_tp_ip=(lo3,lo4,lo5,lo,lo7,lo9)+(i)+(d127.0.0.8)
+
+	Таким образом во входящем трафике для перечисленных интерфейсов,
+	будут учитываться только те пакеты IP адрес назначения которых
+	равен 127.0.0.8 .
+
+    33. <a name="deny_dev_tp_ip_iname"></a><font color="#a62828"><b>deny_dev_tp_ip_iname</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Имя определенной переменной.
+	    2) Перечисление интерфейсов.
+	    3) Перечисление типов пакетов.
+	    4) Перечисление/диапазоны IP адресов.
+
+	Данная функция равнозначна функции <a href="tab_HOWTO.htm#deny_dev_tp_ip" style="text-decoration:none;color:#000000;">deny_dev_tp_ip</a>,
+	только действие этой функции ограничивается
+	переменной имя которой совпадает с именем указанным
+	первым параметром данной функции.
+	Пример:
+	full_stat_global=(/var/trafacct/testing/full_stat_global)+(a)+(full_stat_global)
+	deny_dev_tp_ip_iname=(full_stat_global)+(lo3,lo4,lo5,lo,lo7,lo9)+(i)+(d127.0.0.8)
+
+	Из данного примера можно видеть, что в файл не будут записаны
+	только те пакеты, тип которых равен i(входящий), интерфейс которых
+	совпадает с одним из перечисленных, IP адрес назначения которого
+	равен 127.0.0.8 . Остальные пакеты будут записаны.
+
+    34. <font color="#a62828"><b>Переменные управляющие потоком ICMP  пакетов.</b></font>
+
+    	<a href="tab_HOWTO.htm#deny_icmp_type" style="text-decoration:none;color:#000000;">deny_icmp_type</a>,<a href="tab_HOWTO.htm#deny_icmp_type_idev" style="text-decoration:none;color:#000000;">deny_icmp_type_idev</a>,
+    	<a href="tab_HOWTO.htm#deny_icmp_type_by_ip" style="text-decoration:none;color:#000000;">deny_icmp_type_by_ip</a>,<a href="tab_HOWTO.htm#deny_icmp_type_by_ip_idev" style="text-decoration:none;color:#000000;">deny_icmp_type_by_ip_idev</a>,
+    	<a href="tab_HOWTO.htm#deny_icmp_type_name" style="text-decoration:none;color:#000000;">deny_icmp_type_name</a>.
+
+    	34.1 <a name="deny_icmp_type"></a><font color="#a62828"><b>deny_icmp_type</b></font>
+
+    		Ограничивает поток пакетов по их типу.
+    		Пример:
+    		deny_icmp_type=(8)
+
+    		Так отбрасываются из потока ICMP пакеты
+    		с типом "echo request".
+
+    	34.2 <a name="deny_icmp_type_idev"></a><font color="#a62828"><b>deny_icmp_type_idev</b></font>
+
+    		Переменная идентична <a href="tab_HOWTO.htm#deny_icmp_type" style="text-decoration:none;color:#000000;">deny_icmp_type</a>
+    		но ограничивает на определенном
+    		интерфейсе.
+    		Пример:
+    		deny_icmp_type_idev=(eth8)+(0)
+
+    		Из данного примера можно видеть, что из потока
+		отбрасываются ICMP пакеты с типом "echo reply"
+		на интерфейсе eth8.
+
+    	34.3 <a name="deny_icmp_type_by_ip"></a><font color="#a62828"><b>deny_icmp_type_by_ip</b></font>
+
+    		Переменная ограничивает ICMP поток
+    		на определенных IP адресах.
+    		Пример:
+    		deny_icmp_type_by_ip=(a192.168.4.1-90)+(3)
+
+    		Так отбрасываются ICMP пакеты с типом "dest unreach"
+    		и IP адреса которых входят в диапазон 192.168.4.1-90 .
+
+    	34.4 <a name="deny_icmp_type_by_ip_idev"></a><font color="#a62828"><b>deny_icmp_type_by_ip_idev</b></font>
+
+    		Переменная ограничивает ICMP поток для
+    		определенных IP адресов на определенном
+    		интерфейсе.
+    		Пример:
+    		deny_icmp_type_by_ip_idev=(eth1)+(a192.168.0.59)+(3,8)
+
+    		Так отбрасываются ICMP пакеты с типами
+    		"dest unreach" и "echo request" на интерфейсе
+		eth1 от IP адреса 192.168.0.59.
+
+    	34.5 <a name="deny_icmp_type_name"></a><font color="#a62828"><b>deny_icmp_type_name</b></font>
+
+    		Переменная ограничивает ICMP поток
+    		для определенной переменной имя которой
+    		определено в параметре.
+    		Пример:
+    		full_stat_global=(/var/trafacct/eth/stat_global)+(a)+(stat_global)
+    		deny_icmp_type_name=(stat_global)+(3)
+
+    		так в файл /var/trafacct/eth/stat_global будут занесены
+		все ICMP пакеты исключая ICMP пакеты с типом "dest unreach".
+
+    35. <a name="prefix_v"></a><font color="#a62828"><b>Префиксные переменные</b></font>
+
+	deny_dev_prefix,rs_by_proto_idev_prefix,al_by_proto_idev_prefix,
+    	rs_by_port_idev_prefix, al_by_port_idev_prefix,
+    	alo_ip_in_dev_prefix,alo_dev_prefix,deny_dev_prefix_in_name,
+    	alo_dev_prefix_in_name, deny_icmp_type_idev_prefix_name.
+
+    	Указанные выше переменные аналогичны своим предшествующим
+    	переменным без "_prefix", данное расширение позволяет оперировать
+    	не с именами интерфейсов а с префиксами интерфейсов, для того
+    	чтобы не указывать eth1,2,eth3,eth4 и сразу же отделить все
+    	eth следует указать префикс eth.
+    	Например для того чтобы избавиться в конфигурации от всех
+	пакетов	любых ppp интерфейсов, нужно просто указать строку
+    	deny_dev_prefix=(ppp).
+
+  4.2.4 <a name="p4_2_4"></a><font color="#109200"><b>Группа ведения отчетов</b></font>
+
+    К данной группе относятся такие переменные как:
+
+    <a href="tab_HOWTO.htm#ls_by_iface" style="text-decoration:none;color:#000000;">ls_by_iface</a>, <a href="tab_HOWTO.htm#ls_by_each_ip" style="text-decoration:none;color:#000000;">ls_by_each_ip</a>,
+    <a href="tab_HOWTO.htm#ls_by_port_ip_each" style="text-decoration:none;color:#000000;">ls_by_port_ip_each</a>, <a href="tab_HOWTO.htm#ls_by_eport_eip" style="text-decoration:none;color:#000000;">ls_by_eport_eip</a>,
+    <a href="tab_HOWTO.htm#ls_by_proto_ip_each" style="text-decoration:none;color:#000000;">ls_by_proto_ip_each</a>, <a href="tab_HOWTO.htm#ls_by_eproto_eip" style="text-decoration:none;color:#000000;">ls_by_eproto_eip</a>,
+    <a href="tab_HOWTO.htm#ls_full_by_each_ip" style="text-decoration:none;color:#000000;">ls_full_by_each_ip</a>, <a href="tab_HOWTO.htm#ls_by_each_ip_local" style="text-decoration:none;color:#000000;">ls_by_each_ip_local</a>,
+    <a href="tab_HOWTO.htm#ls_by_ip" style="text-decoration:none;color:#000000;">ls_by_ip</a>, <a href="tab_HOWTO.htm#ls_by_proto_ip" style="text-decoration:none;color:#000000;">ls_by_proto_ip</a>, <a href="tab_HOWTO.htm#ls_by_eproto_ip" style="text-decoration:none;color:#000000;">ls_by_eproto_ip</a>,
+    <a href="tab_HOWTO.htm#ls_by_port_ip" style="text-decoration:none;color:#000000;">ls_by_port_ip</a>, <a href="tab_HOWTO.htm#ls_by_eport_ip" style="text-decoration:none;color:#000000;">ls_by_eport_ip</a>.
+
+    Описание каждой из переменных.
+
+    1. <a name="ls_by_iface"></a><font color="#a62828"><b>ls_by_iface</b></font>
+
+	Данная переменная имеет 5 параметров.
+	Параметры:
+	    1) Файл скина
+	    2) Файл в который будет заноситься отчет
+	    3) Перечисление типов пакетов
+	    4) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    5) Расширение для файла который указан 2-м параметром
+    	    6) Формат отчета текстовый (t) или использовать скин (s).
+	    7) Имя для данной переменной.
+
+	Данная переменная используется для ведения
+	отчетов о суммарном трафике по интерфейсам.
+	Расширение для файла указывается например
+	как ".%SS,%MM,%HH,%DD,%MO,%YR,%WW.html"
+	В результате части с символом '%' заменятся на:
+	SS - секунды (0-60)
+	MM - минуты  (0-60)
+	HH - часы    (0-24)
+	DD - день месяца (1-{28,30,31})
+	MO - месяц, его номер (1-12)
+	YR - год, формат 4-х значный (2002)
+	WW - номер дня в неделе:
+		    1) понедельник
+		    2) вторник
+		     ...
+		    6) суббота
+		    7) воскресение
+
+	Пример:
+	ls_by_iface=(skin_b.cf)+(/var/trafacct/ls_by_iface)+(i,o,b,f,m)+(*/10|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls-iface)
+
+    2. <a name="ls_by_each_ip"></a><font color="#a62828"><b>ls_by_each_ip</b></font>
+
+	Данная переменная имеет 6 параметров.
+	Параметры:
+	    1) Файл скина
+	    2) Перечисление диапазонов IP адресов
+	    3) Файл в который будет заноситься отчет
+	    4) Перечисление типов пакетов
+	    5) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    6) Расширение для файла который указан 3-м параметром
+    	    7) Формат отчета текстовый (t) или использовать скин (s).
+	    8) Имя для данной переменной.
+
+	Данная переменная используется для ведения отчетов о суммарном
+	трафике для каждого из IP адресов входящих в диапазон
+	указанный 2-м параметром.
+	Пример:
+	ls_by_each_ip=(skin_a.cf)+(a127.0.0.1-9,a127.0.0.10-56)+(/var/trafacct/ls_by_each_ip)+(i,o,b,f,m)+(*/10|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls_by_each_ip_name)
+
+    3. <a name="ls_by_port_ip_each"></a><font color="#a62828"><b>ls_by_port_ip_each</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Номер протокола 17(UDP), 6(TCP)
+	    3) Перечисление/диапазоны IP адресов
+	    4) Перечисление/диапазоны портов
+	    5) Файл в который будет заноситься отчет
+	    6) Перечисление типов пакетов
+	    7) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    8) Расширение для файла который указан 5-м параметром
+    	    9) Формат отчета текстовый (t) или использовать скин (s).
+	    10) Имя для данной переменной.
+
+	Функция предназначена для ведения отчетов по диапазонам портов
+	каждого IP адреса, который входит указанный 3-м параметром.
+	Пример:
+	ls_by_port_ip_each=(skin_b.cf)+(6)+(a127.0.0.1-10)+(a1-60)+(/var/trafacct/ls_by_port_ip_each)+(i,o,b,f,m)+(*/10|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls_by_port_ip_each_name)
+
+    4. <a name="ls_by_eport_eip"></a><font color="#a62828"><b>ls_by_eport_eip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Номер протокола 17(UDP), 6(TCP)
+	    3) Перечисление/диапазоны IP адресов
+	    4) Перечисление/диапазоны портов
+	    5) Файл в который будет заноситься отчет
+	    6) Перечисление типов пакетов
+	    7) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    8) Расширение для файла который указан 5-м параметром
+    	    9) Формат отчета текстовый (t) или использовать скин (s).
+	    10) Имя для данной переменной.
+
+	Данная функция предназначена для ведения отчетов по
+	каждому порту для каждого IP адреса, которые входят
+	в указанные диапазоны.
+	Пример:
+	ls_by_eport_eip=(skin_b.cf)+(6)+(a127.0.0.1-10)+(a1-60)+(/var/trafacct/ls_by_eport_eip)+(i,o,b,f,m)+(*/5|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls_by_eport_eip_name)
+
+    5. <a name="ls_by_proto_ip_each"></a><font color="#a62828"><b>ls_by_proto_ip_each</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Перечисление/диапазоны протоколов
+	    4) Файл в который будет заноситься отчет
+	    5) Перечисление типов пакетов
+	    6) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    7) Расширение для файла который указан 4-м параметром
+    	    8) Формат отчета текстовый (t) или использовать скин (s).
+	    9) Имя для данной переменной.
+
+	Функция предназначена для ведения отчетов по диапазонам
+	протоколов для каждого IP адреса который входит в диапазон,
+	указанный 2-м параметром.
+	Пример:
+	ls_by_proto_ip_each=(skin_b.cf)+(a127.0.0.1-10)+(1-60)+(/var/trafacct/ls_by_proto_ip_each)+(i,o,b,f,m)+(*/5|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls_by_proto_ip_each_name)
+
+    6. <a name="ls_by_eproto_eip"></a><font color="#a62828"><b>ls_by_eproto_eip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Перечисление/диапазоны протоколов
+	    4) Файл в который будет заноситься отчет
+	    5) Перечисление типов пакетов
+	    6) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    7) Расширение для файла который указан 4-м параметром
+    	    8) Формат отчета текстовый (t) или использовать скин (s).
+	    9) Имя для данной переменной.
+
+	Функция предназначена для ведения отчетов по каждому
+	протоколу каждого IP адреса, которые входят в указанные
+	диапазоны.
+	Пример:
+	ls_by_eproto_eip=(skin_b.cf)+(a127.0.0.1-10)+(1-60)+(/var/trafacct/ls_by_eproto_eip)+(i,o,b,f,m)+(*/5|*|*|*|*|*|*)+(.%SS,%MM,%HH,%DD,%MO,%YR,%WW.html)+(t)+(ls_by_eproto_eip)
+
+    7. <a name="ls_full_by_each_ip"></a><font color="#a62828"><b>ls_full_by_each_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Файл в который будет заноситься отчет
+	    4) Перечисление типов пакетов
+	    5) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    6) Расширение для файла который указан 3-м параметром
+    	    7) Формат отчета текстовый (t) или использовать скин (s).
+	    8) Имя для данной переменной.
+
+	Данная переменная используется для ведения отчетов о суммарном
+	количестве трафика для каждого из IP адресов входящий в
+	диапазон, указанный 2-м параметром.
+	При этом используется полный отчет и суммарный трафик
+	каждого обращения указанного IP адреса к какому-либо хосту.
+	Пример:
+	ls_full_by_each_ip=(skin_b.cf)+(a127.0.0.1-10)+(/var/trafacct/testing/ls_full_by_each_ip)+(a)+(*/5|*|*|*|*|*|*)+(_%UT)+(t)+(ls_full_by_each_ip_name)
+
+    8. <a name="ls_by_each_ip_local"></a><font color="#a62828"><b>ls_by_each_ip_local</b></font>
+
+	Данная переменная имеет 6 параметров.
+	Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Файл в который будет заноситься отчет
+	    4) Перечисление типов пакетов
+	    5) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    6) Расширение для файла который указан 3-м параметром
+    	    7) Формат отчета текстовый (t) или использовать скин (s).
+	    8) Имя для данной переменной.
+
+	Данная переменная используется для ведения отчетов о суммарном
+	количестве трафика для каждого из IP адресов входящий в
+	диапазон, указанный 2-м параметром.
+	Данную функцию необходимо использовать только для подсчета
+	трафика локальных IP адресов, т.е. только тех адресов
+	которые принадлежат той машине на которой функционирует TA.
+	Пример:
+	ls_by_each_ip_local=(skin_b.cf)+(a127.0.0.1-10)+(/var/trafacct/testing/ls_by_each_ip_local)+(a)+(*/5|*|*|*|*|*|*)+(_%UT)+(t)+(ls_by_each_ip_local)
+
+    9. <a name="ls_by_ip"></a><font color="#a62828"><b>ls_by_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Файл в который будет заноситься отчет
+	    4) Перечисление типов пакетов
+	    5) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    6) Расширение для файла который указан 3-м параметром
+    	    7) Формат отчета текстовый (t) или использовать скин (s).
+	    8) Имя для данной переменной.
+
+	Данная функция полная копия функции <a href="tab_HOWTO.htm#log_by_ip" style="text-decoration:none;color:#000000;">log_by_ip</a>,
+	за тем лишь исключением, что <a href="tab_HOWTO.htm#ls_by_ip" style="text-decoration:none;color:#000000;">ls_by_ip</a> для вывода
+	данных использует отчеты.
+	Пример:
+	ls_by_ip=(skin_a.cf)+(a127.0.0.1-10,a127.0.0.15)+(/var/trafacct/lo/time/group2.ls-lip)+(a)+(*|*|_|*|*|*|*)+(_%UT)+(t)+(ls-lip)
+
+    10. <a name="ls_by_proto_ip"></a><font color="#a62828"><b>ls_by_proto_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Перечисление/диапазоны протоколов
+	    4) Файл в который будет заноситься отчет
+	    5) Перечисление типов пакетов
+	    6) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    7) Расширение для файла который указан 4-м параметром
+    	    8) Формат отчета текстовый (t) или использовать скин (s).
+	    9) Имя для данной переменной.
+
+	Данная функция полная копия функции <a href="tab_HOWTO.htm#log_by_proto_ip" style="text-decoration:none;color:#000000;">log_by_proto_ip</a>,
+	за тем лишь исключением, что <a href="tab_HOWTO.htm#ls_by_proto_ip" style="text-decoration:none;color:#000000;">ls_by_proto_ip</a> для вывода
+	данных использует отчеты.
+	Пример:
+	ls_by_proto_ip=(skin_a.cf)+(a127.0.0.1-10,a127.0.0.15)+(0-255)+(/var/trafacct/lo/time/group2.ls-gpri)+(a)+(*|*|_|*|*|*|*)+(_%UT)+(t)+(ls-gpri)
+
+    11. <a name="ls_by_eproto_ip"></a><font color="#a62828"><b>ls_by_eproto_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Перечисление/диапазоны IP адресов
+	    3) Перечисление/диапазоны протоколов
+	    4) Файл в который будет заноситься отчет
+	    5) Перечисление типов пакетов
+	    6) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    7) Расширение для файла который указан 4-м параметром
+    	    8) Формат отчета текстовый (t) или использовать скин (s).
+	    9) Имя для данной переменной.
+
+	Функция предназначена для ведения отчетов по каждому
+	протоколу для указанного диапазона IP адресов.
+	Пример:
+	ls_by_eproto_ip=(skin_a.cf)+(a127.0.0.1-10,a127.0.0.15)+(0-255)+(/var/trafacct/lo/time/group2.ls-gepri)+(a)+(*|*|_|*|*|*|*)+(_%UT)+(t)+(ls-gepri)
+
+    12. <a name="ls_by_port_ip"></a><font color="#a62828"><b>ls_by_port_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Номер протокола 17(UDP), 6(TCP)
+	    3) Перечисление/диапазоны IP адресов
+	    4) Перечисление/диапазоны портов
+	    5) Файл в который будет заноситься отчет
+	    6) Перечисление типов пакетов
+	    7) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    8) Расширение для файла который указан 5-м параметром
+    	    9) Формат отчета текстовый (t) или использовать скин (s).
+	    10) Имя для данной переменной.
+
+	Данная функция полная копия функции <a href="tab_HOWTO.htm#log_by_port_ip" style="text-decoration:none;color:#000000;">log_by_port_ip</a>,
+	за тем лишь исключением, что <a href="tab_HOWTO.htm#ls_by_port_ip" style="text-decoration:none;color:#000000;">ls_by_port_ip</a> для вывода
+	данных использует отчеты.
+	Пример:
+	ls_by_port_ip=(skin_a.cf)+(6)+(a127.0.0.1-10,a127.0.0.15)+(a1-65535)+(/var/trafacct/lo/time/group2.ls-tcp-gpi)+(a)+(*|*|_|*|*|*|*)+(_%UT)+(t)+(ls-tcp-gpi)
+
+    13. <a name="ls_by_eport_ip"></a><font color="#a62828"><b>ls_by_eport_ip</b></font>
+
+	Данная переменная имеет 8 параметров.
+	  Параметры:
+	    1) Файл скина
+	    2) Номер протокола 17(UDP), 6(TCP)
+	    3) Перечисление/диапазоны IP адресов
+	    4) Перечисление/диапазоны портов
+	    5) Файл в который будет заноситься отчет
+	    6) Перечисление типов пакетов
+	    7) Время обновления (описание в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>)
+	    8) Расширение для файла который указан 5-м параметром
+    	    9) Формат отчета текстовый (t) или использовать скин (s).
+	    10) Имя для данной переменной.
+
+	Данная функция предназначена для ведения отчетов по
+	каждому порту для указанного диапазона IP адресов.
+	Пример:
+	ls_by_eport_ip=(skin_a.cf)+(6)+(a127.0.0.1-10,a127.0.0.15)+(a1-65535)+(/var/trafacct/lo/time/group2.ls-tcp-gepi)+(a)+(*|*|_|*|*|*|*)+(_%UT)+(t)+(ls-tcp-gepi)
+
+  4.2.5 <a name="p4_2_5"></a><font color="#109200"><b>Вспомогательная группа</b></font>
+
+    К данной группе относятся такие переменные как:
+
+    <a href="tab_HOWTO.htm#time_stamp" style="text-decoration:none;color:#000000;">time_stamp</a>, <a href="tab_HOWTO.htm#stat_time_on" style="text-decoration:none;color:#000000;">stat_time_on</a>, <a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a>,
+    <a href="tab_HOWTO.htm#priority" style="text-decoration:none;color:#000000;">priority</a>, <a href="tab_HOWTO.htm#ip_entry_list" style="text-decoration:none;color:#000000;">ip_entry_list</a>.
+
+    Описание каждой из переменных.
+
+    1. <a name="time_stamp"></a><font color="#a62828"><b>time_stamp</b></font>
+
+	Данная переменная имеет 1 параметр.
+	Параметры:
+	    1) yes или no
+
+	Данная переменная влияет на результаты функций
+	из группы ведения статистики, если данная переменная
+	установлена в yes то к каждой записи у функций статистики
+	добавляется time stamp в Unix time формате.
+	Пример:
+	time_stamp=(yes)
+
+    2. <a name="stat_time_on"></a><font color="#a62828"><b>stat_time_on</b></font>
+
+	Переменная имеет 4 параметра.
+	Параметры:
+	    1)	Строка с именем.
+	    2)	Строка с именем файла.
+	    3)	Время обновления в ниже приведенном формате.
+	    4)	Расширение файла в формате описанном ниже.
+
+	Данная функция имеет параметр в котором можно
+	указать имя какой либо из функций статистики и
+	<a href="tab_HOWTO.htm#stat_time_on" style="text-decoration:none;color:#000000;">stat_time_on</a> изменит параметры функции так, что
+	она будет записывать свою статистику в разные файлы
+	в соответствии с промежутками времени, которые
+	указываются так же в параметре функции <a href="tab_HOWTO.htm#stat_time_on" style="text-decoration:none;color:#000000;">stat_time_on</a>.
+	Пример:
+
+	Время задается как и в crontab только добавлены еще и секунды.
+	Если использование секунд не предполагается то данный параметр
+	секунд всегда должен быть равен нулю.
+	Параметры:
+	(SS|MM|HH|DD|MO|YR|WW)
+	SS - секунды (0-60)
+	MM - минуты  (0-60)
+	HH - часы    (0-23)
+	DD - день месяца (1-{28,30,31})
+	MO - месяц, его номер (1-12)
+	YR - год, формат 4-х значный (2002)
+	WW - номер дня в неделе:
+		    1) понедельник
+		    2) вторник
+		     ...
+		    6) суббота
+		    7) воскресение
+	Описание работы:
+	каждый параметр может содержать символ '*' это означает любой,
+	если такой символ будут содержать часы то значит в любой час,
+	месяцы то в любой месяц, если дни недели то так же будут любыми.
+	10-31/2 - если данная запись стоит в параметре для дня то
+	          это означает что с числа 10 по 31 число, каждые два дня.
+	*/2	- если данная запись стоит к примеру в части для часов
+	    	  то это означает что каждые 2 часа.
+
+	Записи могут быть и такими:
+
+	10-31/4,*/5,1,18,24	- если такая строка находится в параметре дня
+				  то это означает что с числа 10 до 31 каждые 4
+				  дня начинать новый файл, а так же каждые 5 дней
+				  а так же 1 18 и 24 числах начинать новый файл.
+	    пример:
+	    (0|45|*/7|*|*|*|3-7) - означает что каждые 7 часов 45 минут 0 сек.
+				   со среды по воскресение начинать записывать в
+				   другой файл.
+
+	    (0|0|0|*|*|*|*)	- Начинать новый файл с наступлением новых суток.
+
+	    (0|12-45/2,23,58|*|*|*|*|*) - Начинать новый файл с 12 минут по 45
+					  каждые 2 минуты. А так же на 23-ю минуту
+					  и на 58 минуту.
+
+	    (0|0|23-7/1,9|*|*|*|*)	- Начинать новый файл с 23 до 7 утра каждый час
+					  и начать новый файл еще и в 9 утра.
+
+	    (0|0|23-7/1,9|*|*|*|3,4)	- тоже самое что и выше но
+					  только с среду и четверг.
+
+	    (*|*|*|_|*|*|*)		- символ "_" символизирует начало, каждое
+					  новое значение. В данном случае статистика
+					  будет начинаться каждый новый день.
+
+	    (*|*|_|*|*|*)		- в данном примере статистика начинаться
+					  будет каждый новый час, и так далее.
+
+	    stat_by_dev=(lo2,lo2,lo8,lo,lo3,lo4)+(/var/trafacct/loSD-1)+(o,i)+(nameSD)
+	    stat_time_on=(nameSD)+(/var/trafacct/lo-staGL)+(0|*|23-7/1,9|*|*|*|0,3)+(ss,ss,mo,dd,yr,ww,hh,mm,ss)
+
+	    Дальше идет третья часть после параметра формата
+	    времени это дополнение к расширению файла
+	    (ss,ss,mo,dd,yr,ww,hh,mm,ss)
+	    это аббревиатура, только с маленькими буквами,
+	    к формату времени описанному выше.
+	    Для представленного формата(ss,ss,mo,dd,yr,ww,hh,mm,ss)
+	    файл буде выглядеть так:
+		lo-staGL.40.40.02.12.2002.06.06.44.40
+	    расположение аббревиатур может вариироваться,
+	    и количество тоже не фиксированно.
+
+    3. <a name="save_on_time"></a><font color="#a62828"><b>save_on_time</b></font>
+
+	Переменная имеет 2 параметра.
+	Параметры:
+	    1)  Период сохранения данных.
+	    2)	Строка с именем файла.
+
+	Изначально для всех функций log_
+	остановка программы и последующий ее запуск
+	обнулял каунтеры(counters) для функций log_
+	и все данные, что содержали подобные функции
+	ранее - терялось безвозвратно.
+	Но функция <a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a> позволяет периодически
+	сохранять статистику в указанный файл, а
+	при следующем старте восстанавливать оттуда
+	все сохраненные данные.
+	Первым параметром указывается период обновления базы,
+	т.е. тот период через который данная функция будет
+	сохранять данные.
+	Второй параметр это путь к файлу.
+	В пути к файлу можно использовать строку "%DV",
+	и в последствии формирования пути %DV заменится
+	на название той конфигурации где используется
+	<a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a>. Например если конфигурация eth
+	то заменится на "eth", если конфигурация mynetwork
+	то заменится на "mynetwork".
+	Пример:
+	save_on_time=(/var/trafacct/saved-conf-lo)
+	save_on_time=(/var/trafacct/data/%DV.db)
+
+	Так же данная функция имеет утилиту(cutdb), утилита предназначена
+	для того чтобы в сохраненной базе можно было бы удалить записи для
+	указанных функций.
+	Например используются в работе 2 функции <a href="tab_HOWTO.htm#log_file" style="text-decoration:none;color:#000000;">log_file</a> и
+	<a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>, и необходимо обнулить сохраненные значения
+	для <a href="tab_HOWTO.htm#log_file" style="text-decoration:none;color:#000000;">log_file</a> но	оставить данные для функции <a href="tab_HOWTO.htm#log_by_each_ip" style="text-decoration:none;color:#000000;">log_by_each_ip</a>.
+	Это можно сделать с помощью утилиты cutdb, которая удалит записи
+	для указанной функции, для этого нужно будет выполнить команду:
+	bash# cutdb /var/trafacct/saved-conf-eth log_file
+
+	естественно, что перед выполнением команды cutdb
+	необходимо завершить работу программы Traffic Accounting.
+
+    4. <a name="priority"></a><font color="#a62828"><b>priority</b></font>
+
+	Данная функция изменяет приоритет для текущего процесса
+	обрабатывающего определенную конфигурацию.
+	Наилучшим приоритетом для процесса является (-20).
+	Пример:
+	    priority=(-20)
+	    Если данная строка вставлена в файл eth-conf тогда
+	    процесс обрабатывающий конфигурацию eth,
+	    получит приоритет "-20".
+
+    5. <a name="ip_entry_list"></a><font color="#a62828"><b>ip_entry_list</b></font>
+
+	Данная переменная имеет 2 параметра.
+	Параметры:
+	    1) Максимальное колличество записей
+	    2) Файл для результата
+
+	Данная функция используется для того чтобы узнать
+	время первого и последнего обнаружения активности
+	для какого либо IP.
+	Если какой либо IP был обнаружен то сразу же он записывается
+	в таблицу к <a href="tab_HOWTO.htm#ip_entry_list" style="text-decoration:none;color:#000000;">ip_entry_list</a> и так же записывается время его обнаружения.
+	Фактически посмотрев на таблицу можно будет знать когда первый раз
+	был обнаружен конкретный IP и когда был обнаружен последний раз.
+	Если в таблице не присутствуют искомые IP адреса и таблица не
+	переполнена то IP адрес никогда не обращался к машине.
+	Если таблица переполнилась т.е. достигнуто максимальное количество
+	обнаруженных IP адресов то первой строкой в таблице об этом
+	будет сообщено.
+	Пример:
+	ip_entry_list=(1000)+(/var/trafacct/ip_entry_list)
+
+  4.2.6 <a name="p4_2_6"></a><font color="#109200"><b>Группа лимитов</b></font>
+
+    К данной группе относятся такие переменные как:
+
+    <a href="tab_HOWTO.htm#ip_range_traf_limit" style="text-decoration:none;color:#000000;">ip_range_traf_limit</a>, <a href="tab_HOWTO.htm#ip_each_traf_limit" style="text-decoration:none;color:#000000;">ip_each_traf_limit</a>,
+    <a href="tab_HOWTO.htm#port_range_limit" style="text-decoration:none;color:#000000;">port_range_limit</a>, <a href="tab_HOWTO.htm#each_port_limit" style="text-decoration:none;color:#000000;">each_port_limit</a>,
+    <a href="tab_HOWTO.htm#proto_range_limit" style="text-decoration:none;color:#000000;">proto_range_limit</a>, <a href="tab_HOWTO.htm#proto_each_limit" style="text-decoration:none;color:#000000;">proto_each_limit</a>,
+    <a href="tab_HOWTO.htm#port_ip_limit" style="text-decoration:none;color:#000000;">port_ip_limit</a>, <a href="tab_HOWTO.htm#port_ip_each_limit" style="text-decoration:none;color:#000000;">port_ip_each_limit</a>,
+    <a href="tab_HOWTO.htm#eport_eip_limit" style="text-decoration:none;color:#000000;">eport_eip_limit</a>, <a href="tab_HOWTO.htm#proto_ip_limit" style="text-decoration:none;color:#000000;">proto_ip_limit</a>,
+    <a href="tab_HOWTO.htm#proto_ip_each_limit" style="text-decoration:none;color:#000000;">proto_ip_each_limit</a>, <a href="tab_HOWTO.htm#eproto_eip_limit" style="text-decoration:none;color:#000000;">eproto_eip_limit</a>,
+    <a href="tab_HOWTO.htm#iface_limit" style="text-decoration:none;color:#000000;">iface_limit</a>.
+
+    Описание каждой из переменных.
+
+    1.  <a name="ip_range_traf_limit"></a><font color="#a62828"><b>ip_range_traf_limit</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны IP адресов.
+	    3) Имя программы.
+	    4) Имя для переменной.
+
+	Перечисление лимитов выглядит следующим образом:
+	    пример: (i#2304835,b#234234,f#9756735,o#9000000)
+
+		т.е. указывается тип трафика далее добавляется знак '#'
+		и указывается лимит на количество байт для выбранного
+		типа трафика.
+		Максимальное число которое можно указать в качестве
+		лимита - 18446744073709551615.
+
+	Пример:
+	ip_range_traf_limit=(i#2304835,b#234234,f#9756735,o#9000000)+(a127.0.0.1-10)+(/bin/tprog %LT %IP %TP %LM)
+
+	После того как лимит будет достигнут
+	запустится программа указанная третьим параметром.
+	Путь к программе выглядит следующим образом:
+	    пример: (/bin/tprog %LT %IP %TP %LM %IN)
+
+		под %LT %IP %TP %LM подставляется следующее:
+
+	    %LT - тип лимита:
+	    	Значения которые может принимать
+		данный шаблон:
+		"IR" - для переменной ip_range_traf_limit
+		"IE" - для переменной ip_each_traf_limit
+		"PR" - для переменной port_range_limit
+		"PE" - для переменной each_port_limit
+		"RP" - для переменной proto_range_limit
+		"RE" - для переменной proto_each_limit
+		"PA" - для переменной port_ip_limit
+		"PB" - для переменной port_ip_each_limit
+		"PC" - для переменной eport_eip_limit
+		"PD" - для переменной proto_ip_limit
+		"PE" - для переменной proto_ip_each_limit
+		"PF" - для переменной eproto_eip_limit
+		"IL" - для переменной iface_limit
+
+	    %IP - в данной переменной для данного шаблона подставится:
+		a127.0.0.1-10
+
+	    %TP - тип трафика лимит которого достигнут, шаблон может
+	          принимать такие значения как:
+		input     для "i"
+		forward   для "f"
+		broadcast для "b"
+		multicast для "m"
+		output    для "o"
+
+	    %LM - размер лимита который был достигнут,
+		  для данного примера и для типа "i"
+		  это будет число 2304835.
+
+	    %IN - интерфейс.
+
+	В последствии получится следующее:
+	 например был достигнут лимит для типа "i",
+	 и используется переменная
+	 ip_range_traf_limit:
+
+	    /bin/tprog IR a127.0.0.1-10 input 2304835
+
+	Это будет означать, что диапазон IP 127.0.0.1-10 достиг
+	лимита в 2304835 байт для трафика input, т.е. программа
+	запустилась в то время когда диапазон IP адресов
+	127.0.0.1-10 получил 2304835 байт.
+	Содержание файла /bin/tprog может быть любым.
+	Пример:
+
+	#--- CUT HERE ---
+
+	#!/bin/bash
+
+	if [ ${3} = "input" ]; then
+	  echo диапазон IP адресов ${2} получил максимальное \
+	    колличество байт, размером в LM:${4}, на интерфейсе ${5} \
+		&gt;&gt; /var/log/limit.log;
+	fi
+
+	#--- END  CUT ---
+
+	После запуска программы значения лимита сбрасываются и
+	программа сново запустится как только лимит еще раз
+	будет достигнут.
+
+	Для переменной ip_range_traf_limit допустимыми
+	шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN.
+
+	Функция предназначена контролировать лимиты трафика
+	для диапазонов IP адресов.
+
+    2.  <a name="ip_each_traf_limit"></a><font color="#a62828"><b>ip_each_traf_limit</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны IP адресов.
+	    3) Имя программы.
+	    4) Имя для переменной.
+
+	Функция предназначена контролировать лимиты трафика
+	для каждого IP адреса входящего в диапазон, указанный
+	вторым параметром.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN.
+
+	%IP для данной переменной будет содержать IP адрес
+	    достигший лимита.
+
+	Пример:
+	ip_each_traf_limit=(i#4000000,o#340958349)+(a127.0.0.1-10)+(/bin/tprog %LT %IP %TP %LM %IN)
+
+	Программа может быть следующего содержания:
+
+	#--- CUT HERE ---
+
+	#!/bin/bash
+
+	if [ ${3} = "input" ]; then
+	    iptables -A OUTPUT -d ${2} -i ${5} -j DROP;
+	fi
+
+	#--- END  CUT ---
+
+	Из данного примера можно видеть, что когда IP адрес
+	из диапазона получит 4000000 байт, то для него будет
+	отключен внешний трафик.
+
+    3.  <a name="port_range_limit"></a><font color="#a62828"><b>port_range_limit</b></font>
+
+	Данная переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Номер протокола 6(TCP) или 17(UDP).
+	    3) Перечисление/диапазоны портов.
+	    4) Имя программы.
+	    5) Имя для переменной.
+
+	Функция предназначена контролировать лимиты для
+	диапазона портов, на протоколах UDP или TCP.
+
+	Допустимыми шаблонами являются:
+	%LT, %TP, %LM, %IN, %PR, %PO.
+
+	%PR - протокол, 17(для UDP) или 6(для TCP)
+	%PO - диапазон портов, например может содержать "a1-60"
+
+	Пример:
+	port_range_limit=(i#900000,o#1009990)+(6)+(a1-60)+(/bin/tprog_port %LT %PR %PO %TP %LM)
+
+	Из данного примера можно видеть, что программа /bin/tprog_port
+	запустится только когда будет достигнут лимит на input или на output.
+
+    4.  <a name="each_port_limit"></a><font color="#a62828"><b>each_port_limit</b></font>
+
+	Данная переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Номер протокола 6(TCP) или 17(UDP).
+	    3) Перечисление/диапазоны портов.
+	    4) Имя программы.
+	    5) Имя для переменной.
+
+	Функция предназначена контролировать лимиты для
+	каждого порта входящего в указанный диапазон портов.
+
+	Допустимыми шаблонами являются:
+	%LT, %TP, %LM, %IN, %PR, %PO.
+
+	%PO - для данной переменной будет содержать
+	      номер порта, который достиг лимита.
+
+	Пример:
+	each_port_limit=(i#10000000)+(6)+(a1-80)+(/bin/tprog_port %LT %PR %PO %TP %LM %IN)
+
+	Программа /bin/tprog_port запустится только тогда когда
+	какой либо порт получит 10000000 байт трафика.
+
+    5.  <a name="proto_range_limit"></a><font color="#a62828"><b>proto_range_limit</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны протоколов.
+	    3) Имя программы.
+	    4) Имя для переменной.
+
+	Функция предназначена контролировать лимиты
+	для диапазона протоколов, указанных во втором
+	параметре.
+
+	Допустимыми шаблонами являются:
+	%LT, %TP, %LM, %IN, %RP.
+
+	%RP - будет содержать диапазон протоколов,
+	      который достиг лимита, например "1-60".
+
+	Пример:
+	proto_range_limit=(i#2049890,o#304958340)+(1-60)+(/bin/tprog_proto %LT %RP %TP %LM %IN)
+
+	Программа /bin/tprog_proto запустится тогда когда диапазон
+	портов достигнет лимита для трафика input или output.
+	Т.е. когда отправлено будет 304958340 байт с диапазона 1-60
+	или получено будет 2049890 байт.
+
+    6.  <a name="proto_each_limit"></a><font color="#a62828"><b>proto_each_limit</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны протоколов.
+	    3) Имя программы.
+	    4) Имя для переменной.
+
+	Функция предназначена контролировать лимиты для
+	каждого протокола из диапазона, указанного
+	вторым параметром.
+
+	Допустимыми шаблонами являются:
+	%LT, %TP, %LM, %IN, %RP.
+
+	%RP - будет содержать номер протокола, достигшего лимита.
+
+	Пример:
+	proto_each_limit=(i#2049890,o#304958340)+(1-60)+(/bin/tprog_proto %LT %PR %TP %LM %IN)
+
+	Программа /bin/tprog_proto может содержать следующее:
+
+	#--- CUT HERE ---
+
+	#!/bin/bash
+
+	if [ ${3} = "input" ] && [ ${2} = "1" ]; then
+	    echo трафик по ICMP достиг максимального лимита \
+		в ${4} байт, на интерфейсе ${5} &gt;&gt; /var/log/limit.log;
+	fi
+
+	#--- END  CUT ---
+
+    7. <a name="port_ip_limit"></a><font color="#a62828"><b>port_ip_limit</b></font>
+
+	Данная переменная имеет 6 параметров.
+	Параметры:
+    	    1) Перечисление лимитов.
+	    2) Номер протокола 6(TCP) или 17(UDP).
+	    3) Перечисление/диапазоны IP адресов.
+	    4) Перечисление/диапазоны портов.
+	    5) Имя программы.
+	    6) Имя для переменной.
+
+	Функция предназначена контролировать лимиты для
+	диапазонов портов на указанных диапазонах IP адресов.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %PR, %PO.
+
+	%IP - для данной функции содержит диапазон IP адресов.
+	%PO - для данной функции содержит диапазон портов.
+
+	Пример:
+	port_ip_limit=(i#2049890,o#304958340)+(6)+(a127.0.0.1-10)+(a1-60)+(/bin/tprog_pip %LT %PR %PO %IP %TP %LM %IN)
+
+    8.  <a name="port_ip_each_limit"></a><font color="#a62828"><b>port_ip_each_limit</b></font>
+
+	Данная переменная имеет 6 параметров.
+	Параметры:
+    	    1) Перечисление лимитов.
+	    2) Номер протокола 6(TCP) или 17(UDP).
+	    3) Перечисление/диапазоны IP адресов.
+	    4) Перечисление/диапазоны портов.
+	    5) Имя программы.
+	    6) Имя для переменной.
+
+	Функция предназначена контролировать лимит для
+	диапазонов портов для каждого IP адреса, входящего
+	в диапазон, указанный третьим параметром.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %PR, %PO.
+
+	%IP - для данной функции содержит IP адрес который
+	      превысил лимит по диапазону портов.
+
+	Пример:
+	port_ip_each_limit=(i#2049890,o#304958340)+(6)+(a127.0.0.1-10)+(a1-60)+(/bin/tprog_pip %LT %PR %PO %IP %TP %LM %IN)
+
+    9.  <a name="eport_eip_limit"></a><font color="#a62828"><b>eport_eip_limit</b></font>
+
+	Данная переменная имеет 6 параметров.
+	Параметры:
+    	    1) Перечисление лимитов.
+	    2) Номер протокола 6(TCP) или 17(UDP).
+	    3) Перечисление/диапазоны IP адресов.
+	    4) Перечисление/диапазоны портов.
+	    5) Имя программы.
+	    6) Имя для переменной.
+
+	Функция предназначена контролировать лимит для
+	каждого порта, который входит в указанный диапазон,
+	для каждого IP адреса, который входит в
+	указанный диапазон.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %PR, %PO.
+
+	%PO - содержит номер порта который превысил лимит.
+
+	Пример:
+	eport_eip_limit=(i#50,b#123,f#56,o#1000)+(6)+(a127.0.0.1-10)+(a1-60)+(/bin/tprog_epeip %LT %PR %OP %IP %TP %LM %IN)
+
+    10.  <a name="proto_ip_limit"></a><font color="#a62828"><b>proto_ip_limit</b></font>
+
+	Данная переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны IP адресов.
+	    3) Перечисление/диапазоны протоколов.
+	    4) Имя программы.
+	    5) Имя для переменной.
+
+	Функция предназначена контролировать лимиты
+	диапазонов протоколов для диапазонов IP адресов.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %RP.
+
+	%IP - как диапазон.
+	%RP - как диапазон.
+
+	Пример:
+	proto_ip_limit=(i#50,b#123,f#56,o#1000)+(a127.0.0.1-10)+(1-60)+(/bin/tprog_prip %LT %RP %IP %TP %LM %IN)
+
+    11. <a name="proto_ip_each_limit"></a><font color="#a62828"><b>proto_ip_each_limit</b></font>
+
+	Данная переменная имеет 5 параметров.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны IP адресов.
+	    3) Перечисление/диапазоны протоколов.
+	    4) Имя программы.
+	    5) Имя для переменной.
+
+	Функция предназначена контролировать лимиты
+	диапазонов протоколов для каждого IP адреса
+	который	входит в диапазон указанный
+	вторым параметром.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %RP.
+
+	%IP - как одиночный IP.
+
+	Пример:
+	proto_ip_each_limit=(i#50,b#123,f#56,o#1000)+(a127.0.0.1-10)+(1-60)+(/bin/tprog_prip %LT %RP %IP %TP %LM %IN)
+
+    12. <a name="eproto_eip_limit"></a><font color="#a62828"><b>eproto_eip_limit</b></font>
+
+	Данная переменная имеет 4 параметров.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление/диапазоны IP адресов.
+	    3) Перечисление/диапазоны протоколов.
+	    4) Имя программы.
+	    5) Имя для переменной.
+
+	Функция предназначена контролировать лимиты
+	каждого протокола для каждого IP адреса, которые
+	входят в указанные диапазоны.
+
+	Допустимыми шаблонами являются:
+	%LT, %IP, %TP, %LM, %IN, %RP.
+
+	%RP - как одиночный протокол.
+
+	Пример:
+	eproto_eip_limit=(i#50,b#123,f#56,o#1000)+(a127.0.0.1-10)+(1-60)+(/bin/tprog_prip %LT %RP %IP %TP %LM %IN)
+
+    13. <a name="iface_limit"></a><font color="#a62828"><b>iface_limit</b></font>
+
+	Данная переменная имеет 4 параметра.
+	Параметры:
+	    1) Перечисление лимитов.
+	    2) Перечисление интерфейсов.
+	    3) Имя программы.
+	    4) Имя для переменной.
+
+	Функция предназначена контролировать лимиты
+	каждого из указанных интерфейсов.
+
+	Допустимыми шаблонами являются:
+	%LT, %TP, %LM, %IN.
+
+	%IN - как отдельный интерфейс.
+
+	Пример:
+	iface_limit=(i#90000000,o#90000000)+(eth3,eth7)+(/bin/tprog_iface %LT %TP %LM %IN)
+
+  4.2.7 <a name="p4_2_7"></a><font color="#109200"><b>Переменные TA Billing.</b></font>
+
+  	В данной части приведен список
+  	переменных используемых в файлах
+  	конфигураций.
+  	Переменные не перечисленные ниже
+  	не подлежат для самостоятельного,
+  	несознательного изменения.
+
+	1. <font color="#a62828"><b>messages</b></font>
+
+		Данная переменная разрешает или
+		запрещает вывод различных сообщений
+		в лог файл во время работы Traffic Accounting.
+		Переменная может принимать значения yes или no.
+		Пример:
+		messages=(yes)
+
+	2. <font color="#a62828"><b>debug</b></font>
+
+		Данная переменная разрешает или запрещает
+		вывод отладочной информации в лог файл в
+		процессе работы Traffic Accounting.
+		Переменная может принимать значения yes или no.
+		Пример:
+		debug=(no)
+
+	3. <font color="#a62828"><b>debug_traffic</b></font>
+
+		Данная переменная разрешает или запрещает
+		вывод отладочной информации о поступающих
+		пакетах. Используется только при отладке
+		трафика для разрешения возникшей проблемы
+		или неясной ситуации в подсчете трафика.
+		Переменная может принимать значения yes или no.
+		Пример:
+		debug_traffic=(no)
+
+	4. <font color="#a62828"><b>traffic_look</b></font>
+
+		Данная переменная используется для указания
+		Traffic Accounting на какие типы трафика
+		смотреть для того чтобы принять решение об
+		отключении пользователя. Это требуется в тех
+		случаях	когда пользователь по исчерпанию баланса
+		или по каким либо иным причинам не был отключен
+		с первого раза(например скрипт отключения ошибочный),
+		то Traffic Accounting должен будет определить использует
+		ли данный пользователь трафик сети, и если да то
+		входящим или исходящим или каким либо другим, и если
+		пользуется а должен быть отключен то Traffic Accounting
+		пытается отключить пользователя сново и т.д.
+		Т.е. если указан traffic_look=(i) и пользователь
+		не отключился с первого раза то как только у него на
+		input появится какой либо трафик то его отключат еще раз.
+		Пример:
+		traffic_look=(i,o)
+
+	5. <font color="#a62828"><b>bufferdb_size</b></font>
+
+		Данная переменная определяет максимальный размер
+		базы для хранения различной информации.
+		Вся база какой бы размер у нее ни был должна
+		находиться в памяти поэтому надо расчитывать на то
+		что память на определенное кол-во пользователей доступна.
+		Целесообразно исходить из такого расчета, что база занимающая
+		7 мб. в памяти хранит информацию на 10000 тыс. IP адресов.
+		Пример:
+		bufferdb_size=(2000000)
+
+	6. <font color="#a62828"><b>compress_base</b></font>
+
+		Данная переменная разрешает или запрещает сжатие базы.
+		При сжатии базы и каждое ее обновление на дисковом пространстве
+		будет использоваться размер базы помноженный на два, т.
+		для сжатия 5 мб. базы необходимо 10 мб. свободной памяти.
+		После сжатия, размер базы на диске сокращается от 2 до 4 раз.
+		Переменная может принимать значения yes или no.
+		Пример:
+		compress_base=(yes)
+
+	7. <font color="#a62828"><b>Особенности расположения переменных.</b></font>
+
+		Есть некоторые особенности расположения переменных
+		в файлах конфигурации.
+		Переменные update_MODeth, update_MODserver, update_MODnetflow.
+		Закомментировав строку с какой либо из выше перечисленных
+		переменных означает запрещение на получение какого либо
+		потока трафика.
+		Например закомментировав update_MODnetflow конфигурация
+		не будет получать пакеты от Netflow коллектора, или
+		закомментировав так же update_MODeth, не будет получать
+		пакеты с интерфейсов. Можно закомментировать все
+		выше указанные переменные оставив таким образом
+		базу данных конфигурации неизменяемой так как
+		ни один пакет ниоткуда не будет получен.
+
+  5. <a name="p5"></a><font color="#109200"><b>Модуль Netflow</b></font>
+
+  	Данная часть описывает различные способы
+  	работы с Netflow в TA Billing.
+
+  5.1 <a name="p5_1"></a><font color="#109200"><b>Поддерживаемые версии Netflow</b></font>
+
+  	Ниже следует список версий пакетов
+  	Netflow которые поддерживает модуль.
+  	Версии:
+  	1, 5, 6, 7, 8.8 .
+
+  5.2 <a name="p5_2"></a><font color="#109200"><b>Работа с модулем Netflow</b></font>
+
+  	Для работы конфигурации с модулем Netflow
+  	необходимо прописать для необходимой
+  	конфигурации порт на котором указанная
+  	конфигурация будет принимать Netflow
+  	пакеты.
+  	Например существует конфигурация
+  	nf-collector и выбранный для
+  	конфигурации порт 3003, далее
+  	необходимо в главном конфигурационном
+  	файле прописать для конфигурации
+  	nf-collector порт 3003. Для того чтобы
+  	выполнить это, необходимо добавить
+  	в переменную MODnetflow_port строку
+  	nf-collector:3003, и должно получиться
+  	MODnetflow_port=(nf-collector:3003).
+  	Если в данной переменной уже существует
+  	какая либо строка не относящаяся к
+  	конфигурации nf-collector то добавлять
+  	строку необходимо через запятую, например
+  	в итоге может получиться так:
+  	MODnetflow_port=(other-collector:2002, nf-collector:3003)
+
+  	Далее в конфигурационном файле nf-collector-conf
+  	раскомментировать строку update_MODnetflow,
+  	если таковая была закомментирована.
+  	(Такая строка обязательно должна присутствовать
+  	при стандартной инсталляции)
+  	На этом операции заканчиваются и данная конфигурация
+  	будет получать Netflow пакеты приходящие на указанный
+  	порт(в нашем случае 3003). Префикс интерфейса пакетов
+  	будет netflow, дальше в зависимости от номера интерфейса
+  	отправителя, например получится netflow7(если номер
+  	интерфейса отправителя равен 7).
+
+	Если информация недостаточна то следует перейти
+	к пункту 5.3 "Исключительные ситуации".
+
+  5.3 <a name="p5_3"></a><font color="#109200"><b>Исключительные ситуации</b></font>
+
+  	К исключительной ситуации возможно отнести следующую:
+  	Существует поток Netflow от двух или более сетей,
+  	например от двух сетей 192.168.1.X и 192.168.2.X.
+  	При этом существует задача разделить поток Netflow
+  	на две конфигурации т.е. одна конфигурация будет собирать
+  	трафик от сети 192.168.1.X а вторая конфигурация должна
+  	собирать трафик от сети 192.168.2.X, назовем конфигурации
+  	net1X и net2X . Выделим для конфигураций порты потока netflow,
+  	MODnetflow_port=(net1X:1001, net2X:1002), так net1X будет
+  	принимать поток Netflow на 1001 порту а net2X на 1002 порту.
+  	После этого заносим конфигурации в список <a href="tab_HOWTO.htm#promisc_dev" style="text-decoration:none;color:#000000;">promisc_dev</a>, получится
+  	promisc_dev=(net1X, net2X). Далее поток Netflow направляем
+  	на порт 1001 а для того чтобы пакеты уходили кроме 1001 еще и на
+  	1002 есть утилита udptunnel в стандартном пакете TA Billing.
+  	Утилита udptunnel позволяет прозрачно для программ зеркалировать
+	трафик идущий для одного udp порта на другой. В нашем примере
+  	необходимо зеркалировать трафик для порта 1001 на порт 1002.
+  	Допустим локальный адрес машины на которой производятся
+  	операции равен 192.168.0.19 .
+  	В файл udptunnel.conf необходимо ввести строку
+  	redirect_to=(1001:192.168.0.19:1002), данная строка
+  	означает, производить зеркалирование трафика приходящего
+  	для порта 1001 на машину 192.168.0.19 и порт 1002.
+  	Вместо 192.168.0.19 можно использовать 127.0.0.1 для
+  	локального, как в данном примере, зеркалирования.
+  	Если необходимо зеркалировать на кол-во портов больше
+  	одного то свободно можно перечислять их в строке:
+  	redirect_to=(1001:192.168.0.19:1002,1001:192.168.0.19:1003,1001:192.168.0.19:1004)
+  	Строку можно указывать и более одного раза:
+  	redirect_to=(1001:192.168.0.19:1002)
+  	redirect_to=(1001:192.168.0.19:1003)
+  	redirect_to=(1001:192.168.0.19:1004)
+
+  	Все зеркалирование прозрачно для программ.
+  	После этого необходимо запустить udptunnel:
+  	bash# ./udptunnel -c ./udptunnel.conf -d
+  	Далее все пакеты приходящие на порт 1001 будут
+  	отображаться и на порт 1002.
+  	Конечно же конфигурации net1X и net2X должны
+  	быть настроены для приема Netflow (см. 5.2)
+  	и сконфигурированы для приема пакетов только
+  	своих сетей т.е. у net1X сеть 192.168.1.X
+  	а у net2X сеть 192.168.2.X .
+
+  6. <a name="p6"></a><font color="#109200"><b>Модуль Server</b></font>
+
+    В данном пункте рассказывается о работе Traffic Accounting Billing
+    с модулем Server. Описывается о том как подключить указанный модуль
+    к какой-либо конфигурации. Описывается дальнейший способ работы
+    с модулем Server и его возможностями.
+
+  6.1 <a name="p6_1"></a><font color="#109200"><b>Информация</b></font>
+
+	Модуль Server предназначен для подсчета трафика
+	сетей недоступных той машине на которой
+	функционирует TA Billing.
+	Например когда есть несколько шлюзов которые
+	не связаны между собой и каждый имеет отдельную
+	сеть. Если при такой конфигурации серверов необходим
+	подсчет трафика всех сетей шлюзов то в этом
+	поможет модуль Server.
+
+  6.2 <a name="p6_2"></a><font color="#109200"><b>Необходимые настройки</b></font>
+
+	Для работы конфигурации с модулем Server
+	необходимо каждой конфигурации указать
+	на каком порту данная конфигурация будет
+	принимать трафик от клиента к модулю Server.
+	Трафик на порт принимается по протоколу UDP.
+	Например существует конфигурация another-net,
+	которая должна будет обрабатывать пакеты
+	сети которая недоступна	той машине на которой
+	запущен TA Billing. Порт конфигурации another-net
+	равен 3001. Прописываем информацию по порту в
+	главном конфигурационном файле:
+	Вводим строку MODserver_port=(another-net:3001)
+	или же если строка MODserver_port присутствует
+	то необходимо добавить запись "another-net:3001",
+	например: MODserver_port=(confconf:3005,another-net:3001).
+	На данном этапе конфигурации another-net указан порт
+	который будет использоваться для приема пакетов от
+	клиентов модуля Server.
+	Далее в конфигурационном файле another-net-conf
+	необходимо разкомментировать строку update_MODserver,
+	если таковая была закомментирована, или же добавить
+	таковую строку в соответствии с ее параметрами
+	указанными при стандартной инсталляции.
+	После выполненных операций, пакеты от клиентов будут
+	приходить и обрабатываться как свои собственные.
+
+	Для получения информации о работе с клиентом
+	см. главы <a href="tab_HOWTO.htm#p6_4" style="text-decoration:none;color:#000000;">6.4</a>, <a href="tab_HOWTO.htm#p6_5" style="text-decoration:none;color:#000000;">6.5</a> .
+
+	Если информации по конфигурированию недостаточно
+	то следует перейти к пункту <a href="tab_HOWTO.htm#p6_3" style="text-decoration:none;color:#000000;">6.3 "Исключительные ситуации"</a>.
+
+  6.3 <a name="p6_3"></a><font color="#109200"><b>Исключительные ситуации</b></font>
+
+  	К исключительной ситуации возможно отнести следующую:
+  	существует 4 шлюза с различными сетями, при этом одна
+  	конфигурация должна быть настроена для приема трафика
+  	всех существующих сетей шлюзов и дополнительная
+  	конфигурация которая обрабатывала бы пакеты
+  	только двух удаленных сетей шлюзов. Для решения
+  	такой задачи потребуется создать две конфигурации
+  	gateway-4 и gateway-2. Каждую конфигурацию нужно
+	настроить на те сети которые необходимо обрабатывать.
+  	Далее указать порты приема пакетов для модуля Server:
+  	MODserver_port=(gateway-4:3001,gateway-2:3002)
+  	После этого каждого клиента нужно настроить на любой
+  	выбранный порт, пусть в данном примере выбранный
+  	порт будет 3001. Так как на одной машине невозможна работа
+  	двух клиентов то трафик будет идти от единично запущенных
+  	клиентов(на каждом из шлюзов) на порт 3001. А для того чтобы
+	вторая конфигурация принимала трафик на порту 3002 необходимо
+	воспользоваться утилитой udptunnel которая входит в стандартный
+	пакет TA Billing. Утилита udptunnel зеркалирует трафик для
+  	одного порта на другой или несколько иных портов.
+  	Допустим локальный адрес машины на которой производятся
+  	операции равен 192.168.0.27 .
+  	Для зеркалирования трафика порта 3001 на порт 3002
+  	в конфигурационный файл udptunnel.conf вписываем строку:
+  	redirect_to=(3001:192.168.0.27:3002)
+
+  	как локальный адрес можно использовать и адрес 127.0.0.1 .
+  	Если необходимо зеркалировать на несколько портов
+  	то можно перечислить их в одной строке, например:
+  	redirect_to=(3001:192.168.0.27:3002,3001:192.168.0.27:3003,3001:192.168.0.27:3004)
+
+  	так же можно указывать строку неоднократно, например:
+  	redirect_to=(3001:192.168.0.27:3002)
+  	redirect_to=(3001:192.168.0.27:3003)
+  	redirect_to=(3001:192.168.0.27:3004)
+
+  	Зеркалирование прозрачно для программ.
+  	После этого нужно запустить udptunnel:
+  	bash# ./udptunnel -c ./udptunnel.conf -d
+  	Далее все пакеты приходящие на порт 3001 будут
+  	отображаться и на порт 3002.
+  	На этом зеркалирование заканчивается, и таким
+  	образом после запуска udptunnel обе конфигурации
+  	gateway-2 и gateway-4 будут принимать пакеты
+  	от сетей 4-х шлюзов, но как напоминалось выше
+  	обе конфигурации должны быть настроены должным
+  	образом т.е. gateway-4 должна принимать пакеты
+  	от всех 4 сетей шлюзов а gateway-2 только от
+  	двух сетей шлюзов.
+
+  6.4 <a name="p6_4"></a><font color="#109200"><b>Создание аккаунта</b></font>
+
+    Для того чтобы модуль Server мог принимать соединения
+    от клиентов, необходимо с помощью утилиты tuseradd
+    создать аккаунты.
+
+    При создании аккаунтов создается файл /etc/passwd.db, но
+    при необходимости файл /etc/passwd.db можно заменить
+    на иной, указав необходимый параметр к утилите tuseradd,
+    подробнее в <a href="tab_HOWTO.htm#p10" style="text-decoration:none;color:#000000;">п. 10</a>.
+    Все аккаунты сохраняются в шифрованном виде.
+    Для создания аккаунта необходимо выполнить
+    следующее:
+
+    bash#tuseradd -a test
+    Changing password for user
+    New password:
+
+    вводим пароль и на этом создание аккаунта "test" завершено.
+
+    Если при создании аккаунта использовался иной файл записей то
+    его так же необходимо указать параметром --pfile,
+    tuseradd -a test --pfile /etc1234/12345.db
+    и так же параметр --pfile должен быть использован при
+    запуске TA, ./ta --pfile /etc1234/12345.db, для того чтобы
+    модуль Server знал где искать записи для аунтефикации.
+
+  6.5 <a name="p6_5"></a><font color="#109200"><b>Запуск клиента</b></font>
+
+    При стандартной инсталляции TA Billing, клиент находится
+    в инсталлируемом каталоге, в подкаталоге bin, файл
+    клиента называется tsclient.
+
+    Для запуска клиента необходимо выполнить следующее:
+
+    bash#./tsclient -s &lt;IP_TA_SERVER&gt; -p &lt;PORT&gt; --user &lt;USER&gt; --pass &lt;YOURPASS&gt;
+
+    &lt;IP_TA_SERVER&gt; = IP адрес на котром функционирует модуль Server.
+    &lt;PORT&gt;         = порт для соединения с модулем Server.
+    &lt;USER&gt;         = имя аккаунта, который должен быть создан утилитой tuseradd.
+    &lt;YOURPASS&gt;     = пароль аккаунта, если не указан параметр "--pass" то
+		     ввод пароля будет запрошен с консоли.
+
+    после этого, если введенные значения корректны, траффик будет считаться.
+    Для того чтобы клиент не оставался на консоли с которой его запустили то
+    его необходимо переключить в режим daemon, добавив параметр "-d":
+
+    bash#./tsclient -d -s &lt;IP_TA_SERVER&gt; -p &lt;PORT&gt; --user &lt;USER&gt; --pass &lt;YOURPASS&gt;
+
+  7. <a name="p7"></a><font color="#109200"><b>Оптимизация конфигурации</b></font>
+
+  	В данной части будет рассказано об ускорении
+  	работы с данными для TA Billing.
+	Соблюдение нижеследующих пунктов
+	гарантированно ускорит работу TA Billing.
+
+  7.1 <a name="p7_1"></a><font color="#109200"><b>Оптимизация по скорости</b></font>
+
+     	1. Если в использовании функции "Who Is Online"
+     	   нет необходимости.
+
+     	   	В таком случае необходимо закомментировать
+     		строку taw_show_online_list в файле
+     		конфигурации.
+
+     	2. Если в использовании статистики по портам
+     	   нет необходимости.
+
+     	   	В таком случае необходимо закомментировать
+     		строки taw_user_ip_port в файле конфигурации.
+
+     	3. Если в использовании статистики по протоколам
+     	   нет необходимости.
+
+     	   	В таком случае необходимо закомментировать
+     		строки taw_user_ip_proto в файле конфигурации.
+
+     	4. Если в использовании функции "Учтенные IP адреса"
+     	   нет необходимости.
+
+		В таком случае необходимо закомментировать
+		строку taw_ip_list в файле конфигурации.
+
+  8. <a name="p8"></a><font color="#109200"><b>Тесты работы TA Billing.</b></font>
+
+    В данном разделе представлены некоторые результаты работы,
+    Traffic Accounting.
+
+    8.1 <a name="p8_1"></a><font color="#109200"><b>Размер базы данных</b></font>
+
+	Размер базы данных содержащей полную информацию
+	о 10 000 (10 тыс.) IP адресах, составляет
+	от 7 до 14 мб. Т.е. размер информации на 10 тыс.
+	пользователей будет составлять 7-14 мб.
+
+    8.2 <a name="p8_2"></a><font color="#109200"><b>Скорость работы</b></font>
+
+    	Скорость сбора пакетов составляет
+	7 тыс. пакетов в секунду, при скорости
+	процессора 200Mhz(P-II).
+	Скорость обработки собранных пакетов
+	составляет 1.5 тыс. пакетов в секунду
+	при той же скорости процессора.
+
+  9. <a name="p9"></a><font color="#109200"><b>Дополнительные возможности пакета TA Billing</b></font>
+
+    В данном пункте описаны некоторые возможности
+    пакета TA Billing которые не касаются настроек
+    конфигурационных файлов.
+
+  9.1 <a name="p9_1"></a><font color="#109200"><b>Параметры командной строки</b></font>
+
+    В данной части документа описаны параметры
+    командной строки для программы Traffic Accouting.
+
+    Параметры.
+
+    1. --cfile
+
+      Данный параметр указывает на главный конфигурационный
+      файл. Если данный параметр не указан то как главный конфигурационный
+      файл, Traffic Accouting будет использовать "/etc/ta.conf".
+      Пример:
+
+      bash# ./ta --cfile /etc123/ta123.conf
+
+    2. --pfile
+
+      Данный параметр используется для указания пути к файлу,
+      с базой пользователей для аунтефикации на модуль Server.
+      Пример:
+
+      bash# ./ta --pfile /etc123/ta123passwd.db
+
+  9.2 <a name="p9_2"></a><font color="#109200"><b>Опустошение буфера</b></font>
+
+    Если в конфигурационном файле управления трафиком используются
+    функции из группы статистики, то для того чтобы преждевременно
+    (не дожидаясь накопления 10,000[10тыс.] пакетов) записать пакеты
+    на диск, необходимо послать сигнал kill с типом USR1 процессу TA.
+    Это нужно например если постоянный трафик отсутствует, но пришло
+    всего 6 пакетов то в файлах для результата пакетов не будет,
+    и для того чтобы преждевременно сбросить буфер(записать пакеты на диск),
+    необходимо выполнить команду(послать процессу TA сигнал USR1),
+    например так: killall -USR1 ta .
+
+  10. <a name="p10"></a><font color="#109200"><b>Утилиты</b></font>
+
+    Данный пункт посвящен описанию утилит, поставляемых
+    в стандартном пакете TA Billing.
+
+    1. <font color="#a62828"><b>tmlog</b></font>
+
+	Используется для конвертации, формата binary в текстовый
+	из логов от функций full_bin_stat*, bin_stat*...
+	Подробнее см. <a href="tab_HOWTO.htm#p10_1" style="text-decoration:none;color:#000000;">п. 10.1</a> .
+
+    2. <font color="#a62828"><b>tsclient</b></font>
+
+	Клиент к модулю Server пакета TA Billing.
+	Подробнее см. <a href="tab_HOWTO.htm#p10_1" style="text-decoration:none;color:#000000;">п. 10.1</a> .
+	Описание работы tsclient см. <a href="tab_HOWTO.htm#p6_5" style="text-decoration:none;color:#000000;">п. 6.5</a> .
+
+    3. <font color="#a62828"><b>tuseradd</b></font>
+
+	Программа манипулирования файлом аунтефикации
+	для модуля Server пакета TA Billing.
+	Подробнее см. <a href="tab_HOWTO.htm#p10_1" style="text-decoration:none;color:#000000;">п. 10.1</a> .
+	Описание работы tuseradd см. <a href="tab_HOWTO.htm#p6_4" style="text-decoration:none;color:#000000;">п. 6.4</a> .
+
+    4. <font color="#a62828"><b>cutdb</b></font>
+
+	Предназначена для функции <a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a>, cutdb может
+	вырезать значения для указанных функций оставляя при этом
+	другие сохраненные значения остальных функций, нетронутыми.
+
+	Описание применения в пункте <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">4.2.5</a>, в описании <a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a>.
+
+    5. <font color="#a62828"><b>udptunnel</b></font>
+
+    	Предназначена для зеркалирования udp пакетов с одного
+	порта на другой. Например пакеты приходящие на порт
+	12 могут быть зеркалированны на порт 18, в результате
+	получится один и тот же трафик на порту 12 и на порту 18.
+	Так же зеркалирование не ограничивается одной машиной,
+	т.е. трафик приходящий на udp порт 12 машины 192.168.2.1
+	можно зеркалировать на udp порты 15,19,112 машины 192.168.3.95 .
+	Данная утилита может одновременно зеркалировать до 10тыс.
+	портов, при этом не занимая ни одного из них.
+	Примеры работы с данной утилитой описываются в п. <a href="tab_HOWTO.htm#p5_3" style="text-decoration:none;color:#000000;">5.3</a> и <a href="tab_HOWTO.htm#p6_3" style="text-decoration:none;color:#000000;">6.3</a> .
+
+  10.1 <a name="p10_1"></a><font color="#109200"><b>Подробное описание</b></font>
+
+    1. <font color="#a62828"><b>ta</b></font>
+
+	[--cfile]: указывает путь к главному конфигурационному файлу.
+	    Пример:
+		bash# ./ta --cfile /etc/ta123.conf
+
+	[--pfile]: указывает путь к файлу с аккаунтами для аунтефикации
+		   на сервер.
+
+	    Пример:
+		bash# ./ta --pfile /etc/ta12passwd.db
+
+    2. <font color="#a62828"><b>tuseradd</b></font>
+
+	[-a]: добавить пользователя,
+	      следующий параметр это имя пользователя.
+	    Пример:
+		bash# ./tuseradd -a test
+
+	[-d]: удалить пользователя из базы,
+	      следующим параметром идет имя пользователя для удаления.
+	    Пример:
+		bash# ./tuseradd -d test
+
+	[-p]: изменить пароль для пользователя,
+	      следующим параметром идет имя пользователя, для смены пароля.
+	      (новый пароль будет запрошен с консоли)
+	    Пример:
+		bash# ./tuseradd -p test
+
+	[--pfile]: указывает на путь к базе паролей,
+		   по умолчанию используется путь "/etc/passwd.db"
+	    Пример:
+		bash# ./tuseradd --pfile /etc/tapasswd8.db
+
+    3. <font color="#a62828"><b>tsclient</b></font>
+
+	[-s]: IP адрес машины на которой функционирует модуль Server.
+	    Пример:
+		bash# tsclient -s 195.23.78.4 -p 6 --user test
+
+	[--user]: имя пользователя которое будет использоваться для
+		  аунтефикации.
+	    Пример:
+		bash# tsclient --user test -s 195.23.78.4 -p 6
+
+	[--pass]: пароль для имени пользователя, если этот параметр
+		  не указан то пароль будет запрошен с консоли.
+	    Пример:
+		bash# tsclient -pass mypassword --user test -s 195.23.78.4 -p 6
+
+	[-p]: параметр указывает порт для коннекта.
+	    Пример:
+		bash# tsclient -p 6 --user test -s 195.23.78.4
+
+	[-d]: если данный параметр присутствует то tsclient
+	      после запуска переходит в режим daemon.
+
+    4. <font color="#a62828"><b>tmlog</b></font>
+
+	[-f]: Этот параметр указывает какой вид формата ЛОГА
+	      будет использоваться, допустимые значения:
+	      b: binary (для всех bin_stat_ функций)
+	      bf: full binary (для всех full_bin_stat_ функций)
+
+	[-p]:
+	      Функция конвертирования:
+	      t: конвертировать из binary в текстовый формат.
+
+	[-o]:
+	      Выходной файл(файл результата) если он не указан
+	      то по молчанию используется stdout.
+
+	[-i]:
+	      Входной файл, файл над которым будут производится операции.
+
+	[--data]:
+	      Строка с датой, если данный параметр присутствует то выводятся
+	      только те пакеты, timestamp которых совпадает с датой указанной
+	      параметром.
+	      **Формат строки с датой описан в <a href="tab_HOWTO.htm#p4_2_5" style="text-decoration:none;color:#000000;">п. 4.2.5</a>,
+	        дальше см. описание к функции <a href="tab_HOWTO.htm#stat_time_on" style="text-decoration:none;color:#000000;">stat_time_on</a> .
+
+	[--ptype]:
+	      Данный параметр указывает какой тип пакетов требуется
+	      для вывода.
+	      Типы могу быть:
+	    	    	i, o, f, b, m
+	      параметр может содержать например: i,o,m
+
+	[--proto]:
+	      Данный параметр используется для того чтобы выводить пакеты
+	      с определенным протоколом.
+	      Синтаксис данного параметра такой же как и в самих
+	      настроечных файлах конфигураций, программы TA.
+	      т.е. можно указывать например: 1-6,10-17,90
+	      так пакеты с протоколами с 1 по 6, с 10 по 17 и 90
+	      будут выводиться.
+	      Такой параметр можно использовать только для файлов
+	      с полной статистикой, так как в неполной не
+	      присутствует поле для протокола.
+
+        [--port]:
+	      Данный параметр ограничивает вывод записей по портам.
+      	      Синтаксис данного параметра такой же как и в самих
+	      настроечных файлах конфигураций, программы TA.
+	      Например: --port a12-45,d67,a20-21,a80
+	        в этом случае будут выводиться только те пакеты,
+		порты которых подходят указанной маске.
+	      Данный параметр будет распространяться только на те
+	      пакеты, которые имеют записи для портов.
+
+	[--ip]:
+	      Данный параметр ограничивает вывод пакетов по IP
+	      адресам.
+      	      Синтаксис данного параметра такой же как и в самих
+	      настроечных файлах конфигураций, программы TA.
+	      Например: --ip d127.0.0.1,a127.0.0.9,d11-12.13-14.15-16.17,a11.11.11.11/255.255.255.252
+
+	[--schar]:
+	      Данный параметр используется для задания символа
+	      разделения полей в выходном потоке. По умолчанию
+	      это символ '|' .
+
+
+	Дополнительные примеры использования утилиты tmlog:
+	    ./tmlog -i lo-ig-bin_full-1 -o textfullout -p t -f fb
+	    ./tmlog -i lo-ig-bin-1 -o textbinout -p t -f b
+	    ./tmlog -i lo-ig-bin_full-1 -o textfullout -p t -f fb --data '0|*|23-7/1,9|*|*|*|1,3'
+	    ./tmlog -i lo-ig-bin-1 -o textbinout -p t -f b --ptype i,o
+	    ./tmlog -i lo-ig-bin-1 -o textbinout -p t -f b --proto 1,2-9
+	    ./tmlog -i lo-ig-bin-1 -o textbinout -p t -f b --proto 6 --port a20-21
+	    ./tmlog -i lo-ig-bin-1 -o textbinout -p t -f b --port a80,a3128
+
+    5. <font color="#a62828"><b>cutdb</b></font>
+
+	Параметры данной утилиты:
+	первый параметр это путь к файлу с базой от <a href="tab_HOWTO.htm#save_on_time" style="text-decoration:none;color:#000000;">save_on_time</a>,
+	остальные параметры это перечисления функций, данные которых
+	необходимо обнулить.
+
+	Пример:
+	    ./cutdb save_on_time-lo log_by_each_ip_local log_by_port_ip
+
+	Обнуляет данные от функций <a href="tab_HOWTO.htm#log_by_each_ip_local" style="text-decoration:none;color:#000000;">log_by_each_ip_local</a> и <a href="tab_HOWTO.htm#log_by_port_ip" style="text-decoration:none;color:#000000;">log_by_port_ip</a>,
+	из файла базы save_on_time-lo.
+
+    5. <font color="#a62828"><b>udptunnel</b></font>
+
+    	Примеры работы с данной утилитой описываются в п. <a href="tab_HOWTO.htm#p5_3" style="text-decoration:none;color:#000000;">5.3</a> и <a href="tab_HOWTO.htm#p6_3" style="text-decoration:none;color:#000000;">6.3</a> .
+	Параметры данной утилиты:
+
+	[-c]: Путь к конфигурационному файлу утилиты.
+	    Пример:
+		bash# udptunnel -c ./udptunnel.conf
+
+	[-d]: Если данный параметр присутствует то после запуска
+	      утилита udptunnel переходит в режим daemon.
+	    Пример:
+		bash# udptunnel -c udptunnel.conf -d
+
+
+<center><b><small>Copyright (C) 2002, 2003 Yashin Sergey <a href="../../cdn-cgi/l/email-protection.html#443025282d2a313c04342d3721296a2a2130" style="text-decoration:none;color:#000000;">&lt;<span class="__cf_email__" data-cfemail="f084919c999e8588b0809983959dde9e9584">[email&#160;protected]</span>&gt;</a></small></b></center>
+</pre>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 15 Серверное программное обеспечение (Почтовый сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 15 Серверное программное обеспечение (Почтовый сервис) -
+      Sendmail (часть 1)</H2><FONT size=+2>В этой главе</FONT><BR><FONT
+      size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#1">-->Linux Sendmail
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#3">-->Организация
+      защиты Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#4">-->Утилиты
+      администратора Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#5">-->Утилиты
+      пользователя Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#6">-->Linux Imap и
+      Pop сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#7">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#8">-->Настройка Imap
+      и POP для использования с TCP-Wrappers inetd супер сервером<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#9">-->Организация
+      защиты IMAP/POP<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=200
+      src="ch15_2.files/22.jpg" width=139></TD></TR></TBODY></TABLE>
+<H3>Файлы &#8220;/etc/mail/aliases и aliases.db&#8221; для Центрального Почтового
+Концентратора</H3>
+<P align=justify>Использование псевдонимов это процесс конвертирования одних
+локальных имен получателей в другие (использование псевдонимов возможно только
+для локальных имен). Например используется конвертирование общих имен (таких как
+root) в реальные имена, или конвертирование одних имен в список из нескольких
+имен (для списка рассылки). Для каждого элемента где локальный пользователь
+упоминается как получатель, Sendmail смотрит получателя в базе данных &#8220;aliases&#8221;.
+Так как Sendmail может производить поиск среди нескольких тысяч имен в файле
+&#8220;aliases&#8221;, копия файла хранится в независимой базе данных &#8220;db&#8221; для значительного
+увеличения скорости просмотра. Если вы настраиваете ваш Sendmail на
+использование Центрального Сервера (Почтового концентратора) для управления всей
+почты, вам не нужно будет инсталлировать файлы &#8220;aliases&#8221; и &#8220;aliases.db&#8221; на
+граничных серверах и клиентских машинах.</P><B>Шаг 1</B>
+<P align=justify>Создайте файл aliases (touch /etc/mail/aliases) и добавьте в
+него следующие строки:</P><FONT color=#008080><PRE>#
+# @(#)aliases 8.2 (Berkeley) 3/5/94
+#
+# Псевдонимы в этом файле не будут расширяться в заголоке FROM: почты
+# но будут видны через сеть и из /bin/mail.
+#
+# &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Программа "newaliases" должна быть запущена после того
+# &gt;&gt; NOTE &gt;&gt; как этот в этот файл будут внесены любые изменения,
+# &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; чтобы они стали видны в sendmail.
+#
+# Общие системные псевдонимы &#8211; должны быть представлены.
+MAILER-DAEMON: postmaster
+postmaster: root
+# Общие перенаправления для псевдо бюджетов.
+bin: root
+daemon: root
+nobody: root
+# Лицо получающее почту пользователя root
+#root: admin</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Ваш файл псевдонимов будет скорее всего более
+сложным. Этот пример показывает минимальный вид этого файла.</P><B>Шаг 2</B>
+<P align=justify>Создание файла aliases.db:<BR>Так как &#8220;/etc/mail/aliases&#8221; &#8211; это
+база данных, после создания текстового файла как описано выше, вы должны
+использовать команду &#8220;makemap&#8221; для создания базы данных схем.<BR>Для создания
+&#8220;базы данных схем псевдонимов&#8221;, используйте следующую команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# makemap hash /etc/mail/aliases.db &lt;
+/etc/mail/aliases</FONT>
+<H3>Файлы &#8220;/etc/mail/virtusertable, domaintable, mailertable, и
+virtusertable.db,
+<P align=justify>domaintable.db, mailertable.db&#8221; для Центрального Почтового
+Концетратора.</H3>Все эти файлы связаны с отдельными возможностями Sendmail,
+которые могут быть настроены системным администратором. Еще раз отметим, что эти
+возможности нужны только на Центральном Почтовом Концентраторе. Ниже даны
+краткие описания каждой из них.</P><B>Файлы virtusertable и
+virtusertable.db.</B>
+<P align=justify>virtusertable &#8211; это база данных, которая отображает виртуальные
+домены на известные адреса. Благодаря этой возможности, почта для виртуальных
+доменов на вашей сети может быть доставлена локальным, удаленным или отдельным
+пользовательским адресам.</P><B>Файлы domaintable и domaintable.db.</B>
+<P align=justify>domaintable &#8211; это база данных, которая отображает старые домены
+на новые. Благодаря этой возможности, несколько доменных имен в вашей сети может
+быть переписаны из старых доменов в новые.</P><B>Файлы mailertable &amp;
+mailertable.db.</B>
+<P align=justify>mailertable &#8211; это база данных, которая отображает имена вида
+&#8220;host.domain&#8221; на специальные агенты доставки и новые пары доменных имен.
+Благодаря этой возможности может быть доставлена через использования
+специального агента доствки новым локальным или удаленным доменным именам.</P>
+<P align=justify>Для создания файлов virtusertable, domaintable, mailertable и
+их соответсвующих &#8220;.db&#8221; версий в каталоге &#8220;/etc/mail&#8221; используйте следующие
+команды:</P><FONT color=#008080 size=-1>[root@deep /]# for map in virtusertable
+domaintable mailertable<BR>&gt; do<BR>&gt; touch /etc/mail/${map}<BR>&gt; chmod
+0644 /etc/mail/${map}<BR>&gt; makemap hash /etc/mail/${map}.db &lt;
+/etc/mail/${map}<BR>&gt; chmod 0644 /etc/mail/${map}.db<BR>&gt;
+done<BR><BR></FONT>
+<H3>Файл &#8220;/etc/mail/local-host-names&#8221; для всех типов конфигураций</H3>
+<P align=justify>Файл &#8220;/etc/mail/local-host-names&#8221; считывается для получения
+альтернативных имен локального хоста. Одним из способов, как этот файл может
+быть использован, это объявление списка хостов для которых локальный компьютер
+выступает как получатель почты через MX записи. На такой машине нам просто нужно
+добавить имена (например, mail.openna.com), для которых он будет манипулировать
+почтой. Например:</P>
+<P align=justify>Создайте файл local-host-names file (touch
+/etc/mail/local-host-names) и добавьте в него следют строку:</P><FONT
+color=#008080 size=-1># local-host-names &#8211; включает все псевдонимы для вашего
+компьютера.<BR>openna.com<BR>deep.openna.com<BR>www.openna.com<BR>win.openna.com<BR>mail.openna.com<BR></FONT>
+<P align=justify>С такой конфигурацией, вся почта отправляемая на домен
+&#8220;openna.com&#8221; или любая почта отправляемая на сервер &#8220;www.openna.com&#8221; или другой
+хост будет доставляться на ваш почтовый концентратор &#8220;mail.openna.com&#8221;.</P>
+<P align=justify>Пожалуйста запомните, что если вы настраивает вашу систему для
+маскарадинга под другую машину, любая почта посланная из вашей системы на вашу
+систему будет отправлена на машину под которую вы маскируетесь. Например, в
+вышеприведенной конфигурации, системные файлы регистрации, которые периодически
+отправляются на адрес <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="dfadb0b0ab9fa8a8a8f1b0afbab1b1bef1bcb0b2">[email&#160;protected]</a>, будут отправлены на адрес
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5a2835352e1a373b333674352a3f34343b74393537">[email&#160;protected]</a> вашего почтового концентратора.</P>
+<H3>Конфигурация файла &#8220;/etc/sysconfig/sendmail&#8221; для всех типов
+конфигураций</H3>
+<P align=justify>Файл &#8220;/etc/sysconfig/sendmail&#8221; используется для определения
+конфигурационной информации SENDMAIL, такой как, запускать ли sendmail как
+демон, нужно ли слушать порт для приема почты или нет, и как долго ждать перед
+отправкой предупреждающего сообщения, если сообщение из каталога очереди не
+может быть доставлено.</P>
+<P align=justify>Создайте файл sendmail (touch /etc/sysconfig/sendmail) и
+добавьте в него следующее:</P><FONT color=#008080
+size=-1>DAEMON=yes<BR>QUEUE=1h<BR></FONT>
+<P align=justify>Опция <B>&#8220;DAEMON=yes&#8221;</B> говорит Sendmail запускаться как
+демон. Эта строка особо полезна, когда sendmail запускается на клиентских
+машинах, которые не должны принимать почту из внешнего мира, а должны пересылать
+все сообщения на центральный почтовый концентратор. Не запуская sendmail, вы
+также улучшается безопасность. Если вы настаиваете sendmail подобным образом, то
+замените строку &#8220;DAEMON=yes&#8221; на &#8220;DAEMON=no&#8221;.</P>
+<P align=justify>Почта обычно помещается в очередь, потому что не может быть
+отправлена незамедлительно. <B>&#8220;QUEUE=1h&#8221;</B> устанавливает интервал времени до
+отправки предупреждающего сообщения отправителю письма, что его сообщение не
+может быть доставлено.</P>
+<H3>Конфигурация скрипта &#8220;/etc/rc.d/init.d/sendmail&#8221; для всех типов
+конфигураций.</H3>
+<P align=justify>Настройка скрипта &#8220;/etc/rc.d/init.d/sendmail&#8221; для запуска и
+остановки демона Sendmail.<BR>Создайте скрипт-файл sendmail (touch
+/etc/rc.d/init.d/sendmail) и добавьте в него следующее:</P><FONT
+color=#008080>#!/bin/sh<BR>#<BR># sendmail Это shell скрипт, который заботится о
+запуске и остановки<BR># sendmail.<BR>#<BR># chkconfig: 2345 80 30<BR>#
+Описание: Sendmail &#8211; это почтовый транспортный агент, который \ <BR>#
+используется для перемещения почты с одной машины на другую.<BR># имя процесса:
+sendmail<BR># конфигурационный файл: /etc/sendmail.cf<BR># pidfile:
+/var/run/sendmail.pid<BR># Библиотека исходных функций.<BR>.
+/etc/rc.d/init.d/functions<BR># Исходная сетевая конфигурация.<BR>.
+/etc/sysconfig/network<BR># Исходная конфигурация sendmail.<BR>if [ -f
+/etc/sysconfig/sendmail ] ; then<BR>.
+/etc/sysconfig/sendmail<BR>else<BR>DAEMON=yes<BR>QUEUE=1h<BR>fi<BR># Проверка,
+что сеть включена.<BR>[ ${NETWORKING} = "no" ] &amp;&amp; exit 0<BR>[ -f
+/usr/sbin/sendmail ] || exit 0<BR>RETVAL=0<BR># Смотрим как мы вызываем
+скрипт.<BR>case "$1" in<BR>start)<BR># Запуск демона.<BR>echo -n "Starting
+sendmail: "<BR>/usr/bin/newaliases &gt; /dev/null 2&gt;&amp;1<BR>for i in
+virtusertable access domaintable mailertable ; do<BR>if [ -f /etc/mail/$i ] ;
+then<BR>makemap hash /etc/mail/$i &lt; /etc/mail/$i<BR>fi<BR>done<BR>daemon
+/usr/sbin/sendmail $([ "$DAEMON" = yes ] &amp;&amp; echo -bd) \<BR>$([ -n
+"$QUEUE" ] &amp;&amp; echo -q$QUEUE)<BR>RETVAL=$?<BR>echo<BR>[ $RETVAL -eq 0 ]
+&amp;&amp; touch /var/lock/subsys/sendmail<BR>;;<BR>stop)<BR># Остановка
+демона.<BR>echo -n "Shutting down sendmail: "<BR>killproc
+sendmail<BR>RETVAL=$?<BR>echo<BR>[ $RETVAL -eq 0 ] &amp;&amp; rm -f
+/var/lock/subsys/sendmail<BR>;;<BR>restart|reload)<BR>$0 stop<BR>$0
+start<BR>RETVAL=$?<BR>;;<BR>status)<BR>status
+sendmail<BR>RETVAL=$?<BR>;;<BR>*)<BR>echo "Usage: sendmail
+{start|stop|restart|status}"<BR>exit 1<BR>esac<BR>exit $RETVAL<BR></FONT>
+<P align=justify>Сейчас, сделаем скрипт исполняемым и изменим права доступа по
+умолчанию:<BR><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/sendmail</FONT><BR>Создадим символическую ссылку rc.d для
+Sendmail:<BR><FONT color=#008080 size=-1>[root@deep /]# chkconfig --add
+sendmail</FONT><BR>Запустим Sendmail сервер вручную, используя следующую
+команду:<BR><FONT color=#008080 size=-1>[root@deep /]# /etc/rc.d/init.d/sendmail
+start<BR>Starting sendmail: [ OK ]</FONT><BR></P>
+<H3>Очистка после работы</H3><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# rm -rf sendmail-version/
+sendmail.version.tar.gz<BR></FONT>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции Sendmail. Также будет
+удален сжатый архив Sendmail из каталога &#8220;/var/tmp&#8221;.</P>
+<H3><A name=3>Организация защиты Sendmail</A></H3><FONT size=+1>Ограниченная
+оболочка &#8220;smrsh&#8221; Sendmail.</FONT><BR>
+<P align=justify>Программа smrsh предназначается для замены &#8220;/bin/sh&#8221; в
+программах почтальонах, определенных в Sendmail. Это ограниченная оболочка,
+которая предоставляет возможность строго определить через каталог &#8220;/etc/smrsh&#8221;,
+явный список исполняемых программ доступных Sendmail. Чтобы быть более точным,
+даже если &#8220;плохой парень&#8221; использует Sendmail для запуска программ без файлов
+псевдонимов и forward, smrsh ограничит набор программ, которые он или она сможет
+выполнить. В связке с Sendmail smrsh эффективно ограничивает область выполняемых
+программ только теми программами, что перечислены в каталоге /etc/smrsh. Если вы
+следовали по инструкциям описанным выше, то smrsh уже откомпилирована и
+инсталлирована в каталог &#8220;/usr/sbin/smrsh&#8221;.</P><B>Шаг 1</B>
+<P align=justify>Первое, что надо сделать, это определить список команд, которые
+&#8220;smrsh&#8221; позволит Sendmail выполнять.<BR>По умолчанию в него
+входят:<BR>&#8220;/bin/mail&#8221; (если инсталлирована на вашей
+системе)<BR>&#8220;/usr/bin/procmail&#8221; (если инсталлирована на вашей системе)</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Вы не должны включать интерпретирующие
+программы, такие как sh(1), csh(1), perl(1), uudecode(1) или потоковый редактор
+sed(1) в список разрешенных программ.</P><B>Шаг 2</B>
+<P align=justify>Следующее, что надо сделать, это заполнить каталог &#8220;/etc/smrsh&#8221;
+программами, которые разрешено запускать Sendmail. Для предотвращения
+дублирования программ мы будем создавать символические ссылки.<BR>Для разрешения
+использования программы &#8220;/bin/mail&#8221; используйте следующие команды:</P><FONT
+color=#008080 size=-1>[root@deep /]# cd /etc/smrsh<BR>[root@deep smrsh]# ln -s
+/bin/mail mail<BR></FONT>
+<P align=justify>Для разрешения использования программы &#8220;/usr/bin/procmail&#8221;
+используйте следующие команды:</P><FONT color=#008080 size=-1>[root@deep /]# cd
+/etc/smrsh<BR>[root@deep smrsh]# ln -s /usr/bin/procmail procmail<BR></FONT>
+<P align=justify>Вышеприведенные команды позволят запускать программы mail и
+procmail из пользовательских файлов &#8220;.forward&#8221; или файла &#8220;aliases&#8221;, которые
+используют "program" синтаксис.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Procmail требуется только на почтовом
+концентраторе и не требуется на клиентской машине. Если вы настраиваете вашу
+систему как Центральный почтовый сервер, то создайте ссылку на procmail как
+описано выше, иначе пропустите его.</P><B>Шаг 3</B>
+<P align=justify>Сейчас мы можем настроить Sendmail на использование защищенного
+shell. Программа почтальон определяется в одиночной строке конфигурационного
+файла &#8220;/etc/mail/sendmail.cf&#8221;. Вы должны модифицировать линию &#8220;Mprog&#8221;, заменив в
+ней &#8220;/bin/sh&#8221; на &#8220;/usr/sbin/smrsh&#8221;.</P>
+<P align=justify>Редактируйте файл sendmail.cf (vi /etc/mail/sendmail.cf) и
+измениет строку: Например:</P><FONT color=#008080 size=-1>Mprog, P=/bin/sh,
+F=lsDFMoqeu9, S=10/30, R=20/40, D=$z:/, T=X-Unix, A=sh -c $u<BR></FONT>Дожна
+быть изменена на:<BR><FONT color=#008080 size=-1>Mprog, P=/usr/sbin/smrsh,
+F=lsDFMoqeu9, S=10/30, R=20/40, D=$z:/, T=X-Unix, A=sh -c $u<BR></FONT>
+<P align=justify>Сейчас перезапустите вручную процесс sendmail следующей
+командой:</P><FONT color=#008080 size=-1>[root@deep /]#
+/etc/rc.d/init.d/sendmail restart</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> В нашем конфигурационном файле &#8220;sendmail.mc&#8221;,
+написанном выше, мы уже настроили строку &#8220;Mprog&#8221; на использование защищенного
+shell &#8220;/usr/sbin/smrsh&#8221; при помощи макроопределения
+&#8220;FEATURE(`smrsh',`/usr/sbin/smrsh')&#8221;, так что не удивляйтесь, если
+&#8220;/usr/sbin/smrsh&#8221; уже установлен в &#8220;/etc/mail/sendmail.cf&#8221; для Почтового
+концентратора. Используйте технику непосредственного редактирования файла
+&#8220;/etc/mail/sendmail.cf&#8221; для тех машин, где вы использовали файл с
+макроопределениями &#8220;null.mc&#8221; (граничные сервера и клиентские машины).</P><FONT
+size=+1>Файл&#8220;/etc/mail/aliases&#8221;</FONT>
+<P align=justify>Несовершенное или небрежное администрирование файла &#8220;aliases&#8221;
+может привести к легкому получению привилегированному статусу. Например, многие
+разработчики поставляют системы с псевдонимом &#8220;decode&#8221; в файле
+&#8220;/etc/mail/aliases&#8221;. Его основное назначение &#8211; облегчение для пользователей
+пересылки двоичных файлов по почте. Отправляющий пользователь конвертирует
+двоичный файл в ASCII, используя &#8220;uuencode&#8221;, затем отправляет полученное
+сообщение псевдониму &#8220;decode&#8221; на принимающий сервер. Затем псевдоним через канал
+(pipe) отправляет сообщение программе &#8220;/usr/bin/uuencode&#8221;, которая конвертирует
+ASCII назад в двоичный файл. Удалите псевдоним &#8220;decode&#8221; из файла
+&#8220;/etc/mail/aliases&#8221;. Аналогично, каждый псевдоним, который запускает программу и
+который вы сам не создавали должен быть проверен и скорее всего удален.</P>
+<P align=justify>Редактируйте файл aliases (vi /etc/mail/aliases) и удалите
+следующие строки: </P><FONT color=#008080 size=-1># Базовые псевдонимы системы &#8211;
+ДОЛЖНЫ быть представлены.<BR>MAILER-DAEMON: postmaster<BR>postmaster: root<BR>#
+Обычная переадресация для псевдобюджетов.<BR>bin: root<BR>daemon: root<BR>games:
+root <FONT color=#000000>- удалите эту строку.</FONT><BR>ingres: root <FONT
+color=#000000>- удалите эту строку.</FONT><BR>nobody: root<BR>system: root <FONT
+color=#000000>- удалите эту строку.</FONT><BR>toor: root <FONT color=#000000>-
+удалите эту строку.</FONT><BR>uucp: root <FONT color=#000000>- удалите эту
+строку.</FONT><BR># Хорошо известные псевдонимы.<BR>manager: root <FONT
+color=#000000>- удалите эту строку.</FONT><BR>dumper: root <FONT color=#000000>-
+удалите эту строку.</FONT><BR>operator: root <FONT color=#000000>- удалите эту
+строку.</FONT><BR># ловушка decode для захвата атаки<BR>decode: root - <FONT
+color=#000000>удалите эту строку.</FONT><BR># Человек получающий почту для
+пользователя root<BR>#root: marc<BR></FONT>
+<P align=justify>Чтобы изменения вступили в силу выполните команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# /usr/bin/newaliases</FONT><BR><BR><FONT
+size=+1>Предотвращение неправильного обращения к вашему Sendmail
+неавторизированными пользователями</FONT>
+<P align=justify>Sendmail сейчас включает значительные антиспаммовские
+возможности, которые могут помочь предотвратить неправильное использование
+вашего почтового сервера неавторизированными пользователями. Для этого,
+редактируйте ваш файл &#8220;/etc/mail/sendmail.cf&#8221; и внесите в него изменения
+блокирующие спаммеров.</P>
+<P align=justify>Редактируйте файл sendmail.cf (vi /etc/mail/sendmail.cf) и
+измените строку:</P>
+<P align=justify><FONT color=#008080 size=-1>O
+PrivacyOptions=authwarnings</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>O PrivacyOptions=authwarnings,goaway</FONT><BR></P>
+<P align=justify>Установка &#8220;goaway&#8221; говорит Sendmail отвергать все SMTP &#8220;EXPN&#8221;
+команды, отбрасывать все SMTP &#8220;VERB&#8221; команды и игнорировать все SMTP &#8220;VRFY&#8221;
+команды. Эти изменения не дадут спаммеру использовать команды &#8220;EXPN&#8221; и
+&#8220;VRFY&#8221;.</P><FONT size=+1>Ограничение числа людей, которые могут просматреть
+содержимое очереди</FONT>
+<P align=justify>Обычно, кто угодно может просмотреть почтовую очередь при
+помощи команды &#8220;mailq&#8221;. Для ограничения тех, кто имеет возможность ее
+просмотреть используйте опцию &#8220;restrictmailq&#8221; в файле &#8220;/etc/mail/sendmail.cf&#8221;. С
+ней, Sendmail позволяет просматривать очередь только тем пользователям, кто
+входит в группу владеющую ею (root). Это позволяет полностью защитить каталог
+очереди, используя режим доступа 0700.</P>
+<P align=justify>Редактируйте файл sendmail.cf (vi /etc/mail/sendmail.cf) и
+внесите в него следующее изменение:</P>
+<P align=justify><FONT color=#008080 size=-1>O
+PrivacyOptions=authwarnings,goaway</FONT><BR>Измените на:<BR><FONT color=#008080
+size=-1>O*-PrivacyOptions=authwarnings,goaway,restrictmailq</FONT><BR></P>
+<P align=justify>Сейчас измените режим доступа к вашему каталогу
+очереди:<BR><FONT color=#008080 size=-1>[root@deep /]# chmod 0700
+/var/spool/mqueue</FONT><BR></P>
+<P align=justify><BR>И перезапустите процесс sendmail, чтобы изменения вступили
+в силу: <FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/sendmail restart
+Shutting down sendmail:         [ OK ]
+Starting sendmail:              [ OK ]</PRE></FONT>
+<P></P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Мы уже добавили опцию &#8220;goaway&#8221; в строке
+&#8220;PrivacyOptions=&#8221;, а сейчас добавили туда же опцию &#8220;restrictmailq&#8221;. Любой
+непривелигированный пользователь, который попытается изучить почтовую очередь
+получит следующее собщение:</P><FONT color=#008080 size=-1>[user@deep /]$
+/usr/bin/mailq<BR>You are not permitted to see the queue<BR></FONT><BR><FONT
+size=+1>Ограничение пользователей имеющих возможность вызвать обработку очереди
+пользователем &#8220;root&#8221;</FONT>
+<P align=justify>Обычно, кто угодно может вызвать обработку очереди при помощи
+ключа &#8220;-q&#8221;. Чтобы только пользователь &#8220;root&#8221; и владелец каталога очереди могли
+сделать это используйте опцию &#8220;restrictqrun&#8221; в файле
+&#8220;/etc/mail/sendmail.cf&#8221;.</P>
+<P align=justify>Редактируйте файл sendmail.cf (vi /etc/mail/sendmail.cf) и
+внесите в него следующее изменение:</P>
+<P align=justify><FONT color=#008080 size=-1>O
+PrivacyOptions=authwarnings,goaway,restrictmailq</FONT><BR>Изменить на:<BR><FONT
+color=#008080 size=-1>O
+PrivacyOptions=authwarnings,goaway,restrictmailq,restrictqrun</FONT><BR></P>
+<P align=justify>Перезапустите процесс sendmail, чтобы изменения вступили в
+силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/sendmail restart
+Shutting down sendmail:   [ OK ]
+Starting sendmail:        [ OK ]</PRE></FONT>
+<P align=justify>Любой непривилегированный пользователь, попытавшийся запустить
+обработку очереди, получит следующее сообщение:</P><FONT color=#008080
+size=-1>[user@deep /]$ /usr/sbin/sendmail -q<BR>You do not have permission to
+process the queue<BR></FONT><BR><FONT size=+1>Приветственное сообщение
+SMTP</FONT>
+<P align=justify>Когда Sendmail принимает входящие SMTP соединения, он посылает
+на другой хост приветственное сообщение. Оно идентифицирует локальную машину и
+говорит о том, что sendmail готов к приему.</P>
+<P align=justify>Редактируйте файл sendmail.cf (vi /etc/mail/sendmail.cf) и
+измените строку:</P>
+<P align=justify><FONT color=#008080 size=-1>O SmtpGreetingMessage=$j Sendmail
+$v/$Z; $b<BR>Должна быть:<BR>O SmtpGreetingMessage=$j<BR></FONT></P>
+<P align=justify>Перезапустите процесс sendmail, чтобы изменения вступили в
+силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/sendmail restart
+Shutting down sendmail:   [ OK ]
+Starting sendmail:        [ OK ]</PRE></FONT>
+<P align=justify>Это изменение фактически ничего не меняет, но рекомендуется в
+группе новостей news.admin.net-abuse.email как законная предосторожность. Оно
+изменяет заголовок, которое Sendmail выводит при приеме соединений.</P><FONT
+size=+1>Установка бита &#8220;постоянства&#8221; на важнейшие файлы Sendmail</FONT>
+<P align=justify>На важные файлы Sendmail может быть установлен бит &#8220;постоянства
+для лучшей безопасности при помощи команды &#8220;chattr&#8221;. Файл с установленным
+атрибутом &#8220;+i&#8221; не может быть модифицирован, удален или переименован, на него
+нельзя создавать ссылки и никакие данные не могут быть дописаны в такие файлы.
+Только суперпользователь может снять этот атрибут.</P>
+<P align=justify>Установите бит &#8220;постоянства&#8221; на файл &#8220;sendmail.cf&#8221;:<BR><FONT
+color=#008080 size=-1>[root@deep /]# chattr +i /etc/mail/sendmail.cf</FONT></P>
+<P align=justify>Установите бит &#8220;постоянства&#8221; на файл
+&#8220;local-host-names&#8221;:<BR><FONT color=#008080 size=-1>[root@deep /]# chattr +i
+/etc/mail/local-host-names</FONT></P>
+<P align=justify>Установите бит &#8220;постоянства&#8221; на файл &#8220;aliases&#8221;:<BR><FONT
+color=#008080 size=-1>[root@deep /]# chattr +i /etc/mail/aliases</FONT></P>
+<P align=justify>Установите бит &#8220;постоянства&#8221; на файл &#8220;access&#8221;:<BR><FONT
+color=#008080 size=-1>[root@deep /]# chattr +i /etc/mail/access</FONT></P>
+<H3>Дополнительная документация.</H3>
+<P align=justify>Для получения большей информации читайте следующие страницы
+руководства:</P>
+<P align=justify>$ man aliases (5) &#8211; файл псевдонимов для sendmail<BR>$ man
+makemap (8) &#8211; создание базы данных отображений для sendmail<BR>$ man sendmail
+(8) &#8211; почтовый агент электронной почты<BR>$ man mailq (1) &#8211; вывод информации о
+почтовой очереди<BR>$ man newaliases (1) &#8211; пересоздание данных базирующихся на
+почтовом файле псевдонимов<BR>$ man mailstats (8) &#8211; вывод статистики работы
+sendmail<BR>$ man praliases (8) &#8211; вывод системных почтовых псевдонимов<BR></P>
+<H3><A name=4>Утилиты администратора Sendmail</A></H3>
+<P align=justify>Команды описанные ниже мы будем часто использовать, но на самом
+деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P><FONT
+size=+1>newaliases</FONT>
+<P align=justify>Назначение утилиты &#8220;newaliases&#8221; &#8211; это пересоздание и обновление
+базы данных произвольного доступа для файла почтовых псевдонимов
+&#8220;/etc/mail/aliases&#8221;. Она должна запускаться каждый раз, когда вы изменяете
+содержимое этого файла, чтобы изменения вступили в силу.<BR>Обновите файл базы
+данных псевдонимов с помощью утилиты &#8220;newaliases&#8221;, используя следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]#
+/usr/bin/newaliases</FONT><BR><BR><FONT size=+1>makemap</FONT>
+<P align=justify>Назначение утилиты &#8220;makemap&#8221; это создание базы данных
+соответствий для Sendmail. Она должна использоваться только когда вам надо
+создать новую базу данных для файлов подобных aliases, access, domaintable,
+mailertable и virtusertable.</P>
+<P align=justify>Запустите команду makemap, чтобы создать новую базу данных
+access:</P><FONT color=#008080 size=-1>[root@deep /]# makemap hash
+/etc/mail/access.db &lt; /etc/mail/access</FONT>
+<P align=justify>где <B>&lt;hash&gt;</B> - это формат базы данных, makemap может
+манипулировать тремя различными форматами баз данных: &#8220;hash&#8221;, &#8220;btree&#8221; или &#8220;dbm&#8221;.
+<B>&lt;/etc/mail/access.db&gt;</B> - месторасположения и имя новой базы данных,
+которую мы создаем. <B>&lt;/etc/mail/access&gt;</B> - месторасположение файла из
+которого мы получаем базу. В нашем примере, мы создаем новый файл &#8220;access.db&#8221;,
+используя команду makemap. Для создания баз данных из других файлов (aliases,
+domaintable, mailertable и virtusertable) вы должны определить месторасположение
+и имена соответствующих файлов в команде &#8220;makemap&#8221;.</P><FONT
+size=+1>mailq</FONT>
+<P align=justify>Назначение утилиты &#8220;mailq&#8221; &#8211; это печать краткой информации о
+почтовых сообщениях, хранящихся в очереди для дальнейшей доставки Для вывода
+краткой информации о почтовой очереди используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# mailq<BR>Mail queue is empty<BR></FONT>
+<H3><A name=5>Утилиты пользователя Sendmail</A></H3>
+<P align=justify>Команды описанные ниже мы будем часто использовать, но на самом
+деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P><FONT
+size=+1>mailstats</FONT>
+<P align=justify>Назначение утилиты &#8220;mailstats&#8221; &#8211; это вывод текущей статистики
+работы почтового сервера.<BR>Для получения текущей почтовой статистики
+используйте следующую команду:</P><FONT color=#008080><PRE>[root@deep /]# mailstats
+Statistics from Tue Dec 14 20:31:48 1999
+M   msgsfr   bytes_from   msgsto   bytes_to   msgsrej   msgsdis   Mailer
+5     0         0K           1        3K         0         0       esmtp
+8    1259      19618K       1259     19278K      0         0       local
+=========================================================================
+T    1259      19618K       1260     19281K      0         0</PRE></FONT><BR><FONT
+size=+1>praliases</FONT>
+<P align=justify>Назначение утилиты &#8220;praliases&#8221; &#8211; вывод текущих почтовых
+псевдонимов.<BR>Для вывода почтовых псевдонимов используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]#
+praliases<BR>postmaster:root<BR>daemon:root<BR>root:admin<BR>@:@<BR>mailer-daemon:postmaster<BR>bin:root<BR>nobody:root<BR>webadmin:admin<BR>www:root<BR></FONT>
+<H3>Файлы инсталлированные для Sendmail на Центральном Почтовом
+Концентраторе</H3><FONT size=-1><PRE>&gt; /etc/rc.d/init.d/sendmail
+&gt; /etc/rc.d/rc0.d/K30sendmail
+&gt; /etc/rc.d/rc1.d/K30sendmail
+&gt; /etc/rc.d/rc2.d/S80sendmail
+&gt; /etc/rc.d/rc3.d/S80sendmail
+&gt; /etc/rc.d/rc4.d/S80sendmail
+&gt; /etc/rc.d/rc5.d/S80sendmail
+&gt; /etc/rc.d/rc6.d/K30sendmail
+&gt; /etc/sysconfig/sendmail
+&gt; /etc/mail
+&gt; /etc/mail/statistics
+&gt; /etc/mail/sendmail.cf
+&gt; /etc/mail/access
+&gt; /etc/mail/access.db
+&gt; /etc/mail/aliases
+&gt; /etc/mail/aliases.db
+&gt; /etc/mail/virtusertable
+&gt; /etc/mail/virtusertable.db
+&gt; /etc/mail/domaintable
+&gt; /etc/mail/domaintable.db
+&gt; /etc/mail/mailertable
+&gt; /etc/mail/mailertable.db
+&gt; /etc/mail/local-host-names
+&gt; /etc/smrsh
+&gt; /usr/bin/newaliases
+&gt; /usr/bin/mailq
+&gt; /usr/bin/hoststat
+&gt; /usr/bin/purgestat
+&gt; /usr/lib/sendmail
+&gt; /usr/man/man1/mailq.1
+&gt; /usr/man/man1/newaliases.1
+&gt; /usr/man/man5/aliases.5
+&gt; /usr/man/man8/sendmail.8
+&gt; /usr/man/man8/mailstats.8
+&gt; /usr/man/man8/makemap.8
+&gt; /usr/man/man8/praliases.8
+&gt; /usr/man/man8/smrsh.8
+&gt; /usr/sbin/sendmail
+&gt; /usr/sbin/mailstats
+&gt; /usr/sbin/makemap
+&gt; /usr/sbin/praliases
+&gt; /usr/sbin/smrsh
+&gt; /var/spool/mqueue</PRE></FONT>
+<H3>Файлы инсталлированные для Sendmail на локальном сервере или
+клиенте</H3><FONT size=-1><PRE>&gt; /etc/rc.d/init.d/sendmail
+&gt; /etc/rc.d/rc0.d/K30sendmail
+&gt; /etc/rc.d/rc1.d/K30sendmail
+&gt; /etc/rc.d/rc2.d/S80sendmail
+&gt; /etc/rc.d/rc3.d/S80sendmail
+&gt; /etc/rc.d/rc4.d/S80sendmail
+&gt; /etc/rc.d/rc5.d/S80sendmail
+&gt; /etc/rc.d/rc6.d/K30sendmail
+&gt; /etc/sysconfig/sendmail
+&gt; /etc/mail
+&gt; /etc/mail/statistics
+&gt; /etc/mail/sendmail.cf
+&gt; /etc/mail/local-host-names
+&gt; /etc/smrsh
+&gt; /usr/bin/mailq
+&gt; /usr/bin/hoststat
+&gt; /usr/bin/purgestat
+&gt; /usr/lib/sendmail
+&gt; /usr/man/man1/mailq.1
+&gt; /usr/man/man8/sendmail.8
+&gt; /usr/man/man8/mailstats.8
+&gt; /usr/man/man8/smrsh.8
+&gt; /usr/sbin/sendmail
+&gt; /usr/sbin/mailstats
+&gt; /usr/sbin/smrsh
+&gt; /var/spool/mqueue</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

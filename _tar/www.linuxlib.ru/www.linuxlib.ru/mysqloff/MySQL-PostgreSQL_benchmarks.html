@@ -1,0 +1,668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 1.11.2.3  Тестирование скорости работы MySQL и PostgreSQL — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/MySQL-PostgreSQL_benchmarks.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/MySQL-PostgreSQL_benchmarks.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Introduction.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1 Общая информация
+</a><ul><li class="gp"><a href="Comparisons.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.11 Сравнение MySQL с другими СУБД
+</a><ul><li class="p"><a href="Compare_PostgreSQL.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.11.2 Сравнение MySQL c PostgreSQL
+</a><ul class="immediate"><li><a href="MySQL-PostgreSQL_goals.html">1.11.2.1 Стратегии развития MySQL и PostgreSQL
+</a></li><li><a href="MySQL-PostgreSQL_features.html">1.11.2.2 Сравнение возможностей MySQL и PostgreSQL
+</a></li><li class="self">1.11.2.3 Тестирование скорости работы MySQL и PostgreSQL
+</li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="MySQL-PostgreSQL_features.html" title="1.11.2.2  Сравнение возможностей MySQL и PostgreSQL">Previous</a> / <a rel="next" href="Installing.html" title="2  Установка MySQL">Next</a> / <a rel="up" href="Compare_PostgreSQL.html" title="1.11.2  Сравнение MySQL c PostgreSQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>1.11.2.3  Тестирование скорости работы MySQL и PostgreSQL</H4>
+
+<P>
+<A NAME="IDX163"></A>
+
+</P>
+<P>
+Единственная тестовая система с открытым кодом, способная тестировать
+скорость работы как MySQL  Server, так и PostgreSQL (а также других СУБД),
+о существовании которой нам известно, - наша собственная разработка. Ее
+можно найти по адресу <a HREF="https://www.linuxlib.ru/information/benchmarks.html">http://www.mysql.com/information/benchmarks.html</a>.
+
+</P>
+<P>
+Мы много раз просили разработчиков PostgreSQL и некоторых пользователей
+PostgreSQL помочь нам расширить эту систему и превратить ее в совершенный
+инструмент тестирования скорости работы СУБД, но, к сожалению,
+безрезультатно.
+
+</P>
+<P>
+По этой причине разработчики MySQL потратили много времени, пытаясь выжать
+(для тестирования) из PostgreSQL все возможное, но из-за недостаточно
+совершенного знания PostgreSQL мы наверняка что-то упустили. На страничке
+тестов производительности проведенное нами исследование полностью
+задокументировано, так что любой может легко повторить его и проверить
+результаты.
+
+</P>
+<P>
+Обычно тесты запускаются без ключа <code>--fast</code>. При запуске с этим ключом
+используются все трюки, позволяющие заставить сервер работать как можно
+быстрее. Идея состоит в том, чтобы в обычном режиме тест показал, как
+сервер будет работать при настройках по умолчанию, в режиме <code>--fast</code>, - как
+производительность изменится, если разработчик приложения воспользуется
+расширениями сервера для ускорения его работы.
+
+</P>
+<P>
+При тестировании PostgreSQL в режиме <code>--fast</code> мы запускаем <code>VACUUM</code> после
+каждой операции <code>UPDATE</code> и <code>DROP TABLE</code>, чтобы обеспечить отличное состояние
+базы для последующих операторов <code>SELECT</code>. Время, уходящее на работу <code>VACUUM</code>,
+измеряется отдельно.
+
+</P>
+<P>
+Однако при тестировании PostgreSQL 7.1.1 мы не смогли запустить программу
+в режиме <code>--fast</code>, так как во время теста <code>INSERT</code>, <code>postmaster</code> (демон
+PostgreSQL) дал сбой и база данных была повреждена настолько, что
+перезапустить демон не удалось. Когда это случилось дважды, мы решили
+отложить тестирование в режиме <code>--fast</code> до выхода следующей версии
+PostgreSQL. Подробную информацию о компьютере, на котором выполнялись
+тесты, вы найдете на странице тестов.
+
+</P>
+<P>
+Перед тем как переходить к описанию других известных нам тестов, мы дадим
+побольше информации о таких тестах вообще.
+
+</P>
+<P>
+Нет ничего проще, чем написать тест, доказывающий, что любая СУБД является
+лучшей в мире, для этого достаточно ограничиться измерением результатов
+операций, с которыми эта СУБД справляется хорошо, и деликатно забыть об
+остальных. А если еще после этого выдать обобщенный график, то все
+становится еще проще.
+
+</P>
+<P>
+Это то же самое, если бы мы решили сравнить скорость работы MySQL  Server
+и PostgreSQL просто сравнив общие результаты тестов MySQL, приведенных на
+нашей странице. По таким результатам MySQL  Server оказался бы более чем в
+40 раз быстрее PostgreSQL, а это, конечно, неверно. Можно было бы подлить
+масла в огонь, избрав для тестирования PostgreSQL тесты, на которые эта
+система тратит больше всего времени, - и утверждать что MySQL  Server
+более чем в 2000 раз быстрее PostgreSQL.
+
+</P>
+<P>
+Дело тут в том, что MySQL оптимизирует многое из того, чего не
+оптимизирует PostgreSQL. И наоборот. SQL-оптимизатор вообще очень сложная
+штука, и можно потратить годы исключительно на его улучшение.
+
+</P>
+<P>
+Исследуя результаты тестов, нужно искать задачи, которые должно выполнять
+ваше приложение, и результаты их выполнения использовать для принятия
+решения о выборе СУБД. Результаты тестов позволяют определить и задачи, с
+решением которых выбранная СУБД справляется не слишком хорошо, - таким
+образом можно определить, чего следует избегать и обходить в своих
+программах.
+
+</P>
+<P>
+Нам известно о двух тестах, утверждающих, что PostgreSQL по
+производительности превосходит MySQL  Server. Оба они -
+многопользовательские, а у сотрудников MySQL  AB пока что не нашлось
+времени написать такой тест. Основная причина - довольно сложно сделать
+это так, чтобы не поставить ни одну из СУБД в заведомо проигрышное
+положение.
+
+</P>
+<P>
+Один из этих тестов был заказан компанией Great Bridge, которая в течение
+16 месяцев пыталась построить бизнес на основе PostgreSQL, но в конце
+концов прекратила свою деятельность. Вероятно, это худший из когда-либо
+проводившихся кем-либо тестов. Он не только принимает во внимание лишь те
+области, в которых PostgreSQL оказывается ``на коне'', но и ставит
+абсолютно все остальные СУБД в заведомо проигрышное положение.
+
+</P>
+<P>
+<strong>Примечание</strong>: Нам стало известно о том, что даже некоторым ключевым
+разработчикам PostgreSQL отнюдь не понравилось то, как фирма Great  Bridge
+проводила свое тестирование, так что команду разработчиков PostgreSQL мы в
+связи с этим тестом ни в чем не обвиняем.
+
+</P>
+<P>
+Упомянутый тест осуждался во многих сообщениях и телеконференциях, так что
+мы просто коротко перечислим его недостатки.
+
+</P>
+
+<ul>
+<LI>
+
+Тесты выполнялись дорогой коммерческой программой, что сделало задачу
+проверки их результатов невыполнимой для <code>Open Source</code>-компании,
+каковой мы являемся; мы даже не можем выяснить, как же на самом деле
+проводились эти тесты. Причем сама программа, даже не является
+специализированной утилитой для тестирования производительности - она
+представляет из себя универсальный инструмент для настройки и
+тестирования приложений. Называть ее ``стандартным'' тестом - это уж
+слишком большая натяжка.
+
+<LI>
+
+Компания Great Bridge признала, что база данных PostgreSQL была
+оптимизирована (а перед проведением теста была запущена программа
+<code>VACUUM</code>) и специально настроена для проведения тестов, чего не делалось
+ни для одной другой СУБД, участвовавшей в тестировании. Они заявили
+буквально следующее: ``Этот процесс оптимизирует индексы и
+высвобождает немного дискового пространства. Оптимизированные индексы
+в некоторой степени повышают производительность.'' Проведенные нами
+тесты недвусмысленно свидетельствуют о том, что разница в скорости
+выполнения большого количества выборок (SELECT'ов) из базы данных,
+прошедшей чистку <code>VACUUM</code>, и не прошедшей ее, может быть десятикратной.
+
+<LI>
+
+Результаты тестов тоже вызывают сомнения. В тестовой документации
+<code>AS3AP</code> упоминается о том, что при тестировании выполняются ``выборки,
+простые связи, проекции, аггрегация, обновления с одним набором
+значений для атрибута и массовые обновления''.
+
+PostgreSQL отлично выполняет операции <code>SELECT</code> и <code>JOIN</code> (особенно после
+<code>VACUUM</code>), но отнюдь не здорово справляется с <code>INSERT</code> или <code>UPDATE</code>. А
+результаты показывают, что выполнялись только операции <code>SELECT</code> (или
+операций обновления выполнялось очень мало). Это правдоподобно объясняет
+отличные результаты, показанные PostgreSQL в данном тесте. А причина, по
+которой MySQL показал неважные результаты, станет понятной несколько ниже.
+
+<LI>
+
+Так называемый тест запускался с компьютера, работающего под
+управлением Windows и связывавшегося с Linux через ODBC, а такая
+конфигурация никакому нормальному пользователю СУБД, особенно при
+работе с многопользовательским приложением, даже в голову не придет. В
+этом случае тестируется не СУБД, а ODBC-драйвер и Windows-протокол,
+связывающие клиентов.
+
+<LI>
+
+При связи базы с Oracle и MS-SQL (Great  Bridge косвенно указала на
+примененные в тесте СУБД) использовался не соответствующий им
+протокол, а ODBC. Любой, кто когда-либо имел дело с Oracle, знает, что
+во всех настоящих приложениях используется не ODBC, а ``родной''
+интерфейс. Проводить тесты через ODBC и утверждать, что они имеют
+какое-либо отношение к использованию СУБД в реальной работе, попросту
+нечестно. Нужно было провести два теста, с ODBC и без него, чтобы
+получить истинные факты (причем все СУБД перед проведением тестов
+должны были бы настраиваться специалистами).
+
+<LI>
+
+Представители компании постоянно говорят о TPC-C тестах, но нигде не
+упоминают о том, что проведенный ими тест вовсе не относился к TPC-C,
+а проводить TPC-C они просто не имели права. TPC-C может проводиться
+только по правилам, утвержденным комитетом TPC Council
+(<!--<a HREF="http://www.tpc.org/">-->http://www.tpc.org/<!--</a>-->). Great Bridge в комитет не обращалась. Не
+сделав этого, она не только вступила в конфликт с торговой маркой TPC,
+но и дискредитировала свои тесты. Установленные комитетом TPC  Council
+правила очень строги, чтобы никто не мог выдавать ложных результатов
+или делать недоказуемые заявления. Очевидно, у Great  Bridge не было
+желания следовать этим правилам.
+
+<LI>
+
+После проведения первого теста мы связались с Great  Bridge и сообщили
+ее представителям о наиболее очевидных из допущенных при тестировании
+MySQL  Server ошибок:
+
+
+<ul>
+<LI>
+
+Использование отладочной версии нашего ODBC-драйвера
+
+<LI>
+
+Запуск сервера под управлением ОС Linux, не оптимизированной для
+работы с потоками.
+
+<LI>
+
+Использование старой версии MySQL, хотя уже существовала более
+современная
+
+<LI>
+
+Отказ от запуска MySQL  Server с соответствующими настройками для
+работы с большим количеством пользователей (по умолчанию после
+установки MySQL  Server настраивается для минимального использования
+ресурсов)
+</ul>
+
+Great  Bridge провела новый тест, с нашим оптимизированным драйвером ODBC
+и лучшей настройкой MySQL  Server, но отказалась применить обновленную
+библиотеку <code>glibc</code> или нашу стандартную бинарную поставку (ее используют 80%
+наших пользователей), которая была статически слинкована с конкретной
+glibc. Насколько нам известно, компания Great  Bridge не сделала абсолютно
+ничего для правильной настройки других СУБД при тестировании. Впрочем, мы
+уверены, что в Oracle или Microsoft они за советом не обращались. ;)
+
+<LI>
+
+Тестирование было оплачено Great  Bridge, и эта компания решила
+опубликовать не все результаты, а только выборочно - те, что были ей
+выгодны.
+</ul>
+
+<P>
+Тим Пердью (Tim  Perdue), преданный обожатель PostgreSQL и не слишком
+большой любитель MySQL, опубликовал свое сравнение на сайте PHPbuilder
+(<!--<a HREF="http://www.phpbuilder.com/columns/tim20001112.php3">-->http://www.phpbuilder.com/columns/tim20001112.php3<!--</a>-->).
+
+</P>
+<P>
+Узнав об этом, мы связались с Тимом по телефону с тем, чтобы обсудить
+некоторые странности в полученных им результатах. Он, например, утверждал,
+что MySQL  Server в его тестах с трудом справлялся с обслуживанием пяти
+пользователей, хотя нам были известны пользователи с примерно такими же,
+как у Тима, компьютерами, работающие с MySQL  Server при 2000 активных
+соединениях, выдающих до 400 запросов в секунду (причем в данном случае
+производительность ограничивалась каналом связи с web, а не базой данных).
+
+</P>
+<P>
+Похоже было, что Тим работал с ядром Linux, не умеющим нормально
+обрабатывать большое количество потоков, как, например, ядра до версии
+2.4, у которых возникали серьезные проблемы с обработкой большого
+количества потоков на мультипроцессорных компьютерах. В настоящем
+руководстве мы описали решение этой проблемы, и Тим должен был об этом
+знать.
+
+</P>
+<P>
+Существует еще одна возможная причина возникновения проблем: Тим мог
+воспользоваться старой библиотекой <code>glibc</code> или не загрузить
+откомпилированный исполняемый файл MySQL (слинкованный с исправленной
+библиотекой <code>glibc</code>) с нашего сайта, но скомпилировал его сам. В любом из
+этих случаев симптомы были бы именно такими, как описал Тим.
+
+</P>
+<P>
+Мы спросили Тима, может ли он предоставить нам его данные с тем, чтобы мы
+могли повторить тест, а также попросили его проверить свою версию MySQL и
+сообщить нам. Пока что он этого не сделал.
+
+</P>
+<P>
+Из за этого его тесту мы тоже не можем доверять. :(
+
+</P>
+<P>
+Все течет, все изменяется, и старые тесты теряют актуальность. Теперь
+MySQL обзавелся парой новых обработчиков таблиц, которые
+обеспечивают совершенно разные характеристики в разрезе
+скорости/параллелизма. See section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>. Было бы интересно
+узнать, какие результаты показали бы вышеупомянутые тесты с разными типами
+транзакционных таблиц в MySQL. Конечно, в PostgreSQL с тех пор тоже
+появились новые возможности. Так как эти тесты недоступны общественности,
+выяснить, как СУБД показала бы себя в них сегодня, мы не можем.
+
+</P>
+<P>
+Заключение:
+
+</P>
+<P>
+Единственные существующие на сегодня тесты, позволяющие сравнить MySQL
+Server и PostgreSQL, которые любой может загрузить и запустить, - это
+тесты из комплекта MySQL. Мы, сотрудники MySQL  AB, считаем, что Open
+Source-СУБД должны тестироваться при помощи Open  Source-инструментов!
+Только так можно получить гарантии того, что никто не сможет провести
+невоспроизводимые тесты и на основе их результатов утверждать, что одна
+СУБД лучше другой. Не зная всех фактов, подтвердить или опровергнуть
+подобные утверждения просто невозможно.
+
+</P>
+<P>
+Нам кажется странным, что невоспроизводимые тесты с участием PostgreSQL
+показывают преимущество этой системы, в то время как наши тесты, которые
+может повторить любой, четко доказывают обратное. Этим мы вовсе не хотим
+сказать, что PostgreSQL не годится для решения многих задач (еще как
+годится!) или что при определенных условиях эта система не обгонит MySQL
+Server. Но нам просто хотелось бы для разнообразия увидеть честный тест, в
+котором PostgreSQL покажет отличные результаты, - исключительно с целью
+поддержания товарищеской конкуренции!
+
+</P>
+<P>
+Дополнительную информацию о нашей тестовой системе вы можете получить из
+раздела section <A HREF="MySQL_Benchmarks.html">5.1.4  Набор тестов MySQL (The MySQL Benchmark Suite)</A>.
+
+</P>
+<P>
+Мы занимаемся разработкой еще лучшего комплекса тестов, в состав которого
+будут включены многопользовательские тесты, а также более подробное
+описание того, что собственно делает каждый отдельный тест и как расширить
+комплекс.
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1214" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#ec9f8f839898c2818d9e80839b89ac85849fc28f8381">Scott Marlowe</a> on Friday October 11 2002, @12:09pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1214&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1214">Edit</a>]</td></tr></table><p class="commenttext">Can MySQL now run the OSDB tests?  If so, we<br />
+should really get some numbers on that, as<br />
+Postgresql can now run it.  It would be nice to<br />
+have a NEUTRAL test to compare the two on, not<br />
+something MySQL wrote, since, no matter how fair<br />
+you try to be, you'll always be accused of<br />
+favoring MySQL in your benchmark</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=MySQL-PostgreSQL_benchmarks">Add your own comment.</a></p><div id="docnav"><a href="MySQL-PostgreSQL_benchmarks.html#">Top</a> / <a rel="prev" href="MySQL-PostgreSQL_features.html" title="1.11.2.2  Сравнение возможностей MySQL и PostgreSQL">Previous</a> / <a rel="next" href="Installing.html" title="2  Установка MySQL">Next</a> / <a rel="up" href="Compare_PostgreSQL.html" title="1.11.2  Сравнение MySQL c PostgreSQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

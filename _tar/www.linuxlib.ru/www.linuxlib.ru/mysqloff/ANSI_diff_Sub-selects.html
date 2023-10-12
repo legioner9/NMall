@@ -1,0 +1,537 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 1.9.4.1  Вложенные SELECTы — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/ANSI_diff_Sub-selects.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/ANSI_diff_Sub-selects.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Introduction.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1 Общая информация
+</a><ul><li class="gp"><a href="Compatibility.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9 Насколько MySQL соответствует стандартам?
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9.4 Отличия MySQL от ANSI SQL92
+</a><ul class="immediate"><li class="self">1.9.4.1 Вложенные <code>SELECT</code>ы
+</li><li><a href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html">1.9.4.2 Оператор  <code>SELECT INTO TABLE</code>
+</a></li><li><a href="ANSI_diff_Transactions.html">1.9.4.3 Транзакции и атомарные операции
+</a></li><li><a href="ANSI_diff_Triggers.html">1.9.4.4 Хранимые процедуры и триггеры
+</a></li><li><a href="ANSI_diff_Foreign_Keys.html">1.9.4.5 Внешние ключи
+</a></li><li><a href="ANSI_diff_Views.html">1.9.4.6 Представления
+</a></li><li><a href="ANSI_diff_comments.html">1.9.4.7 Символы `--' как начало комментария
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html" title="1.9.4.2  Оператор  SELECT INTO TABLE">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>1.9.4.1  Вложенные <code>SELECT</code>ы</H4>
+
+<P>
+<A NAME="IDX122"></A>
+<A NAME="IDX123"></A>
+<A NAME="IDX124"></A>
+
+</P>
+<P>
+В сервер MySQL поддерживает вложенные запросы вида <code>INSERT ... SELECT ...</code>
+и  <code>REPLACE ... SELECT ...</code>. В других контекстах можно использовать
+и функцию <code>IN()</code>.
+
+</P>
+<P>
+Вложенные операции выборки реализованы в версии 4.1.
+
+</P>
+<P>
+Между тем, во многих случаях можно переписать запрос, чтобы не
+использовать вложенную выборку. Например, запрос:
+
+</P>
+
+<pre>
+SELECT * FROM table1 WHERE id IN (SELECT id FROM table2);
+</pre>
+
+<P>
+можно переписать следующим образом:
+
+</P>
+
+<pre>
+SELECT table1.* FROM table1,table2 WHERE table1.id=table2.id;
+</pre>
+
+<P>
+Запросы:
+
+</P>
+
+<pre>
+SELECT * FROM table1 WHERE id NOT IN (SELECT id FROM table2);
+SELECT * FROM table1 WHERE NOT EXISTS (SELECT id FROM table2
+         WHERE table1.id=table2.id);
+</pre>
+
+<P>
+эквивалентны следующему:
+
+</P>
+
+<pre>
+SELECT table1.* FROM table1 LEFT JOIN table2 ON table1.id=table2.id
+                WHERE table2.id IS NULL;
+</pre>
+
+<P>
+Для более сложных подзапросов часто можно создать временные таблицы,
+содержащие данный подзапрос. Иногда, однако, этот способ не годится, чаще
+всего для команд <code>DELETE</code>, для которых в стандарте SQL не поддерживаются
+объединения (за исключением вложенных выборок). В этой ситуации возможны
+два временных (пока вложенные запросы не поддерживаются сервером MySQL)
+варианта решения проблемы.
+
+</P>
+<P>
+Первый вариант следующий: при помощи какого-либо
+процедурно-ориентированного языка программирования (такого как Perl или
+PHP) делается запрос <code>SELECT</code> для получения первичных ключей тех записей,
+которые должны быть удалены, а затем полученные величины используются для
+составления команды <code>DELETE (DELETE FROM ... WHERE ... IN (key1, key2,
+...))</code>.
+
+</P>
+<P>
+Второй вариант предполагает применение диалогового SQL для автоматического
+создания набора команд <code>DELETE</code> с использованием расширения MySQL <code>CONCAT()</code>
+(вместо стандартного оператора <code>||</code>). Например:
+
+</P>
+
+<pre>
+SELECT CONCAT('DELETE FROM tab1 WHERE pkid = ', "'", tab1.pkid, "'", ';')
+       FROM tab1, tab2
+       WHERE tab1.col1 = tab2.col2;
+</pre>
+
+<P>
+Можно поместить этот запрос в файл скрипта, перенаправить  стандартный
+вход клиента  командной  строки  с  этого  файла, а стандартный  выход - на
+еще  один  экземпляр  клиента  командной  строки:
+
+</P>
+
+<pre>
+shell&#62; mysql --skip-column-names mydb &#60; myscript.sql | mysql mydb
+</pre>
+
+<P>
+Сервер версии MySQL 4.0 поддерживает многотабличные удаления - эту функцию
+можно использовать для эффективного удаления строк как из одной таблицы,
+так и из нескольких одновременно
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c526" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by John Gwilliam on Friday January 11 2002, @2:44pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=526&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=526">Edit</a>]</td></tr></table><p class="commenttext">Deletes and sub-selects.<br />
+<br />
+I have found a convenient way of avoiding sub-<br />
+selects for deleting as follows -<br />
+1/ Add a DELETE_FLAG column to the table involved.<br />
+2/ Set the DELETE_FLAG using UPDATE, where joins <br />
+can be used.<br />
+3/ DELETE from the table using a simple WHERE <br />
+clause to select rows where the DELETE_FLAG is <br />
+set.</p><table id="c866" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#5c2f34332e282c3d2f283d1c253d343333723f3331">Sal Ingrilli</a> on Sunday May 19 2002, @11:02pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=866&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=866">Edit</a>]</td></tr></table><p class="commenttext">Tip: if you use the DELETE_FLAG approach you will <br />
+most likely lose the ability to add UK's as <br />
+you'll get UK violations when you try to delete <br />
+the same logical record a second time.</p><table id="c1236" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#e584909780898c8aa5959087898c86969780868a978196cb8b8091">Aurelio Alvarez</a> on Wednesday December 18 2002, @5:28pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1236&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1236">Edit</a>]</td></tr></table><p class="commenttext">The Debian package of 3.23 only worked when a list<br />
+of values was used so I wrote a function to convet<br />
+the sub-select result into a string.  This is a<br />
+function I used.  It's easier than<br />
+rewriting loops.  I hope it may be useful to someone.<br />
+<br />
+<br />
+This was for PHP4. <br />
+<br />
+I needed to know how many tickets were owned by a<br />
+department, so the call was:<br />
+<br />
+<br />
+$deptname = genericget($deptid, deptid, deptname,<br />
+department);<br />
+$querytickets = &quot;SELECT * from ticket WHERE owner<br />
+IN (&quot; <br />
+	. getnestedvals(id, user, dept_id, $deptid) . &quot;)&quot;;<br />
+$result = mysql_query($querytickets) <br />
+	or die(&quot;MySQL Error: &quot; . mysql_error() . &quot;<br />
+$querytickets.&quot;);<br />
+$numtickets = mysql_num_rows($result);<br />
+echo &quot;There are $numtickets tickets owned by<br />
+$deptname.&quot;;<br />
+<br />
+<br />
+// This is a generic function which returns the<br />
+results<br />
+// of a query in list form, so they can be used in<br />
+place<br />
+// of nested queries until it is implemented in<br />
+MySQL<br />
+// If there are no values, it returns the string<br />
+&quot;Empty Nested Set&quot; by default.<br />
+<br />
+function getnestedvals($field, $table,<br />
+$comparefield, $key)<br />
+{<br />
+$nestedquery = &quot;SELECT $field FROM $table WHERE<br />
+$comparefield = '$key'&quot;;<br />
+$nestedresult = mysql_query($nestedquery) <br />
+	or die(&quot;MySQL Error: &quot; .  mysql_error() . &quot;<br />
+$nestedquery&quot;);<br />
+if (mysql_num_rows($nestedresult) == 0)<br />
+        {<br />
+        return &quot;Empty Nested Set&quot;;<br />
+        }<br />
+else<br />
+        {<br />
+        $row = mysql_fetch_array($nestedresult);<br />
+        $nestedvals = $row[$field];<br />
+        while ($row =<br />
+mysql_fetch_array($nestedresult))<br />
+                {<br />
+                $nestedvals = $nestedvals . &quot;,<br />
+$nestedvals&quot;;<br />
+                }<br />
+        return $nestedvals;<br />
+        } // end of else numrows &gt; 0<br />
+} // end of getnestedvals()</p><table id="c1917" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#14727b667e716760546d757c7b7b3a777b79">ForJest </a> on Monday March 3 2003, @4:09pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1917&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1917">Edit</a>]</td></tr></table><p class="commenttext">For deleting like subselect you can often use construction like as listed below<br />
+&gt; SET @list:='';<br />
+&gt; SELECT LEFT(@list:=CONCAT(@list, t1.id, ','), -1) FROM table1 AS t1, table2 AS t2 WHERE &lt;conditions&gt;<br />
+&gt; DELETE FROM table1 WHERE id IN (LEFT(@list, LENGTH(@list)-1));<br />
+--------------------<br />
+Of course this will works only if you have key field in the table. If no matching rows will found by the 2-nd query, the 3-rd query will fails. You can specify for example SET @list='-1,', if your key have no -1 value.</p><table id="c1972" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Costa  on Saturday March 8 2003, @8:05am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1972&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1972">Edit</a>]</td></tr></table><p class="commenttext">(ORIGINALLY POSTED UNDER CHAPTER 5.2.6 by David Martin on Friday January 24 2003, @10:18am)<br />
+<br />
+This gave me trouble for a while so I thought I'd <br />
+pass it on. If you want a left join with a <br />
+condition for the right table (the row that may <br />
+or may not be there) you have to put the <br />
+condition in the join clause, not the where <br />
+clause. <br />
+<br />
+Here's an example: <br />
+SELECT <br />
+* <br />
+FROM <br />
+t1 LEFT JOIN t2 ON<br />
+(t1.id_t1 = t2.id_t1 AND t2.id_t2 = 345) <br />
+WHERE <br />
+t1.id_level=17; <br />
+<br />
+I appologize if that's common knowledge but this <br />
+note would have saved me hours. <br />
+Thanks<br />
+</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=ANSI_diff_Sub-selects">Add your own comment.</a></p><div id="docnav"><a href="ANSI_diff_Sub-selects.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html" title="1.9.4.2  Оператор  SELECT INTO TABLE">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

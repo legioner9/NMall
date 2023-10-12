@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Более продуктивная работа с bash 2.x / Linuxоид / Софтерра — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#loading">установка, загрузчики</A> |
+    <A HREF="index.htm#setting">настройка Linux</A> |
+    <A HREF="index.htm#console">консоль</A> |
+    <A HREF="index.htm#filesys">файловые системы</A> |
+    <A HREF="index.htm#proc">процессы</A> |
+    <A HREF="index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<H1>Более продуктивная работа с bash 2.x</H1><BR>Автор: DH и Arlantine , <A href="../cdn-cgi/l/email-protection.html#f2969ab2969adc9c9786dc8087de" arlantine@mtu-net.ru><span class="__cf_email__" data-cfemail="debab69ebab6f0b0bbaaf0acab">[email&#160;protected]</span>,
+<span class="__cf_email__" data-cfemail="48293a2429263c21262d08253c3d65262d3c663a3d">[email&#160;protected]</span></A><BR>Опубликовано: 05.03.2002<BR>Оригинал: <A
+href="index.html">http://www.softerra.ru/freeos/16449/</A></DIV><BR><BR>
+<P align=justify class=maintext>Перевод статьи <A href="../cdn-cgi/l/email-protection.html#38515956785b5954515a595616574a5f"><I>Яна Макдональда (Ian Macdonald)</I></A> <!--<A
+href="http://www.caliban.org/bash/" target=_blank>-->&laquo;Working more productively
+with bash 2.x&raquo;<!--</A>-->
+<P align=justify class=maintext>
+<UL>
+  <LI><A href="bashdop.htm#overview">Обзор и введение</A>
+  <LI><A href="bashdop.htm#bashtips">Советы и приемы эффективной работы</A>
+  <LI><A href="bashdop.htm#completion">Программируемое автозаполнение</A>
+  <UL>
+    <LI><A href="bashdop.htm#completion_intro">Введение</A>
+    <LI><A href="bashdop.htm#completion_standard">Стандартное автозаполнение</A>
+    <LI><A href="bashdop.htm#completion_download">Download</A>
+    <LI><A href="bashdop.htm#completion_installation">Установка</A>
+    <LI><A href="bashdop.htm#completion_starting">Начало работы</A>
+    <LI><A href="bashdop.htm#completion_bugs">Исправление ошибок и дополнения</A>
+    <LI><A href="bashdop.htm#completion_contact">Связь со мной</A> </LI></UL></LI></UL><A
+name=overview>
+<H2>Обзор и введение</H2></A>
+<P align=justify class=maintext><!--<A
+href="http://www.gnu.org/software/bash/bash.html" target=_blank>-->bash<!--</A>--> &#8211; это
+shell, т.е. командный интерпретатор для современных компьютеров. Он совместим с
+Bourne-shell (sh) и включает полезные функции Korn-shell (ksh) и C-shell (csh).
+Он соответствует стандартам IEEE POSIX P1003.2/ISO 9945.2 для командных
+интерпретаторов и утилит. </P>
+<P align=justify class=maintext>Некоторые возможности bash, приведенные без
+строго определенного порядка: редактирование и автозаполнение; история и
+повторный ввод команд; контроль заданий; функции shell и псевдонимы; массивы;
+математические операции; кавычки ANSI C; раскрытие "~"; раскрытие "{}"; работа с
+подстроками; раскрытие косвенных переменных; расширенные возможности
+ввода-вывода; контроль встроенных команд; помощь; стек для хранения каталогов;
+режим совместимости с POSIX; интернационализация; определение времени выполнения
+команды. </P>
+<P align=justify class=maintext>bash &#8211; командный интерпретатор по умолчанию во
+всех популярных дистрибутивах <!--<A href="http://www.linux.org/"
+target=_blank>-->Linux<!--</A>-->. По этой причине, он широко используется, но редко в
+полной мере. </P>
+<P align=justify class=maintext>bash, возможно, самая используемая вами в работе
+программа Linux, но много ли в действительности вы получаете от ее
+использования? Если вы хотите повысить производительность, снизив количество
+нажатий клавиш в день, этот документ для вас. <A name=bashtips>
+<H3 class=subhead1>Советы и приемы эффективной работы в bash</H3></A>
+<H4 class=subhead2>Переменные shell</H4>
+<P align=justify class=maintext><B>$CDPATH</B><BR>Это малоизвестная и часто
+недооцениваемая переменная shell. <I>CDPATH</I> выполняет те же действия для
+встроенной команды <STRONG>cd</STRONG>, что и <I>PATH</I> для исполняемых
+файлов. Мудро установив ее значение, вы можете сократить количество нажатий
+клавиш в день.
+<P align=justify class=maintext>Попробуйте это: <BR><I>$ export
+CDPATH=.:~:~/docs:/mnt:/usr/src/redhat/RPMS:/usr/src:/usr/lib:/usr/local:
+</I></P>
+<P align=justify class=maintext>После использования вышеуказанной команды, <I>cd
+i386</I> вероятно переместит вас в <I>/usr/src/redhat/RPMS/i386</I> в
+Linux-системе на основе Red Hat. <BR><BR><B>$HISTIGNORE</B> <BR>Установите
+значение этой переменной во избежание попадания в историю команд подряд идущих
+одинаковых команд и другой не слишком полезной информации. Это сократит
+бесконечные нажатия клавиши &laquo;стрелка вверх&raquo; для получения команды, которая
+находится до команды, введенной вами 20 раз. Это также позволит избежать
+заполнения большей части истории команд ненужными записями.
+<P align=justify class=maintext>Попробуйте это: <BR><I>$ export
+HISTIGNORE="&amp;:ls:ls *:mutt:[bf]g:exit" </I></P>
+<P align=justify class=maintext>После использования вышеуказанной команды,
+повторяющиеся команды, вызовы <STRONG>ls</STRONG>, запуски почтового клиента <!--<A
+href="http://www.mutt.org/" target=_blank>-->mutt<!--</A>--> без каких-либо дополнительных
+параметров, плюс вызовы встроенных команд <STRONG>bg</STRONG>,
+<STRONG>fg</STRONG> и <STRONG>exit</STRONG> не попадут в историю команд. </P>
+<P align=justify class=maintext><B>$MAILPATH</B> <BR>bash сообщит вам о новой
+почте в любом каталоге, указанном в переменной <I>MAILPATH</I>. Это очень
+полезно если вы пользуйтесь утилитами типа <!--<A href="http://www.procmail.org/"
+target=_blank>-->procmail<!--</A>--> для сортировки вашей почты по каталогам.
+<P align=justify class=maintext>Попробуйте добавить следующие команды к вашему
+<I>~/.bash_profile</I>, чтобы получать уведомления о появлении новой почты в
+любом ящике в <I>~/Mail</I>. </P><PRE> MAILPATH=/var/spool/mail/$USER
+ for i in `echo ~/Mail/[^.]*`
+ do
+ MAILPATH=$MAILPATH:$i
+ done
+ export MAILPATH
+ unset i
+ </PRE>
+<P align=justify class=maintext>Если вы используете <!--<A
+href="http://www.mutt.org/" target=_blank>-->mutt<!--</A>--> и во многие из каталогов не
+попадает автоматически отфильтрованная почта, вы можете выбрать только те, куда
+попадает новая почта, также просматриваемые <STRONG>mutt</STRONG>. </P>
+<P align=justify class=maintext>В это случае, попробуйте что-нибудь похожее на
+нижеследующее в своем <I>~/.bash_profile</I>: <BR><I>export `perl -ne
+'s/^mailboxes /MAILPATH=/ &amp;&amp; tr/ /:/ &amp;&amp; print &amp;&amp; exit'
+&lt; ~/.muttrc` </I>
+<P align=justify class=maintext><B>$TMOUT</B> <BR>Если вы установите эту
+переменную в значение больше нуля, bash завершит свою работу по истечении
+указанного количества секунд, если в течении этого времени не будет ничего
+введено.
+<P align=justify class=maintext>Эти установки полезны при работе под root для
+уменьшения риска безопасности в тех случаях, когда кто-то забывает выйти из
+системы, работая как суперпользователь. </P>
+<P align=justify class=maintext><B>Опции <STRONG>set</STRONG></B>
+<BR>&nbsp;&nbsp;<I>ignoreeof</I><BR>Обычно, нажатие <I>Ctrl-D</I> в командной
+строке выкинет вас из командного интерпретатора. Это может раздражать, если вам
+регулярно необходимо набирать <I>Ctrl-D</I> в других ситуациях, например для
+завершения Telnet-сессии. В такой ситуации слишком частое нажатие <I>Ctrl-D</I>
+закроет ваш shell, что может очень вас расстроить. Это опция делает невозможным
+использование <I>Ctrl-D</I> для выхода из shell.
+<P align=justify class=maintext><B>Опции <STRONG>shopt</STRONG></B> <BR>Вы
+можете установить все нижеуказанные опции, введя <I>shopt -s &lt;опция&gt;</I>.
+<BR>&nbsp;&nbsp;<I>cdspell</I> <BR>Данная опция исправляет незначительные
+синтаксические ошибки в вызове команды <STRONG>cd</STRONG>, в этом случае
+переставленные местами символы, пропущенные и лишние символы будут исправлены
+без перепечатывания. <BR>&nbsp;&nbsp;<I>cmdhist</I> Использование данной опции -
+дело вкуса. Указание данной опции заставит bash записывать многострочные команды
+в историю как однострочные. Это сделано для упрощения редактирования команд.
+<BR>&nbsp;&nbsp;<I>dotglob</I> <BR>Эта опция позволяет файлам, чьи имена
+начинаются с точки ('.'), быть возвращенными в результате раскрытия имени пути (
+при использовании символов *,?, [] в командах - прим. переводчика ).
+<BR>&nbsp;&nbsp;<I>extglob</I><BR><BR>Эта опция позволяет вам использовать
+расширенный поиск по шаблону в стиле команды egrep ksh-88 или, другими словами,
+сверх-развитый поиск по шаблону в bash. Доступные операторы:
+<P align=justify
+class=maintext><STRONG>?(</STRONG><I>шаблон</I><STRONG>)</STRONG>
+<BR>Соответствует количеству появлений указанного шаблона, равному нулю или
+единице<BR><STRONG>*(</STRONG><I>шаблон</I><STRONG>)</STRONG> <BR>Соответствует
+количеству появлений указанного шаблона, равному нулю или
+больше<BR><STRONG>+(</STRONG><I>шаблон</I><STRONG>)</STRONG> <BR>Соответствует
+одному или большему количеству появлений указанного
+шаблона<BR><STRONG>@(</STRONG><I>шаблон</I><STRONG>)</STRONG> <BR>Соответствует
+одному появлению указанного
+шаблона<BR><STRONG>!(</STRONG><I>шаблон</I><STRONG>)</STRONG> <BR>Соответствует
+всему, кроме одного появления указанного шаблона<BR>
+<P align=justify class=maintext>Вот пример. Скажем, вы хотите установить все
+RPM-файлы в указанном каталоге, кроме тех, которые собраны для архитектуры
+<I>noarch</I>. Вы можете использовать что-нибудь типа этого: </P>
+<P align=justify class=maintext><I>rpm -Uvh /usr/src/RPMS/!(*noarch*)</I> </P>
+<P align=justify class=maintext>Эти выражения могут быть также сгруппированы,
+тогда, если вы хотите вывести список всех не-PDF и не-Postscript файлов в
+текущем каталоге, вы можете сделать так: </P>
+<P align=justify class=maintext><I>ls -lad !(*.p?(df|s))</I> </P><A
+name=readlinetips>
+<H3 class=subhead1>readline: советы и приемы эффективной работы</H3></A>
+<P align=justify class=maintext>Библиотека readline используется bash и многими
+другими программами для чтения строк с терминала, позволяя пользователю
+исправлять введенные строки с помощью стандартных клавиш редактирования <!--<A
+href="http://www.emacs.org/" target=_blank>-->Emacs<!--</A>-->. </P>
+<P align=justify class=maintext>
+<UL>
+  <LI><I>set show-all-if-ambiguous on</I> <BR>Если данная команда есть в вашем
+  <I>/etc/inputrc</I> или <I>~/.inputrc</I>, вам больше не нужно жать дважды
+  клавишу <I>&lt;Tab&gt;</I> чтобы вывести список всех возможных вариантов
+  автозаполнения. Одного нажатия <I>&lt;Tab&gt;</I> будет достаточно.
+  <LI><I>set visible-stats on</I> <BR>Добавление данной команды в ваш
+  <I>/etc/inputrc</I> или <I>~/.inputrc</I> будет результатом добавления символа
+  типа файла в конце имени каждого файла, возвращенного при автозаполнении,
+  точно так же как при использовании <I>ls -F</I>.
+  <P></P></LI></UL><A name=completion>
+<H3 class=subhead1>Программируемое автозаполнение</H3></A></A>
+<H4 class=subhead2><A name=completion_intro>Введение</A></H4>
+<P align=justify class=maintext>Сравнительно новая возможность в bash &#8211;
+программируемое автозаполнение, которое доступно, начиная с бета-версии 2.04.
+Программируемое автозаполнение знакомо вам, если вы пользователь <!--<A
+href="http://www.zsh.org/" target=_blank>-->zsh<!--</A>-->. Оно также присутствует, хотя в
+менее удобной форме, в <STRONG>tcsh</STRONG>. </P>
+<P align=justify class=maintext>Намного легче продемонстрировать принцип работы
+программируемого автозаполнения, чем объяснить его, таким образом я предлагаю
+установить один из нижеуказанных файлов и попробовать. Если вам не понравится,
+вы всегда можете отключить автозаполнение для определенной команды, полностью
+запретить использование, или удалить файлы из вашей системы. Они могут быть
+установлены и удалены очень чисто, так что вам не придется об этом беспокоится.
+</P>
+<H4 class=subhead2><A name=completion_standard>Стандартное
+автозаполнение</A></H4>
+<P align=justify class=maintext>bash предлагает много форм автозаполнения с
+самого начала, включая путь, имя файла, пользователя, хоста и переменной.
+<UL>
+  <LI><I>Автозаполнение пути</I> <BR>Этот тип автозаполнения встречается в
+  первом слове командной строки, позволяя вам заканчивать имена исполняемых
+  файлов. Вместе с автозаполнением имени файла, это наиболее известный и
+  используемый тип.
+  <LI><I>Автозаполнение имени файла</I><BR>Позволяет завершать имена файлов и
+  директорий во втором и последующих словах в командной строке.
+  <LI><I>Автозаполнение имени пользователя</I><BR>Позволяет завершать имена
+  пользователей, предваряя их символом <I>~</I> (тильда).
+  <LI><I>Автозаполнение имени хоста </I><BR>Позволяет завершать имена хостов,
+  предваряя их символом <I>@</I>.
+  <LI><I>Автозаполнение имени переменной </I><BR>Позволяет завершать имена
+  переменных, предваряя их символом <I>$</I>.
+  <P></P></LI></UL>
+<P align=justify class=maintext>Программируемое автозаполнение бесконечно
+увеличивает количество типов автозаполнения. </P>
+<H4 class=subhead2>Механика</H4>
+<P align=justify class=maintext>Детальное описание механики программируемого
+автозаполнения появится здесь через некоторое время. </P>
+<H4 class=subhead2><A name=completion_download>Download</A></H4>
+<P align=justify class=maintext>Следующие файлы доступны для скачивания. Все они
+сделаны доступными под лицензией GNU General Public License. <BR><BR>
+<TABLE align=center border=1 cellPadding=2 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TH align=left bgColor=#9ed39a><FONT size=-1>Файл</FONT></TH>
+    <TH align=left bgColor=#9ed39a><FONT size=-1>Тип</FONT></TH></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/bash/bash-completion-20020209.tar.gz"
+      target=_blank>-->bash-completion-20020209.tar.gz<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>Исходные файлы, упакованные tar и gzip для bash версий
+      2.05 и выше </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A href="http://www.caliban.org/files/bash/Changelog"
+      target=_blank>-->Changelog<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>Список изменений bash_completion из CVS </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/RPMS/noarch/bash-completion-20020209-1-noarch.rpm"
+      target=_blank>-->bash-completion-20020209-1.noarch.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>RPM для bash версий 2.05-12 и выше </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/SRPMS/bash-completion-20020209-1.src.rpm"
+      target=_blank>-->bash-completion-20020209-1.src.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>SRPM для bash версий 2.05-12 и выше </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/bash/bash-2.05a-service_completion.patch"
+      target=_blank>-->bash-2.05a-service_completion.patch<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>Патч (от 20020207) для bash версии 2.05a для добавления
+      автозаполнения имени службы </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/RPMS/i386//bash-2.05a-53.i386.rpm"
+      target=_blank>-->bash-2.05a-53.i386.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>RPM bash 2.05a с установленными патчами </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/RPMS/i386/bash-doc-2.05a-53.i386.rpm"
+      target=_blank>-->bash-doc-2.05a-53.i386.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>RPM с документацией к bash 2.05a </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/SRPMS/bash-2.05a-53.src.rpm"
+      target=_blank>-->bash-2.05a-53.src.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>SRPM bash 2.05a с установленными патчами </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/bash/bash-2.05-group_completion.patch"
+      target=_blank>-->bash-2.05-group_completion.patch<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>Патч для bash 2.05 для добавления автозаполнения имени
+      группы </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/bash/bash-2.05-service_completion.patch"
+      target=_blank>-->bash-2.05-service_completion.patch<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>Патч для bash 2.05 для добавления автозаполнения имени
+      службы (требует предварительно установленного <!--<A
+      href="http://www.caliban.org/files/bash/bash-2.05-group_completion.patch"
+      target=_blank>-->патча для автозаполнения имени группы<!--</A>-->) </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/RPMS/i386/bash-2.05-12.i386.rpm"
+      target=_blank>-->bash-2.05-12.i386.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>RPM bash 2.05 с установленными патчами </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/RPMS/i386/bash-doc-2.05-12.i386.rpm"
+      target=_blank>-->bash-doc-2.05-12.i386.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>RPM с документацией к bash 2.05 </FONT></TD></TR>
+  <TR>
+    <TD><FONT size=-1><!--<A
+      href="http://www.caliban.org/files/redhat/SRPMS/bash-2.05-12.src.rpm"
+      target=_blank>-->bash-2.05-12.src.rpm<!--</A>--></FONT></TD>
+    <TD><FONT size=-1>SRPM bash 2.05 с установленными патчами
+  </FONT></TD></TR></TBODY></TABLE></P>
+<H4 class=subhead2><A name=completion_installation>Установка</A></H4>
+<P align=justify class=maintext>Если вы хотите установить собранный RPM,
+запустите следующую команду из-под root: </P>
+<P align=justify class=maintext><I># rpm -Uvh
+bash-completion-<I>xxxxxxxx</I>-<I>x</I>.noarch.rpm</I> </P>
+<P align=justify class=maintext>После чего вы обнаружите новый файл в своей
+системе, <I>/etc/bash_completion</I>. Если вы не добавляли параметр
+<I>--noscripts</I> при вызове <!--<A href="http://www.rpm.org/"
+target=_blank>-->rpm<!--</A>-->, когда делали установку, скрипт RPM, вызываемый после
+установки, изменит ваш <I>/etc/bashrc</I> так, чтобы он содержал следующий кусок
+кода: </P><PRE># START bash completion -- do not remove this line
+bash=${BASH_VERSION%.*}; bmajor=${bash%.*}; bminor=${bash#*.}
+if [ "$PS1" ] &amp;&amp; [ $bmajor -eq 2 ] &amp;&amp; [ $bminor '&gt;' 04 ] &amp;&amp; [ -f /etc/bash_completion ]; then
+ # interactive shell
+ # Source completion code
+ . /etc/bash_completion
+fi
+unset bash bmajor bminor
+# END bash completion -- do not remove this line
+</PRE>
+<P align=justify class=maintext>Если вы устанавливаете файл с исходниками,
+упакованный либо <STRONG>gunzip</STRONG>, либо <STRONG>bunzip2</STRONG>,
+положите его куда-нибудь в своей системе и добавьте вышеуказанный код либо в
+<I>/etc/bashrc</I>, либо в <I>~/.bashrc</I>. Если вы положили исходник
+куда-нибудь еще, кроме <I>/etc/bash_completion</I>, вам нужно отредактировать
+начало, чтобы переменная <I>$BASH_COMPLETION</I> указывала на правильное
+расположение файла bash_completion. </P>
+<P align=justify class=maintext>Строка, которая вам нужна: </P><PRE>[ -z "$BASH_COMPLETION" ] &amp;&amp; declare -r BASH_COMPLETION=/etc/bash_completion
+</PRE>
+<H4 class=subhead2><A name=completion_starting>Начало работы</A></H4>
+<P align=justify class=maintext>Вы можете получить полный список всех команд,
+которые были связаны с автозаполнением, выполнив команду <I>complete -p</I>.
+Дополнительно, команда <I>declare -f</I> покажет вам код всех функций shell,
+включая те, что связаны с автозаполнением. </P>
+<P align=justify class=maintext>Чтобы ознакомиться с программируемым
+автозаполнением, вероятно, лучше всего просто набрать некоторые из этих команд и
+затем нажать &lt;Tab&gt; в разных местах командной строки. Автозаполнение на
+многих командах действует по разному в зависимости от местоположения и контекста
+слова в командной строке. Этот <!--<A
+href="http://freshmeat.net/img/screenshots/19041.jpg" target=_blank>-->снимок<!--</A>-->
+может помочь вам лучше понять, как автозаполнение работает на практике. </P>
+<P align=justify class=maintext>Если вы сисадмин, вы найдете автозаполнение
+<STRONG>ssh</STRONG> особенно полезным, поскольку оно завершает имена хостов по
+содержимому из файлов <I>known_hosts</I>. Также если вы монтируете NFS-партиции
+с большого количества хостов, попробуйте набрать <I>mount <I>имя
+хоста</I>:&lt;Tab&gt;</I>. </P>
+<P align=justify class=maintext>Программисты возможно сочтут полезным
+автозаполнение параметров <STRONG>p4</STRONG> и <STRONG>cvs</STRONG>. </P>
+<H4 class=subhead2><A name=completion_bugs>Исправление ошибок и
+дополнения</A></H4>
+<P align=justify class=maintext>Если вы найдете какие-либо ошибки или пожелаете
+сделать какие-либо дополнения, я буду счастлив получить ваши патчи к коду.
+Особенно кстати будут автозаполнение параметров <STRONG>gcc</STRONG> и полная
+обработка параметров <STRONG>cvs</STRONG>. Еще одна огромная просьба &#8211; сделать
+код более портируемым без замедления работы. Патчи во всех этих областях
+приветствуются. </P>
+<H4 class=subhead2>Новые релизы</H4>
+<P align=justify class=maintext><!--<A href="http://freshmeat.net/subscribe/19041/"
+target=_blank>-->подпишитесь<!--</A>--> на извещение о новых версиях. <A
+name=completion_contact></A></P>
+<H4 class=subhead2><A name=completion_contact>Связь со мной</A></H4>
+<P align=justify class=maintext><A name=completion_contact>Если вы не можете
+предложить патч, но хотели бы высказать свои соображения, пожалуйста, свяжитесь
+со мной. Если ваши соображения понравятся большинству, то есть шанс, что я их
+использую. </A></P>
+<P align=justify class=maintext><A name=completion_contact>Если у вас появится
+мнение о коде, пожалуйста найдите время </A><!--<A
+href="http://freshmeat.net/rate/19041/" target=_blank>-->оценить<!--</A>--> его. </P><BR>
+<HR noShade SIZE=1>
+
+<DIV align=center>Вниманию вебмастеров: использование данной статьи возможно
+только в соответствии<BR>с <A href="https://www.linuxlib.ru/site/rules/page1.html">правилами
+использования материалов сайта &laquo;Софтерра&raquo;
+</A>(http://www.softerra.ru/site/rules/)</DIV><BR>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

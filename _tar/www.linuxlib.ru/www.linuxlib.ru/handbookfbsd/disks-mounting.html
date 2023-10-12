@@ -1,0 +1,800 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Монтирование и размонтирование файловых систем — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf">Речфлот. Аренда теплоходов. Речные круизы. <a href="https://www.mosturflot.ru/river-cruises/" target="_blank">Тур речного круиза на теплоходе</a>.<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://www.stockpolymer.ru/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Https://www.stockpolymer.ru </p> <p class='block_links_text'> <a href="https://www.stockpolymer.ru/" target="_blank">https://www.stockpolymer.ru</a> Колодец пластиковый дренажные пластиковые. </p><p class='block_links_url'> www.stockpolymer.ru </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Руководство FreeBSD</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="disks-naming.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. Диски</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="disks-adding.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DISKS-MOUNTING"
+>7.4. Монтирование и размонтирование файловых систем</A
+></H1
+><P
+>Файловую систему лучше всего рассматривать как дерево, корень
+      которого, как обычно, находится в <TT
+CLASS="FILENAME"
+>/</TT
+>.
+      <TT
+CLASS="FILENAME"
+>/dev</TT
+>, <TT
+CLASS="FILENAME"
+>/usr</TT
+> и другие каталоги
+      в корневом каталоге являются ветками, которые могут иметь собственные
+      ветви, такие, как <TT
+CLASS="FILENAME"
+>/usr/local</TT
+> и так далее.</P
+><P
+>Есть несколько причин размещать некоторые из этих каталогов в
+      раздельных файловых системах.  <TT
+CLASS="FILENAME"
+>/var</TT
+> содержит
+      журналы, очереди и различные типы временных файлов, поэтому может быть
+      заполнена до отказа.  Заполнение корневой файловой системы
+      нежелательно, так что отделение <TT
+CLASS="FILENAME"
+>/var</TT
+> от
+      <TT
+CLASS="FILENAME"
+>/</TT
+> зачастую бывает весьма полезно.</P
+><P
+>Другим общим соображением при размещении отдельных деревьев
+      каталогов в других файловых системах является их размещение на
+      отдельных физических дисках или отдельных виртуальных дисках, таких,
+      как точки монтирования <A
+HREF="nfs.html"
+>сетевой файловой
+      системы</A
+> или привода CDROM.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DISKS-FSTAB"
+>7.4.1. Файл fstab</A
+></H2
+><P
+>Во время <A
+HREF="boot.html"
+>процесса загрузки</A
+> файловые
+	системы, перечисленные в <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+>, монтируются
+	автоматически (если при них не указан флаг
+	<TT
+CLASS="OPTION"
+>noauto</TT
+>).</P
+><P
+>Файл <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+> состоит из строк следующего
+	формата:</P
+><PRE
+CLASS="PROGRAMLISTING"
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>device</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>/mount-point</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>fstype</I
+></TT
+>	  <TT
+CLASS="REPLACEABLE"
+><I
+>options</I
+></TT
+>	  <TT
+CLASS="REPLACEABLE"
+><I
+>dumpfreq</I
+></TT
+>	  <TT
+CLASS="REPLACEABLE"
+><I
+>passno</I
+></TT
+>
+          </PRE
+><P
+><TT
+CLASS="LITERAL"
+>device</TT
+> являются именем устройства (которое
+	должно существовать) вида, описанного выше в главе о <A
+HREF="disks-naming.html"
+>соглашениях по именованию
+	дисков</A
+>.</P
+><P
+><TT
+CLASS="LITERAL"
+>mount-point</TT
+> является каталогом (который должен
+	существовать), в который будет смонтирована файловая система.</P
+><P
+><TT
+CLASS="LITERAL"
+>fstype</TT
+> является типом файловой системы для
+	передачи в <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+>.  По умолчанию во FreeBSD файловая система
+	имеет тип <TT
+CLASS="LITERAL"
+>ufs</TT
+>.</P
+><P
+>В качестве параметров <TT
+CLASS="LITERAL"
+>options</TT
+> указывается
+	<TT
+CLASS="OPTION"
+>rw</TT
+> для файловых систем, доступных по чтению-записи,
+	или <TT
+CLASS="OPTION"
+>ro</TT
+> для файловых систем, доступных только для
+	чтения, за которым следует любое количество других параметров, могущих
+	быть нужными.  Часто используемым параметром является опция
+	<TT
+CLASS="OPTION"
+>noauto</TT
+> для файловых систем, которые обычно
+	не монтируются во время загрузки.  Другие параметры описаны на
+	странице справочника по <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+>.</P
+><P
+><TT
+CLASS="LITERAL"
+>dumpfreq</TT
+> определяет количество дней для
+	обязательного создания архивной копии файловой системы, а
+	<TT
+CLASS="LITERAL"
+>passno</TT
+> задает номер прохода, при котором
+	файловая система была смонтирована во время процесса загрузки.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DISKS-MOUNT"
+>7.4.2. Команда mount</A
+></H2
+><P
+>Команда <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+> является тем, что необходимо использовать
+	для монтирования файловых систем.</P
+><P
+>В ее самой простой форме она используется так:</P
+><DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><PRE
+CLASS="SCREEN"
+>    <TT
+CLASS="PROMPT"
+>#</TT
+> <TT
+CLASS="USERINPUT"
+><B
+>mount <TT
+CLASS="REPLACEABLE"
+><I
+>device</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>mountpoint</I
+></TT
+></B
+></TT
+>
+    	</PRE
+><P
+></P
+></DIV
+><P
+>Как отмечено на справочной странице по команде <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+>, она
+	имеет массу параметров, но наиболее часто используются
+	следующие:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Параметры команды mount</B
+></P
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-a</TT
+></DT
+><DD
+><P
+>Смонтировать все файловые системы, перечисленные в файле
+	      <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+>, с модификациями по параметру
+	      <TT
+CLASS="OPTION"
+>-t</TT
+>, если он задан.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-d</TT
+></DT
+><DD
+><P
+>Сделать все, кроме собственно монтирования файловой
+	      системы.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-f</TT
+></DT
+><DD
+><P
+>Принудительно смонтировать файловую систему.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-r</TT
+></DT
+><DD
+><P
+>Смонтировать файловую систему в режиме только для
+	      чтения.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t</TT
+>
+	    <TT
+CLASS="REPLACEABLE"
+><I
+>fstype</I
+></TT
+></DT
+><DD
+><P
+>Смонтировать указанную файловую систему как файловую
+	      систему указанного типа, или смонтировать файловые системы
+	      только указанного типа, если задан параметр
+	      <TT
+CLASS="OPTION"
+>-a</TT
+>.</P
+><P
+>По умолчанию используется тип файловой системы
+	      <SPAN
+CLASS="QUOTE"
+>"ufs"</SPAN
+>.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-u</TT
+></DT
+><DD
+><P
+>Обновить параметры монтирования файловой системы.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+></DT
+><DD
+><P
+>Выдавать подробный журнал.</P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+></DT
+><DD
+><P
+>Смонтировать файловую систему в режиме доступа как для
+	      чтения, так и для записи.</P
+></DD
+></DL
+></DIV
+><P
+>Опция <TT
+CLASS="OPTION"
+>-o</TT
+> принимает список разделенных запятыми
+	параметров, включая следующее:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>nodev</DT
+><DD
+><P
+>Не обрабатывать специальные устройства в файловой системе.
+	      Опция, полезная с точки зрения обеспечения безопасности.</P
+></DD
+><DT
+>noexec</DT
+><DD
+><P
+>Запретить выполнение бинарных файлов на этой файловой
+	      системе.	Опция, полезная с точки зрения обеспечения
+	      безопасности.</P
+></DD
+><DT
+>nosuid</DT
+><DD
+><P
+>Не обрабатывать флаги установки выполнения файлов с
+	      привилегиями их владельцев и групп в этой файловой системе.
+	      Опция, полезная с точки зрения обеспечения безопасности.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DISKS-UMOUNT"
+>7.4.3. Команда umount</A
+></H2
+><P
+>Команда umount воспринимает в качестве параметра либо точку
+	монтирования, либо имя устройства, либо параметры <TT
+CLASS="OPTION"
+>-a</TT
+>
+	или <TT
+CLASS="OPTION"
+>-A</TT
+>.</P
+><P
+>Все формы воспринимают параметр <TT
+CLASS="OPTION"
+>-f</TT
+> для
+	принудительного размонтирования и <TT
+CLASS="OPTION"
+>-v</TT
+> для вывода
+	подробного журнала.</P
+><P
+>Флаги <TT
+CLASS="OPTION"
+>-a</TT
+> и <TT
+CLASS="OPTION"
+>-A</TT
+> используются для
+	размонтирования всех смонтированных файловых систем, возможно с
+	учетом типов файловых систем, перечисленных после
+	<TT
+CLASS="OPTION"
+>-t</TT
+>.  Однако при использовании опции
+	<TT
+CLASS="OPTION"
+>-A</TT
+> не будет предприниматься попытка размонтировать
+	корневую файловую систему.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="disks-naming.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="disks-adding.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Именование дисков</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="disks.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Добавление дисков</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>The inetd Super Server — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-appl.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 12. ImportantNetwork Features</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-appl.tcpd.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="X-087-2-APPL.INETD"
+>12.1. The inetd Super Server</A
+></H1
+><P
+>Programs that provide application services via the network are called
+network <I
+CLASS="EMPHASIS"
+>daemons</I
+>. A daemon is a program that opens a
+port, most commonly a well-known service port, and waits for incoming
+connections on it. If one occurs, the daemon creates a child process that
+accepts the connection, while the parent continues to listen for further
+requests. This mechanism works well, but has a few disadvantages; at
+least one instance of every possible service you wish to provide must be
+active in memory at all times. In addition, the software routines that
+do the listening and port handling must be replicated in every network daemon.</P
+><P
+>To overcome these inefficiencies, most Unix installations run a special
+network daemon, what you might consider a &#8220;super server.&#8221; This
+daemon creates sockets on behalf of a number of services and listens on
+all of them simultaneously. When an incoming connection is received on
+any of these sockets, the super server accepts the connection and spawns
+the server specified for this port, passing the socket across to the child
+to manage. The server then returns to listening.</P
+><P
+>&#13;
+
+The most common super server is called <B
+CLASS="COMMAND"
+>inetd</B
+>,
+the Internet Daemon. It is started at system boot time and takes the list
+of services it is to manage from a startup file named
+<TT
+CLASS="FILENAME"
+>/etc/inetd.conf</TT
+>. In addition to those servers,
+there are a number of trivial services performed by <B
+CLASS="COMMAND"
+>inetd</B
+>
+itself called <I
+CLASS="EMPHASIS"
+>internal services</I
+>. They include
+<B
+CLASS="COMMAND"
+>chargen</B
+>, which simply generates a string of characters,
+and <B
+CLASS="COMMAND"
+>daytime</B
+>, which returns the system's idea of the time
+of day.</P
+><P
+>An entry in this file consists of a single line made up of the
+following fields:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="REPLACEABLE"
+><I
+>service</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>protocol</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>wait</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>server</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>cmdline</I
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>Each of the fields is described in the following list:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>service</I
+></TT
+></DT
+><DD
+><P
+>Gives the service name. The service name has to be translated to a port
+number by looking it up in the <TT
+CLASS="FILENAME"
+>/etc/services</TT
+> file. This
+file will be described later in this chapter in the section <A
+HREF="x-087-2-appl.services.html"
+>Section 12.3</A
+>.&#8221;</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+></DT
+><DD
+><P
+>Specifies a socket type, either <SPAN
+CLASS="SYSTEMITEM"
+>stream</SPAN
+>
+(for connection-oriented protocols) or
+<SPAN
+CLASS="SYSTEMITEM"
+>dgram</SPAN
+> (for datagram protocols).
+TCP-based services should therefore always use
+<SPAN
+CLASS="SYSTEMITEM"
+>stream</SPAN
+>, while UDP-based services
+should always use <SPAN
+CLASS="SYSTEMITEM"
+>dgram</SPAN
+>.</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>protocol</I
+></TT
+></DT
+><DD
+><P
+>Names the transport protocol used by the service. This must be a valid
+protocol name found in the <TT
+CLASS="FILENAME"
+>protocols</TT
+> file, explained
+later.</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>wait</I
+></TT
+></DT
+><DD
+><P
+>This option applies only to <SPAN
+CLASS="SYSTEMITEM"
+>dgram</SPAN
+>
+sockets. It can be either <SPAN
+CLASS="SYSTEMITEM"
+>wait</SPAN
+> or
+<SPAN
+CLASS="SYSTEMITEM"
+>nowait</SPAN
+>. If
+<SPAN
+CLASS="SYSTEMITEM"
+>wait</SPAN
+> is specified,
+<B
+CLASS="COMMAND"
+>inetd</B
+> executes only one server for the specified
+port at any time. Otherwise, it immediately continues to listen on
+the port after executing the server.</P
+><P
+>This is useful for &#8220;single-threaded&#8221; servers that read all
+incoming datagrams until no more arrive, and then exit. Most RPC servers
+are of this type and should therefore specify
+<SPAN
+CLASS="SYSTEMITEM"
+>wait</SPAN
+>. The opposite type,
+&#8220;multi-threaded&#8221; servers, allow an unlimited number of
+instances to run concurrently. These servers should specify
+<SPAN
+CLASS="SYSTEMITEM"
+>nowait</SPAN
+>.</P
+><P
+><SPAN
+CLASS="SYSTEMITEM"
+>stream</SPAN
+> sockets should always use
+<SPAN
+CLASS="SYSTEMITEM"
+>nowait</SPAN
+>.</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></DT
+><DD
+><P
+>This is the login ID of the user who will own the process when it is
+executing. This will frequently be the <SPAN
+CLASS="SYSTEMITEM"
+>root</SPAN
+>
+user, but some services may use different accounts. It is a very good idea to
+apply the principle of least privilege here, which states that you shouldn't
+run a command under a privileged account if the program doesn't require this for
+proper functioning. For example, the NNTP news server runs as
+<SPAN
+CLASS="SYSTEMITEM"
+>news</SPAN
+>, while services that may pose
+a security risk (such as <B
+CLASS="COMMAND"
+>tftp</B
+> or <B
+CLASS="COMMAND"
+>finger</B
+>)
+are often run as <SPAN
+CLASS="SYSTEMITEM"
+>nobody</SPAN
+>.</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>server</I
+></TT
+></DT
+><DD
+><P
+>Gives the full pathname of the server program to be executed. Internal
+services are marked by the keyword
+<SPAN
+CLASS="SYSTEMITEM"
+>internal</SPAN
+>.</P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cmdline</I
+></TT
+></DT
+><DD
+><P
+>This is the command line to be passed to the server. It starts with the
+name of the server to be executed and can include any arguments that need
+to be passed to it. If you are using the TCP wrapper, you specify
+the full pathname to the server here. If not, then you just specify the
+server name as you'd like it to appear in a process list. We'll talk about
+the TCP wrapper shortly.</P
+><P
+>This field is empty for internal services.</P
+></DD
+></DL
+></DIV
+><P
+>&#13;
+A sample <TT
+CLASS="FILENAME"
+>inetd.conf</TT
+> file is shown in
+<A
+HREF="x-087-2-appl.inetd.html#X-087-2-APPL.FIG.INETD.CONF"
+>Example 12-1</A
+>. The <B
+CLASS="COMMAND"
+>finger</B
+>
+service is commented out so that it is not available. This is often done
+for security reasons, because it can be used by attackers to obtain names
+and other details of users on your system.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="X-087-2-APPL.FIG.INETD.CONF"
+></A
+><P
+><B
+>Example 12-1. A Sample /etc/inetd.conf File</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#
+# inetd services
+ftp      stream tcp nowait root  /usr/sbin/ftpd    in.ftpd -l
+telnet   stream tcp nowait root  /usr/sbin/telnetd in.telnetd -b/etc/issue
+#finger  stream tcp nowait bin   /usr/sbin/fingerd in.fingerd
+#tftp    dgram  udp wait  nobody /usr/sbin/tftpd   in.tftpd
+#tftp    dgram  udp wait  nobody /usr/sbin/tftpd   in.tftpd /boot/diskless
+#login   stream tcp nowait root  /usr/sbin/rlogind in.rlogind
+#shell   stream tcp nowait root  /usr/sbin/rshd    in.rshd
+#exec    stream tcp nowait root  /usr/sbin/rexecd  in.rexecd
+#
+#       inetd internal services
+#
+daytime  stream tcp nowait root internal
+daytime  dgram  udp nowait root internal
+time     stream tcp nowait root internal
+time     dgram  udp nowait root internal
+echo     stream tcp nowait root internal
+echo     dgram  udp nowait root internal
+discard  stream tcp nowait root internal
+discard  dgram  udp nowait root internal
+chargen  stream tcp nowait root internal
+chargen  dgram  udp nowait root internal</PRE
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>&#13;
+The <B
+CLASS="COMMAND"
+>tftp</B
+> daemon is shown commented out as well.
+<B
+CLASS="COMMAND"
+>tftp</B
+> implements the <I
+CLASS="EMPHASIS"
+>Trivial File Transfer
+Protocol</I
+> (TFTP), which allows someone to transfer any
+world-readable files from your system without password checking.
+This is especially harmful with the <TT
+CLASS="FILENAME"
+>/etc/passwd</TT
+> file, and even more so when you don't use shadow passwords.</P
+><P
+>TFTP is commonly used by diskless clients and Xterminals to download their
+code from a boot server. If you need to run <B
+CLASS="COMMAND"
+>tftpd</B
+> for this
+reason, make sure to limit its scope to those directories from which clients
+will retrieve files; you will need to add those directory names to
+<B
+CLASS="COMMAND"
+>tftpd</B
+>'s command line. This is shown in the second
+<B
+CLASS="COMMAND"
+>tftp</B
+> line in the example.
+
+ &#13;</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.tcpd.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ImportantNetwork Features</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The tcpd Access Control Facility</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

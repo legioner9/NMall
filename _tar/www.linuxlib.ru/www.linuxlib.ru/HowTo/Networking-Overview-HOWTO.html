@@ -1,0 +1,1386 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux Networking Overview HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1>Linux Networking Overview HOWTO</H1>
+
+<H2>Daniel Lуpez Ridruejo
+<A HREF="../cdn-cgi/l/email-protection.html#7d0f14190f081817123d180e1453080e53180e">mailto:<span class="__cf_email__" data-cfemail="f88a919c8a8d9d9297b89d8b91d68d8bd69d8b">[email&#160;protected]</span></A>
+Русский перевод
+Ilgiz Kalmetev,
+<A HREF="../cdn-cgi/l/email-protection.html#01686d66687b416c60686d2f73632f7374"><span class="__cf_email__" data-cfemail="1d74717a74675d707c7471336f7f336f68">[email&#160;protected]</span></A></H2>  V0.2, 10 июля 1998
+<P><HR>
+<EM>  Цель этого документа состоит в том, чтобы дать краткий обзор возможностей
+  работы с сетями операционной системы Linux и обеспечить указания по поиску
+  дальнейшей информации и подробностей реализации.</EM>
+<HR>
+<H2><A NAME="s1">1. Введение. </A></H2>
+
+<P>
+<P>Цель этого документа состоит в том, чтобы дать краткий обзор возможностей
+работы с сетями операционной системы Linux. Хотя одним из достоинств Linux -
+является то, что имеется множество источников информации, доступной почти
+по каждой теме, большинство ее сосредоточено на реализации. Новички в Linux,
+особенно пришедшие из среды Windows, не осознают возможностей Linux при
+работе с сетями. Этот документ стремится дать общее представление о таких
+возможностях с кратким описанием каждой и указать источники для поиска
+дальнейшей информации. Информация была собрана из многих источников:
+различные howto, факи, проектов веб-страниц и моего собственного опыта.
+Огромные благодарности авторам. Без них и их программ этот документ не
+появился бы.
+<P>
+<P>
+<H2><A NAME="s2">2. Linux.</A></H2>
+
+<H2>2.1 Что такое Linux?</H2>
+
+<P>Автор-основатель Linux - Linus Torvalds. Начиная с первоначальных версий,
+Linux улучшался бесчисленным количеством людей. Это - аналог операционной
+системы UNIX, написанный полностью с нуля. Одна из наиболее интересных
+особенностей, присущих Linux - это то, что его разработка происходит
+одновременно во всем мире.
+<P>Linux защищен авторским правом в соответствии с лицензией GNU (GPL). Эта
+лицензия написана Фондам Свободного Программного Обеспечения (FSF),
+который создан, чтобы предохранить людей от ограничения на распространение
+программного обеспечения. Короче говоря, лицензия говорит о том, что, хотя
+деньги могут быть заплачены за копию, человек, который получил эту копию, не
+должно быть ограничений в получении такой же копии и бесплатно. Это также
+означает, что должен быть доступен исходный текст. Это полезно для
+программистов. Любой может изменять Linux и даже распространять его
+модификации при условии, что исходный код остается под тем же самым
+авторским правом.
+<P>
+<P>
+<H2>2.2 Чем замечателен Linux?</H2>
+
+<P>Зачем нужно работать на Linux? Linux вообще более дешев (или по крайней мере
+не более дорог), чем другие операционные системы и часто менее проблематичен,
+чем многие коммерческие системы. Но отличает Linux не его цена (в конце
+концов, почему кому-то должна нравиться OS - даже если она свободная - если
+она не достаточно хороша?), а его замечательные возможности:
+<UL>
+<LI>   Linux - истинно многозадачная 32-битная операционная система, продуманная
+и достаточно функциональная, чтобы использоваться во многих областях,
+от университетов до больших корпораций.
+</LI>
+<LI>   Она работает начиная с низкопроизводительных платформ на i386 заканчивая
+ультра-параллельными машинами в исследовательсктх центрах.
+</LI>
+<LI>   Есть доступные "из коробки" версии для Intel/Sparc/Alpha, и
+экспериментальная поддержка для Power PC и встроенных систем типа
+SGI, Ultra Sparc, AP1000 +, Strong ARM, MIPS R3000/R4000 ...
+</LI>
+<LI>   В заключение, для работы с сетями, Linux  - хороший выбор. Не только
+потому, что работа с сетями сильно интегрирована с самой OS и исходный код
+прикладных программ свободно доступен, но и из-за отказоустойчивости при
+тяжелой загрузке, что может быть достигнуто только годами отладки и
+тестирования в проекте Open Source.</LI>
+</UL>
+<P>
+<H2><A NAME="s3">3. Сетевые протоколы.</A></H2>
+
+<P>
+<P>Linux поддерживает много различных протоколов работы с сетями:
+<P>
+<P>
+<H2>3.1 TCP/IP</H2>
+
+<P>
+<P>IP (Межсетевой Протокол) был первоначально разработан два десятилетия назад
+для Отдела Защиты Соединенных Штатов (DoD), главным образом с целью
+соединения компьютеров различных марок. TCP/IP - это набор допустимых
+протоколов, имеющих многоуровневую структуру, чтобы избежать привязки кода
+прикладных программ к сетевому аппаратному обеспечению.
+<P>Хотя он и основан на многоуровневой модели, он ориентирован более на задачи
+соединений, чем на твердое соблюдение функциональных уровней. Это одна из
+причин, почему TCP/IP стал фактическим стандартным протоколом работы с
+сетями в отличие от OSI.
+<P>Работа с сетями по протоколу TCP/IP была заложена в Linux с самого начала.
+Она была выполнена заново и является одной из наиболее продуманных, быстрых
+и надежных реализаций и потому является одним из ключевых факторов успеха
+Linux.
+<P>Дополнительный источник:
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/NET-3-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/NET-3-HOWTO.html<!--</A>--><P>
+<P>
+<H2>3.2 TCP/IP версия 6</H2>
+
+<P>
+<P>IPv6, который иногда также называют IPng (IP Следующего Поколения), -
+это обновление для протокола IPv4 для решения множества проблем. Эти
+проблемы включают: нехватка доступных адресов IP, недостаток механизмов
+обработки трафика, критичного ко времени передачи, недостатки защиты
+сетевого уровня, и т.д
+<P>Увеличение адресного пространства будет сопровождаться в соответствии c
+дополнительной схемой адресации, что сильно подействовует на эффективность
+маршрутизации. Реализация беты уже существует для Linux, и промышленная
+версия ожидается для ядра 2.2.0 Linux.
+<UL>
+<LI>   Linux IPv6 How-to:
+<!--<A HREF="http://www.terra.net/ipv6/linux-ipv6.faq.htm">-->http://www.terra.net/ipv6/linux-ipv6.faq.htm<!--</A>-->
+</LI>
+<LI>   Домашняя страница IPv6:
+<!--<A HREF="http://playground.sun.com/pub/ipng/html/ipng-main.html">-->http://playground.sun.com/pub/ipng/html/ipng-main.html<!--</A>--></LI>
+</UL>
+<P>
+<P>
+<H2>3.3 IPX/SPX</H2>
+
+<P>IPX/SPX (Межсетевой Пакетный Обмен/Последовательный Пакетный Обмен) - стек
+протоколов, разработанный и являющийся собственностью Novell и основанный
+на XNS протоколе фирмы Xerox. IPX/SPX стал в начале 1980-ого неотъемлемой
+частью системы Novell Netware. Система Netware стала фактической стандартной
+сетевой операционной системой (NOS) для первого поколения локальных
+вычислительных сетей. Novell выполнил свою NOS с бизнес-ориентируемым
+набором прикладных программ и утилитами подключения со стороны пользователя.
+<P>Linux имеет очень ясную реализацию IPX/SPX, что позволяет его настроить как:
+<UL>
+<LI>   IPX маршрутизатор
+</LI>
+<LI>   IPX мост
+</LI>
+<LI>   NCP клиент и/или NCP сервер (для совместного использования файлов)
+</LI>
+<LI>   клиент печати Novell, сервер печати Novell</LI>
+</UL>
+
+А также:
+<UL>
+<LI>   Допускает PPP/IPX, позволяя машине с Linux работать как PPP сервер/клиент
+</LI>
+<LI>   IPX tunnelling через IP, позволяя соединить две IPX сети через
+исключительно IP связь</LI>
+</UL>
+
+Дополнительно, Caldera
+<!--<A HREF="http://www.caldera.com">-->http://www.caldera.com<!--</A>-->предлагает коммерческую
+поддержку для Novell Netware под Linux. Caldera обеспечивает
+полнофункционально клиента Novell Netware, созданного  по технологии,
+запатентованной корпорацией Novell. Клиент обечспечивает обеспечивает
+полный клиентский доступ к файлсерверам Novell 3.x и 4.x и включает
+функции типа Netware Directory Service (NDS) и RSA шифрование.
+<UL>
+<LI>   IPX How-to:
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/IPX-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/IPX-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>3.4 Набор протоколов AppleTalk</H2>
+
+<P>Appletalk - имя сетевого стека Apple. Он позволяет peer-to-peer сетевую
+модель, которая обеспечивает базовые функциональные возможности типа
+совместного использования принтера и файлов. Каждая машина может
+работать одновременно как клиент и сервер, все необходимое программное и
+аппаратное обеспечение поставляются с каждым компьютером Apple.
+<P>Linux обеспечивает полную работу с сетями Appletalk. Netatalk - реализация
+на уровне ядра набора протоколов AppleTalk, первоначально разработанного
+для bsd-совместимых систем. Она включает поддержку для маршрутизации
+AppleTalk, обслуживание файловых систем Unix и AFS поверх AFP (AppleShare),
+обслуживание принтеров Unix и доступ к принтерам AppleTalk через PAP.
+<P>За подробностями обратитесь к разделу 5.1.
+<P>
+<P>
+<H2>3.5 Глобальные сети: X. 25, Frame-Relay, и т.д ...</H2>
+
+<P>Некоторые третьи фирмы обеспечивают продукты T-1, T-3, X. 25 и Frame-Relay
+для Linux. Обычно для этих типов соединений требуются специальные аппаратные
+средства. Продавцы, торгующие аппаратными средствами, также предлагают
+драйвера поддержки протоколов.
+<UL>
+<LI>   WAN для Linux:
+Http://www.secretagent.com/networking/wan.html</LI>
+</UL>
+<H2>3.6 ISDN</H2>
+
+<P>Ядро Linux имеет встроенную поддержку ISDN. Isdn4linux управляет адаптерами
+ISDN для PC и может эмулировать модем с набором команд Hayes ("В" команды).
+Предоставляются возможности от просто использования программы терминала до
+соединений через HDLC (используя включенные устройства) для полного
+подключения к Интернет по PPP к звуковым прикладным программам.
+<UL>
+<LI>   FAQ для isdn4linux:
+<!--<A HREF="http://tsikora.tiac.net/i4l-faq/eng-i4l-Faq.html">-->http://tsikora.tiac.net/i4l-faq/eng-i4l-Faq.html<!--</A>--></LI>
+</UL>
+<P>
+<P>
+<H2>3.7 PPP, SLIP, PLIP</H2>
+
+<P>Linux ядро имеет встроенную поддержку для PPP (Point-to-Point-Protocol),
+SLIP (IP для последовательных линий) и PLIP (IP для параллельных линий).
+PPP - наиболее популярный метод, с помощью которого пользователи подключаются
+к своему ISP (провайдер услуг Интернет). PLIP обеспечивает дешевое соединение
+двух машин. Он использует параллельный порт и специальный кабель, достигая
+скоростей от 10kBps до 20kBps.
+<P>
+<UL>
+<LI>   Linux PPP How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/PPP-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/PPP-HOWTO.html<!--</A>-->
+</LI>
+<LI>   PPP/SLIP эмулятор
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/SLIP-PPP-Emulator.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/SLIP-PPP-Emulator.html<!--</A>-->
+</LI>
+<LI>   Информация по PLIP может быть найдена в Руководстве Сетевого Администратора
+<!--<A HREF="http://sunsite.unc.edu/mdw/LDP/nag/nag.html">-->http://sunsite.unc.edu/mdw/LDP/nag/nag.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>3.8 Любительское Радио (HAM)</H2>
+
+<P>Linux ядро имеет встроенную поддержку для радиолюбительских протоколов.
+<P>Особенно интересен - AX.25. Протокол AX.25 предлагает и соединенный, и
+несоединенный режимы работы, и используется для связи либо по собственному
+протоколу, либо для переноса пакетов других протоколов типа TCP/IP и NetRom.
+<P>По структуре он напоминает X.25 уровня 2, с некоторыми расширениями,
+чтобы приспособить его к среде любительского радио.
+<UL>
+<LI>   Любительское радио how-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/HAM-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/HAM-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>3.9 ATM</H2>
+
+<P>ATM поддержка для Linux в настоящее время очень сырая. Имеется
+экспериментальный релиз, который поддерживает простые ATM соединения
+(PVCs и SVCs), IP над ATM, эмуляцию локальной вычислительной сети ...
+<UL>
+<LI>   Домашняя страница Linux ATM-Linux
+<!--<A HREF="http://lrcwww.epfl.ch/linux-atm/">-->http://lrcwww.epfl.ch/linux-atm/<!--</A>--></LI>
+</UL>
+<P>
+<H2><A NAME="s4">4. Сетевые аппаратные средства, поддерживаемые Linux</A></H2>
+
+<P>Linux поддерживает множество разнообразных аппаратных средств для работы с
+сетями, включая устаревшие.
+<P>Некоторые интересные документы:
+<UL>
+<LI>   Hardware HowTo
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Hardware-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Hardware-HOWTO.html<!--</A>-->
+</LI>
+<LI>   Ethernet How-To
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Ethernet-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Ethernet-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2><A NAME="s5">5. Совместное использование файлов и печать</A></H2>
+
+<P>Основная цель многих локальных вычислительных сетей, состоящих из PC,
+состоит в том, чтобы обеспечить совместное использование пользователями
+файлов и принтеров. Linux прекрасно проявляет себя в качестве файлового
+сервера и сервера печати.
+<P>
+<P>
+<H2>5.1 Платформа Apple</H2>
+
+<P>Как было сказано в предыдущих разделах, Linux поддерживает семейство
+протоколов Appletalk . Linux Netatalk позволяет клиентам Macintosh видеть
+систему с Linux как другой Macintosh в сети, позволяя станциям, соединенным с
+Linux, совместное использование файлов и принтеров.
+<P>Netatalk faq и how-to:
+<UL>
+<LI>
+<!--<A HREF="http://thehamptons.com/anders/netatalk/">-->http://thehamptons.com/anders/netatalk/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://www.umich.edu/~rsug/netatalk/">-->http://www.umich.edu/~rsug/netatalk/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://www.umich.edu/~rsug/netatalk/faq.html">-->http://www.umich.edu/~rsug/netatalk/faq.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>5.2 Платформа Windows</H2>
+
+<P>Samba - набор прикладных программ, которые позволяют большинству юниксов (и
+в частности Linux) работать в сети Microsoft как в качестве клиента, так и
+в качестве сервера. Работа в качестве сервера позволяет клиентам Windows 95,
+Windows for Workgroups, DOS и Windows NT обращаться к файловому сервису и
+сервису печати, предоставляемым Linux. Таким образом он может полностью
+заменить Windows NT при обслуживании файлов и печати, включая
+автоматическую загрузку драйверов принтера для клиентов. Работа в качестве
+клиента, позволяет рабочей станции Linux монтировать локально доступные
+совместно используемые каталоги.
+<P>Согласно SAMBA мета-faq:
+<P>"Многие пользователи сообщают, что Samba сравнилась с другими SMB
+реализациями, и более устойчива, быстрее и совместима с большим количеством
+клиентов. Администраторы некоторых больших сетей говорят, что Samba -
+единственый доступный SMB сервер, который уверенно работает со многими
+десятками тысяч пользователей."
+<P>
+<UL>
+<LI>   Домашняя страничка Samba -
+<!--<A HREF="http://samba.anu.edu.au/samba/">-->http://samba.anu.edu.au/samba/<!--</A>-->
+</LI>
+<LI>   Samba How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/SMB-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/SMB-HOWTO.html<!--</A>-->
+</LI>
+<LI>   Printing How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Printing-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Printing-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>5.3 Novell Платформа</H2>
+
+<P>Как говорилось в предыдущих разделах, Linux может быть сконфигурирован так,
+чтобы работать как NCP клиент или сервер, таким образом предоставляя доступ
+к файлам и услугам печати в сети Novell как для клиентов Novell, так и для
+клиентов Unix.
+<P>
+<UL>
+<LI>   IPX How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/IPX-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/IPX-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>5.4 UNIX Платформа</H2>
+
+<P>Наиболее часто используемый метод совместного использования файлов по сети
+в среде UNIX - через NFS. NFS означает Network File Sharing (Совместное
+использование Файлов в Сети), и является протоколом, первоначально
+разработанным Sun Microsystems. Это способ совместного использования файлов
+машинами как будто они расположены локально. Пользователь "монтирует"
+файловую систему "экспортируемую" сервером NFS. Смонтированная файловая
+система появляется на машине пользователя так, как будто она является частью
+локальной файловой системы.
+<P>Возможно смонтировать корневую файловую систему во время запуска, и таким
+образом позволить бездисковому клиенту скачивать и обращаться ко всем файлам
+на сервере. То есть можно иметь полностью функциональный компьютер без
+жесткого диска.
+<P>Источники информации о Nfs:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/NFS-Root.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/NFS-Root.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Diskless.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Diskless.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/NFS-Root-Client.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/NFS-Root-Client.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://www.redhat.com/support/docs/rhl/NFS-Tips/NFS-Tips.html">-->http://www.redhat.com/support/docs/rhl/NFS-Tips/NFS-Tips.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/NFS-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/NFS-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2><A NAME="s6">6. Internet/Intranet</A></H2>
+
+<P>Linux - прекрасная платформа для Intranet/Internet сервера. Термин Intranet
+относится к применению Internet технологий внутри организации с целью
+распространения и предоставления доступа к информации внутри компании.
+Internet и Intranet услуги, предлагаемые Linux, включают электронную почту,
+новости, WWW сервера и еще множество услуг, о которых будет рассказано
+в следующих разделах.
+<P>
+<P>
+<H2>6.1 Почта</H2>
+
+<H3>Почтовые сервера</H3>
+
+<P>Sendmail - фактически стандартная программа сервера почты для платформ UNIX.
+Будучи продуманной, масштабируемой и правильно настроенной и при наличии
+необходимых аппаратных средств, она может рабатать пол нагрузкой в тысячи
+пользователей без сбоев. Другие сервера почты (MTA - Почтовые Транспортные
+Агенты) - это smail и qmail, которые разработаны как альтернатива sendmail.
+<P>
+<UL>
+<LI>   Веб-страница Sendmail
+<!--<A HREF="http://www.sendmail.org/">-->http://www.sendmail.org/<!--</A>-->
+</LI>
+<LI>   Smail faq
+<!--<A HREF="http://www.sbay.org/smail-faq.html">-->http://www.sbay.org/smail-faq.html<!--</A>-->
+</LI>
+<LI>   Qmail место ткани
+<!--<A HREF="http://www.qmail.org">-->http://www.qmail.org<!--</A>--></LI>
+</UL>
+
+Почтовые how-tos:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Mail-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Mail-HOWTO.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Qmail+MH.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Qmail+MH.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Sendmail+UUCP.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Sendmail+UUCP.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Mail-queue.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Mail-queue.html<!--</A>--></LI>
+</UL>
+<P>
+<H3>Удаленный доступ к почте.</H3>
+
+<P>В организации или ISP, пользователи вероятно обращаются за своей почтой
+дистанционно со своих рабочих мест. В Linux существуют несколько вариантов
+поддержки такого доступа, включающие сервера POP (Post Office Protoсol) и
+IMAP (Internet Mail Access Protoсol). Протокол POP обычно используется,
+чтобы передать сообщения от сервера пользователю. IMAP допускает работу с
+сообщениями на сервере, удаленное создание и стирание папок на сервере,
+параллельный доступ к общедоступным почтовым ящикам, и т.д.
+<UL>
+<LI>   Краткое сравнение IMAP и POP
+<!--<A HREF="http://www.imap.org/imap.vs.pop.brief.html">-->http://www.imap.org/imap.vs.pop.brief.html<!--</A>--></LI>
+</UL>
+
+Почтовые how-tos:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Mail-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Mail-HOWTO.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Cyrus-IMAP.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Cyrus-IMAP.html<!--</A>--></LI>
+</UL>
+<P>
+<H3>Почтовые пользовательские агенты</H3>
+
+<P>В Linux имеется ряд MUA (Почтовые пользовательские агенты), работающих как
+в графическом, так и в текстовом режиме. Наиболее широко используемые:
+pine, elm, mutt и Netscape.
+<P>
+<UL>
+<LI>   Список почтовго программного обеспечения
+<!--<A HREF="http://www.linuxlinks.com/Software/Internet/Mail/">-->http://www.linuxlinks.com/Software/Internet/Mail/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/TkRat.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/TkRat.html<!--</A>--></LI>
+</UL>
+<P>
+<H3>Программного обеспечения списков почтовой рассылки</H3>
+
+<P>Имеется много MLM (Mail List Management) программ, доступных для UNIX вообще
+и для Linux в частности.
+<P>
+<UL>
+<LI>   Хорошее сравнение существующих MLM может находяться на
+<!--<A HREF="ftp://ftp.uu.net/usenet/news.answers/ma">-->ftp://ftp.uu.net/usenet/news.answers/ma<!--</A>-->il/list-admin/
+</LI>
+<LI>   Listserv
+<!--<A HREF="http://www.lsoft.com/">-->http://www.lsoft.com/<!--</A>-->
+</LI>
+<LI>   Домашняя страница Majordomo
+<!--<A HREF="http://www.greatcircle.com/majordomo/">-->http://www.greatcircle.com/majordomo/<!--</A>--></LI>
+</UL>
+<P>
+<H3>Fetchmail</H3>
+
+<P>fetchmail - очень полезная почтовая утилита. Fetchmail - свободная, наглядная,
+продуманная, хорошо документированная утилита для удаленного скачивания и
+пересылки почты, которая используется для каналов TCP/IP "по требованию",
+(SLIP или PPP соединений). Он поддерживает все протокол удаленной работы с
+почтой, которые используются в настоящее время в Internet. Он может
+поддерживать даже IPv6 и IPSEC.
+<P>Fetchmail вытаскивает почту с удаленных почтовых серверов и пересылает ее
+через SMTP так, что она могла затем читаться нормальными почтовыми агентами
+пользователя типа mutt, pine или BSD mail. Это позволяет всем средствам
+фильтрации системы MTA, пересылки и совмещения имен (aliasing) работать так,
+будто они работают с обычной почтой.
+<P>Fetchmail может использоваться как шлюз POP/IMAP-to-SMTP для целого домена
+DNS, забирая почту из одного почтового ящика у ISP и пересылая почту по
+smtp руководствуясь адресами, указанными в заголовках.
+<P>Маленькая компания может централизовать свою почту в одном почтовом ящике
+а программа fetchmail будет собирать всю исходящую почту, посылать ее в
+Internet и забирать из Internet всю входящую почту.
+<UL>
+<LI>   Домашняя страница Fetchmail
+<!--<A HREF="http://sagan.earthspace.net/~esr/fetchmail/">-->http://sagan.earthspace.net/~esr/fetchmail/<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.2 Веб сервера</H2>
+
+<P>Большинство дистрибутивов Linux включает Apache (
+<!--<A HREF="http://www.apache.or">-->http://www.apache.or<!--</A>-->g).
+Apache - сервер номер один в Интернет (
+<!--<A HREF="http://www.netcraft.co.uk/survey/">-->http://www.netcraft.co.uk/survey/<!--</A>-->),
+где более половины всех интернетовских сайтов работают под Apache или
+производных от него. Преимущества Apache заключаются в модульной
+организации, стабильности и быстродействии. При наличии соответствующих
+аппаратных средств и настройке он может выдерживать самые высокие загрузки:
+Yahoo, Altavista, GeoCities, Hotmail основаны на различных версиях этого
+сервера.
+<P>Опциональная поддержка для SSL (который нужен для защиты транзакций)
+доступна в:
+<UL>
+<LI>
+<!--<A HREF="http://www.apache-ssl.org/">-->http://www.apache-ssl.org/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://raven.covalent.net/">-->http://raven.covalent.net/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://www.c2.net/">-->http://www.c2.net/<!--</A>--></LI>
+</UL>
+
+How-tos:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/WWW-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/WWW-HOWTO.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Virtual-Services-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Virtual-Services-HOWTO.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Intranet-Server-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Intranet-Server-HOWTO.html<!--</A>-->
+</LI>
+<LI>   веб сервера для Linux
+<!--<A HREF="http://www.linuxlinks.com/Software/Internet/WebServers/">-->http://www.linuxlinks.com/Software/Internet/WebServers/<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.3 Веб браузеры</H2>
+
+<P>Для Linux существует целый ряд веб-браузеров. Один из них - Netscape
+Navigator, и новый Mozilla (
+<!--<A HREF="http://www.mozilla.org">-->http://www.mozilla.org<!--</A>-->) будет иметь версию под
+Linux. Другой популярный текстовый браузер - lynx. Он быстр и удобен, когда
+не установлена графическая среда.
+<UL>
+<LI>   Веб-браузеры для Linux
+<!--<A HREF="http://www.linuxlinks.com/Software/Internet/WebBrowsers/">-->http://www.linuxlinks.com/Software/Internet/WebBrowsers/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Public-Web-Browser.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Public-Web-Browser.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.4 FTP сервера и клиенты</H2>
+
+<P>FTP означает Протокол Передачи файлов. FTP сервер позволяет клиентам
+подключаться к себе и скачивать файлы. Для Linux написано множество ftp
+серверов и клиентов, и они обычно включены в большинство дистрибутивов.
+Имеются как текстовые клиенты, так и GUI-клиенты. Относящееся к FTP
+программное обеспечение (сервера и клиенты) для Linux можгут быть найдены на:
+<!--<A HREF="http://sunsite.unc.edu/pub/Linux/system/network/file-transfer/">-->http://sunsite.unc.edu/pub/Linux/system/network/file-transfer/<!--</A>--><P>
+<P>
+<H2>6.5 Информационная служба</H2>
+
+<P>Usenet (также известный как новости) - огромная BBS, которая покрывает все
+тематики, и организованная иерархически. Компьютерная сеть обменивается
+через Internet (Usenet) статьями по протоколу NNTP. Для Linux существуют
+несколько реализаций. Либо для тяжело загруженных сайтов, либо для маленьких
+сайтов, получающих только несколько групп новостей.
+<UL>
+<LI>   Домашняя страница INN
+<!--<A HREF="http://www.isc.org/">-->http://www.isc.org/<!--</A>-->
+</LI>
+<LI>   Программное обеспечение Linux, относящееся к новостям
+<!--<A HREF="http://www.linuxlinks.com/Software/Internet/News/">-->http://www.linuxlinks.com/Software/Internet/News/<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.6 DNS</H2>
+
+<P>DNS сервер проделывает работу по трансляции имен (читаемых людьми) в адрес
+IP. DNS сервер не знает все в мире адреса IP; он может запросить другие
+сервера о неизвестных адресах. DNS сервер либо возвратит требуемый IP адрес
+пользователю, либо сообщают, что это имя не может быть найдено.
+<P>Обслуживание имен в Unix (и в большинстве Internet) выполняется программой
+называемой named. Она является частью пакета bind, продвигаемого The
+Internet Software Consortium.
+<UL>
+<LI>   BIND
+<!--<A HREF="http://www.isc.org/">-->http://www.isc.org/<!--</A>-->
+</LI>
+<LI>   DNS How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/DNS-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/DNS-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.7 DHCP, bootp</H2>
+
+<P>DHCP и bootp - протокол, который позволяет машине пользователя получать
+сетевую информацию (типа своего IP адреса) с сервера. Многие организации
+начинают использовать этот протокол, потому что он облегчает управление
+сетью, особенно в больших сетях или сетях, в которых имеется множество
+мобильных пользователей.
+<P>Относящиеся к данной теме документы:
+<UL>
+<LI>   DHCP How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/DHCP.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/DHCP.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.8 NIS</H2>
+
+<P>Сетевая Информационная служба (NIS) обеспечивает простой сетевой сервис,
+состоящий из баз данных и процессов. Его цель состоит в предоставлении
+информацию, которая должна быть известна через сеть, для всех машин в сети.
+К примеру, он позволяет одному человеку зарегистрироваться на любой машине
+в сети с NIS без необходимости добавления администратором пароля для него во
+все машины, а только в основную базу данных.
+<P>How-To:
+<UL>
+<LI>   NIS How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/NIS-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/NIS-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>6.9 Аутентификация</H2>
+
+<P>Имеются различные методы аутентификации пользователей. В смешанных сетях
+Linux/Window NT:
+<!--<A HREF="http://www.mindware.com.au/ftp/smb-NT-verify.1.1.tar.gz">-->http://www.mindware.com.au/ftp/smb-NT-verify.1.1.tar.gz<!--</A>-->.
+PAM (встраиваемый опознавательный модуль), который является гибким методом
+аутентификации в UNIX: PAM библиотека
+<!--<A HREF="http://www.kernel.org/pub/linux/libs/pam/index.html">-->http://www.kernel.org/pub/linux/libs/pam/index.html<!--</A>-->. В заключение,
+LDAP для Linux
+<!--<A HREF="http://www.umich.edu/~dirsvcs/ldap/index.html">-->http://www.umich.edu/~dirsvcs/ldap/index.html<!--</A>--><P>
+<P>
+<H2><A NAME="s7">7. Удаленное выполнение прикладных программ</A></H2>
+
+<P>Одна из наиболее удивительных особенностей UNIX (и одна из наиболее
+неизвестных для новых пользователей) - мощная поддержка удаленного и
+распределенного выполнения прикладных программ.
+<P>
+<P>
+<H2>7.1 Telnet</H2>
+
+<P>Telnet - программа, которая позволяет человеку использовать удаленный
+компьютер, как будто этот человек находится рядом с этой машиной. Telnet -
+одно из наиболее мощных инструментальных средств в UNIX, позволяя истинно
+удаленное администрирование. Он также является интересной программой с точки
+зрения пользователей, потому что предоставляет удаленный доступ к всем их
+файлам и программам из любой точки Internet. При объединении с X-сервером,
+отсутствует разлница (кроме задержки) между нахождением за пультом или на
+другой стороне планеты. Telnet демоны и клиенты доступны в большинстве
+дистрибутивов Linux.
+<P>Шифрованные удаленные сессии shell можно проводить через SSH
+(
+<!--<A HREF="http://www.cs.hut.fi/ssh/">-->http://www.cs.hut.fi/ssh/<!--</A>-->), что позволяет действительно безопасно
+удаленно администрировать узел.
+<P>
+<UL>
+<LI>   Программное обеспечение для Telnet
+<!--<A HREF="http://sunsite.unc.edu/pub/Linux/system/network/telnet/">-->http://sunsite.unc.edu/pub/Linux/system/network/telnet/<!--</A>--></LI>
+</UL>
+<P>
+<H2>7.2 Команды удаленного выполнения</H2>
+
+<P>В Unix, и в частности в Linux, существуют удаленные команды, которые
+позволяют взаимодействовать с другими компьютерами из строки приглашения
+shell. Примеры: rlogin, который позволяет войти в систему на удаленной
+машине наподобие telnet; rcp, который позволет удаленно передавать файлы
+между машинами, и т.д. В заключение, удаленная команда оболочки rsh
+позволяет выполнение команд на удаленной машине без фактической регистрации
+на той машину.
+<P>
+<P>
+<H2>7.3 X Window System</H2>
+
+<P>X Window System была разработана в MIT в недавнем 1980-ом и быстро стала
+промышленным стандартом оконной системы для графических рабочих станций UNIX.
+Программное обеспечение свободно доступно, очень универсально и подходит для
+широкого диапазона аппаратных средств. Любая X window system состоит из 2
+частей - X сервер и одного или больше X клиентов. Важно понять различие
+между сервором и клиентом. Сервер управляет дисплеем напрямую и ответственен
+за весь ввод-вывод через клавиатуру, мышь и дисплей. Клиенты, с другой
+стороны, не обращаются к экрану непосредственно - они связываются с сервером,
+который обрабатывает весь ввод и вывод. Клиенты проделывают "реальную"
+вычислительную работу - управляют прикладными программами или еще что-нибудь.
+Клиент связывается с сервером, заставляя сервер открыть одно или более окон,
+чтобы произвести операции ввода и вывода для этого клиента.
+<P>Короче говоря, X Window System позволяет пользователю зарегистрироваться на
+удаленной машине, выполнить процесс (например, открыть веб-браузер) и вывод
+отобразить на собственной машине. Поскольку процесс фактически выполняется
+на сервере, пользователю требуется процессор очень небольшой
+производительности. Действительно возможно иметь компьютеры, чье первичное
+назначение состоит в том, чтобы работать как чистые x-серверы, и они
+известны как x-терминалы.
+<P>Свободный порт X windows system существует для Linux и может быть найден в:
+Xfree
+<!--<A HREF="http://www.xfree86.org/">-->http://www.xfree86.org/<!--</A>-->Обычно он включается в большинство
+дистрибутивов Linux.
+<P>How-to:
+<DL>
+<DT><B>   Remote X Apps How-to</B><DD><P>VNC. VNC означает Virtual Network Computing. Это, в сущности, система
+"удаленного дисплея", которая позволяет видеть "рабочий стол" не только
+на машине, где запущен процесс, но и из любой точки Internet на машинах
+самой разнообразной архитектуры. И клиент, и сервер существует для Linux,
+также как и для многих других платформ. Можно запустить MS Word на машине с
+Windows NT или Windows 95 и выводимую информацию отображать на Linux
+машине. И наоборот - можно выполнять прикладную программу на Linux машине
+и выводить отображаемую информацию на любую другую машину с Linux или
+Windows. Существует клиент Java, позволяющий выполнять "удаленный дисплей"
+внутри окна веб-браузера. В заключение скажу что, порт для Linux,
+использующий графическую библиотеку SVGAlib позволяет сделать полностью
+функциональный x-терминал из 386 с 4 МБ оперативной памяти.
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Remote-X-Apps.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Remote-X-Apps.html<!--</A>--></DL>
+<P>
+<P>
+<H2><A NAME="s8">8. Сетевые соединения</A></H2>
+
+<P>Работа с сетями в Linux богата возможностями. Linux-машина может быть
+настроена так, чтобы работать в качестве маршрутизатора, моста, и т.д ...
+Некоторые из доступных возможностей описаны ниже
+<P>
+<P>
+<H2>8.1 Маршрутизатор</H2>
+
+<P>Linux ядро имеет встроенную поддержку для функций маршрутизации. Linux-машина
+может действовать или как IP, или IPX маршрутизатор стоимостью в несколько
+раз меньшей, чем коммерческий маршрутизатор. Новые ядра включают специальные
+опции для машин, работающих прежде всего как маршрутизаторы:
+<DL>
+<DT><B>   Мультикастинг: </B><DD><P>Позволяет Linux машине работать как маршрутизатор для IP
+пакетов, которые имеют несколько адресов назначения. Это необходимо при
+работе в MBONE, сеть с высокой прпускной способностью, лежащая в основе
+Internet, который передает звук, радиопередачи, видео
+<P>
+<DT><B>   Стратегия IP маршрутизации: </B><DD><P>Обычно, маршрутизатор решает, что делать с
+полученным пакетом, основываясь исключительно на адресе назначения пакета,
+но маршрутизатор может также принять во внимание и адрес источника, и
+сетевое устройство, с которого пакет прибыл пакет.
+</DL>
+
+Имеется несколько проектов, которые включают попытки построить маршрутизатор
+на Linux на одной дискете: Linux Router Project
+<!--<A HREF="http://www.psychosis.com/linux-router/">-->http://www.psychosis.com/linux-router/<!--</A>--><P>
+<P>
+<H2>8.2 Мост</H2>
+
+<P>Ядро Linux имеет встроенную поддержку для работы в качестве моста локальной
+сети ethernet, что означает, что соединенные им различные сегменты локальной
+сети ethernet работают как одна локальная сеть ethernet. Несколько мостов
+могут работать вместе, чтобы создать большие сети Ethernet, используя
+алгоритм spanning tree IEEE802.1. Поскольку он является стандартом, Linux
+мосты будут правильно взаимодействать с мостами третьих фирм. Дополнительные
+программные пакеты позволяют фильтровать данные по IP, IPX или MAC адресам.
+<P>How-tos:
+<UL>
+<LI>   Bridge + Firewall
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Bridge+Firewall.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Bridge+Firewall.html<!--</A>-->
+</LI>
+<LI>   Bridge
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Bridge.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Bridge.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.3 IP-Masquerading</H2>
+
+<P>IP Masquerade - развивающаяся функция работы с сетями в Linux. Если
+Linux-хост соединен с Internet с включенным IP Masquerade, то компьютеры,
+подключенные к нему (либо в той же самой локальной вычислительной сети, либо
+соединенные по модему) могут тоже выходить в Inetrnet, даже если у них нет
+официально назначенных IP адресов. Это позволяет сократить издержки, так как
+множество людей могут работать с Internet через одно модемное соединение,
+а также способствует укреплению безопасности (в некоторых случаях машина
+работает как firewall, так как к неофициально назначенным адресам нельзя
+обращаться из внешней сети)
+<P>Страницы и документы IP masquerade:
+<UL>
+<LI>
+<!--<A HREF="http://www.tor.shaw.wave.ca/~ambrose/">-->http://www.tor.shaw.wave.ca/~ambrose/<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://www.indyramp.com/masq/links.pfhtml">-->http://www.indyramp.com/masq/links.pfhtml<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/IP-Masquerade.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/IP-Masquerade.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.4 Ip-accounting</H2>
+
+<P>Эта опция ядра Linux следит за IP трафиком, регистрацией пакетов и
+вырабатывает статистику. Последовательность правил может определять, что
+когда некоторый пакет соответствует образцу, то счетчик увеличивается, он
+принимается/отвергается, и т.д ..
+<P>
+<P>
+<H2>8.5 IP aliasing</H2>
+
+<P>Эта особенность ядра Linux обеспечивает возможность установки нескольких
+сетевых адресов на один и тот же драйвер низкого уровня сетевого устройства
+(например, два IP адреса на один адаптер локальной сети ethernet). Обычно
+используется для сервисов, которые работают с адресами из различных сетей
+(например "мультихостинг" или "виртуальные области" или "виртуальный
+мультихостинг").
+<P>How-to:
+<UL>
+<LI>   IP aliasing How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/IP-Alias.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/IP-Alias.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.6 Traffic shaper</H2>
+
+<P>Traffic shaper - это действительное сетевое устройство, которое ограничиивает
+выходной поток данных в другом сетевом устройстве. Он особенно полезен в тех
+случаях (например, для ISP), когда желательно управлять скоростями передачи
+данных для каждого пользователя. Другой вариант (только для веб) - это
+модули Apache, которые ограничивают число IP соединений или используемую
+скорость передачи для конкретного пользователя.
+<P>
+<P>
+<H2>8.7 Firewall</H2>
+
+<P>Firewall - устройство, которое защищает частную сеть от общей части
+(Internet'а в целом). Оно разработано для управления потоком пакетов,
+в зависимости от адреса источника, адреса назначения, порта и информации о
+типе пакета, содержащихся в каждом пакете.
+<P>Для Linux существуют различные комплекты инструментальных средств firewall
+равно как и встроенная в ядро поддержка. Другие firewallы - TIS и SOCKS.
+эти комплекты инструментальных средств firewall весьма функциональны, и
+будучи объединенными с другими инструментальными средствами позволяют
+блокировать/переназначать любые трафик и протоколы. Различные правила
+могут задаваться через файлы конфигурации или GUI программы.
+<P>
+<UL>
+<LI>   Домашняя страничка TIS
+<!--<A HREF="http://www.tis.com">-->http://www.tis.com<!--</A>-->
+</LI>
+<LI>   SOCKS
+<!--<A HREF="http://www.socks.nec.com/socksfaq.html">-->http://www.socks.nec.com/socksfaq.html<!--</A>-->
+</LI>
+<LI>   Firewall How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Firewall-HOWTO.html">-->http://sunsite.unc.edu/mdw/HOWTO/Firewall-HOWTO.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.8 Port Forwarding</H2>
+
+<P>Увеличение числа веб-сайтов достигается с помощью cgi-bins или Java-апплетов,
+которые обращаются к некоторой базе данных или другому сервису. Так как
+этот доступ может ставить проблему защиты, машина, содержащая базу данных
+не должна быть соединена непосредственно к Internet.
+<P>Port Forwarding может обеспечить почти идеальное решение этой проблемы. На
+firewall, в IP пакетах, которые приходят на указанный порт, номер порта
+может быть подменен, и пакеты будут посылаться на внутренний сервер,
+обеспечивающий фактическое обслуживание. Ответные пакеты от внутреннего
+сервера преобразуются так, словно они исходят от firewall.
+<P>Информация по Port Forwarding может быть найдена здесь
+<!--<A HREF="http://www.ox.compsoc.net/~steve/portforwarding.html">-->http://www.ox.compsoc.net/~steve/portforwarding.html<!--</A>--><P>
+<P>
+<H2>8.9 Выравнивание нагрузки</H2>
+
+<P>Вопрос о выравнивании нагрузки возникает обычно при доступе к базе
+данных/веб, когда к серверу обращается одновременно множество клиентов.
+Было бы желательно иметь несколько идентичных серверов и переназначать
+запросы на менее загруженный сервер. Это может быть достигнуто с помощью
+технологии Трансляции Сетевых Адресов (NAT), чьим подмножеством является
+IP-masquerading. Сетевые администраторы могут заменить один сервер,
+обеспечивая услуги веб - или любое другое приложение, - объединением
+серверов, совместно использующих один общий адрес IP. Входящие соединения
+направлюятся на особый сервер, использующий алгоритм выравнивания нагрузки.
+Виртуальный сервер перезаписывает входящие и исходящие пакеты так, что
+клиент имеют прозрачный доступ к серверу, как будто сервер только один.
+<P>Информация по Linux IP-NAT может быть найдена здесь
+<!--<A HREF="http://www.csn.tu-chemnitz.de/~mha/linux-ip-nat/diplom/">-->http://www.csn.tu-chemnitz.de/~mha/linux-ip-nat/diplom/<!--</A>--><P>
+<P>
+<H2>8.10 EQL</H2>
+
+<P>EQL интегрирован в ядро Linux. Если существуют два последовательных
+соединения с некоторым другим компьютером (обычно для этого требуется два
+модема и две телефонных линии) и на них используются SLIP или PPP (протоколы
+для передачи Internet трафика по телефонным линиям), то можно заставить их
+вести себя как одно соединение удвоенного быстродействия, использующее этот
+драйвер. Конечно, оно должно поддерживаться также и на другом конце линка.
+<P>
+<UL>
+<LI>   EQL How-to
+<!--<A HREF="http://www.abies.com/eql-howto.mhtml">-->http://www.abies.com/eql-howto.mhtml<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.11 Прокси-сервер</H2>
+
+<P>Термин прокси означает "делать что-либо от чьего-то имени". В условиях
+работы с сетями, прокси-сервер может работать для защиты нескольких клиентов.
+HTTP прокси - это машина, которая получает запросы на веб страницы от другой
+машины (Машина A). Прокси скачивает запрошенную страницу и передает ее
+Машине A. Прокси может иметь кэш запрошенных страниц, так что, если другая
+машина обратится к той же самой странице, то ей будет передана копия из кэша.
+это позволяет более эффективно использовать каналы связи и уменьшить время
+отклика. Как побочный эффект, для машин, не подключенных непосредственно к
+Internet прокси является точкой выхода внутренней сети во внешний мир.
+Тщательно настроенный прокси может быть эффективен также, как и хороший
+firewall.
+<P>Для Linux написано несколько прокси серверов. Одно из самых популярных
+решение - прокси-модуль из пакета Apache. Более полная и продуманная
+реализация HTTP прокси - SQUID.
+<P>
+<UL>
+<LI>   Apache
+<!--<A HREF="http://www.apache.org">-->http://www.apache.org<!--</A>-->
+</LI>
+<LI>   Squid
+<!--<A HREF="http://www.squid.org">-->http://www.squid.org<!--</A>--></LI>
+</UL>
+<P>
+<P>
+<H2>8.12 Дозвон по требованию</H2>
+
+<P>Цель дозвона по требованию состоит в том, чтобы заставить это очевидно
+появиться, что пользователи имеют постоянное соединение с удаленным местом.
+Обычно, имеется daemon, кто контролирует воздушное движение пакетов и где
+интересный пакет (интересный определен обычно набором
+rules/priorities/permissions) прибывает, это устанавливает соединение с
+удаленным концом. Когда канал - простой для некоторого периода(точки)
+времени, это понижает(пропускает) соединение.
+<P>
+<UL>
+<LI>   Diald How-to
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Diald.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Diald.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>8.13 Tunnelling, мобильный IP и виртуальные частные сети</H2>
+
+<P>Ядро Linux позволяет осуществлять tunnelling протоколов (вложение пакетов).
+Он может делать IPX tunnelling через IP, позволяя соединить две IPX сети
+по IP связи. Также можно делать IP-IP tunnelling, что является необходимым
+для поддержки мобильных IP, поддержки мультивещания и любительского радио.
+(См.
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/NET-3-HOWTO-6.html#ss6.13">-->http://sunsite.unc.edu/mdw/HOWTO/NET-3-HOWTO-6.html#ss6.13<!--</A>-->)
+<P>Мобильный IP определяет расширения, которые позволяют осуществлять прозрачную
+маршрутизацию IP датаграмм для подвижных узлов Internet. Каждый мобильный
+узел всегда идентифицируется по собственному адресу, независимо от текущей
+точки входа в Internet. При нахождении вдалеке от дома, подвижный узел
+также связывается с адресом обслуживания, который предоставляет информацию
+о точке входа в Internet. Протокол регистрирует адрес обслуживания в
+домашнем агенте. Домашний агент посылает датаграммы, предназначенные
+подвижному узлу через туннель на адрес обслуживания. По достижению конца
+туннеля, каждая датаграмма затем приходит на мобильный узел.
+<P>Двухточечный Протокол Туннелирования (PPTP) - технология работы с сетями,
+которая позволяет использовать Internet в качестве среды передачи для
+виртуальной частной сети (VPN). На сервере Windows NT PPTP встроен в сервер
+удаленного доступа (RAS). С помощью PPTP пользователи могут звонить
+локальному ISP или соединяться непосредственно с Internet, и обращаться к
+своей сети, словно работая в локальной сети. PPTP - закрытый протокол, и его
+качество защиты было недавно скомпрометировано. Настойчиво рекомендуется под
+Linux использовать другие методы защиты, так как они основаны на открытых
+стандартах, которые были тщательно проверены.
+<P>
+<UL>
+<LI>   Реализация клиента PPTP для Linux доступна здесь
+<!--<A HREF="http://www.pdos.lcs.mit.edu/~cananian/Projects/PPTP/">-->http://www.pdos.lcs.mit.edu/~cananian/Projects/PPTP/<!--</A>--></LI>
+</UL>
+
+Мобильные IP:
+<UL>
+<LI>
+<!--<A HREF="http://www-uk.hpl.hp.com/people/jt/mip.html">-->http://www-uk.hpl.hp.com/people/jt/mip.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://anchor.cs.binghamton.edu/~mobileip/">-->http://anchor.cs.binghamton.edu/~mobileip/<!--</A>--></LI>
+</UL>
+
+Документы о Виртуальных Частных Сетях:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/VPN.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/VPN.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sites.inka.de/sites/bigred/devel/cipe.html">-->http://sites.inka.de/sites/bigred/devel/cipe.html<!--</A>--></LI>
+</UL>
+<P>
+<P>
+<H2><A NAME="s9">9. Сетевое Управление</A></H2>
+
+<H2>9.1 Прикладные программы сетевого управления</H2>
+
+<P>Имеется внушительное число инструментальных средств, ориентированных на
+сетевое управление и удаленное администрирование. Некоторые интересные
+проекты удаленного администрирования - linuxconf и webmin:
+<UL>
+<LI>   Webmin
+<!--<A HREF="http://www.webmin.com/webmin/">-->http://www.webmin.com/webmin/<!--</A>-->
+</LI>
+<LI>   Linuxconf
+<!--<A HREF="http://solucor.solucorp.qc.ca/linuxconf/">-->http://solucor.solucorp.qc.ca/linuxconf/<!--</A>--></LI>
+</UL>
+
+Другие инструментальные средства включают сетевые инструментальные средства
+анализа трафика, сетевые инструментальные средства защиты, контролирующие
+инструментальные средства, инструментальные средства настройки, и т.д
+Архивы многих из этих инструментальных средств могут быть найдены на Sunsite
+<!--<A HREF="http://www.sunsite.unc.edu/pub/Linux/system/network/">-->http://www.sunsite.unc.edu/pub/Linux/system/network/<!--</A>--><P>
+<P>
+<H2>9.2 SNMP</H2>
+
+<P>Простой Сетевой Протокол Управления - протокол для предоствления услуг по
+управлению сетью. Он предоставляет удаленный текущий контроль и настройку
+маршрутизаторов, мостов, сетевых плат, коммутаторов, и т.д ... Имеется
+большое количество библиотек, клиентов, демонов и программ для SNMP
+написанных для Linux. Хорошая страница, относящаяся к SNMP и ПО для Linux
+может быть найдена в:
+<P>
+<P>
+<P>
+<H2><A NAME="s10">10. Производственные сети и Linux</A></H2>
+
+<P>В некоторых ситуациях при работе с сетями необходимо иметь механизмы,
+гарантирующие &nbsp;100% работоспособность cети. Некоторые такие методы
+описаны в последующих разделах. Большинство из этого материала может быть
+найдено на превосходном веб-сайте Linas:
+<!--<A HREF="http://linas.org/linux/index.html">-->http://linas.org/linux/index.html<!--</A>-->
+и в High-Availability-HOWTO для Linux
+<!--<A HREF="http://sunsite.unc.edu/pub/Linux/ALPHA/linux-ha/High-Availability-HOWTO.html">-->http://sunsite.unc.edu/pub/Linux/ALPHA/linux-ha/High-Availability-HOWTO.html<!--</A>--><P>
+<P>
+<H2>10.1 Высокая надежность</H2>
+
+<P>Для предотвращения полный краха системы при единичных случаях отказа
+используется избыточность. Станция с одной сетевой платой или одним SCSI
+диском имеет две потенциальные точки отказа. Цель состоит в сокрытии от
+пользователей незапланированных сбоев и возможности максимально быстро
+позволить пользователям возобновить работу. Программное обеспечение
+обеспечения высокой надежности - это набор скриптов и инструментальных
+средств, которые автоматически контролируют и обнаруживают отказы,
+предпринимая соответствующие шаги для восстановления нормальной работы и
+сообщая об этом администратору системы.
+<P>
+<P>
+<H2>10.2 RAID</H2>
+
+<P>RAID, сокращение для Избыточного Массива Недорогих Дисков, является методом,
+с помощью которого информация располагается на нескольких дисках, используя
+методы типа дискового striping (RAID уровня 0) и зеркального отображения
+диска (RAID уровня 1), чтобы достигнуть избыточности, более малого времени
+ожидания и/или большей скорости чтения и/или записи, и восстановимости после
+сбоев жесткого диска. Имеется свыше шести различных типов конфигураций RAID.
+Для пользователей Linux доступны три вида реализации RAID: программный RAID,
+внешние корзины DASD и контроллеры RAID.
+<P>
+<DL>
+<DT><B>   Программный RAID:</B><DD><P>Исключительно программная реализация RAID осуществляет
+различные уровни RAID в дисковом коде ядра.
+<P>
+<DT><B>   Внешние корзины DASD:</B><DD><P>DASD (Устройство Памяти Прямого доступа) - отдельные
+модули, которые поставляются с их собственным питанием, обеспечивают
+шкаф/блок для закрепления жестких дисков, и видны в Linux как SCSI
+устройства. Во многих случаях они предоставляют наиболее продуманное
+решение RAID.
+<P>
+<DT><B>   Контроллеры RAID: </B><DD><P>Контроллеры - платы адаптера, которые подключают к шине
+ISA/EISA/PCI. Точно так же как и обычные платы дискового контроллера,
+кабель присоединяется к дисководам. В отличие от обычных контроллеров
+дисков, контроллеры RAID реализуют RAID непосредственно на самой плате,
+выполняя все необходимые операции по обеспечению различных уровней RAID.
+</DL>
+
+How-tos:
+<UL>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/DPT-Hardware-RAID.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/DPT-Hardware-RAID.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/Root-Rescue.html">-->http://sunsite.unc.edu/mdw/HOWTO/Root-Rescue.html<!--</A>-->
+</LI>
+<LI>
+<!--<A HREF="http://sunsite.unc.edu/mdw/HOWTO/mini/Software-RAID.html">-->http://sunsite.unc.edu/mdw/HOWTO/mini/Software-RAID.html<!--</A>--></LI>
+</UL>
+
+RAID в linas.org:
+<UL>
+<LI>
+<!--<A HREF="http://linas.org/linux/raid.html">-->http://linas.org/linux/raid.html<!--</A>--></LI>
+</UL>
+<P>
+<H2>10.3 Избыточность в сетях</H2>
+
+<P>IP Address Takeover (IPAT). Когда сбоит плата сетевого адаптера, ее адрес IP
+должен переназначиться рабочей сетевой плате на том же самом хосте или на
+другом хосте. MAC Address Takeover: когда происходит перераспределение IP
+адресов, надо удостовериться, что все узлы в сети модифицировали свои ARP
+кэши (отображение между IP и MAC адресами). См. High-Availability How-To для
+подробностей:
+<!--<A HREF="http://sunsite.unc.edu/pub/Linux/ALPHA/linux-ha/High-Availability-HOWTO.html">-->http://sunsite.unc.edu/pub/Linux/ALPHA/linux-ha/High-Availability-HOWTO.html<!--</A>--><P>
+<P>
+<H2><A NAME="s11">11. Источники Информации</A></H2>
+
+<P>Где получать дальнейшую информацию:
+<UL>
+<LI>   Linux:
+<!--<A HREF="http://www.linux.org">-->http://www.linux.org<!--</A>-->
+</LI>
+<LI>   Linux Documentation Project:
+<!--<A HREF="http://sunsite.unc.edu/mdw/linux.html">-->http://sunsite.unc.edu/mdw/linux.html<!--</A>-->
+(посмотрите Руководство Сетевого Администратора Linux)
+</LI>
+<LI>   Freshmeat: последние выпуски ПО для Linux .
+<!--<A HREF="http://www.freshmeat.net">-->http://www.freshmeat.net<!--</A>-->
+</LI>
+<LI>   Относящееся к Linux:
+<!--<A HREF="http://www.linuxlinks.com/Networking/">-->http://www.linuxlinks.com/Networking/<!--</A>--></LI>
+</UL>
+<P>
+<H2><A NAME="s12">12. Подтверждения и оговорки</A></H2>
+
+<P>Этот документ основан на работах многих других людей, которые помогли
+Linux стать тем, чем он является теперь: одной из самых лучших сетевых
+операционных систем. Все благодарности - им. На этот документ было потрачено
+много усилий, чтобы сделать его простым, точным и полным, но не чрезмерно
+длинным. Однако, автором не будет принята ответственность в любом случае.
+Используйте информацию, содержащуюся здесь на ваш собственный риск.
+Пожалуйста, не стесняйтесь присылать мне по электронной почте предложения,
+исправления или общие комментарии относящиеся к документу, так чтобы я мог
+улучшать его. Другие темы, которые будут вероятно включены в будущие
+изменения этого документа, могут включать radius, утилиты для web/ftp
+зеркал типа wget, анализаторов трафика, CORBA ... и многое другое, что
+может быть предложено и подойдет. Вы можете найти меня здесь
+<P>В заключение я хотел бы поблагодарить FinnBjшrn av Teilgum за его корректную
+"проверочную бету" этого how-to.
+<P>Daniel Lуpez Ridruejo 9-ого мая 1998
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

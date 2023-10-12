@@ -1,0 +1,683 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 3 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 3.</h2>
+<br><h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs3.html">-->http://www-106.ibm.com/developerworks/library/l-fs3.html<!--</a>--></h3>
+<br><h2>Использование файловой системы virtual memory (VM) и bind mounts</h2>
+<p><a href="l-fs3_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#4723352825252e29340720222933282869283520"><span class="__cf_email__" data-cfemail="98fceaf7fafaf1f6ebd8fffdf6ecf7f7b6f7eaff">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>September 2001</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования
+filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и других.
+Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно они
+могут делать, насколько они хороши и насколько оправдано их использование в
+промышленной Linux среде. В этой статье Daniel дает обзор tmpfs, файловой системы,
+основанной на VM, и описывает новые, ставшими доступными с переходом
+на ядро 2.4 возможностями "bind"-mounting abilities.</blockquote>
+<p>В предыдущих статьях этой серии я описал преимущества журналирования вообще
+и файловую систему ReiserFS в частности. Была
+описана процедура установки
+rock-solid Linux 2.4-based ReiserFS файловой системы. В данной статье обратим
+свое внимание на
+нетривиальную тему. Сначала будет рассмотрена tmpfs, еще
+известная как virtual memory (VM) filesystem. Tmpfs - вероятно лучшая
+RAM disk-like система, уже сейчас доступная для Linux через новые свойства
+ядра 2.4. После начального вступления рассмотрим
+дополнительные возможности
+ядра 2.4, называемые "bind mounts", которые добавляют много гибкости в
+монтировании файловых систем.
+В следующей статье мы сосредоточимся на devfs,
+а затем потратим время на более глубокое знакомство с новой ext3 filesystem.</p>
+<h3>Презентация tmpfs.</h3>
+<p>
+Если от меня потребуют объяснить в одной фразе, что такое tmpfs, я бы сказал -
+tmpfs подобие ramdisk, но с "изюминкой".
+Подобно ramdisk, tmpfs использует
+ОПЕРАТИВНУЮ ПАМЯТЬ, но, кроме этого, может использовать swap devices. В то
+время как
+традиционный ramdisk это блочное устройство и перед его
+использованием необходимо отформатировать раздел командой <code>mkfs</code>
+с опциями,
+то файловая система tmpfs - устройство не блочное, готовое к использованию
+сразу после монтирования.
+Такие свойства tmpfs делают ее самой привлекательной
+из RAM-based файловых систем, известных на сегодняшний день.</p>
+<h3>Tmpfs и VM</h3>
+<p>
+Давайте посмотрим на некоторые наиболее интересные свойства tmpfs. Как было
+отмечено выше, tmpfs может использовать <b>и RAM,
+и swap</b>. На первый взгляд,
+это может показаться не принципиальным, но вспомните, tmpfs еще известна как
+"virtual memory
+filesystem". Возможно, вы знаете, что ядро Linux "понимает"
+ресурс "виртуальная память" именно как единое - целое RAM и swap
+devices.
+Подсистема VM ядра ассигнует эти ресурсы другим подсистемам и управляет этими
+ресурсами behind-the-scenes (прозрачно
+в фоне). При этом часто без ведома
+"подсистемы - заказчика" перемещает страницы ОПЕРАТИВНОЙ ПАМЯТИ между swap
+и vice-versa.</p>
+<p>
+Файловая система tmpfs запрашивает страницы у подсистемы VM для хранения
+файлов. При этом сама tmpfs не знает, находятся ли
+эти страницы в swap или
+в RAM; это - "проблема" VM подсистемы. Иначе, tmpfs filesystem знает лишь то,
+что она использует виртуальную память.</p>
+<h3>Это не блочное устройство.</h3>
+<p>
+Теперь о другом интересном свойстве tmpfs filesystem. В отличие от большинства
+"нормальных" файловых систем (например, ext3,
+ext2, XFS, JFS, ReiserFS) tmpfs
+не является "надстройкой" над блочным устройством. Поскольку tmpfs напрямую
+"встроена" в VM,
+ее можно монтировать сразу после создания командой:</p>
+<pre><code>
+# mount tmpfs /mnt/tmpfs -t tmpfs
+</code></pre>
+<p>
+После выполнения команды вы получите новую tmpfs filesystem, смонтированную
+в /mnt/tmpfs и готовую к использованию.
+Обратите внимание, нет потребности в
+форматировании командой <code>mkfs tmpfs</code>; да это и невозможно, такой
+команды
+просто не существует. Сразу после команды <code>mount</code> файловая
+система доступна для использования и имеет тип
+<code>tmpfs</code>. Это в
+принципе отличается от Linux ramdisks; стандартный Linux ramdisks -
+<i>block devices</i> и требует
+форматирования перед размещением на нем файлов.
+Что имеем? Монтируй и используй!</p>
+<h3>Преимущества tmpfs.</h3>
+<ul>
+<li>
+<b>Динамически изменяемый размер файловой системы.</b></li>
+<p>
+Вы вероятно уже задавались вопросом, а какого размера файловую систему мы
+ подмонтировали к /mnt/tmpfs в примере выше?
+Ответ неожиданный (особенно, если
+имели дело только с disk-based файловыми системами). /mnt/tmpfs первоначально
+имеет очень
+маленький размер, но, по мере копирования и создания файлов
+драйвер tmpfs ассигнует у VM дополнительную память, динамически
+увеличивая
+емкость. Справедливо и обратное, при удалении файлов из /mnt/tmpfs драйвер
+отдает освобождаемую память операционной
+системе. Теперь ясно (память
+достаточно ценный ресурс и ее "никогда не бывает много"), большой плюс tmpfs
+в том, что
+используется ровно столько памяти, сколько требуется.
+См. <a href="l-fs3_ru.html#resources">Resources</a>.
+</p>
+<li>
+<b>Скорость.</b></li>
+<p>
+Другое преимущество tmpfs - ее "блестящая" скорость. Поскольку файловая
+система tmpfs постоянно загружена в оперативную
+память, операции записи -
+чтения происходят почти мгновенно. Даже если интенсивно используется swap,
+скорость все равно
+высокая (более того, перемещение в swap означает передачу
+ресурсов процессам, наиболее нуждающимся в памяти, что способствует
+повышению
+общей производительности). Итог - свойство динамически изменять размер и,
+при необходимости, сбрасываться в swap,
+дает возможность операционной системе
+более гибко распоряжаться ресурсами. Файловая система tmpfs прекрасная
+альтернатива
+традиционному RAM disk с позиции скорости.
+</p>
+<li>
+<b>Безинерционность.</b></li>
+<p>
+А вот это может считаться как плюсом, так и минусом. Как можно догадаться,
+данные в tmpfs после перезагрузки будут потеряны
+(оперативная память
+энергозависима по своей природе. Даже после "горячей перезагрузки",
+сохранившись в "физической оперативной
+памяти", информация станет недоступной,
+так как таблицы виртуальной памяти будут инициализированы иначе). Название
+"tmpfs" само
+за себя говорит. Плохо ли это? С какой стороны посмотреть.
+Фактически, tmpfs превосходный резервуар для хранения временных
+файлов.
+Традиционно для этих целей используется /tmp и некоторые части дерева /var.
+Есть даже опция - очищать /tmp при
+перезагрузке, на что тратится дополнительное
+время. В случае с tmpfs, такая "опция" - физическое свойство.
+</p>
+</ul>
+<h3>Использование tmpfs.</h3>
+<p>
+Все, что требуется для использования tmpfs - это ядро 2.4, скомпилированное
+с <code>"Virtual memory file system support
+(former shm fs)" enabled</code>;
+эта опция находится в подразделе <code>"File systems"</code> (<code>make menuconfig</code>).
+Если на вашей системе такое ядро, уже можно
+монтировать tmpfs filesystems. На предкомпилированных ядрах дистрибутивов это,
+как
+правило, сделано всегда. Можно не пользоваться самой tmpfs, но такая
+поддержка требуется для использования <i>POSIX shared
+memory</i>. Заметим,
+для использования <i>System V shared memory</i> поддержка tmpfs в ядре не
+требуется. <i>POSIX shared
+memory</i> широкого применения еще не получила,
+но это дело времени.</p>
+<h3>Уход от low VM conditions</h3>
+<p>
+А чего это мы все говорим о достоинствах? Фактом является то, что tmpfs
+динамически растет и уменьшается. Поэтому
+естественен провокационный вопрос.
+А что случится, если tmpfs filesystem разрастется так, что поглотит всю
+виртуальную память?
+Скажем так, приемлемое решение еще не найдено.
+С ядром 2.4.4, увы, произошло бы зависание. С ядром 2.4.6, подсистема VM имеет
+некоторую защиту, и авария не произойдет. Когда 2.4.6 почувствует точку,
+за которой ассигнование дополнительной памяти
+проблематично, вы просто не
+сможете ничего более записать в tmpfs filesystem. Кроме того, произойдут
+некоторые другие вещи.
+Сначала процессы в системе не смогут ассигновать
+дополнительную память; внешне система станет очень вялой. У суперпользователя
+есть время, чтобы предпринять шаги для выхода из low-VM condition.</p>
+<p>
+Далее, ядро имеет встроенную last-ditch систему освобождения памяти при ее
+исчерпании; она находит процесс, который наиболее
+"жадно" потребляет VM ресурсы
+и уничтожает его. К сожалению, такое "kill a process" решение имеет неприятные
+последствия,
+особенно, если в истощении памяти виновата tmpfs. Причина вот
+в чем. Сама tmpfs уничтожена быть не может, так как она - часть
+ядра, а не
+пользовательский процесс. Кроме того, специфика tmpfs такова, что для ядра не
+существует простого способа выяснить,
+какой именно процесс "затопляет" tmpfs.
+В таких случаях ядро ("вот разберусь до конца и накажу, кого попало") по
+ошибке
+"убивает" самый большой VM-hog процесс, которым обычно является ваш
+X server. Определить, что истинной причиной "падения" X
+было low-VM condition
+(tmpfs) очень сложно.</p>
+<h3>Решение для Low VM</h3>
+<p>
+К счастью, tmpfs позволяет указать максимальный размер filesystem при ее
+монтировании или перемонтировании. Фактически, с
+ядром 2.4.6 и util-linux-2.11g,
+такие параметры можно установить только при монтировании, но не
+перемонтировании (в следующих
+версиях ядер это может быть уже решено).
+Установка оптимального лимита на размер tmpfs зависит от ресурсов и режима
+
+использования Linux box; идея в том, чтобы предотвратить возможность со
+стороны tmpfs filesystem истощения ресурсов виртуальной
+памяти и предотвратить
+low-VM conditions, о чем говорилось ранее. Хороший способ найти приемлемый
+tmpfs upper-bound состоит в
+использовании <code>top</code> монитора для
+наблюдения за swap в момент пиковых нагрузок. Установите tmpfs upper-bound немного
+меньше, чем сумма свободной swap и RAM при пиковой нагрузке.</p>
+<p>
+Создать tmpfs filesystem с лимитом на максимальный размер достаточно просто.
+Например:</p>
+<pre><code>
+# mount tmpfs /dev/shm -t tmpfs -o size=32m
+</code></pre>
+<p>
+В этом примере монтирование новой tmpfs происходит не к точке /mnt/tmpfs,
+а к специально созданному /dev/shm. Это каталог,
+который является
+"official" mountpoint для tmpfs. Если вы используете devfs, этот каталог
+будет создан автоматически.</p>
+<p>
+Если требуется ограничить размер filesystem 512 КБ или 1 GB, можно
+соответственно указать <code>size=512k</code> или
+<code>size=1g</code>.
+В дополнение к ограничению размера можно лимитировать число inodes (filesystem
+objects) через параметр
+<code>nr_inodes=x</code>. Где x - целое число,
+возможно, с суффиксом k, m или g для обозначения тысяч, миллионов или
+миллиардов inodes.</p>
+<p>
+Для автоматического монтирования при загрузке системы допустимо сделать
+запись в файле /etc/fstab. Например:</p>
+<pre><code>
+tmpfs   /dev/shm        tmpfs   size=32m        0       0
+</code></pre>
+<h3>Монтирование поверх занятой mountpoints</h3>
+<p>
+При использовании ядер 2.2 любая попытка монтирования к уже используемой
+mountpoint приводила к ошибке. После переписи кода
+ядра повторное монтирование
+к занятой точке перестало быть проблемой. Такой пример: при загрузке системы
+монтируется "реальный"
+раздел диска к точке /tmp. Принимается оперативное
+решение использовать tmpfs. В старое время потребовалось бы размонтировать
+/tmp
+и повторно смонтировать tmpfs в /tmp:</p>
+<pre><code>
+#  umount /tmp
+#  mount tmpfs /tmp -t tmpfs -o size=64m
+</code></pre>
+<p>
+Однако не всегда это возможно. Если есть процессы с открытыми в /tmp файлами
+будет выдана следующая ошибка:</p>
+<pre><code>
+umount: /tmp: device is busy
+</code></pre>
+<p>
+На последних 2.4 ядрах можно перемонтировать /tmp filesystem без получения
+ошибки "device is busy":</p>
+<pre><code>
+# mount tmpfs /tmp -t tmpfs -o size=64m
+</code></pre>
+<p>
+Единственной командой ваша новая tmpfs filesystem монтируется к /tmp поверх
+ранее смонтированного partition. При этом все
+новые файлы будут открываться
+на tmpfs, а процессы, которые имели открытые файлы на "оригинальной"
+filesystem, так и будут
+продолжать работать с ними! Если размонтировать
+tmpfs-based /tmp, "оригинальная" /tmp появится, как и прежде. Фактически, можно
+монтировать любое число файловых систем на одну mountpoint, и mountpoint
+будет действовать подобно стеку.</p>
+<h3>Bind mounts</h3>
+<p>
+Используя bind mount, мы можем монтировать всю или только часть уже
+смонтированной filesystem к другой точке и иметь
+filesystem, доступную
+от обеих mountpoints одновременно! Например, можно использовать bind mounts
+для монтирования root
+filesystem к /home/drobbins/nifty:</p>
+<pre><code>
+#  mount --bind / /home/drobbins/nifty
+</code></pre>
+<p>
+Теперь, если зайти в /home/drobbins/nifty, вы увидите вашу root filesystem
+(/home/drobbins/nifty/etc,
+/home/drobbins/nifty/opt и т.д.). Если модифицируется
+файл на root filesystem, все изменения будут видны и в
+/home/drobbins/nifty.
+Так происходит потому, что это одни и те же разделы диска, просто ядро
+отображает filesystem в двух
+разных mountpoints. Обратите внимание, когда
+происходит монтирование файловой системы к новой точке через bind-mounted, все
+файловые системы, которые были примонтированы к "оригинальной", в новой
+позиции отображены не будут. Другими словами, если
+/usr создан на отдельном
+partition, после выполнения bind-mounted подкаталог /home/drobbins/nifty/usr
+окажется пустым.
+Потребуется дополнительное bind mount, чтобы просмотреть
+содержимое /usr в /home/drobbins/nifty/usr:</p>
+<pre><code>
+#  mount --bind /usr /home/drobbins/nifty/usr
+</code></pre>
+<h3>Bind mounting для части файловой системы.</h3>
+<p>
+Bind mounting делает возможными еще более "тонкие" вещи. Например, вы
+монтируете tmpfs к /dev/shm, его "традиционной" точке,
+но одновременно хотите
+использовать tmpfs для /tmp. Вместо монтирования еще одной tmpfs к /tmp
+(что возможно), вы решаете
+<i>share</i> новый /tmp с /dev/shm. Но,
+bind mount /dev/shm к /tmp нужно сделать так, чтобы каталоги из /dev/shm не
+были видны
+в /tmp. Как это сделать? Пример:</p>
+<pre><code>
+# mkdir /dev/shm/tmp
+# chmod 1777 /dev/shm/tmp
+# mount --bind /dev/shm/tmp /tmp
+</code></pre>
+<p>
+В этом примере сначала создается каталог /dev/shm/tmp и назначаются права
+доступа <code>1777</code> (обычные для /tmp).
+Далее можно монтировать только
+отдельный /dev/shm/tmp. После этого файл /tmp/foo будет дополнительно виден
+как /dev/shm/tmp/foo,
+но файл /dev/shm/bar в каталоге /tmp отображен не будет.</p>
+<p>
+<i>Примечание переводчика. Здесь очень быстро "пролистали" тонкие вещи.
+<code>chmod 1777 /dev/shm/tmp</code> устанавливает
+наследование прав в
+"стиле Беркли" (единичка в аргументах). Если этого не сделать, например,
+X server после перезагрузки
+"грохнется на старте". Второй момент - "аномальное"
+наследование при монтировании. Родительский каталог (точка монтирования
+/tmp)
+наследует свойства от дочернего каталога (/dev/shm/tmp). "Не логично",
+и "по незнанию" может стать причиной проблем.</i></p>
+<p>
+Как следует из примера, bind mounts очень сильное средство и может помочь в
+проектировании файловой системы сложной
+архитектуры. Следующая статья будет
+посвящена devfs; а пока можно посмотреть следующие ресурсы.</p>
+<a name="resources"><h3>Resources</h3></a>
+<ul>
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul><br>
+<br></li>
+<li><!--<a href="http://www.lwn.net/">-->Linux Weekly News<!--</a>--> is a great resource
+ for keeping up with the latest kernel developments.</li>
+<li><!--<a href="http://freshmeat.net/projects/util-linux/">-->util-linux<!--</a>-->
+ (freshmeat link) is a collection of various important
+Linux utilities,
+ including <code>mount</code> and <code>umount</code>.  You may want to upgrade to the
+ latest available version
+so that you can use the <code>mount --bind</code> syntax
+ (rather than using <code>mount -o bind</code>).</li>
+<li>Since tmpfs and bind mounts are relatively new and for the most part
+ undocumented new kernel features, the best way to
+learn more about them is to
+ study relevant parts of <!--<a href="http://freshmeat.net/projects/linux/">-->the
+ Linux kernel sources<!--</a>-->.</li>
+<li>The <!--<a href="http://www.namesys.com/">-->Namesys Web page<!--</a>--> is <i>the</i> place to learn more about ReiserFS.</li>
+<li>The <!--<a href="http://www.namesys.com/mailinglist.html">-->ReiserFS mailing
+list<!--</a>--> is an excellent source for current, more
+in-depth ReiserFS
+information. Be sure to check out the <!--<a href="http://marc.theaimsgroup.com/?l=reiserfs&amp;r=1&amp;w=2">-->
+ReiserFS
+mailing list archive<!--</a>-->, too.</li>
+<li>You can find a very nice in-depth look at the meta-data differences
+between UFS, ext2, ReiserFS, and more in Juan I. Santos
+Florido's <!--<a href="http://www.linuxgazette.com/issue55/florido.html">-->Linux Gazette
+Journal File Systems<!--</a>--> review.</li>
+<li>Jedi's <!--<a href="http://www.jedi.claranet.fr/reiserfs-tuning.html">-->ReiserFS/Qmail tuning
+page<!--</a>--> contains a lot of good
+information for <!--<a href="http://www.qmail.org/">-->qmail<!--</a>--> users. Also be sure to check out <!--<a href="http://www.jedi.claranet.fr/reisersmtp.html">-->
+ReiserSMTP<!--</a>-->, Jedi's collection of drop-in qmail components that offer dramatically higher qmail
+performance.</li>
+<li>Read Steve Best's <!--<a href="http://www-106.ibm.com/developerworks/library/jfs.html">-->JFS Overview<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Take Daniel's free <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/73CADD8F9875EAD0862569C8005B6783?OpenDocument">-->JFS fundamentals tutorial<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on <i>developerWorks</i>.</li>
+</ul>
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs3_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel
+Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of </a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->,
+an advanced Linux for the
+ PC, and the <b>Portage</b> system, a next-generation ports system for
+ Linux. He has also served as a
+contributing author for the Macmillan books
+ <i>Caldera OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba
+Unleashed</i>. Daniel has been involved with computers in some
+ fashion since the second grade, when he was first exposed to the
+Logo
+ programming language as well as a potentially dangerous dose of Pac Man.
+ This probably explains why he has since served as
+a Lead Graphic Artist at
+ <b>SONY Electronic Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his
+new baby daughter,
+ Hadassah. You can contact Daniel at <a href="../cdn-cgi/l/email-protection.html#bedaccd1dcdcd7d0cdfed9dbd0cad1d190d1ccd9"><span class="__cf_email__" data-cfemail="9df9eff2fffff4f3eeddfaf8f3e9f2f2b3f2effa">[email&#160;protected]</span></a>.
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#2b5d40434447466b5b42454448434e5f0548425f524742454e05595e">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

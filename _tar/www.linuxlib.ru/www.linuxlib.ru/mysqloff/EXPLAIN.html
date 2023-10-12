@@ -1,0 +1,810 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 5.2.1  Синтаксис оператора EXPLAIN (получение информации о SELECT) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/EXPLAIN.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/EXPLAIN.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Optimisation.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />5 Оптимизация в MySQL
+</a><ul><li class="p"><a href="Query_Speed.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />5.2 Оптимизация <code>SELECT</code> и других запросов
+</a><ul class="immediate"><li class="self">5.2.1 Синтаксис оператора <code>EXPLAIN</code> (получение информации о <code>SELECT</code>)
+</li><li><a href="Estimating_performance.html">5.2.2 Оценка производительности запроса
+</a></li><li><a href="SELECT_speed.html">5.2.3 Скорость выполнения запросов <code>SELECT</code>
+</a></li><li><a href="Where_optimisations.html">5.2.4 Как MySQL оптимизирует выражения <code>WHERE</code>
+</a></li><li><a href="DISTINCT_optimisation.html">5.2.5 Как MySQL оптимизирует <code>DISTINCT</code>
+</a></li><li><a href="LEFT_JOIN_optimisation.html">5.2.6 Как MySQL оптимизирует <code>LEFT JOIN</code> и <code>RIGHT JOIN</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/ORDER_BY_optimisation.html">5.2.7 Как MySQL оптимизирует <code>ORDER BY</code>
+</a></li><li><a href="LIMIT_optimisation.html">5.2.8 Как MySQL оптимизирует <code>LIMIT</code>
+</a></li><li><a href="Insert_speed.html">5.2.9 Скорость выполнения запросов <code>INSERT</code>
+</a></li><li><a href="Update_speed.html">5.2.10 Скорость выполнения запросов <code>UPDATE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Delete_speed.html">5.2.11 Скорость выполнения запросов <code>DELETE</code>
+</a></li><li><a href="Tips.html">5.2.12 Другие советы по оптимизации
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Previous</a> / <a rel="next" href="Estimating_performance.html" title="5.2.2  Оценка производительности запроса">Next</a> / <a rel="up" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>5.2.1  Синтаксис оператора <code>EXPLAIN</code> (получение информации о <code>SELECT</code>)</H3>
+
+<P>
+<A NAME="IDX829"></A>
+<A NAME="IDX830"></A>
+
+</P>
+
+<pre>
+    EXPLAIN имя_таблицы
+или EXPLAIN SELECT опции_выборки
+</pre>
+
+<P>
+<code>EXPLAIN имя_таблицы</code> является синонимом операторов <code>DESCRIBE имя_таблицы</code> и
+<code>SHOW COLUMNS FROM имя_таблицы</code>.
+
+</P>
+<P>
+Если оператор <code>SELECT</code> предваряется ключевым словом <code>EXPLAIN</code>, MySQL сообщит о
+том, как будет производиться обработка <code>SELECT</code>, и предоставит информацию о
+порядке и методе связывания таблиц.
+
+</P>
+<P>
+При помощи <code>EXPLAIN</code> можно выяснить, когда стоит снабдить таблицы индексами,
+чтобы получить более быструю выборку, использующую индексы для поиска
+записей. Кроме того, можно проверить, насколько удачный порядок связывания
+таблиц был выбран оптимизатором. Заставить оптимизатор связывать таблицы в
+заданном порядке можно при помощи указания <code>STRAIGHT_JOIN</code>.
+
+</P>
+<P>
+Для непростых соединений <code>EXPLAIN</code> возвращает строку информации о каждой из
+использованных в работе оператора <code>SELECT</code> таблиц. Таблицы перечисляются в
+том порядке, в котором они будут считываться.
+MySQL выполняет все связывания за один проход (метод называется
+"single-sweep multi-join"). Делается это так: MySQL читает строку из
+первой таблицы, находит совпадающую строку во второй таблице, затем - в
+третьей, и так далее. Когда обработка всех таблиц завершается, MySQL
+выдает выбранные столбцы и обходит в обратном порядке список таблиц до тех
+пор, пока не будет найдена таблица с наибольшим совпадением строк.
+Следующая строка считывается из этой таблицы и процесс продолжается в
+следующей таблице.
+
+</P>
+<P>
+Вывод команды <code>EXPLAIN</code> включает следующие столбцы:
+
+</P>
+<DL COMPACT>
+
+<DT><code>table</code>
+<DD>
+Таблица, к которой относится выводимая строка.
+
+<DT><code>type</code>
+<DD>
+Тип связывания. Информация о различных типах связывания представлена ниже.
+
+<DT><code>possible_keys</code>
+<DD>
+Столбец <code>possible_keys</code> служит для указания индексов, которые может
+использовать MySQL для нахождения строк в этой таблице. Обратите внимание:
+этот столбец полностью независим от порядка таблиц. Это означает, что на
+практике некоторые ключи в столбце <code>possible_keys</code> могут не годиться для
+сгенерированного порядка таблиц. Если данный столбец пуст, то никаких
+подходящих индексов не имеется. В этом случае для увеличения
+производительности следует исследовать выражение <code>WHERE</code>, чтобы увидеть,
+есть ли в нем ссылки на какой-либо столбец (столбцы), которые подходили бы
+для индексации. Если да, создайте соответствующий индекс и снова проверьте
+запрос при помощи оператора <code>EXPLAIN</code>. See section <A HREF="https://www.linuxlib.ru/mysqloff/ALTER_TABLE.html">6.5.4  Синтаксис оператора <code>ALTER TABLE</code></A>.
+
+Чтобы увидеть, какие
+индексы есть в таблице, используйте команду <code>SHOW INDEX FROM имя_таблицы</code>.
+
+<DT><code>key</code>
+<DD>
+Столбец <code>key</code> содержит ключ (индекс), который MySQL решил использовать в
+действительности. Если никакой индекс не был выбран, ключ будет иметь
+значение <code>NULL</code>. Если был выбран неверный индекс, можно попробовать
+заставить MySQL применить другой индекс. Для этого следует использовать
+<code>myisamchk -analyze</code> (see section <A HREF="https://www.linuxlib.ru/mysqloff/myisamchk_syntax.html">4.4.6.1  Синтаксис запуска <code>myisamchk</code></A>) или оператор <code>USE INDEX/IGNORE INDEX</code>.
+See section <A HREF="https://www.linuxlib.ru/mysqloff/SELECT.html">6.4.1  Синтаксис оператора <code>SELECT</code></A>.
+
+<DT><code>key_len</code>
+<DD>
+Столбец <code>key_len</code> содержит длину ключа, которую решил использовать MySQL.
+Если <code>key</code> имеет значение <code>NULL</code>, то длина ключа (<code>key_len</code>) тоже <code>NULL</code>. Обратите
+внимание: по значению длины ключа можно определить, сколько частей
+составного ключа в действительности будет использовать MySQL.
+
+<DT><code>ref</code>
+<DD>
+Столбец <code>ref</code> показывает, какие столбцы или константы используются с ключом,
+указанным в <code>key</code>, для выборки строк из таблицы.
+
+<DT><code>rows</code>
+<DD>
+В столбце <code>rows</code> указывается число строк, которые MySQL считает нужным
+проанализировать для выполнения запроса.
+
+<DT><code>Extra</code>
+<DD>
+Этот столбец содержит дополнительную информацию о том, как MySQL будет
+выполнять запрос. Ниже объясняется значение каждой из текстовых строк,
+которые могут находиться в этом столбце:
+
+<DL COMPACT>
+
+<DT><code>Distinct</code>
+<DD>
+После нахождения первой совпадающей строки MySQL не будет продолжать поиск
+строк для текущей комбинации строк.
+
+<DT><code>Not exists</code>
+<DD>
+MySQL смог осуществить оптимизацию <code>LEFT JOIN</code> для запроса и после
+нахождения одной строки, соответствующей критерию <code>LEFT JOIN</code>, не будет
+искать в этой таблице последующие строки для предыдущей комбинации строк.
+
+Например:
+
+
+<pre>
+SELECT * FROM t1 LEFT JOIN t2 ON t1.id=t2.id WHERE t2.id IS NULL;
+</pre>
+
+Предположим, что столбец <code>t2.id</code> определен как <code>NOT NULL</code>. В этом случае MySQL
+просмотрит таблицу <code>t1</code> и будет искать строки в <code>t2</code> соответствующие <code>t1.id</code>.
+Если MySQL находит в <code>t2</code> нужную строку, он знает, что <code>t2.id</code> никогда не
+может иметь значение <code>NULL</code>, и не будет искать в <code>t2</code> оставшуюся часть строк,
+имеющих тот же самый <code>id</code>. Другими словами, для каждой строки в <code>t1</code> MySQL
+должен выполнить только один поиск в <code>t2</code>, независимо от того, сколько
+совпадающих строк содержится в <code>t2</code>.
+
+<DT><code><code>range checked for each record (index map: #)</code></code>
+<DD>
+MySQL не нашел достаточно хорошего индекса для использования. Вместо этого
+для каждой комбинации строк в предшествующих таблицах он будет проверять,
+какой индекс следует использовать (если есть какой-либо индекс), и
+применять его для поиска строк в таблице. Это делается не очень быстро, но
+таким образом таблицы связываются быстрее, чем без индекса.
+
+<DT><code>Using filesort</code>
+<DD>
+MySQL должен будет сделать дополнительный проход, чтобы выяснить, как
+извлечь строки в порядке сортировки. Для выполнения сортировки выполняется
+просмотр всех строк согласно типу связывания (<code>join type</code>) и сохраняются
+ключ сортировки + указатель на строку для всех строк, удовлетворяющих
+выражению <code>WHERE</code>. После этого ключи сортируются и строки извлекаются в
+порядке сортировки.
+
+<DT><code>Using index</code>
+<DD>
+Для извлечения данных из столбца используется только информация дерева
+индексов; при этом нет необходимости производить собственно чтение записи.
+Это применимо для случаев, когда все используемые столбцы таблицы являются
+частью одного индекса.
+
+<DT><code>Using temporary</code>
+<DD>
+Чтобы выполнить запрос, MySQL должен будет создать временную таблицу для
+хранения результата. Это обычно происходит, если предложение <code>ORDER BY</code>
+выполняется для набора столбцов, отличного от того, который используется в
+предложении <code>GROUP BY</code>.
+
+<DT><code>Where used</code>
+<DD>
+Выражение <code>WHERE</code> будет использоваться для выделения тех строк, которые
+будут сопоставляться со следующей таблицей или тех, которые будут посланы
+клиенту. Если этой информации нет, а таблица имеет тип <code>ALL</code> или <code>index</code>, то,
+значит, в вашем запросе есть какая-то ошибка (если вы не собираетесь
+делать выборку/тестирование всех строк таблицы).
+</DL>
+
+Если нужно, чтобы запросы выполнялись настолько быстро, насколько это
+возможно, посмотрите, есть ли строки упоминания <code>Using filesort</code> и <code>Using temporary</code>.
+</DL>
+
+<P>
+Ниже перечислены различные типы связывания, упорядоченные от лучшего к
+худшему:
+
+</P>
+<P>
+<A NAME="IDX831"></A>
+<A NAME="IDX832"></A>
+
+</P>
+<DL COMPACT>
+
+<DT><code>system</code>
+<DD>
+Таблица содержит только одну строку (= системная таблица). Это - частный
+случай типа связывания <code>const</code>.
+
+<A NAME="IDX833"></A>
+
+<DT><code>const</code>
+<DD>
+Таблица содержит не более одной соответствующей строки, которая будет
+считываться в начале запроса. Поскольку имеется только одна строка,
+оптимизатор в дальнейшем может расценивать значения этой строки в столбце
+как константы. Таблицы <code>const</code> являются очень быстрыми, поскольку они
+читаются только однажды!
+
+<DT><code>eq_ref</code>
+<DD>
+Для каждой комбинации строк из предыдущих таблиц будет cчитываться одна
+строка из этой таблицы. Это наилучший возможный тип связывания среди
+типов, отличных от <code>const</code>. Данный тип применяется, когда все части индекса
+используются для связывания, а сам индекс - <code>UNIQUE</code> или <code>PRIMARY KEY</code>.
+
+<DT><code>ref</code>
+<DD>
+Из этой таблицы будут считываться все строки с совпадающими значениями
+индексов для каждой комбинации строк из предыдущих таблиц. Тип <code>ref</code>
+применяется, если для связывания используется только крайний левый префикс
+ключа, или если ключ не является <code>UNIQUE</code> или <code>PRIMARY KEY</code> (другими словами,
+если на основании значения ключа для связывания не может быть выбрана одна
+строка). Этот тип связывания хорошо работает, если используемый ключ
+соответствует только нескольким строкам.
+
+<DT><code>range</code>
+<DD>
+При помощи индекса для выборки строк будут извлечены только строки,
+находящиеся в заданном диапазоне. Используемый индекс указывается в
+столбце <code>key</code>. Столбец <code>key_len</code> содержит самую длинную часть ключа, которая
+была использована. Столбец <code>ref</code> будет содержать значения <code>NULL</code> для этого
+типа.
+
+<DT><code>index</code>
+<DD>
+Данный тип аналогичен <code>ALL</code>, за исключением того, что просматривается только
+дерево индексов. Этот тип обычно более быстрый чем <code>ALL</code>, поскольку
+индексный файл, как правило, меньше файла данных.
+
+<DT><code>ALL</code>
+<DD>
+Для каждой комбинации строк из предыдущих таблиц будет производиться
+полный просмотр этой таблицы. Это обычно плохо, если таблица - первая из
+не отмеченных как <code>const</code>, и <strong>очень</strong> плохо во всех остальных случаях. Как
+правило, можно избегать типа связывания <code>ALL</code> - путем добавления большего
+количества индексов таким образом, чтобы строка могла быть найдена при
+помощи константных значений или значений столбца из предыдущих таблиц.
+</DL>
+
+<P>
+Существует неплохой способ определить, насколько хорошим является тип
+связывания. Для этого нужно перемножить все значения столбца <code>rows</code>,
+выводимого командой <code>EXPLAIN</code>. Результатом будет грубая оценка того, сколько
+строк должен просмотреть MySQL для выполнения запроса. Это же число
+используется для ограничения запросов в переменной <code>max_join_size</code>.
+See section <A HREF="Server_parameters.html">5.5.2  Настройка параметров сервера</A>.
+
+</P>
+<P>
+В следующем примере показано, как можно постепенно оптимизировать <code>JOIN</code> при
+помощи информации, выводимой оператором <code>EXPLAIN</code>.
+
+</P>
+<P>
+Предположим, что имеется представленный ниже оператор <code>SELECT</code>, который
+нужно исследовать при помощи команды <code>EXPLAIN</code>:
+
+</P>
+
+<pre>
+EXPLAIN SELECT tt.TicketNumber, tt.TimeIn,
+            tt.ProjectReference, tt.EstimatedShipDate,
+            tt.ActualShipDate, tt.ClientID,
+            tt.ServiceCodes, tt.RepetitiveID,
+            tt.CurrentProcess, tt.CurrentDPPerson,
+            tt.RecordVolume, tt.DPPrinted, et.COUNTRY,
+            et_1.COUNTRY, do.CUSTNAME
+        FROM tt, et, et AS et_1, do
+        WHERE tt.SubmitTime IS NULL
+            AND tt.ActualPC = et.EMPLOYID
+            AND tt.AssignedPC = et_1.EMPLOYID
+            AND tt.ClientID = do.CUSTNMBR;
+</pre>
+
+<P>
+Для этого примера принимается, что:
+
+</P>
+
+<ul>
+<LI>
+
+Сравниваемые столбцы были объявлены следующим образом:
+
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>Таблица</strong> </TD><TD> <strong>Столбец</strong> </TD><TD> <strong>Тип столбца</strong>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>ActualPC</code> </TD><TD> <code>CHAR(10)</code>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>AssignedPC</code> </TD><TD> <code>CHAR(10)</code>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>ClientID</code> </TD><TD> <code>CHAR(10)</code>
+</TD></TR>
+<TR><TD><code>et</code> </TD><TD> <code>EMPLOYID</code> </TD><TD> <code>CHAR(15)</code>
+</TD></TR>
+<TR><TD><code>do</code> </TD><TD> <code>CUSTNMBR</code> </TD><TD> <code>CHAR(15)</code>
+</TD></TR>
+</TABLE>
+
+<LI>
+
+Таблицы проиндексированы следующим образом:
+
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>Таблица</strong> </TD><TD> <strong>Индекс</strong>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>ActualPC</code>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>AssignedPC</code>
+</TD></TR>
+<TR><TD><code>tt</code> </TD><TD> <code>ClientID</code>
+</TD></TR>
+<TR><TD><code>et</code> </TD><TD> <code>EMPLOYID</code> (primary key)
+</TD></TR>
+<TR><TD><code>do</code> </TD><TD> <code>CUSTNMBR</code> (primary key)
+</TD></TR>
+</TABLE>
+
+<LI>
+
+Значения <code>tt.ActualPC</code> распределены не равномерно.
+</ul>
+
+<P>
+На начальном этапе перед выполнением какой-либо оптимизации оператор
+<code>EXPLAIN</code> выведет следующую информацию:
+
+</P>
+
+<pre>
+table type possible_keys                key  key_len ref  rows  Extra
+et    ALL  PRIMARY                      NULL NULL    NULL 74
+do    ALL  PRIMARY                      NULL NULL    NULL 2135
+et_1  ALL  PRIMARY                      NULL NULL    NULL 74
+tt    ALL  AssignedPC,ClientID,ActualPC NULL NULL    NULL 3872
+      range checked for each record (key map: 35)
+</pre>
+
+<P>
+Поскольку каждая таблица имеет тип <code>ALL</code>, из приведенного выше вывода видно,
+что MySQL будет делать полное связывание всех таблиц! Это займет долгое
+время, поскольку для выполнения такого связывания должно быть рассмотрено
+произведение числа строк в каждой таблице! Для нашего случая такое
+произведение - 74 * 2135 * 74 * 3872 = 45268558720 строк. Если таблицы
+большие, трудно даже представить себе, как долго они будут связываться.
+
+</P>
+<P>
+Одна проблема здесь состоит в том, что MySQL не может (пока еще)
+эффективно применять индексы к столбцам, если они объявлены по-разному. В
+этом контексте тип <code>VARCHAR</code> и тип <code>CHAR</code> - одинаковы, если они не объявлены с
+различной длиной. Поскольку столбец <code>tt.ActualPC</code> объявлен как <code>CHAR(10)</code>, а
+<code>et.EMPLOYID</code> - как <code>CHAR(15)</code>, имеется несоответствие по длине значений.
+
+</P>
+<P>
+Чтобы устранить это несоответствие между длинами столбцов, следует
+использовать команду <code>ALTER TABLE</code> для удлинения столбца <code>ActualPC</code> от 10
+символов до 15 символов:
+
+</P>
+
+<pre>
+mysql&#62; ALTER TABLE tt MODIFY ActualPC VARCHAR(15);
+</pre>
+
+<P>
+Теперь оба столбца <code>tt.ActualPC</code> и <code>et.EMPLOYID</code> имеют тип <code>VARCHAR(15)</code>. При
+повторном выполнении оператора <code>EXPLAIN</code> будет выведен следующий результат:
+
+</P>
+
+<pre>
+table type   possible_keys   key     key_len ref         rows    Extra
+tt    ALL    AssignedPC,ClientID,ActualPC NULL NULL NULL 3872    where used
+do    ALL    PRIMARY         NULL    NULL    NULL        2135
+      range checked for each record (key map: 1)
+et_1  ALL    PRIMARY         NULL    NULL    NULL        74
+      range checked for each record (key map: 1)
+et    eq_ref PRIMARY         PRIMARY 15      tt.ActualPC 1
+</pre>
+
+<P>
+Это не идеально, но уже намного лучше (произведение значений строк теперь
+уменьшилось в 74 раза). Такое связывание выполнится за пару секунд.
+
+</P>
+<P>
+Можно сделать еще одно изменение - чтобы устранить несоответствие длин
+столбцов для сравнений <code>tt.AssignedPC = et_1.EMPLOYID and tt.ClientID =
+do.CUSTNMBR</code>.
+
+</P>
+
+<pre>
+mysql&#62; ALTER TABLE tt MODIFY AssignedPC VARCHAR(15),
+    -&#62; MODIFY ClientID VARCHAR(15);
+</pre>
+
+<P>
+Теперь оператор <code>EXPLAIN</code> будет выводить такую информацию:
+
+</P>
+
+<pre>
+table type   possible_keys   key      key_len ref           rows Extra
+et    ALL    PRIMARY         NULL     NULL    NULL          74
+tt    ref    AssignedPC,     ActualPC 15      et.EMPLOYID   52   where used
+             ClientID,
+             ActualPC
+et_1  eq_ref PRIMARY         PRIMARY  15      tt.AssignedPC 1
+do    eq_ref PRIMARY         PRIMARY  15      tt.ClientID   1
+</pre>
+
+<P>
+Это почти идеально.
+
+</P>
+<P>
+Осталась еще одна проблема. Она заключается в том, что по умолчанию MySQL
+принимает, что значения в столбце <code>tt.ActualPC</code> распределены равномерно, но
+в таблице <code>tt</code> это не так. К счастью, проинформировать MySQL об этом можно
+очень просто:
+
+</P>
+
+<pre>
+shell&#62; myisamchk --analyze PATH_TO_MYSQL_DATABASE/tt
+shell&#62; mysqladmin refresh
+</pre>
+
+<P>
+Теперь связывание совершенно, и оператор <code>EXPLAIN</code> выведет такой результат:
+
+</P>
+
+<pre>
+table type   possible_keys key     key_len ref           rows Extra
+tt    ALL    AssignedPC    NULL    NULL    NULL          3872 where used
+             ClientID,
+             ActualPC
+et    eq_ref PRIMARY       PRIMARY 15      tt.ActualPC   1
+et_1  eq_ref PRIMARY       PRIMARY 15      tt.AssignedPC 1
+do    eq_ref PRIMARY       PRIMARY 15      tt.ClientID   1
+</pre>
+
+<P>
+Обратите внимание: столбец rows в выводе оператора <code>EXPLAIN</code> - опытное
+предположение оптимизатора связей MySQL. Чтобы оптимизировать запрос,
+нужно проверить, являются ли числа близкими к действительным. Если нет,
+можно получить лучшую производительность, используя в операторе <code>SELECT</code>
+соединение <code>STRAIGHT_JOIN</code> и попытаться задать другой порядок таблиц в
+выражении <code>FROM</code>.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c677" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#83eeeae8e6adefececeae9eee2edf0c3e2f0eeefade0ecee">Mike Looijmans</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=677&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=677">Edit</a>]</td></tr></table><p class="commenttext">I found that when EXPLAIN gives unexpected results <br />
+(like using another index than the one you created <br />
+especially for this goal), first running ANALYZE <br />
+TABLE on the involved tables helped a lot. I put <br />
+an ANALYZE TABLE for 10 or so &quot;key&quot; tables in  the <br />
+nightly cronjob for this reason.<br />
+Especially useful if you mave more than one multi-<br />
+key index on a table, or if tables can be joined <br />
+along different paths.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=EXPLAIN">Add your own comment.</a></p><div id="docnav"><a href="EXPLAIN.html#">Top</a> / <a rel="prev" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Previous</a> / <a rel="next" href="Estimating_performance.html" title="5.2.2  Оценка производительности запроса">Next</a> / <a rel="up" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

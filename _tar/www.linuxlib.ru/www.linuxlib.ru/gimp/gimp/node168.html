@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>11.2.2 Коррекция цвета при помощи баланса нейтральных тонов — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../index.htm#gimp">GIMP</a> |
+    <A HREF="../index.htm#photo">фото</a> |
+    <A HREF="../index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--Navigation Panel--><A
+href="node169.html" name=tex2html2294><IMG
+height=24 alt=next src="img/next.png" width=37 align=bottom
+border=0></A> <A href="node166.html"
+name=tex2html2292><IMG height=24 alt=up src="img/up.png" width=26
+align=bottom border=0></A> <A
+href="node167.html" name=tex2html2286><IMG
+height=24 alt=previous src="img/prev.png" width=63 align=bottom
+border=0></A> <BR><B>Next:</B> <A
+href="node169.html" name=tex2html2295>11.2.3
+Определение областей бликов,</A> <B>Up:</B> <A
+href="node166.html" name=tex2html2293>11.2
+Коррекция цветового сдвига</A> <B>Previous:</B> <A
+href="node167.html" name=tex2html2287>11.2.1
+Инструмент ``Кривые''</A> <BR><BR><!--End of Navigation Panel-->
+<H2><A name=SECTION001122000000000000000></A><A
+name=colorcorrectingbybalancingtheneutrals></A><BR>11.2.2 Коррекция цвета при
+помощи баланса нейтральных тонов </H2>
+<P>Мощный метод определения наличия цветового сдвига - определение цвета точек,
+которые в принципе должны быть нейтрально серыми. Нейтрально серые точки
+содержат равные значения Красной, Зеленой и Синей составляющих. Если это не так,
+значит есть цветовой сдвига и необходима цветокоррекция.
+<P>
+<DIV align=center><A
+name=izobrazcheniestsvetovimsdvigomizmerenijagovoratda></A><A name=2199></A>
+<TABLE>
+  <CAPTION align=bottom><STRONG>Figure:</STRONG> Изображение с цветовым сдвигом?
+  Измерения говорят,- Да!</CAPTION>
+  <TBODY>
+  <TR>
+    <TD><IMG height=454 alt=\includegraphics[]{eps/img215_gif.eps}
+      src="node168.files/img129.png" width=631 align=bottom
+  border=0></TD></TR></TBODY></TABLE></DIV>
+<P>Рисунок&nbsp;<A
+href="node168.html#izobrazcheniestsvetovimsdvigomizmerenijagovoratda">11.13</A>
+демонстрирует случай, когда определение нейтральных точек позволяет
+скорректировать цветовой сдвиг. На картинке галерея пальм отбрасывает тени на
+дорожку из белого песка, и, в принципе, эти тени должны быть нейтрального серого
+цвета.
+<P>Тени имеют широкий диапазон значений яркости, что дает возможность определить
+цвета для светлых, средних и темных участков теней. На рисунке&nbsp;<A
+href="node168.html#izobrazcheniestsvetovimsdvigomizmerenijagovoratda">11.13</A>
+они обозначены как нейтральный блик, нейтральный полутон и нейтральная тень,
+значения соответствующих цветов определены при помощи инструмента ``Пипетка''
+(инструмент ``Пипетка'' находится на панели инструментов). Образцы цветов,
+взятые в указанных трех точках представлены в диалоговых окнах инструмента
+``Пипетка'' в виде цветного прямоугольника и значений Красной Зеленой и Синий
+составляющих. Определение цвета при помощи инструмента ``Пипетка'' также
+приводит к тому, что цвет переднего плана на панели инструментов меняется на
+определяемый.
+<P>В трех точках, показанных на рисунке&nbsp;<A
+href="node168.html#izobrazcheniestsvetovimsdvigomizmerenijagovoratda">11.13</A>
+можно наблюдать присутствие синего оттенка. Цвета в диалоговых окнах инструмента
+``Пипетка'' отклоняются в синюю гамму не только ``на глаз'', значения Красной,
+Зеленой и Синей составляющих показывают значительное отклонение синей
+составляющей от значения, при котором цвета выглядели бы нейтральными. Используя
+цветовую нотацию (форму записи) цвета, введенную в разделе&nbsp;<A
+href="node146.html#thergbcolorspace">10.1</A>,
+цвета, показанные в диалоговых окнах инструмента ``Пипетка'' на рис&nbsp;<A
+href="node168.html#izobrazcheniestsvetovimsdvigomizmerenijagovoratda">11.13</A>
+имеют значения <!-- MATH
+ $33^R 35^G 52^B$
+ --><IMG height=18
+alt="$33^R 35^G 52^B$" src="node168.files/img130.png" width=84 align=bottom
+border=0> для тени, <!-- MATH
+ $111^R 132^G 179^B$
+ --><IMG height=18
+alt="$111^R 132^G 179^B$" src="node168.files/img131.png" width=108 align=bottom
+border=0> для полутона и <!-- MATH
+ $173^R 172^G 206^B$
+ --><IMG height=18
+alt="$173^R 172^G 206^B$" src="node168.files/img132.png" width=108 align=bottom
+border=0> для света. Все три значения ясно показывают, что слишком много синего.
+
+<P>Тени иногда действительно выглядят голубыми. Однако это обычно бывает зимой
+на широтах далеких от экватора из-за особенностей фильтрации солнечных лучей
+атмосферой Земли. Синий оттенок на рисунке&nbsp;<A
+href="node168.html#izobrazcheniestsvetovimsdvigomizmerenijagovoratda">11.13</A>
+скорее вызван тенденцией пленки, особенно слайдовой пленки, вызывать сдвиг
+цветов в сторону синего при съемках под открытым небом при естественном
+освещении. В любом случае, в районах, близких к экватору, следует ожидать
+полного спектра солнечного света, что должно приводить к нейтральным теням, если
+они наблюдаются на нейтральном фоне.
+<P>В дополнение к синему сдвигу, возможен также некоторый недостаток красного в
+области полутонов. Далее будет показано, как цветовой сдвиг в сторону синего и
+недостаток красного в полутонах могут быть скорректированы при помощи
+инструмента ``Кривые''.
+<P>
+<DIV align=center><A
+name=ispolzovanietsvetovihznachenijdlaizmenenijakrasnojkrivoj></A><A
+name=2210></A>
+<TABLE>
+  <CAPTION align=bottom><STRONG>Figure:</STRONG> Использование цветовых значений
+  для изменения Красной кривой</CAPTION>
+  <TBODY>
+  <TR>
+    <TD><IMG height=346 alt=\includegraphics[]{eps/img216_gif.eps}
+      src="node168.files/img133.png" width=525 align=bottom
+  border=0></TD></TR></TBODY></TABLE></DIV>
+<P>
+<DIV align=center><A
+name=ispolzovanietsvetovihznachenijdlaizmenenijasinejkrivoj></A><A
+name=2215></A>
+<TABLE>
+  <CAPTION align=bottom><STRONG>Figure:</STRONG> Использование цветовых значений
+  для изменения Синей кривой</CAPTION>
+  <TBODY>
+  <TR>
+    <TD><IMG height=346 alt=\includegraphics[]{eps/img217_gif.eps}
+      src="node168.files/img134.png" width=525 align=bottom
+  border=0></TD></TR></TBODY></TABLE></DIV>
+<P>На рисунках&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijakrasnojkrivoj">11.14</A>
+и&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijasinejkrivoj">11.15</A>
+показано, как использовать инструмент ``Кривые'' для разрешения этих проблем с
+цветами. Рисунок&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijakrasnojkrivoj">11.14</A>
+демонстрирует изменения Красной кривой, рисунок&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijasinejkrivoj">11.15</A>
+- Синей. Процедуры настройки идентичны для каждой из кривых. Красная и синяя
+компоненты измеренных цветов используются для добавления контрольных точек на
+соответствующие кривые. Это продемонстрировано на части (a) каждого из рисунков.
+Информационное поле, находящееся в левом верхнем углу зоны графика, облегчает
+точное размещение контрольных точек. Затем контрольные точки перемещаются вверх
+или вниз в вертикальном направлении на новые позиции, что приводит к изменению
+характеристик отображения и делает цвета в измеренных точках нейтральными.
+Смещенные контрольные точки показаны на части (b) каждого из рисунков.
+<P>Повторим снова, цель смещения контрольных точек - сделать цвета в каждой из
+измеренных точек изображения нейтральными. Это означает, что их Красная, Зеленая
+и Синяя составляющие должны быть одинаковы. В рассматриваемом примере это
+достигается путем смещения контрольных точек на синей и красной кривых так,
+чтобы сделать их значения равными значению измеренной зеленой составляющей.
+Заметьте, что числа рядом с контрольными точками на рисунках&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijakrasnojkrivoj">11.14</A>
+и&nbsp;<A
+href="node168.html#ispolzovanietsvetovihznachenijdlaizmenenijasinejkrivoj">11.15</A>
+приведены для пояснения смысла процедуры, инструмент ``Кривые'' их не
+показывает. Для точного позиционирования контрольных точек используйте
+информационное поле в левом верхнем углу зоны графика.
+<P>Таким образом, на Красной кривой значения точек для тени, полутона и света
+сдвинуты с 33, 111 и 173 к измеренным значениям зеленого - 35, 132 и 172. На
+Синей кривой значения для тени полутона и света сдвинуты от 52, 179 и 206 также
+к измеренным значения зеленого - 35, 132 и 172. После проведения этих
+манипуляций цвета в измеренных точках стали <!-- MATH
+ $35^R 35^G 35^B$
+ --><IMG
+height=18 alt="$35^R 35^G 35^B$" src="node168.files/img135.png" width=84
+align=bottom border=0> для тени, <!-- MATH
+ $132^R
+132^G 132^B$
+ --><IMG
+height=18 alt="$132^R&#10;132^G 132^B$" src="node168.files/img136.png" width=108
+align=bottom border=0> для полутонов и <!-- MATH
+ $172^R 172^G 172^B$
+ --><IMG
+height=18 alt="$172^R 172^G 172^B$" src="node168.files/img137.png" width=108
+align=bottom border=0> для света, все три - нейтрально серые.
+<P>Результат коррекции цветов нейтральных точек показан на рисунке&nbsp;<A
+href="node168.html#sravnenieishodnogoiskorrektirovannogoizobrazchenija">11.16</A>
+(b).
+<P>
+<DIV align=center><A
+name=sravnenieishodnogoiskorrektirovannogoizobrazchenija></A><A name=2227></A>
+<TABLE>
+  <CAPTION align=bottom><STRONG>Figure:</STRONG> Сравнение исходного и
+  скорректированного изображения</CAPTION>
+  <TBODY>
+  <TR>
+    <TD><IMG height=462 alt=\includegraphics[]{eps/img218_gif.eps}
+      src="node168.files/img138.png" width=659 align=bottom
+  border=0></TD></TR></TBODY></TABLE></DIV>
+<P>Для сравнения исходное изображение показано на рисунке&nbsp;<A
+href="node168.html#sravnenieishodnogoiskorrektirovannogoizobrazchenija">11.16</A>
+(a). Теперь ясно видно, что исходное изображение имело синий цветовой сдвиг,
+который устранен на скорректированном изображении. Измерения цвета на песчаной
+дорожке показывают, что баланс цветов выглядит значительно лучше и большинство
+теней теперь нейтральны. Более того, изображение в целом приобрело более теплый
+вид. Пальмы теперь купаются в желтом свете, более соответствующем тому, чего мы
+ожидаем от освещенной тропическим солнцем сцены.
+<P>Есть несколько практических вопросов, касающихся только что описанной
+процедуры коррекции цветов. Во-первых, почему красный и синий каналы
+``подтягиваются'' к зеленому? Для трех измеренных точек существует девять
+способов сделать их нейтральными. Однако, на практике обычно какие либо два
+канала почти одинаковы, а один значительно отличается. Если это так, как в
+проделанном примере, то выбор ясен, если же нет, то может потребоваться
+поэксперементировать.
+<P>Второй вопрос - почему цвета измеряются в трех точках? Метод не требует трех
+точек и, как это не удивительно, часто одной точки достаточно, чтобы
+скорректировать цвета всего изображения. Однако подбор блика, тени и полутона
+дает дополнительную страховку правильного баланса цветов в каждом диапазоне.
+<P>Инструмент ``Кривые'' имеет некоторые возможности, которые облегчают
+размещение точек на кривой. Нажатие левой кнопки мыши в окне изображения
+приводит к появлению в области графика вертикальной линии. Положение
+вертикальной линии отражает соответствующее значение точки изображения, над
+которой находится курсор. Перемещение мыши с нажатой левой кнопкой изменяет
+положение вертикальной линии. Это позволяет видеть, где различные точки
+изображения находятся на кривой и помогает определить тень, полутон и блик.
+Одновременное нажатие левой кнопки мыши и <B>Shift</B> в окне изображения
+автоматически создает контрольную точку на кривых для активного канала.
+Одновременное нажатие левой кнопки мыши и <B>Ctrl</B> автоматически создает
+контрольную точку на кривых для каждого из каналов.
+<P>В дополнение к инструменту ``Кривые'' есть еще один полезный инструмент для
+исследования проблем с балансом цветов - <B>``Информация об окне''</B>. Он
+находится в меню окна изображения <B>Просмотр-&gt;Информация об окне</B>.
+Закладка ``Расширенное'' этого диалога позволяет интерактивно определять
+значения Красной, Зеленой и Синей составляющих для точки изображения, над
+которой находится курсор мыши. Преимущество этого инструмента перед ``Пипеткой''
+в том, что его окно может оставаться открытым в процессе использования
+инструмента ``Кривые''.
+<P>В заключение этого раздела можно сделать несколько выводов. Первое, процесс
+коррекции цветов может быть очень простым. Определение цветовых составляющих в
+нескольких точках от тени до блика позволяет скорректировать цвета во всем
+изображении за несколько минут. Второе, коррекция цвета выполненная таким
+способом не только исправляет проблемы с цветовым балансом в выбранных точках,
+но и, обычно, улучшает изображение в целом. Третье, для коррекции цвета,
+основанной на измеренных значениях точек можно обойтись только одним
+инструментом - ``Кривые''. По этим причинам ``Кривые'' - это наиболее точный и
+мощный инструмент для цветокоррекции в GIMP.
+<P>
+<HR>
+<!--Navigation Panel--><A href="node169.html"
+name=tex2html2294><IMG height=24 alt=next src="img/next.png" width=37
+align=bottom border=0></A> <A
+href="node166.html" name=tex2html2292><IMG
+height=24 alt=up src="img/up.png" width=26 align=bottom border=0></A>
+<A href="node167.html" name=tex2html2286><IMG
+height=24 alt=previous src="img/prev.png" width=63 align=bottom
+border=0></A> <BR><B>Next:</B> <A
+href="node169.html" name=tex2html2295>11.2.3
+Определение областей бликов,</A> <B>Up:</B> <A
+href="node166.html" name=tex2html2293>11.2
+Коррекция цветового сдвига</A> <B>Previous:</B> <A
+href="node167.html" name=tex2html2287>11.2.1
+Инструмент ``Кривые''</A> <!--End of Navigation Panel-->
+<ADDRESS>Grigory Bakunov 2003-05-26 </ADDRESS>
+
+  </div>
+</div>
+</body>
+</html>

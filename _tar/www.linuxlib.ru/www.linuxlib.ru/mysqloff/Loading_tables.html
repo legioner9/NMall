@@ -1,0 +1,516 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 3.3.3  Загрузка данных в таблицу — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Loading_tables.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Loading_tables.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Tutorial.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3 Учебное пособие по MySQL
+</a><ul><li class="p"><a href="Database_use.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.3 Создание и использование базы данных
+</a><ul class="immediate"><li><a href="Creating_database.html">3.3.1 Создание и выбор базы данных
+</a></li><li><a href="Creating_tables.html">3.3.2 Создание таблицы
+</a></li><li class="self">3.3.3 Загрузка данных в таблицу
+</li><li><a href="Retrieving_data.html">3.3.4 Выборка информации из таблицы
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Creating_tables.html" title="3.3.2  Создание таблицы">Previous</a> / <a rel="next" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Next</a> / <a rel="up" href="Database_use.html" title="3.3  Создание и использование базы данных">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>3.3.3  Загрузка данных в таблицу</H3>
+
+<P>
+<A NAME="IDX366"></A>
+<A NAME="IDX367"></A>
+<A NAME="IDX368"></A>
+
+</P>
+<P>
+Создав таблицу, нужно позаботиться об ее заполнении. Для этого
+предназначены команды <code>LOAD DATA</code> и <code>INSERT</code>.
+
+</P>
+<P>
+Предположим, ваши записи соответствуют приведенным в этой таблице
+(обратите внимание: MySQL принимает даты в формате <code>ГГГГ-ММ-ДД</code>; возможно, к
+такой записи вы не привыкли).
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>name</strong> </TD><TD> <strong>owner</strong> </TD><TD> <strong>species</strong> </TD><TD> <strong>sex</strong> </TD><TD> <strong>birth</strong> </TD><TD> <strong>death</strong>
+</TD></TR>
+<TR><TD>Fluffy </TD><TD> Harold </TD><TD> cat </TD><TD> f </TD><TD> 1993-02-04 </TD><TD>
+</TD></TR>
+<TR><TD>Claws </TD><TD> Gwen </TD><TD> cat </TD><TD> m </TD><TD> 1994-03-17 </TD><TD>
+</TD></TR>
+<TR><TD>Buffy </TD><TD> Harold </TD><TD> dog </TD><TD> f </TD><TD> 1989-05-13 </TD><TD>
+</TD></TR>
+<TR><TD>Fang </TD><TD> Benny </TD><TD> dog </TD><TD> m </TD><TD> 1990-08-27 </TD><TD>
+</TD></TR>
+<TR><TD>Bowser </TD><TD> Diane </TD><TD> dog </TD><TD> m </TD><TD> 1998-08-31 </TD><TD> 1995-07-29
+</TD></TR>
+<TR><TD>Chirpy </TD><TD> Gwen </TD><TD> bird </TD><TD> f </TD><TD> 1998-09-11 </TD><TD>
+</TD></TR>
+<TR><TD>Whistler </TD><TD> Gwen </TD><TD> bird </TD><TD> </TD><TD> 1997-12-09 </TD><TD>
+</TD></TR>
+<TR><TD>Slim </TD><TD> Benny </TD><TD> snake </TD><TD> m </TD><TD> 1996-04-29 </TD><TD>
+</TD></TR>
+</TABLE>
+
+<P>
+Так как вы начинаете работу с пустой таблицей, заполнить ее будет проще
+всего, если создать текстовый файл, содержащий по строке на каждое из
+животных, а затем загрузить его содержимое в таблицу одной командой.
+
+</P>
+<P>
+Создайте текстовый файл с именем <tt>`pet.txt'</tt>, содержащий по одной записи в
+каждой строке (значения столбцов должны быть разделены символами табуляции
+и даны в том порядке, который был определен командой <code>CREATE TABLE</code>).
+Незаполненным полям (например, неизвестный пол или даты смерти живых на
+сегодняшний день животных), можно присвоить значение <code>NULL</code>. В текстовом
+файле это значение представляется символами <code>\N</code>. Например, запись для птицы
+<code>Whistler</code> должна выглядеть примерно так (между значениями должны
+располагаться одиночные символы табуляции):
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>name</strong> </TD><TD> <strong>owner</strong> </TD><TD> <strong>species</strong> </TD><TD> <strong>sex</strong> </TD><TD> <strong>birth</strong> </TD><TD> <strong>death</strong>
+</TD></TR>
+<TR><TD><code>Whistler</code> </TD><TD> <code>Gwen</code> </TD><TD> <code>bird</code> </TD><TD> <code>\N</code> </TD><TD> <code>1997-12-09</code> </TD><TD> <code>\N</code>
+</TD></TR>
+</TABLE>
+
+<P>
+Загрузить файл <tt>`pet.txt'</tt> в таблицу можно с помощью следующей команды:
+
+</P>
+
+<pre>
+mysql&#62; LOAD DATA LOCAL INFILE "pet.txt" INTO TABLE pet;
+</pre>
+
+<P>
+Маркер конца строки и символ, разделяющий значения столбцов, можно
+специально задать в команде <code>LOAD DATA</code>, но по умолчанию используются
+символы табуляции и перевода строки. Воспринимая их, команда сможет
+корректно прочитать файл <tt>`pet.txt'</tt>.
+
+</P>
+<P>
+При добавлении одиночных записей используется команда <code>INSERT</code>. В самом
+простом варианте ее применения необходимо задать значения каждого столбца,
+в том порядке, в каком они были перечислены в команде <code>CREATE TABLE</code>.
+Предположим, Диана (Diane) купила хомячка по имени Puffball.
+Соответствующую запись в таблицу с можно внести с помощью команды <code>INSERT</code>
+примерно так:
+
+</P>
+
+<pre>
+mysql&#62; INSERT INTO pet
+    -&#62; VALUES ('Puffball','Diane','hamster','f','1999-03-30',NULL);
+</pre>
+
+<P>
+Обратите внимание на то, что здесь строковые выражения и даты представлены
+в виде ограниченных кавычками строк. Кроме того, в команде <code>INSERT</code>
+отсутствующие данные можно прямо заменять на <code>NULL</code>. Пользоваться эвфемизмом
+<code>\N</code>, как в команде <code>LOAD DATA</code>, нужды нет.
+
+</P>
+<P>
+Этот пример наглядно показывает, что если бы с самого начала все данные
+вносились в базу при помощи нескольких команд <code>INSERT</code>, а не одной команды
+<code>LOAD DATA</code>, то набирать пришлось бы гораздо больше текста.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c573" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jae K on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=573&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=573">Edit</a>]</td></tr></table><p class="commenttext">for some reason it seems that when using files <br />
+to input data into tables, there must always be <br />
+a tab after the \N (for null).<br />
+<br />
+this is true even when the null item is the last <br />
+item on the row. so, if you're getting 0000-00-<br />
+00 for the date in this example, try putting an <br />
+extra tab at the end of the line. </p><table id="c665" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#c4a1a9a9a1b0b09ba6a1a5b6a0a1aa84bda5acababeaa7aba9"><span class="__cf_email__" data-cfemail="73161e1e1607072c1116120117161d330a121b1c1c5d101c1e">[email&#160;protected]</span></a> on Saturday March 2 2002, @5:46pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=665&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=665">Edit</a>]</td></tr></table><p class="commenttext">load data has been disabled by default.  use the<br />
+--local-infile option when starting mysql:<br />
+<br />
+shell$   mysql --local-infile -p menagerie<br />
+<br />
+mysql&gt; LOAD DATA LOCAL INFILE &quot;pet.txt&quot; INTO TABLE<br />
+pet;<br />
+Query OK, 8 rows affected (0.09 sec)<br />
+Records: 8  Deleted: 0  Skipped: 0  Warnings: 2<br />
+<br />
+<br />
+Now it works.</p><table id="c728" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#c588a4aca982b7aaa0a2a0b785a2a8bdebaba0b1"><span class="__cf_email__" data-cfemail="c68ba7afaa81b4a9a3a1a3b486a1abbee8a8a3b2">[email&#160;protected]</span></a> on Friday May 24 2002, @7:49am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=728&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=728">Edit</a>]</td></tr></table><p class="commenttext">I was desperately stuck because using files to <br />
+input data did not work (&quot;SELECT * FROM ...&quot; <br />
+always resulted in a deranged table). Jae K's <br />
+hint to put an extra tab after &quot;\N&quot;-entries in <br />
+the end of a row helped a bit, so I put an extra <br />
+tab in the end of each row, even if the last <br />
+entry was not &quot;\N&quot; - and this works! I get <br />
+some &quot;warnings&quot; when loading such a file, but the <br />
+result of &quot;SELECT * FROM ...&quot; now is as expected.</p><table id="c1390" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by e w on Saturday November 16 2002, @11:56am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1390&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1390">Edit</a>]</td></tr></table><p class="commenttext">I fixed error that says used command not supported <br />
+by this version and loaded my data file by doing the <br />
+following:<br />
+<br />
+mysql&gt; --local-infile   (May not be necessary)<br />
+mysql&gt; use database_name<br />
+Database changed<br />
+mysql&gt; LOAD DATA INFILE &quot;tabledata.txt&quot; INTO <br />
+TABLE table_name;<br />
+Query OK, 7 rows affected (0.02 sec)<br />
+Records: 7  Deleted: 0  Skipped: 0  Warnings: 7<br />
+<br />
+Note: do NOT WRITE LOCAL in the previous load <br />
+data command as instructed in the sql manual.  <br />
+<br />
+Note: Place the data file in the folder with the name <br />
+of the database that has the table you want to load <br />
+data into; Otherwise, specify the path of the data file <br />
+in the command.<br />
+</p><table id="c1694" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Calvin Lam on Monday February 3 2003, @2:33am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1694&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1694">Edit</a>]</td></tr></table><p class="commenttext">For this command:<br />
+<br />
+Load data local infile &quot;pet.txt&quot; into table pet;<br />
+<br />
+didn't work and give an error message saying that the &quot;used command is not allowed in this version of Mysql&quot;<br />
+<br />
+However, it worked when I took out the &quot;local&quot; from my command.<br />
+</p><table id="c1715" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jeff Slatone on Tuesday February 4 2003, @7:40pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1715&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1715">Edit</a>]</td></tr></table><p class="commenttext">F.Y.I.<br />
+<br />
+1. Windows distribution somehow DOES NOT include sample file pet.txt (!).<br />
+<br />
+2. On Windows servers command:<br />
+LOAD DATA LOCAL INFILE &quot;pet.txt&quot; INTO TABLE pet;<br />
+does not work, returning message:<br />
+ERROR 1148: The used command is not allowed with this MySQL version<br />
+<br />
+(I am on ver.4.0.9 recommended for development!)<br />
+<br />
+3. Yet, command:<br />
+LOAD DATA INFILE &quot;pet.txt&quot; INTO TABLE pet;<br />
+would compile properly but your &quot;pet.txt&quot; load file must be in ./mysql/data/menagerie/ directory.<br />
+<br />
+I hope this would be mentioned in future documentation updates.<br />
+</p><table id="c1755" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#3e4c4b4e5b4c4a61565b49574a4a7e475f565151105d51104b55">Rupert Hewitt</a> on Monday February 10 2003, @7:49am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1755&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1755">Edit</a>]</td></tr></table><p class="commenttext">Found you need to add \\ in filenames to get files to load from different paths.<br />
+LOAD DATA INFILE &quot;C:\\mypath\\my_data.txt&quot; INTO TABLE my_data;</p><table id="c1810" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Doug Hall on Monday February 17 2003, @3:11pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1810&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1810">Edit</a>]</td></tr></table><p class="commenttext">With Apple OS X: Use the terminal's drag and drop capability to insert the full path of the import file. This cuts down on the amount of typing, if you don't want deal with adding the import file into MySQL's data folder.<br />
+<br />
+example:<br />
+ %mysql --local-infile -u &lt;username&gt; -p &lt;DatabaseName&gt;<br />
+Enter password:&lt;password&gt;<br />
+mysql&gt;load data local infile '&lt;drag input file here&gt;' into table &lt;TableName&gt;;</p><table id="c1916" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#09687a667c79656c70496460676d7a797b60676e276a6664"><span class="__cf_email__" data-cfemail="92f3e1fde7e2fef7ebd2fffbfcf6e1e2e0fbfcf5bcf1fdff">[email&#160;protected]</span></a> on Monday March 3 2003, @11:35am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1916&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1916">Edit</a>]</td></tr></table><p class="commenttext">I cannot figure out what I am doing wrong.  Whenever I use this command, or any other script to import a file, it only imports the first line.  I cannot figure out how to make it import the entire file.  <br />
+<br />
+I made sure that I am using the LOAD command, and not the INSERT command.  It does the same thing when I use PhpMyAdmin.  <br />
+<br />
+Any help would be greatly appreciated!</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Loading_tables">Add your own comment.</a></p><div id="docnav"><a href="Loading_tables.html#">Top</a> / <a rel="prev" href="Creating_tables.html" title="3.3.2  Создание таблицы">Previous</a> / <a rel="next" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Next</a> / <a rel="up" href="Database_use.html" title="3.3  Создание и использование базы данных">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.4.8  Получение информации о таблице — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Table-info.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Table-info.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.4 Предотвращение катастроф и восстановление
+</a><ul class="immediate"><li><a href="Backup.html">4.4.1 Резервное копирование баз данных
+</a></li><li><a href="BACKUP_TABLE.html">4.4.2 Синтаксис <code>BACKUP TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/RESTORE_TABLE.html">4.4.3 Синтаксис <code>RESTORE TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/CHECK_TABLE.html">4.4.4 Синтаксис <code>CHECK TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/REPAIR_TABLE.html">4.4.5 Синтаксис <code>REPAIR TABLE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Table_maintenance.html">4.4.6 Использование <code>myisamchk</code> для профилактики таблиц и послеаварийного
+</a></li><li><a href="Maintenance_regimen.html">4.4.7 Настройка режима профилактики таблиц
+</a></li><li class="self">4.4.8 Получение информации о таблице
+</li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Maintenance_regimen.html" title="4.4.7  Настройка режима профилактики таблиц">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/Database_Administration.html" title="4.5  Справочник по языку администрирования баз данных">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.4.8  Получение информации о таблице</H3>
+
+<P>
+<A NAME="IDX571"></A>
+
+</P>
+<P>
+Команды, представленные в этом разделе, используются для получения
+описания таблицы или статистики по таблице. Более подробное выборочное
+разъяснение вывода этих команд будет приведено ниже:
+
+</P>
+
+<ul>
+<LI>myisamchk -d tbl_name
+
+Выполняет myisamchk в "описательном режиме" для
+вывода описания таблицы. Если MySQL использует опцию <code>--skip-locking</code>, то
+<code>myisamchk</code> может сообщить об ошибке для таблицы, обновляемой во время
+исполнения утилиты. Однако поскольку <code>myisamchk</code> не меняет таблицы в
+описательном режиме, то никакого риска разрушения данных нет.
+
+<LI>myisamchk -d -v tbl_name
+
+Для выдачи дополнительной информации по
+действиям, выполняемым утилитой <code>myisamchk</code>, добавляется -v для указания
+расширенного режима вывода сообщений.
+
+<LI>myisamchk -eis tbl_name
+
+Отображается только наиболее важная информация
+из таблицы. Работает медленно вследствие того, что приходится считывать
+всю таблицу.
+
+<LI>myisamchk -eiv tbl_name
+
+То же, что и <code>-eis</code>, но с сообщением о выполняемых
+действиях.
+</ul>
+
+<P>
+<A NAME="IDX572"></A>
+<A NAME="IDX573"></A>
+
+</P>
+<P>
+Пример вывода <code>myisamchk -d</code>:
+
+</P>
+
+<pre>
+MyISAM file:     company.MYI
+Record format:   Fixed length
+Data records:    1403698  Deleted blocks:         0
+Recordlength:    226
+
+table description:
+Key Start Len Index   Type
+1   2     8   unique  double
+2   15    10  multip. text packed stripped
+3   219   8   multip. double
+4   63    10  multip. text packed stripped
+5   167   2   multip. unsigned short
+6   177   4   multip. unsigned long
+7   155   4   multip. text
+8   138   4   multip. unsigned long
+9   177   4   multip. unsigned long
+    193   1           text
+</pre>
+
+<P>
+Пример вывода <code>myisamchk -d -v</code>:
+
+</P>
+
+<pre>
+MyISAM file:         company
+Record format:       Fixed length
+File-version:        1
+Creation time:       1999-10-30 12:12:51
+Recover time:        1999-10-31 19:13:01
+Status:              checked
+Data records:           1403698  Deleted blocks:              0
+Datafile parts:         1403698  Deleted data:                0
+Datafilepointer (bytes):      3  Keyfile pointer (bytes):     3
+Max datafile length: 3791650815  Max keyfile length: 4294967294
+Recordlength:               226
+
+table description:
+Key Start Len Index   Type                  Rec/key     Root Blocksize
+1   2     8   unique  double                      1 15845376      1024
+2   15    10  multip. text packed stripped        2 25062400      1024
+3   219   8   multip. double                     73 40907776      1024
+4   63    10  multip. text packed stripped        5 48097280      1024
+5   167   2   multip. unsigned short           4840 55200768      1024
+6   177   4   multip. unsigned long            1346 65145856      1024
+7   155   4   multip. text                     4995 75090944      1024
+8   138   4   multip. unsigned long              87 85036032      1024
+9   177   4   multip. unsigned long             178 96481280      1024
+    193   1           text
+</pre>
+
+<P>
+Пример вывода <code>myisamchk -eis</code>:
+
+</P>
+
+<pre>
+Checking MyISAM file: company
+Key:  1:  Keyblocks used:  97%  Packed:    0%  Max levels:  4
+Key:  2:  Keyblocks used:  98%  Packed:   50%  Max levels:  4
+Key:  3:  Keyblocks used:  97%  Packed:    0%  Max levels:  4
+Key:  4:  Keyblocks used:  99%  Packed:   60%  Max levels:  3
+Key:  5:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+Key:  6:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+Key:  7:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+Key:  8:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+Key:  9:  Keyblocks used:  98%  Packed:    0%  Max levels:  4
+Total:    Keyblocks used:  98%  Packed:   17%
+
+Records:          1403698    M.recordlength:     226
+Packed:             0%
+Recordspace used:     100%   Empty space:          0%
+Blocks/Record:   1.00
+Record blocks:    1403698    Delete blocks:        0
+Recorddata:     317235748    Deleted data:         0
+Lost space:             0    Linkdata:             0
+
+User time 1626.51, System time 232.36
+Maximum resident set size 0, Integral resident set size 0
+Non physical pagefaults 0, Physical pagefaults 627, Swaps 0
+Blocks in 0 out 0, Messages in 0 out 0, Signals 0
+Voluntary context switches 639, Involuntary context switches 28966
+</pre>
+
+<P>
+Пример вывода <code>myisamchk -eiv</code>:
+
+</P>
+
+<pre>
+Checking MyISAM file: company
+Data records: 1403698   Deleted blocks:       0
+- check file-size
+- check delete-chain
+block_size 1024:
+index  1:
+index  2:
+index  3:
+index  4:
+index  5:
+index  6:
+index  7:
+index  8:
+index  9:
+No recordlinks
+- check index reference
+- check data record references index: 1
+Key:  1:  Keyblocks used:  97%  Packed:    0%  Max levels:  4
+- check data record references index: 2
+Key:  2:  Keyblocks used:  98%  Packed:   50%  Max levels:  4
+- check data record references index: 3
+Key:  3:  Keyblocks used:  97%  Packed:    0%  Max levels:  4
+- check data record references index: 4
+Key:  4:  Keyblocks used:  99%  Packed:   60%  Max levels:  3
+- check data record references index: 5
+Key:  5:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+- check data record references index: 6
+Key:  6:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+- check data record references index: 7
+Key:  7:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+- check data record references index: 8
+Key:  8:  Keyblocks used:  99%  Packed:    0%  Max levels:  3
+- check data record references index: 9
+Key:  9:  Keyblocks used:  98%  Packed:    0%  Max levels:  4
+Total:    Keyblocks used:   9%  Packed:   17%
+
+- check records and index references
+[кое-что опущено для краткости]
+
+Records:          1403698    M.recordlength:     226   Packed:             0%
+Recordspace used:     100%   Empty space:          0%  Blocks/Record:   1.00
+Record blocks:    1403698    Delete blocks:        0
+Recorddata:     317235748    Deleted data:         0
+Lost space:             0    Linkdata:             0
+
+User time 1639.63, System time 251.61
+Maximum resident set size 0, Integral resident set size 0
+Non physical pagefaults 0, Physical pagefaults 10580, Swaps 0
+Blocks in 4 out 0, Messages in 0 out 0, Signals 0
+Voluntary context switches 10604, Involuntary context switches 122798
+</pre>
+
+<P>
+Для использованной в предыдущих примерах таблицы размеры файла данных и
+индексного файла были следующими:
+
+</P>
+
+<pre>
+-rw-rw-r-- 1 monty tcx 317235748 Jan 12 17:30 company.MYD
+-rw-rw-r-- 1 davida tcx 96482304 Jan 12 18:35 company.MYM
+</pre>
+
+<P>
+Ниже приводятся пояснения по различным типам выдаваемой <code>myisamchk</code>
+информации. ``keyfile'' означает индексный файл. ``Record'' (запись) и ``row''
+(строка) являются синонимами:
+
+</P>
+
+<ul>
+<LI>ISAM file - Имя (индексного) файла ISAM.
+
+<LI>Isam-version - Версия  формата ISAM. На данный момент всегда 2.
+
+<LI>Creation time - Время создания файла данных.
+
+<LI>Recover time - Дата последнего восстановления индексного файла/файла
+
+данных.
+
+<LI>Data records - Количество записей в таблице.
+
+<LI>Deleted blocks - Количество удаленных блоков, пространство для  которых
+
+все еще зарезервировано. Таблицу можно оптимизировать для сведения к
+минимуму этого пространства (see section <A HREF="Optimisation.html">4.4.6.10  Оптимизация  таблиц</A>).
+
+<LI>Datafile parts - Для динамического формата записей показывает количество
+
+блоков данных. Для оптимизированной таблицы без фрагментированных записей
+совпадает с <code>Data records</code>.
+
+<LI>Deleted data - Количество байтов удаленных данных, которые не были
+
+затребованы. Можно оптимизировать таблицу, чтобы сделать этот объем
+минимальным (see section <A HREF="Optimisation.html">4.4.6.10  Оптимизация  таблиц</A>).
+
+<LI>Data file pointer - Размер указателя в файле данных (в байтах). Обычно
+
+это 2, 3, 4 или 5 байтов. Для большинства таблиц достаточно 2 байтов, но
+назначение размера пока невозможно контролировать из MySQL. Для
+фиксированных таблиц указатель - это адрес записи, а для динамических -
+адрес байта.
+
+<LI>Keyfile pointer - Размер указателя индексного файла в байтах. Обычно
+
+составляет 1, 2 или 3 байта. Для большинства таблиц хватает 2 байтов, но
+размер автоматически вычисляется MySQL. Указатель всегда является адресом
+блока.
+
+<LI>Max datafile length - Максимальный размер файла данных таблицы
+
+(<tt>`.MYD'</tt>-файл) в байтах.
+
+<LI>Max keyfile length - Максимальный размер индексного файла таблицы
+
+(<tt>`.MYI-файла'</tt>) в байтах.
+
+<LI>Recordlength - Размер отдельной записи в байтах.
+
+<LI>Record format - Формат, используемый для хранения строк таблицы. В
+
+примерах, приведенных выше, использовался формат <code>Fixed length</code>. Другие
+возможные значения: <code>Compressed</code> и <code>Packed</code>.
+
+<LI>table description - Список всех ключей в таблице. Для каждого ключа
+
+представляется некоторая низкоуровневая информация:
+
+
+<ul>
+<LI>Key
+
+Номер данного ключа.
+
+<LI>Start
+
+Место в записи, где начинается данная часть индекса.
+
+<LI>Len
+
+Длина данной части индекса. Для упакованных чисел длина всегда
+должна равняться полной длине для столбца. Для строк длина может быть
+меньше полной длины индексированной колонки, поскольку допускается
+индексирование префикса столбца со значениями строками.
+
+<LI>Индекс <code>unique</code> или <code>multip</code>. (multiple - повторяющийся/многократный)
+
+Показывает, может ли одно значение встречаться в индексе многократно.
+
+<LI>Type
+
+Тип данных данной части индекса. Это тип данных <code>ISAM</code> с возможными
+вариантами - <code>packed</code>, <code>stripped</code> и <code>empty</code>.
+
+<LI>Root
+
+Адрес корневого индексного блока.
+
+<LI>Blocksize
+
+Размер каждого индексного блока. По умолчанию равен 1024, но
+значение можно изменить во время компиляции.
+
+<LI>Rec/key
+
+Статистическое значение, используемое оптимизатором. Оно
+показывает, сколько записей приходится на одно значение для данного ключа.
+Для уникального ключа это соотношение всегда 1. Значение может быть
+обновлено после загрузки таблицы (или значительного ее изменения)
+посредством <code>myisamchk -a</code>. Если соотношение совсем не обновляется, то по
+умолчанию принимается значение 30.
+</ul>
+
+<LI>В первом из приведенных примеров 9-й ключ является составным с двумя
+
+частями.
+
+<LI>Keyblocks used - Процент использованных блоков ключей. Поскольку для
+
+примера была взята таблица, совсем недавно реорганизованная при помощи
+<code>myisamchk</code>, то значения очень высоки (очень близки к теоретическому
+максимуму).
+
+<LI>Packed - MySQL пытается упаковывать ключи с общим суффиксом. Это может
+
+быть использовано только для ключей типа <code>CHAR</code>/<code>VARCHAR</code>/<code>DECIMAL</code>. Для длинных
+строк, таких как имена, при помощи упаковки можно значительно уменьшить
+занимаемое ими место. В третьем из приведенных примеров 4-й ключ состоит
+из 10 символов и для него достигнуто 60%-е уменьшение в объеме.
+
+<LI>Max levels - Глубина B-дерева для данного ключа. В больших таблицах с
+
+длинными ключами значение является большим.
+
+<LI>Records Количество строк в таблице.
+
+<LI>M.recordlength - Средняя длина записи. Для таблиц с фиксированной длиной
+
+записи равняется точной длине записи.
+
+<LI>Packed - MySQL отбрасывает пробелы в конце строк. Значение <code>Packed</code>
+
+указывает на процент достигнутой этим экономии.
+
+<LI>Recordspace used - Процент использования файла данных.
+
+<LI>Empty space - На сколько процентов файл данных не использован.
+
+<LI>Blocks/Record - Среднее число блоков на запись (т.е. из какого числа
+
+связей состоит фрагментированная запись). Отношение всегда 1,0 для таблиц
+фиксированного формата. Важно, чтобы это значение было как можно ближе к
+1,0. Если значение становится слишком большим, можно реорганизовать
+таблицу с помощью <code>myisamchk</code>. Обращайтесь к разделу See section <A HREF="Optimisation.html">4.4.6.10  Оптимизация  таблиц</A>.
+
+<LI>Recordblocks - Количество использованных блоков (связей). Для
+
+фиксированного формата совпадает с количеством записей.
+
+<LI>Deleteblocks - Количество удаленных блоков (связей).
+
+<LI>Recorddata - Количество использованных байтов в файле данных.
+
+<LI>Deleted data - Количество удаленных (неиспользуемых) байтов в файле
+
+данных.
+
+<LI>Lost space - Если запись при обновлении уменьшается, то теряется
+
+некоторое пространство. Данное значение является суммой всех таких потерь
+в байтах.
+
+<LI>Linkdata - При использовании динамического формата таблиц фрагменты
+
+записи связываются с помощью указателей (каждый от 4 до 7 байтов).
+<code>Linkdata</code> - общий объем памяти, занимаемый всеми такими указателями.
+</ul>
+
+<P>
+Если таблица была сжата при помощи <code>myisampack</code>, то <code>myisamchk -d</code> выдает
+дополнительную информацию о каждом столбце в таблице. Обращайтесь к
+разделу See section <A HREF="myisampack.html">4.7.4  <code>myisampack</code>, MySQL-генератор сжатых таблиц (только для чтения)</A>, где
+приведен пример такой информации и пояснение к ней.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Table-info">Add your own comment.</a></p><div id="docnav"><a href="Table-info.html#">Top</a> / <a rel="prev" href="Maintenance_regimen.html" title="4.4.7  Настройка режима профилактики таблиц">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/Database_Administration.html" title="4.5  Справочник по языку администрирования баз данных">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html" title="4.4  Предотвращение катастроф и восстановление">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.2.11  Причины появления ошибок Access denied ("в доступе отказано") — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Access_denied.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Access_denied.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="Privilege_system.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.2 Общие проблемы безопасности и система привилегий доступа MySQL
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/General_security.html">4.2.1 Общие принципы обеспечения безопасности
+</a></li><li><a href="Security.html">4.2.2 Как обезопасить MySQL от хакеров
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Privileges_options.html">4.2.3 Опции запуска <code>mysqld</code>, относящиеся к безопасности
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/LOAD_DATA_LOCAL.html">4.2.4 Вопросы безопасности, относящиеся к команде LOAD DATA LOCAL
+</a></li><li><a href="What_Privileges.html">4.2.5 Функции, выполняемые системой привилегий
+</a></li><li><a href="Privileges.html">4.2.6 Как работает система привилегий
+</a></li><li><a href="Privileges_provided.html">4.2.7 Привилегии, предоставляемые MySQL
+</a></li><li><a href="Connecting.html">4.2.8 Соединение с сервером MySQL
+</a></li><li><a href="Connection_access.html">4.2.9 Управление доступом, этап 1: верификация подсоединения
+</a></li><li><a href="Request_access.html">4.2.10 Управление доступом, этап 2: верификация запросов
+</a></li><li class="self">4.2.11 Причины появления ошибок <code>Access denied</code> ("в доступе отказано")
+</li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Request_access.html" title="4.2.10  Управление доступом, этап 2: верификация запросов">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.2.11  Причины появления ошибок <code>Access denied</code> ("в доступе отказано")</H3>
+
+<P>
+Если при попытке подсоединения к серверу MySQL вы сталкиваетесь с ошибкой
+<code>Access denied</code>, то воспользуйтесь приведенным ниже списком. В нем
+перечислены меры, которые можно принять для решения этой проблемы:
+
+</P>
+
+<ul>
+<LI>
+
+Запускали ли вы после инсталляции MySQL скрипт <code>mysql_install_db</code> для
+установки начального содержимого таблиц привилегий? Если нет, сделайте
+это. Обратитесь к разделу See section <A HREF="Default_privileges.html">4.3.4  Задание изначальных привилегий MySQL</A>.
+Проверьте первоначальные привилегии с помощью следующей команды:
+
+
+<pre>
+shell&#62; mysql -u root test
+</pre>
+
+Подсоединение должно произойти без сбоя. Следует также убедиться, что в
+каталоге базы данных MySQL имеется файл <tt>`user.MYD'</tt>. Обычно он находится в
+директории <tt>`PATH/var/mysql/user.MYD'</tt>, где <code>PATH</code> - путь к корневому каталогу
+инсталляции MySQL.
+
+<LI>
+
+После новой инсталляции следует подсоединиться к серверу и создать
+пользователей, а также установить для них права доступа:
+
+
+<pre>
+shell&#62; mysql -u root mysql
+</pre>
+
+Сервер разрешит подсоединение, т.к. пользователь MySQL с именем
+пользователя <code>root</code> исходно не имеет пароля. Но в этом заключается также и
+риск нарушения безопасности системы, поэтому при создании остальных
+пользователей MySQL, вам, помимо прочего, следует задать пароль для
+пользователя <code>root</code>. Если при попытке подсоединения от имени пользователя
+root вы получите следующую ошибку:
+
+
+<pre>
+Access denied for user: '@unknown' to database mysql
+</pre>
+
+это означает, что в таблице <code>user</code> отсутствует запись со значением <code>'root'</code> в
+столбце <code>User</code> и <code>mysqld</code> не может определить имя хоста для вашего клиента. В
+этом случае необходимо перезапустить сервер с опцией <code>--skip-grant-tables</code> и
+отредактировать файл <tt>`/etc/hosts'</tt> или <tt>`\windows\hosts'</tt>, добавив в него запись
+для вашего хоста.
+
+<LI>
+
+Если вы столкнетесь с такой ошибкой, как:
+
+
+<pre>
+shell&#62; mysqladmin -u root -pxxxx ver
+Access denied for user: 'root@localhost' (Using password: YES)
+</pre>
+
+это означает, что используется неверный пароль. Обратитесь к разделу
+See section <A HREF="Passwords.html">4.3.7  Задание паролей</A>. Если вы забыли пароль для пользователя <code>root</code>, то
+перезапустите <code>mysqld</code> с опцией <code>--skip-grant-tables</code> и измените пароль.
+Обратитесь к разделу See section <A HREF="Resetting_permissions.html">A.4.2  Как переустановить забытый пароль пользователя <code>root</code></A>. Такая
+ошибка может появляться даже в том случае, если вы не задавали пароля
+вообще - это значит, что в каком-то файле <tt>`my.ini'</tt> имеется неверный пароль.
+Обратитесь к разделу See section <A HREF="Option_files.html">4.1.2  Файлы параметров <tt>`my.cnf'</tt></A>. Отменить использование файлов
+опций можно с помощью опции the <code>--no-defaults</code>, как показано ниже:
+
+
+<pre>
+shell&#62; mysqladmin --no-defaults -u root ver
+</pre>
+
+<LI>
+
+Запускали ли вы скрипт <code>mysql_fix_privilege_tables</code> при обновлении
+имеющейся инсталляции MySQL, если установленная версия - более ранняя,
+чем 3.22.11, а обновляется она до 3.22.11 или более поздней? Если нет,
+сделайте это. Начиная с MySQL 3.22.11, когда оператор <code>GRANT</code> стал
+функциональным, структура таблиц привилегий изменилась.
+
+<LI>
+
+Если во время сеанса ваши привилегии изменились, то, возможно, их
+изменил суперпользователь. Перезагрузка таблиц привилегий отражается
+не только на новых подсоединениях клиентов, но также на уже имеющихся,
+как это показано в разделе See section <A HREF="https://www.linuxlib.ru/mysqloff/Privilege_changes.html">4.3.3  Когда изменения в привилегиях вступают в силу</A>.
+
+<LI>
+
+Если не удается добиться, чтобы пароль работал, помните, что функция
+<code>PASSWORD()</code> должна использоваться, если вы задаете пароль с помощью
+операторов <code>INSERT</code>, <code>UPDATE</code> или <code>SET PASSWORD</code>. Если же вы задаете пароль
+с помощью оператора <code>GRANT ... INDENTIFIED BY</code> или команды <code>mysqladmin
+passwor</code>d, функция <code>PASSWORD()</code> не нужна. Обратитесь к разделу See section <A HREF="Passwords.html">4.3.7  Задание паролей</A>.
+
+<LI>
+
+<code>localhost</code> - это синоним имени вашего локального хоста, и, если хост
+явно не задан, также устанавливаемое по умолчанию имя хоста, к
+которому клиенты пытаются подключиться. Однако подсоединения к
+<code>localhost</code> не действуют, если в вашей рабочей системе используются
+MIT-потоки (подсоединения к <code>localhost</code> осуществляются с использованием
+сокетов Unix, а они не поддерживаются технологией MIT-потоков). Чтобы
+в таких системах эта проблема не возникала, следует явным образом
+задать имя серверного хоста с помощью опции <code>--host</code>. Таким образом
+будет установлено подсоединение к серверу <code>mysqld</code> по протоколу TCP/IP.
+В этом случае в записях таблицы <code>user</code>, хранящейся на серверном хосте,
+должно быть указано реальное имя хоста. (Это справедливо даже для тех
+случаев, когда клиентская программа и сервер запускаются на одном
+хосте).
+
+<LI>
+
+Если при попытке подсоединения к базе данных с помощью команды <code>mysql
+-u user_name db_name</code> возникает ошибка <code>Access denied</code>, причина этого,
+возможно, кроется в таблице <code>user</code>. Чтобы проверить это, выполните
+команду <code>mysql -u root mysql</code> и введите следующий SQL-оператор:
+
+
+<pre>
+mysql&#62; SELECT * FROM user;
+</pre>
+
+В результате будет выведена запись со столбцами <code>Host</code> и <code>User</code>,
+соответствующими имени вашего компьютера и вашему имени пользователя
+MySQL.
+
+<LI>
+
+Сообщение об ошибке <code>Access denied</code> информирует вас о том, под каким
+именем вы пытаетесь войти в систему, об имени хоста, с которого вы
+пытаетесь установить соединение, и о том, использовали ли вы при этом
+пароль или нет. Как правило, в таблице <code>user</code> будет одна запись, точно
+соответствующая имени хоста и имени пользователя, указанным в
+сообщении об ошибке. Например, если вы получите сообщение об ошибке, в
+котором сказано <code>Using password: NO</code>, это означает, что вы пытались
+войти в систему, не указав пароль.
+
+<LI>
+
+Если при попытке подсоединения не с того компьютера, на котором
+работает сервер MySQL, а с другого, вы получите сообщение об ошибке,
+приведенное ниже, то в таблице <code>user</code> отсутствует строка с таким именем
+хоста:
+
+
+<pre>
+Host ... is not allowed to connect to this MySQL server
+</pre>
+
+Чтобы исправить эту ошибку, с помощью утилиты командной строки <code>mysql</code> (на
+серверном хосте!) добавьте строку в таблицу <code>user</code>, <code>db</code> или <code>host</code> с
+комбинацией имени пользователя/хоста, соответствующей той, которую вы
+используете при попытке подсоединения. Затем выполните команду <code>mysqladmin
+flush-privileges</code>. Если вы используете MySQL версии, отличной от Version
+3.22, и вам неизвестно имя хоста или IP-адрес компьютера, с которого вы
+подсоединяетесь, введите в таблицу user запись со значением <code>'%'</code> в поле
+<code>Host</code> и перезапустите <code>mysqld</code> на серверной машине с опцией <code>--log</code>. Когда
+соединение с клиентской машины будет установлено, вы найдете в журнале
+регистрации MySQL информацию об имени хоста, с которого вы подсоединились.
+(После этого следует заменить в записи таблицы <code>user</code> значение <code>'%'</code> настоящим
+именем хоста, из журнала регистрации. Иначе ваша система останется
+незащищенной.)
+
+В Linux причиной такой ошибки может быть то, что бинарная
+версия MySQL скомпилирована с версией glibc, отличной от используемой
+вами. В этом случае нужно будет либо обновить ОС/glibc, используемые вами,
+либо загрузить исходный код MySQL и скомпилировать сервер самостоятельно.
+Как правило, исходный RPM компилируется и инсталлируется элементарно, так
+что это не составит серьезной проблемы.
+
+<LI>
+
+Если будет выдано сообщение об ошибке, в котором имя хоста не указано
+вообще или указан IP-адрес, хотя вы при попытке подсоединения
+указывали имя хоста:
+
+
+<pre>
+shell&#62; mysqladmin -u root -pxxxx -h some-hostname ver
+Access denied for user: 'root' (Using password: YES)
+</pre>
+
+то это означает, что ошибка возникает при попытке MySQL сопоставить
+IP-адрес с именем хоста. В этом случае вы можете выполнить команду
+<code>mysqladmin flush-hosts</code>, чтобы сбросить внутреннюю кэш-память DNS.
+Обратитесь к разделу See section <A HREF="DNS.html">5.5.5  Как MySQL использует DNS</A>. Вот некоторые способы решения
+этой проблемы:
+
+
+<ul>
+<LI>Попробуйте выяснить, что не так с вашим сервером DNS, и устраните
+
+неисправность.
+
+<LI>Задайте IP-адреса вместо имен хостов таблицах привилегий MySQL.
+
+<LI>Запустите <code>mysqld</code> с опцией <code>--skip-name-resolve</code>.
+
+<LI>Запустите <code>mysqld</code> с опцией <code>--skip-host-cache</code>.
+
+<LI>Подключитесь к <code>localhost</code> если ваш сервер и клиент работают на одном
+
+и том же компьютере.
+
+<LI>Поместите имена клиентских машин в каталог <tt>`/etc/hosts'</tt>.
+
+</ul>
+
+<LI>
+
+Если команда <code>mysql -u root test</code> работает успешно, а команда <code>mysql -h
+your_hostname -u root tes</code>t приводит к ошибке <code>Access denied</code>, то,
+возможно, в таблице <code>user</code> имя вашего хоста указано неверно. Одна из
+распространенных проблем здесь заключается в том, что в поле <code>Host</code>
+записи, хранящейся в таблице <code>user</code>, задается только имя хоста, в то
+время как процедуры разрешения имен, используемые вашей системой,
+возвращают полностью определенное доменное имя (или наоборот).
+Например, если в таблице user имеется запись со значением <code>'tcx'</code> в поле
+<code>host</code>, а DNS при этом сообщает MySQL, что имя хоста - <code>'tcx.subnet.se'</code>,
+эта запись действовать не будет. Попробуйте добавить в таблицу <code>user</code>
+запись, указав в колонке <code>Host</code> IP-адрес хоста. (В качестве альтернативы
+можно добавить в таблицу <code>user</code> запись со значением в поле <code>Host</code>,
+содержащим шаблонный символ, например <code>'tcx.%'</code>. Но использовать имена
+хостов, оканчивающиеся на <code>'%'</code> - небезопасно  и делать это не
+рекомендуется!)
+
+<LI>
+
+Если команда <code>mysql -u user_name test</code> работает успешно, а команда <code>mysql
+-u user_name other_db_nam</code>e - нет, то в таблице <code>db</code> нет записи,
+соответствующей <code>other_db_name</code>.
+
+<LI>
+
+Если команда <code>mysql -u user_name db_name</code> выполняется успешно на том
+компьютере, где установлен сервер, а <code>mysql -u host_name -u user_name
+db_name</code> не работает при выполнении ее на другой клиентской машине, то
+в таблицах <code>user</code> или <code>db</code> эта клиентская машина не зарегистрирована.
+
+<LI>
+
+Если не удается выяснить причину ошибки <code>Access denied</code>, удалите из
+таблицы <code>user</code> все записи, в которых значение в поле <code>Host</code> включает
+шаблонные символы (записи, содержащие символы <samp>`'%''</samp> или <samp>`'_''</samp>). Очень
+распространенной ошибкой является следующая: пользователь вставляет
+новую запись со значением <code>'%'</code> в поле <code>Host</code> и со значением <code>'some user'</code> -
+в поле <code>User</code>, полагая, что после этого для подсоединения с той же самой
+машины он сможет использовать <code>localhost</code>. Такой расчет неверен, и
+причина здесь в том, что устанавливаемые по умолчанию привилегии
+включают запись со значением <code>'localhost'</code> в поле <code>Host</code> и пустым полем
+<code>User</code>. И поскольку в этой записи значение <code>'localhost'</code> более конкретно,
+чем <code>'%',</code> то именно она при подсоединении с <code>localhost</code> предшествует
+новой записи и, соответственно, будет выбрана и сработает! Правильным
+в этом случае будет вставить вторую запись со значением <code>'localhost'</code> в
+поле <code>Host</code> и значением <code>'some_user'</code> - в поле <code>User</code> или удалить запись со
+значением <code>'localhost'</code> в поле <code>Host</code> и пустым полем <code>User</code>.
+
+<LI>
+
+Если вы получите следующую ошибку, то эта проблема, возможно, связана
+с таблицей <code>db</code> или таблицей <code>host</code>:
+
+
+<pre>
+Access to database denied
+</pre>
+
+Если в записи, выбранной из таблицы <code>db</code>, столбец <code>Host</code> - пустой,
+удостоверьтесь, что в таблице <code>host</code> имеется по крайней мере одна
+соответствующая запись, указывающая, к каким хостам относится запись из
+таблицы <code>db</code>. Если ошибка возникает при выполнении SQL-команды <code>SELECT ...
+INTO OUTFILE</code> или <code>LOAD DATA INFILE</code>, то в вашей записи из таблицы <code>user</code>,
+вероятно, отсутствует разрешение на предоставление привилегии <code>FILE</code>.
+
+<A NAME="IDX495"></A>
+<A NAME="IDX496"></A>
+<A NAME="IDX497"></A>
+
+<LI>
+
+Помните, что клиентские программы будут использовать параметры
+подсоединения, указанные файлах конфигурации или переменных окружения.
+Обратитесь к разделу See section <A HREF="Environment_variables.html">F  Переменные окружения</A>. Если есть подозрение, что
+клиент отсылает неверные устанавливаемые по умолчанию параметры
+подсоединения, в случае, когда вы не задаете их в командной строке,
+проверьте ваше окружение и файл <tt>`my.cnf'</tt> в своей домашней директории.
+Можете также проверить конфигурационные файлы MySQL относящиеся ко все
+системе, хотя параметры клиентского подсоединения вряд ли указаны
+именно здесь. Обратитесь к разделу See section <A HREF="Option_files.html">4.1.2  Файлы параметров <tt>`my.cnf'</tt></A>. Если ошибка <code>Access denied</code> возникает при
+выполнении вашей клиентской программы без каких-либо опций, убедитесь,
+что ни в одном из ваших файлов опций не указан старый пароль!
+Обратитесь к разделу See section <A HREF="Option_files.html">4.1.2  Файлы параметров <tt>`my.cnf'</tt></A>.
+
+<LI>
+
+Если вы вносите изменения в таблицы привилегий непосредственно (с
+помощью операторов <code>INSERT</code> или <code>UPDATE</code>), а ваши изменения, похоже,
+игнорируются, то следует выдать оператор <code>FLUSH PRIVILEGES</code> или
+выполнить команду <code>mysqladmin flush-privileges</code> - для того, чтобы
+заставить сервер перечитать таблицы привилегий. В противном случае
+ваши изменения вступят в силу лишь при последующем перезапуске
+сервера. Помните, что после того, как вы зададите пароль от имени
+пользователя, вам нужно будет указывать его только после сброса
+привилегий, т.к. серверу еще не будет известно о том, что вы изменили
+пароль!
+
+<LI>
+
+При возникновении проблемы с доступом при использовании Perl-, PHP-,
+Python- или ODBC-программ, попробуйте установить соединение с сервером
+при помощи команды <code>mysql -u user_name db_name</code> или команды <code>mysql -u
+user_name -pyour_pass db_name</code>. Если ваш клиент <code>mysql</code> обеспечивает
+подсоединение, то проблема связана не с привилегиями доступа, а с
+вашей программой. (Заметим, что между <code>-p</code> и паролем пробела нет; для
+задания пароля можно также использовать синтаксическую структуру
+<code>--password=your_pass</code>. Если вы используете только саму опцию <code>-p</code>, MySQL
+запросит у вас пароль)
+
+<LI>
+
+При тестировании запускайте демон <code>mysqld</code> с опцией <code>--skip-grant-tables</code>.
+Тогда вы сможете изменять таблицы привилегий MySQL и с помощью скрипта
+<code>mysqlaccess</code> проверять, произвели ли сделанные вами изменения желаемый
+эффект. Если результаты вас устраивают, выполните команду <code>mysqladmin
+flush-privileges</code>, чтобы приказать серверу <code>mysqld</code> приступить к
+использованию новых таблиц привилегий. <strong>Внимание</strong>: перезагрузка таблиц
+привилегий отменяет опцию <code>--skip-grant-tables</code>. Это позволяет заставить
+сервер приступить к использованию новых таблиц привилегий без
+завершения его работы и перезагрузки.
+
+<LI>
+
+Если ничего не помогает, запустите демон <code>mysqld</code> daemon с опцией
+отладки (например <code>--debug=d,general,query</code>). В результате будет
+выведена информация о неудачных подсоединениях, с указанием хоста и
+пользователя, а также обо всех обработанных командах. Обратитесь к
+разделу See section <A HREF="https://www.linuxlib.ru/mysqloff/Making_trace_files.html">E.1.2  Создание трассировочных файлов</A>.
+
+<LI>
+
+Если у вас имеется какая-либо проблема с таблицами привилегий MySQL и
+вы полагаете, что необходимо сообщить о ней в список рассылки, нужно
+обязательно приложить к своему отчету распечатку таблиц привилегий
+MySQL. Это можно сделать с помощью команды <code>mysqldump mysql</code>. Отчет о
+проблеме, как и в других случаях, отправляется с помощью скрипта
+<code>mysqlbug</code>. Обратитесь к разделу See section <A HREF="Bug_reports.html">1.8.1.3  Как отправлять отчеты об ошибках или проблемах</A>. В некоторых случаях для выполнения скрипта <code>mysqldump</code> возможно,
+потребуется перезапустить <code>mysqld</code> с опцией <code>--skip-grant-tables</code>.
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c280" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by dave sag on Friday July 5 2002, @2:39am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=280&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=280">Edit</a>]</td></tr></table><p class="commenttext">MySql is running on localhost and I can connect to it and manipulate stuff via shell% mysql -u root -p test and then i neter my password and all is fine.  But trying to make a JDBC connection from a small standalone client on my machine with jdbc:mysql://localhost/test gives me an access denied even though I have specified a valid username and password.  any clues?</p><table id="c674" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#a2d6c7c0e2c3d2d2cec78cc1cdcf"><span class="__cf_email__" data-cfemail="d9adbcbb99b8a9a9b5bcf7bab6b4">[email&#160;protected]</span></a> on Wednesday March 6 2002, @12:53pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=674&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=674">Edit</a>]</td></tr></table><p class="commenttext">I was getting access denied when trying to select <br />
+from a table, where I had specifically given the <br />
+user select privs (in tables_priv table).  turned <br />
+out to be an issue with case sensitivity:  if you <br />
+grant privileges on a table using upper case for <br />
+db name, but then try to access the db in <br />
+lowercase (as I had done), you will get the <br />
+&quot;denied&quot; message.  This is actually in the <br />
+documentation under &quot;how privileges work', but <br />
+easy to miss.</p><table id="c877" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Tim Morton on Monday June 3 2002, @2:22pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=877&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=877">Edit</a>]</td></tr></table><p class="commenttext">For Windows users:<br />
+Problem: getting an access denied message when <br />
+trying to use the GRANT command while logged in <br />
+as root user.<br />
+Background: had data from a previous version of <br />
+Mysql in c:\mysql\data.<br />
+Solution:  renamed c:\mysql\data\mysql to <br />
+c:\mysql\data\old_mysql and then reinstalled the <br />
+binary.  (I could not find <br />
+any 'mysql_fix_privilege_tables' script for <br />
+windows in the distribution nor online)</p><table id="c968" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Joerg Prante on Tuesday August 20 2002, @2:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=968&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=968">Edit</a>]</td></tr></table><p class="commenttext">One case not mentioned here and you get an 1045 &quot;Access denied&quot;  <br />
+error is when you don't have the privilege to alter system <br />
+tables  <br />
+using &quot;LOCK TABLES&quot;. The connect succeeds, but a &quot;LOCK TABLES&quot;  <br />
+query fails. Then you should ask the MySQL administrator to  <br />
+extend your privileges. The &quot;LOCK TABLES&quot; command is  <br />
+writing to the system tables. If the MySQL administrator  <br />
+decided to grant you all privileges only on your database, say  <br />
+foo.*, this won't be sufficient. You will need write access to  <br />
+'mysql' database. If you don't have that, you will get a MySQL  <br />
+error &quot;#1045 access denied&quot; at the &quot;LOCK TABLES&quot; query. So, the <br />
+case of &quot;LOCK TABLE&quot;  <br />
+privilege in MySQL breaks a privilege system where  <br />
+administrators decided to grant privileges ordered by database  <br />
+hierarchy.  </p><table id="c1087" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#82effbf1f3eec2f7ece1e7f0f6e3ebecf6fbacedf0e5acf7e9"><span class="__cf_email__" data-cfemail="432e3a30322f03362d20263137222a2d373a6d2c31246d3628">[email&#160;protected]</span></a> on Friday September 13 2002, @1:34am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1087&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1087">Edit</a>]</td></tr></table><p class="commenttext">JDBC requires a tcp connection, my install of<br />
+mysql did not open a tcp port by default.<br />
+I could connect fine on the command line - but not<br />
+using java.<br />
+Adding port = 3306 to my.cnf solved the problem<br />
+(but reduces security)</p><table id="c1633" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Eric Scuccimarra on Wednesday January 22 2003, @11:38am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1633&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1633">Edit</a>]</td></tr></table><p class="commenttext">I started getting access denied errors this morning. Some of them are 1044 and some are 1045. I have tried everything I can find and nothing seems to work. I can connect using root as the user and the root password but it still tells me that access denied for user: 'root@localhost'.<br />
+<br />
+I have tried to run all of the scripts and none of them will run because access is denied. I can't change the host files or anything because access is denied.</p><table id="c1762" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#2f5f4e5b474946414b4e5c6f47405b424e4643014c4042">Eric Latham</a> on Tuesday February 11 2003, @8:42am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1762&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1762">Edit</a>]</td></tr></table><p class="commenttext">You have to put single quotes around your password.<br />
+e.g. mysql -u root -p'xxxxxx' [databases name]<br />
+P.S. Drove me crazy too :-\</p><table id="c1771" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Beng Yang Ang on Wednesday February 12 2003, @11:02am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1771&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1771">Edit</a>]</td></tr></table><p class="commenttext">Hi, <br />
+i run into some problems of Access Denied.<br />
+I am able to do this: mysql -u root -p<br />
+but not this: mysql -u root -p'xxxx'<br />
+I get a Error 1045 if i use the latter.<br />
+<br />
+I am using WinXp, anybody got any idea??</p><table id="c1860" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Saturday February 22 2003, @11:48pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1860&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1860">Edit</a>]</td></tr></table><p class="commenttext">i have a Q. i use php and mysql to do a website.<br />
+when i use register function in localhost, then i can insert the data to db. But when i my friend use distance computer, then it can not add the new record to db.<br />
+ $db = mysql_connect(&quot;localhost&quot;, &quot;&quot;);<br />
+ mysql_select_db(&quot;bookshop&quot;,$db);<br />
+ $sql = &quot;INSERT INTO ctinf (usn,paw,given,family,addre,email,phone,ccard) <br />
+  VALUES ('$uid','$psw','$gvn','$fyn','$addre','$ema','$phn','$ccad')&quot;;<br />
+ $result = mysql_query($sql);<br />
+this is my code. and u try to use (&quot;localhost&quot;, &quot;root&quot;). also can not. plese tell me what should i do?<br />
+thx a lot!</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Access_denied">Add your own comment.</a></p><div id="docnav"><a href="Access_denied.html#">Top</a> / <a rel="prev" href="Request_access.html" title="4.2.10  Управление доступом, этап 2: верификация запросов">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

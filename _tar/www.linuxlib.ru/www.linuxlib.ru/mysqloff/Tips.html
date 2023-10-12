@@ -1,0 +1,598 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 5.2.12  Другие советы по оптимизации — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Tips.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Tips.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Optimisation.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />5 Оптимизация в MySQL
+</a><ul><li class="p"><a href="Query_Speed.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />5.2 Оптимизация <code>SELECT</code> и других запросов
+</a><ul class="immediate"><li><a href="EXPLAIN.html">5.2.1 Синтаксис оператора <code>EXPLAIN</code> (получение информации о <code>SELECT</code>)
+</a></li><li><a href="Estimating_performance.html">5.2.2 Оценка производительности запроса
+</a></li><li><a href="SELECT_speed.html">5.2.3 Скорость выполнения запросов <code>SELECT</code>
+</a></li><li><a href="Where_optimisations.html">5.2.4 Как MySQL оптимизирует выражения <code>WHERE</code>
+</a></li><li><a href="DISTINCT_optimisation.html">5.2.5 Как MySQL оптимизирует <code>DISTINCT</code>
+</a></li><li><a href="LEFT_JOIN_optimisation.html">5.2.6 Как MySQL оптимизирует <code>LEFT JOIN</code> и <code>RIGHT JOIN</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/ORDER_BY_optimisation.html">5.2.7 Как MySQL оптимизирует <code>ORDER BY</code>
+</a></li><li><a href="LIMIT_optimisation.html">5.2.8 Как MySQL оптимизирует <code>LIMIT</code>
+</a></li><li><a href="Insert_speed.html">5.2.9 Скорость выполнения запросов <code>INSERT</code>
+</a></li><li><a href="Update_speed.html">5.2.10 Скорость выполнения запросов <code>UPDATE</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Delete_speed.html">5.2.11 Скорость выполнения запросов <code>DELETE</code>
+</a></li><li class="self">5.2.12 Другие советы по оптимизации
+</li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Delete_speed.html" title="5.2.11  Скорость выполнения запросов DELETE">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/Locking_Issues.html" title="5.3  Вопросы блокировок">Next</a> / <a rel="up" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>5.2.12  Другие советы по оптимизации</H3>
+
+<P>
+<A NAME="IDX851"></A>
+<A NAME="IDX852"></A>
+
+</P>
+<P>
+Несортированные советы для повышения скорости систем:
+
+</P>
+
+<ul>
+<LI>
+
+Используйте постоянные соединения с базой данных, чтобы избежать
+издержек на подключения. Если невозможно использовать постоянные
+соединения и осуществляется большое количество новых подключений к
+базе данных, то можно изменить значение переменной <code>thread_cache_size</code>.
+See section <A HREF="Server_parameters.html">5.5.2  Настройка параметров сервера</A>.
+
+<LI>
+
+Всегда проверяйте, чтобы все ваши запросы действительно использовали
+созданные вами в таблицах индексы. В MySQL это можно сделать с помощью
+команды <code>EXPLAIN</code>. See section <A HREF="EXPLAIN.html">5.2.1  Синтаксис оператора <code>EXPLAIN</code> (получение информации о <code>SELECT</code>)</A>.
+
+<LI>
+
+Старайтесь избегать сложных запросов <code>SELECT</code> на часто обновляемых
+таблицах типа MyISAM. Это помогает избежать проблем с блокировкой
+таблиц.
+
+<LI>
+
+Новые таблицы MyISAM могут вносить записи в таблицу без удаляемых
+записей, которые в то же самое время читает иная таблица. Если это
+имеет для вас значение, то следует рассмотреть методы, не требующие
+удаления записей или запускать <code>OPTIMIZE TABLE</code> после удаления большого
+количества строк.
+
+<LI>
+
+Используйте <code>ALTER TABLE ... ORDER BY expr1,expr2...</code> если вы большей
+частью извлекаете записи в порядке <code>expr1,expr2...</code> Можно получить более
+высокую производительность, используя эту опцию после больших
+преобразований в таблице.
+
+<LI>
+
+В некоторых случаях может оказаться целесообразным введение столбца,
+базирующегося на "хэшированной" информации из других столбцов. Если
+этот столбец невелик и достаточно уникален, то он может быть намного
+быстрее, чем большой индекс на многих столбцах. В MySQL очень просто
+использовать подобный дополнительный столбец:
+
+<code>SELECT * FROM table_name
+WHERE hash=MD5(CONCAT(col1,col2)) AND col_1='constant' AND
+col_2='constant</code>'
+
+<LI>
+
+Для часто изменяющихся таблиц следует избегать типов <code>VARCHAR</code> или <code>BLOB</code>
+для всех столбцов. При использовании единичного столбца <code>VARCHAR</code> или
+<code>BLOB</code> вы получите динамическую длину строки. See section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>.
+
+<LI>
+
+Разделение таблицы на несколько различных таблиц просто потому, что
+строки получаются "большими", обычно не приносит пользы. Чтобы
+получить доступ к строке, наиболее трудоемким оказывается поиск по
+диску для нахождения первого байта этой строки. После нахождения этих
+данных большинство новых дисков могут прочесть всю строку достаточно
+быстро для большинства приложений. Разделение таблицы имеет значение
+только в следующих случаях: когда это таблица с динамическим размером
+строки (смотрите выше), которую можно изменить на строку
+фиксированного размера, или когда необходимо просматривать таблицу
+очень часто и нет необходимости в большинстве столбцов.
+See section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>.
+
+<LI>
+
+Если очень часто приходится производить вычисления, базирующиеся на
+информации из большого количества строк (такие как подсчет
+предметов), то, вероятно, намного лучше ввести новую таблицу и
+обновлять счетчик в режиме реального времени. Обновление вида <code>UPDATE
+table set count=count+1 where index_column=constant</code> является очень
+быстрым! Это действительно важно при использовании баз данных вроде
+MySQL, имеющих только блокирование таблиц (многочисленные
+читающие/единственный записывающий). Для многих баз данных это обеспечит также
+более высокую производительность, поскольку программа управления
+блокировкой строк в этом случае будет иметь меньше работы.
+
+<LI>
+
+Если необходимо собирать статистические данные из больших журнальных
+таблиц, то используйте сводные таблицы вместо сканирования целой
+таблицы. Поддерживать сводные таблицы должно быть намного быстрее, чем
+пытаться сделать ``живую'' статистику. Намного быстрее воспроизвести
+новые сводные таблицы из журналов, когда что-либо изменяется (в
+зависимости от деловых решений), чем изменять работающее приложение!
+
+<LI>
+
+Если возможно, необходимо классифицировать отчеты как "реальные" или
+"статистические", где данные, необходимые для статистических
+отчетов, генерируются только на основе сводных таблиц, которые
+формируются из реальных данных.
+
+<LI>
+
+Воспользуйтесь преимуществом того факта, что столбцы имеют значения по
+умолчанию. Вносите величины явно только тогда, когда значения вносимых
+величин отличаются от установленных по умолчанию. Это уменьшает объем
+анализа, который необходимо произвести в MySQL, и улучшает скорость
+внесения.
+
+<LI>
+
+В некоторых случаях удобно упаковывать и хранить данные в столбцах
+<code>BLOB</code>. В этом случае необходимо добавить дополнительный код для
+запаковывания в <code>BLOB</code> и распаковывания обратно, но на некотором этапе
+это может сэкономить много обращений. Это практично, когда ваши данные
+не согласуются со структурой статической таблицы.
+
+<LI>
+
+Обычно следует стремиться сохранять все данные в безизбыточной форме
+(которая называется 3-й нормальной формой в теории баз данных), но не
+следует опасаться дублирования данных или создания сводных таблиц,
+если это необходимо для достижения большей скорости.
+
+<LI>
+
+Хранимые процедуры или <code>UDF</code> (функции, определяемые пользователем) могут
+быть хорошим способом получить большую производительность. В этом
+случае, однако, следует иметь в запасе некоторый иной (более
+медленный) путь, если используемая вами база данных не поддерживает
+этих возможностей.
+
+<LI>
+
+Вы всегда можете кое-чего достичь путем кэширования запросов/ответов в
+своем приложении и стараясь выполнить много вставок/обновлений в одно
+и то же время. Если ваша база данных поддерживает блокировку таблиц
+(как MySQL и Oracle), то это должно помочь гарантировать, что кэш
+индексов сбрасывается только однажды после всех обновлений.
+
+<LI>
+
+Используйте <code>INSERT /*! DELAYED */</code>, если нет необходимости знать,
+когда ваши данные записываются. Это повысит скорость работы, поскольку
+многие табличные записи могут быть внесены с помощью одной дисковой
+записи.
+
+<LI>
+
+Используйте <code>INSERT /*! LOW_PRIORITY */</code>, если хотите сделать ваши
+выборки более важными.
+
+<LI>
+
+Используйте <code>SELECT /*! HIGH_PRIORITY */</code>, чтобы получить выборки,
+которые перепрыгивают очередь. То есть, выборка выполняется, даже если
+кто-либо ожидает, чтобы сделать запись.
+
+<LI>
+
+Используйте многострочную команду <code>INSERT</code> для хранения многих строк в
+одной SQL-команде (многие SQL-серверы поддерживают это).
+
+<LI>
+
+Используйте <code>LOAD DATA INFILE</code> для загрузки больших количеств данных.
+Это быстрее, чем обычные вставки и будет еще быстрее при интеграции
+<code>myisamchk</code> в <code>mysqld</code>.
+
+<LI>
+
+Используйте столбцы <code>AUTO_INCREMENT</code>, чтобы сделать величины
+уникальными.
+
+<LI>
+
+Используйте время от времени <code>OPTIMIZE TABLE</code>, чтобы избежать
+фрагментации при использовании динамического табличного формата.
+See section <A HREF="OPTIMIZE_TABLE.html">4.5.1  Синтаксис  команды <code>OPTIMIZE TABLE</code></A>.
+
+<LI>
+
+Используйте таблицы <code>HEAP</code>, чтобы получить более высокую скорость,
+когда это возможно. See section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>.
+
+<LI>
+
+При использовании нормальной установки веб-сервера рисунки должны
+храниться как файлы. То есть, храните в базе данных только ссылку на
+файл. Главная причина этого состоит в том, что обычный веб-сервер
+намного лучше кэширует файлы, чем содержание базы данных. Таким
+образом, при использовании файлов намного легче получить быструю
+систему.
+
+<LI>
+
+Используйте в памяти таблицы для неответственных данных, к которым
+часто обращаются (таким, как информация о последнем показанном баннере
+для пользователей, не имеющих cookies).
+
+<LI>
+
+Столбцы с идентичной информацией в различных таблицах должны
+объявляться одинаково и иметь одинаковые имена. До версии 3.23 в
+противном случае получались медленные соединения (slow joins).
+Старайтесь сохранять имена простыми (используйте <code>name</code> вместо
+<code>customer_name</code> в таблице <code>customer</code>). Чтобы ваши имена были переносимыми
+на другие SQL-серверы, они должны быть короче, чем 18 символов.
+
+<LI>
+
+Если вам действительно нужна высокая скорость, вы должны взглянуть на
+интерфейсы нижнего уровня для хранения данных, поддерживаемые
+различными SQL-серверами! Например, обращаясь к таблицам <code>MyISAM</code> в
+MySQL напрямую, можно было бы получить увеличение скорости в 2-5 раз
+по сравнению с использованием интерфейса SQL. Для возможности сделать
+это, данные должны находиться на том же самом сервере, что и
+приложение, и, обычно, должны иметь доступ только в одном процессе
+обработки (поскольку внешняя файловая блокировка действительно
+медленна). Можно было бы избавиться от вышеуказанных проблем введением
+низко-уровневых команд <code>MyISAM</code> в сервере MySQL (это был бы один из
+простых путей получить большую производительность, если необходимо).
+Путем тщательного проектирования интерфейса базы данных было бы
+достаточно просто поддерживать этот тип оптимизации.
+
+<LI>
+
+Во многих случаях быстрее получить доступ к данным из базы данных
+(используя действующее соединение), чем обращаться к текстовому файлу,
+просто из-за того, что база данных, вероятно, более компактна, чем
+текстовый файл (если вы используете числовые данные), и это приведет к
+меньшему количеству обращений к диску. Вы также сэкономите на коде,
+поскольку не должны анализировать текстовые файлы, чтобы найти границы
+строк и столбцов.
+
+<LI>
+
+Для увеличения скорости можно также использовать репликацию.
+See section <A HREF="Replication.html">4.10  Репликация в MySQL</A>.
+
+<LI>
+
+Объявление таблицы с <code>DELAY_KEY_WRITE=1</code> сделает обновление индексов
+более быстрым, так как они не записываются на диск, пока файл закрыт.
+Обратная сторона этого заключается в том, что необходимо запускать
+<code>myisamchk</code> на этих таблицах перед началом работы <code>mysqld</code>, для
+уверенности, что все в порядке, если что-либо уничтожит <code>mysqld</code> в
+середине работы. Поскольку ключевая информация всегда может быть
+воспроизведена из данных, то вы не должны что-либо потерять при
+использовании <code>DELAY_KEY_WRITE</code>.
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Tips">Add your own comment.</a></p><div id="docnav"><a href="Tips.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Delete_speed.html" title="5.2.11  Скорость выполнения запросов DELETE">Previous</a> / <a rel="next" href="https://www.linuxlib.ru/mysqloff/Locking_Issues.html" title="5.3  Вопросы блокировок">Next</a> / <a rel="up" href="Query_Speed.html" title="5.2  Оптимизация SELECT и других запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

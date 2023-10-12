@@ -1,0 +1,1033 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Начала PAM. — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE width="100%" border=2>
+  <TBODY>
+  <TR>
+    <TD vAlign=center align=middle bgColor=#c8fbe6><FONT
+      style="FONT-WEIGHT: bold; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: fantasy"
+      face=fantasy color=#0000ff size=+3>L&nbsp; i&nbsp; n&nbsp; u&nbsp; x&nbsp;
+      &nbsp; P&nbsp; a&nbsp; r&nbsp; k</FONT><BR><FONT
+      style="FONT-WEIGHT: normal" color=#000000 size=+1><I>при поддержке
+      ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<H3 align=center>Начала PAM.</H3>
+<P align=center><I>Stanislav Ievlev, <A href="../cdn-cgi/l/email-protection.html#3a53545d5f487a5653544f4214484f14545f4e"><span class="__cf_email__" data-cfemail="20494e474552604c494e55580e52550e4e4554">[email&#160;protected]</span></A><BR>Первая публикация
+произошла на <!--<A href="http://linux.ru.net">-->linux.ru.net<!--</A>--></I>
+<H4>0. О статье</H4>
+<P align=justify>Статья эта развивалась долго и нудно. Первая версия появилась
+на linux.ru.net и составляла только первую часть этого труда. Но время шло,
+знаний прибавлялось и захотелось прололжения. Систематизировать свои знания так
+интересно. Присоединяйтесь.
+<H4>1. PAM c точки зрения пользователя</H4>
+<P align=justify>Как было раньше. Желая войти в систему вы были вынуждены
+пообшаться с программой-охранником гордо именуемой login. Она спрашивала ваше
+имя, затем пароль шифровала известным алгоритмом и сличала получивуюся
+абракадабру с записью в файле /etc/passwd. Если все совпадало, то вам
+разрешалось войти иначе предлагалось начать все с начала.
+<P align=justify>Через некоторое время наученные горьким опытом системы
+перестали хранить зашифрованные пароли в файле /etc/passwd открытом на всеобщее
+обозрение и переместили эту интимную информацию в файл /etc/shadow, читать
+который дозводено было только обладателям правами суперпользователя. Программа
+login была переписана заново: теперь она умела и читать из нового файла и
+шифровать по более серьезному алгоритму.
+<P align=justify>Неизвестно сколько еще раз пришлось бы переписывать эту
+программу, да и не только ее (с паролированием в системе связаны еще и passwd, и
+su), если бы не пришла кому-то в голову мысль отделить программы от механизма
+аутентификации. Эта система получила название PAM (Pluggable Authentication
+Modules), что по-русски означает Подгружаемые Модули Аутентификации (ПМА).
+<P align=justify>Теперь если программа (в частности login) жалает произвести
+аутентификацию пользователя она больше не занимается этим, а обращается к PAM'у
+с соответствующей просьбой. Последний выполняет все проверки и докладывает
+вызвавшему его о результатах-пускать или не пускать. Все заботы о выборе
+алгоритма и особенностях аутентификации теперь лежат на PAM'е программа и не
+догадывается через какие круги ада проходит пользователь чтобы его приняли.
+<P align=justify>Формально PAM выполнен в виде разделяемых библиотек-модулей
+комфортно расположившихся в каталоге /lib/security/. Каждый модуль по особому
+пропускает через себя пользователя, реализуя свой особенный механизм
+аутентификации. То есть, запуская тот или иной набор модулей, мы как из
+кирпичиков складываем сценарий аутентификации согласно нашим привычкам и
+желаниям.
+<P align=justify>Осталось только разобраться каким программам какой сценарий
+использовать. Оные разместились в каталоге /etc/pam.d . Имя каждого сценария в
+этом каталоге совпадает с именем программы для которого он предназначен.
+Например, сценарий для login находится по адресу /etc/pam.d/login.
+<P>Заглянем во внутрь этого файла. содержимое может выглядить, например, так: <PRE>#%PAM-1.0
+auth     requisite      /lib/security/pam_unix.so       nullok #set_secrpc
+auth     required       /lib/security/pam_securetty.so
+auth     required       /lib/security/pam_env.so
+auth     required       /lib/security/pam_mail.so
+account  required       /lib/security/pam_unix.so
+password required       /lib/security/pam_unix.so       strict=false
+session  required       /lib/security/pam_unix.so       none # debug or trace
+session  required       /lib/security/pam_limits.so
+</PRE>
+<P>Каждая строчка означает, что для удачной аутентификации пользователь должен
+пройти через указанный модуль. Вообще формат записи:
+<P>Тип-Модуля Флаг-Контроля Путь-К-Модулю Параметры-Модуля
+<P>Тип-Модуля должен быть одним из следующих:
+<UL>
+  <LI><B>auth:</B>Такой модуль проверяет наличие пользователя в системе,
+  спрашивает его имя, разрешает или нет доступ в ту или иную группу (независимо
+  от записей в файле /etc/groups) и вообще способен давать привилегии (конечно
+  специально предназначенные для этого).
+  <LI><B>account</B>: Этот модуль не занимается аутентификацией, а позволяет
+  контролировать распределение ресурсов системы для тех или иных
+  пользовательских бюджетов.
+  <LI><B>session</B>:А этот связан с вещами которые могут происходить перед тем
+  как пользователь получит доступ к той или иной службе. Например ведение
+  записей в системных журналах.
+  <LI><B>password</B>:Модуль, как следует из названия, занимающийся
+  непосредственно проверкой паролей на подлинность, на слабость и т.д. </LI></UL>
+<P align=justify>Флаг-контроля указывает как система будет реагировать при
+удачном или неудачном прохождении соответствующего модуля. Поскольку модули
+запускаются послодовательно один за другим, то специальной расстановкой флагов
+можно определить значимость каждого из них. Возможна простая и сложная форма
+записи подобных флагов, но в рамках нашего знакомства вполне достаточно будет
+простой. В качестве флагов могут быть использованы следующие ключевые слова:
+<UL>
+  <LI><B>required</B>: Удача этого модуля требуется для всей аутентификации в
+  целом. Неудача модуля с подобным флагом не проявится для пользователя пока не
+  выполнятся все оставшиеся модули.
+  <LI><B>requisite</B>:Тоже самое, но только в случае провала управление тут же
+  будет возвращено приложению.
+  <LI><B>sufficient</B>:Удачное прохождение подобного модуля считается
+  достаточным для признания всей аутентификации удачной если не провалилась
+  проверка на предшествующих модулях с флагом required. Неудача же этого модуля
+  не считается фатальной для всей последующей аутентификации.
+  <LI><B>optional:</B>Этот модуль не критичен для аутентификации и используется
+  как дополнительный. То есть,например , может ограничиться выводом на экран
+  предупреждением о слабости вашего пароля. </LI></UL>
+<P>Путь-К-Модулю должен указывать полный адрес выбранного модуля на диске, а
+Параметры-Модуля зависят от выбора оного.
+<P align=justify>Помимо файлов-сценариев для некоторых модулей могут
+использоваться дополнительные файлы конфигурации. Все они расположены в каталоге
+/etc/security и каждый файл предназначен для конкретной группы настроек.
+<P><B>time.conf</B> - Здесь вы сможете ограничить время доступа пользователей с
+различных терминалов к различным сервисам. Например, запретить входить в систему
+с первой виртуальной консоли администратору во время выходных. Эти настройки
+обслуживает модуль pam_time и, соответственно, если вы желаете, чтобы ваши
+ограничения возымели дествие модуль должен быть прописан в соответствующем
+сценарии.<BR><B>pam_env.conf</B>-А здесь вам под силу ограничить возможности в
+изменении отдельных переменных среды пользователями. Работает под руководством
+модуля pam_env.<BR><B>limits.conf</B>- Если вы злобный администратор или у вас
+недобросовестные пользователи, то этот файл для вас. Здесь вы можете
+индивидуально или для группы ограничить:размер core-файла, максимальный
+допустимый размер файла, максимальное количество открытых файлов, запущенных
+процессов, сколько раз можно одновременно зайти в систему и т.д. Руководящий
+модуль pam_limits.<BR><B>access.conf</B>-Так как PAM имеет средства
+аутентификации по сети, то подобные настройки являются полезными ибо
+контролируется не только кто может или не зайти, но и откуда. Контролируется
+pam_access.<BR><B>group.conf</B>- Можно указать какой группе будет принадлежать
+служба запущенная определенным пользователем, в определенное время с
+определенного терминала. Хозяева pam_time и
+pam_group.<BR><B>console.perms</B>-Несколько выбивается своим названием, но не
+функциями. Здесь определяются права, получаемые привилегированными
+пользователями к консоли во время входа в систему и возвращаемые при выходе.
+Модуль pam_console.
+<P>Итак, логика действий проста и понятна, осталось только разобраться какие
+могут быть модули.
+<UL>
+  <LI><B>pam_cracklib</B>:Тип password. Проверяет ваш пароль на стойкость, не
+  является ли он, например, палиндромом (примечание- это не обязательно при
+  использовании модуля pam_unix). Полезен для программ задающих пароли. Полезные
+  параметры: retry=N -дается N попыток на исправление ошибки,diffok=N-должно
+  быть измененено минимум N символов при смене пароля,minlen=N -минимальный
+  размер пароля,dcredit=N ucredit=N lcredit=N ocredit=N - в пароле должно
+  присутствовать минимум N цифр, строчных, прописных букв и других символов.
+  <LI><B>pam_deny</B>:Тип любой. Всегда перекрывает доступ.
+  <LI><B>pam_env</B>:Тип auth. Контролирует сохранность переменных среды.
+  Полезный параметр conffile=S -задает альтернативное название файла
+  конфигурации.
+  <LI><B>pam_ftp</B>:Тип auth. Предназначен для организации анонимного доступа.
+  То есть получив имя пользователя 'anonymous', ждет в качестве пароля что-то
+  похожее на его почтовый адрес. Полезные параметры: ignore- не обращать
+  внимание похож ли пароль на почтовый адрес, users=XXX,YYY -позволяет анонимный
+  вход для пользователей из этого списка.
+  <LI><B>pam_group</B>:Тип auth. предназначение ясно из описания
+  конфигурационного файла group.conf.
+  <LI><B>pam_lastlog</B>:Тип auth. Сообщает о времени и месте входа в систему.
+  Обновляет /var/log/wtmp файл.Полезные параметры: nodate,noterm,nohost,silent -
+  не выводить в сообщении даты, терминала, машины или вообще ничего, never-если
+  пользователь никогда ранее не появлялся, то его приветствуют.
+  <LI><B>pam_limits</B>:Тип session. Предназначение указано выше при описании
+  файла limits.conf. Полезный параметр:conf=S -альтернативное имя
+  конфиругационного файла.
+  <LI><B>pam_listfile</B>:Тип auth. Предназначен для организации доступа на
+  основе конфигурационных файлов-списков например /etc/ftpaccess. Для примера
+  смотрите соответствующие файлы сценариев. Возможные параметры:
+  onerr=succeed|fail; sence=allow|deny; file=filename;
+  item=user|tty|rhost|ruser|group|shell apply=user|@group . Первый параметр
+  задает возвращаемое значение в случае неудачного поиска. Второй - в случае
+  удачного поиска. Третий имя файла со списком. Четвертый- тип элемента в
+  списке. Последний вносит дополнительный ограничения если тип объявлен tty,
+  rhost или shell.
+  <LI><B>pam_mail</B>:Тип auth. Сообщается о наличии почты если таковая имеется.
+  Полезные параметры:dir=S -путь к каталогу почтовых очередей, noenv-не
+  устанавливать переменную среды MAIL,close -сообщать если есть почта у
+  пользователей с аннулироваными бюджетами,nopen-не печатать какой либо почтовой
+  информации если пользовательский бюджет только-что заведен.
+  <LI><B>pam_nologin</B>:Тип auth. Стандартная реакция на наличие файла
+  /etc/nologin. Когда он присутствует, в систему может зайти только root, а
+  остальным будет выдано на экран содержимое этого файла.
+  <LI><B>pam_permit</B>:Тип любой. Использование данного модуля ОПАСНО и
+  применимо только в критических ситуациях. Всегда дает допуск.
+  <LI><B>pam_pwdb</B>:Тип любой. Замещает модули серии pam_unix.... . Использует
+  интерфейс библиотеки libpwdb (пользовательские базы данных), что повышает
+  независимость системы аутентификации от способа хранения пользовательских
+  данных(NIS или passwd или shadow). Полезные параметры: nullok -можно
+  использовать пустые пароли,md5,shadow,bigcrypt -различные способы шифрования
+  пароля.
+  <LI><B>pam_radius</B>:Тип session. Позволяет осуществлять аутентификацию через
+  RADIUS сервер.
+  <LI><B>pam_rhosts_auth</B>:Тип auth. Механизм работы этого модуля основывается
+  на анализе содержимого файлов hosts.equiv и .rhosts используемых для
+  аутентификации таких служб как rlogin и rsh. Полезные параметры:no_hosts_equiv
+  -игнорировать содержимое файла hosts.equiv, no_rhosts-игнорировать содержимое
+  файлов .rhosts ,suppress- охраняет системные журналы от потока малозначимых
+  сообщений, в частности когда используется контрольный флаг sufficient.
+  <LI><B>pam_root_ok</B>:Тип auth. Используется в случае, когда администратору
+  необходимо получать доступ к сервису без введения пароля. Этот модуль
+  допускает пользователя к сервису только если его uid равен 0.
+  <LI><B>pam_securetty</B>: Влючает в проверку файл /etc/securitty.
+  Суперпользователь сможет зайти полько на указанных там терминалах.
+  <LI><B>pam_time</B>:Тип account. Принцип работы думается ясен из описания
+  устройства конфигурационного файла time.conf.
+  <LI><B>pam_warn</B>:Тип auth и password. Просто напросто ведет записи в
+  системных журналах например при смене пароля.
+  <LI><B>pam_weel</B>:Тип auth. Для любителей BSD, где получить права
+  суперпользователя может только пользователь группы wheel (группа root в
+  Linux). Полезные параметры:group=XXX-использовать указанную группу вместо
+  стандартной нулевой,deny- инвертирование действия алгоритма, запрещается
+  получать права суперпользователя пользователям указанной группы, используется
+  вместе с предыдущим параметром, trust -избавляет пользователей группы wheel от
+  необходимости вводить пароль при смене uid на 0. </LI></UL>
+<P align=justify>Ну вот и закончен краткий обзор возможных модулей, теперь
+можете смело смотреть конфигурационные файлы PAM, составлять свои сценарии
+аутентификации и получать удовольствие от потрясающей гибкости и мощности этой
+системы.
+<H4>2. Делаем собственный PAM-модуль</H4>
+<P>После теории посмотрим в глубь PAM. Попытаемся разобраться как же оно
+работает.
+<P><B>Пример1: Новый вход в систему.</B>
+<P>Вы уже наверно во сне видите изрядно доставшие строки
+<P><B><I>login:***<BR>Password:******* </I></B>
+<P align=justify>Эта схема придуманная много лет назад продолжает служить и
+сейчас. Но не паролем единым жив человек. Давайте сделаем что-то новенькое,
+необычное. Будет и самому интересно и вредителей введет в заблуждение, ибо
+такого не будет не на одной другой машине.
+<P align=justify>До PAM'а нам пришлось бы переписывать весь login, а теперь мы
+просто сделаем новый модуль, соберем его как библиотеку и припишем в сценарий
+аутентификации /etc/pam.d/login. Модуль будет называться просто pam_test.
+<P align=justify>Но сначала о том, что же мы будем делать. Имеется следующая
+интересная схема аутентификации: система выдает пользователю несколько случайных
+чисел. Пользователь берет определенные из них, поставляет в ТОЛЬКО ЕМУ известный
+многочлен, например,
+<P>(дата)*x*x+3*x-(текущий час)*y+z
+<P>и вводит вместо пароля ответ. Компьютер тоже считает по этому алгоритму и
+если ответ правильный, пускает в систему.
+<P align=justify>Схема идеальная: повышается математический уровень сотрудников,
+пароль вводится всегда другой, закономерность уловить по косвенным данным
+практически невозможно (коэффициенты у многочлена также меняются от времени,
+возможных многочленов тьма).
+<P align=justify>Есть конечно очевилные недостатки: тяжело считать, можно
+подсмотреть как пользователь считает на бумажке, сложны вопросы хранения
+многочленов ... Но мы не будем столь огорчаться, ведь мы прежде всего учимся, не
+так ли.
+<P>Как вы прочитали ранее модули различаются по классам. Наш будет класса AUTH.
+То есть отвечать за аутентификацию.
+<P>Это его текст. <PRE>/*Это простейший модуль PAM*/
+
+// Включаем необходимые заголовочные файлы.
+
+#include &lt;security/pam_modules.h&gt;
+#include &lt;stdarg.h&gt;
+#include &lt;time.h&gt;
+
+//Это определит тип нашего модуля
+
+#define PAM_SM_AUTH
+#define MAX_V 30
+
+// Самая интересная функция.
+// Именно она реализует наш неповторимый алгоритм аутентификации.
+// Подобные внешние функции должны существовать во всех модулях данного класса.
+
+PAM_EXTERN int pam_sm_authenticate(pam_handle_t * pamh, int flags
+                                   ,int argc, const char **argv)
+{
+        unsigned int ctrl;
+        int retval;
+        const char *name, *p;
+        char *right;
+        /*special variables*/
+        long x1,x2,x3,x4,y;
+
+        time_t mytime;
+        struct tm *mytm;
+
+        /*готовимся к аутентификации*/
+        mytime=time(0);
+        mytm=localtime(&amp;mytime);
+
+
+        srandom(mytime);
+        x1=random()%MAX_V;
+        x2=random()%MAX_V;
+        x3=random()%MAX_V;
+        x4=random()%MAX_V;
+
+        //завели несколько случайных величин, а заодно узнали и время.
+
+        /* получим имя пользователя */
+
+        // Получаем имя пользователя
+        // Вся мудрость PAM в том, что приглашение "login: " появится если имя еще не известно,
+        // иначе мы сразу получим ответ, сгенерированный предыдущими модулями.
+
+        retval = pam_get_user(pamh, &amp;name, "login: ");
+
+        /*получим пароль используя диалог*/
+
+        {
+            struct pam_conv *conv;
+            struct pam_message *pmsg[3],msg[3];
+            struct pam_response *response;
+
+
+        retval = pam_get_item( pamh, PAM_CONV, (const void **) &amp;conv ) ;
+
+// Сами мы не знаем как будет осущестляться диалог, это забота программы
+   (в нашем случае этим займется login). Мы
+// лишь только  укажем параметры, вид приглашения и более того, можем
+   задать сразу несколько приглашений, если надо
+// получить сразу несколько ответов
+
+        pmsg[0] = &amp;msg[0];
+        msg[0].msg_style = PAM_PROMPT_ECHO_OFF;
+        msg[0].msg=malloc(100);
+        snprintf(msg[0].msg,60,"Second Password:%d:%d:%d:%d:",x1,x2,x3,x4);
+
+        retval = conv-&gt;conv(1, ( const struct pam_message ** ) pmsg
+                            , &amp;response, conv-&gt;appdata_ptr);
+ // Нам дали указатель на диалоговую функцию. Ее и запускаем.
+        /*просчитаем правильный ответ*/
+        y=2*x1*mytm-&gt;tm_mday+x3*mytm-&gt;tm_hour;
+        right=malloc(100);
+        snprintf(right,20,"%d",y);
+ // Сравним с ответом пользователя. Ответ формируется диалоговой функцией в специальном формате.
+        if (!(strcmp(right,response-&gt;resp))){
+        return PAM_SUCCESS;
+        }else{
+        return PAM_AUTH_ERR;
+        }
+      }/*диалог*/
+        return PAM_SUCCESS;
+// Нашим результатом будет да или нет. Как прервать программу разберется основной модуль PAM.
+}
+
+
+/*
+ * The only thing _pam_set_credentials_unix() does is initialization of
+ * UNIX group IDs.
+ *
+ * Well, everybody but me on linux-pam is convinced that it should not
+ * initialize group IDs, so I am not doing it but don't say that I haven't
+ * warned you. -- AOY
+ * Перевожу: Единственная вещь которую делает pam_set_cred это инициализация
+   Идентификаторов групп... короче в данном случае это нам совершенно не нужно
+ */
+
+PAM_EXTERN int pam_sm_setcred(pam_handle_t * pamh, int flags
+                              ,int argc, const char **argv)
+{
+        unsigned int ctrl;
+        int retval;
+
+
+        retval = PAM_SUCCESS;
+//Чтобы никто не заметил, что мы ничего не делаем ответим, что все в порядке
+        return retval;
+}
+
+// Это определение необходимо для статической линковки модулей PAM в приложениях.
+#ifdef PAM_STATIC
+struct pam_module _pam_unix_auth_modstruct = {
+    "pam_test",
+    pam_sm_authenticate,
+    pam_sm_setcred,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+};
+#endif
+</PRE>
+<P align=justify>Вот и все. Просто. Дело в том, что мы тут описываем процедуру
+аутентификации и только ее - положительный эффект от грамотного разделения
+обязанностей. Повторим все основные этапы. В модуле, понятное дело ,должны
+существовать экспортируемые функции. В нашем случае это pam_sm_authenticate и
+pam_sm_setcred. Для каждого класса модулей свой набор функций. Дальше, внутри
+функций находится основной алгоритм принятия решения ответом является только
+"да" или "нет". Если же для принятия столь ответственного решения необходимо
+узнать дополнительную информацию от пользователя, то можно узнать указатель на
+диалоговую функцию программы.
+<P>Работа с другими классами модулей абсолютно идентична. Так что попробуйте
+сделать еще что-нибудь свое.
+<H4>3. Делаем собственное PAM-приложение</H4>
+<P>Давайте-ка теперь посмотрим как видят систему PAM-приложения. Нудную и
+скучную документацию вы сами потом прочитаете (или я все-таки сделаю это
+когда-нибудь сам), а сейчас обратимся к практике.
+<P><B>Пример2: избавляемся от SUID-программ.</B>
+<P>Прочитали название? Страшно? Все в порядке, речь в этом разделе не пойдет о
+чем-то необычном. Просто несколько теоретических размышлений и пример их
+реализации.
+<P align=justify>Одним из основных архитектурных недостатков UNIX с точки зрения
+защищенности является наличие SUID-программ, то есть способность процесса
+изменять одного владельца на другого после запуска. По-умолчанию, процесс
+приобретает права того пользователя, который его запустил. Исключение -
+программы в правах которых выставлен бит SUID. После запуска такой процесс
+приобратает права не того пользователя,который запустил его, а права владельца
+данного файла.
+<P align=justify>Зачем это нужно. Дело в том, что иногда для доступа к тем или
+иным системным данным прав пользователя недостаточно. Так, например, программе
+passwd необходимо иметь права root для доступа к файлам /etc/passwd и
+/etc/shadow. Но будучи запущенной пользователем (ведь может же он поменять
+пароль самому себе), она не в состоянии это сделать. Тут то и происходит фокус
+со сменой владельца. Запускаясь, процесс passwd получает права своего владельца
+(root) и теперь может спокойно работать с ранее запретными данными. Получается,
+что пользователь как-бы не получает прав администратора, а программа спокойно с
+ними работает. Все гениально, просто и безопасно... Стоп, вот тут мы и не правы.
+Большинство атак, направленных на "переполнение буфера" как раз и пользуются
+этой возможностью процессов расширять свои возможности. Ну и что, что права
+получает только процесс, если его надлежащим образом накачать, то он запустит
+нам оболочку. Последняя унаследует права процесса - права администратора. Была у
+тебя оболочка с правами пользователя - стала от имени администратора.
+<P align=justify>Что же делать. Давайте обратимся к опыту других операционных
+систем, не наступивших на грабли UNIX. В Windows NT нет SUID-программ. А что же
+делать, если кому-то нужно, скажем, поменять себе пароль? Очень просто. Есть
+программа пользователя, желающая поменять пароль и работающая с правами оного. А
+есть сервер, работающий с правами администратора и готовый помочь всякому
+правильному клиенту. Вот пользовательский процесс делает запрос, сервер
+проверяет тот ли это пользователь и радостно выполняет поручение. При таком
+решении неизбежно возникают две проблемы: Клиент-серверное взаимодействие должно
+быть грамотно написано (что бы не напороться на грабли несанкционированного
+превишения полномочий) и падает производительность системы на всех подобных
+операциях (в Windows это решается применением кеширования запросов). Но с другой
+стороны серверов будет поменьше чем SUID-программ (следовательно, вероятность
+допустить ошибку меньше) и при хорошем проектировании системы повышение прав
+потребуется не столь часто.
+<P align=justify>А что если и в UNIX попытаться сделать , например,
+клиент-серверную авторизацию. Я понимаю, что для аккуратного решения этой
+проблемы надо очень крепко подумать и возможно даже изменить архитектуру, но
+разве это не интересно попробовать изменить как-то свою ОС?
+<P align=justify>Сразу оговорюсь, что в примерах не описан процесс
+аутентификации клиента. Понятно, что он должен быть достаточно хитроумным,
+желательно с применением криптографии. Кроме того, сервер обрабатывает только
+один запрос. В идеале он должен или постоянно висеть в системе как daemon, или
+вызываться через какой-нибудь wrapper. Все программы ниже будут выглядить
+максимально упрощенными. Лучше понимание, чем уважение без оного.
+<P>Итак, сказано-сделано. Пишем клиент (собственно passwd который будет вызывать
+пользователь). <PRE>//Всякие полезные включения. Право не знаю все ли они нужны?..
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;netdb.h&gt;
+
+#define PORTNUM 1500
+
+//Это порт по умолчанию, на котором расположится сервер в ожидании запросов.
+//А также адрес по умолчанию-локальный.
+
+#define DEFAULT_ADDR "0.0.0.0"
+
+main(int argc, char *argv[])
+
+//единственная и главная функция.
+
+{
+int s;
+int pid;
+int i,j;
+struct sockaddr_in serv_addr;
+struct hostent *hp;
+char username[80],hostname[80]=DEFAULT_ADDR;
+char *tmp=malloc(80);
+
+if (argc&lt;2){
+printf("Usage: passwdc username host\n");
+exit(1);
+}
+
+//Работать будем или с локальной машиной
+  или с удаленной (а почему бы и нет, если силы позволяют, только аутентификация
+//должна быть очень продуманной)
+
+strncpy(username,argv[1],80);
+printf("Changing password for user:%s \n",username);
+
+if (argc&gt;2) {
+  strncpy(hostname,argv[2],80);
+ }
+
+printf("on host:%s\n",hostname);
+
+if((hp=gethostbyname(hostname))==0)
+{
+perror("gethostbyname()");
+exit(3);
+}
+
+
+bzero(&amp;serv_addr, sizeof(serv_addr));
+bcopy(hp-&gt;h_addr,&amp;serv_addr.sin_addr,hp-&gt;h_length);
+
+serv_addr.sin_family=hp-&gt;h_addrtype;
+serv_addr.sin_port=htons(PORTNUM);
+
+if((s=socket(AF_INET, SOCK_STREAM, 0))==-1){
+perror("socket()");
+exit(1);
+}
+
+if (connect(s, (struct sockaddr_in *)
+&amp;serv_addr, sizeof(serv_addr))==-1){
+perror("connect()");
+}
+
+//где-то тут после успешного соединения клиент должен убедить сервер, что он
+//действительно тот за кого себя выдает и что
+  работает именно от имени того пользователя чей пароль так хочется изменить.
+
+//посылаем имя пользователя
+
+send(s, username, sizeof(username),0);
+
+//считываем с локальной консоли и отсылаем пароль пользователя
+//Тонкий момент: или соединение должно быть шифорванным или пароль
+  посылается уже после применения к нему хеш-функции.
+
+tmp=getpass("New UNIX password:");
+strncpy(username,tmp);
+send(s, username, sizeof(username),0);
+
+//После этого работает уже сервер. Нас интересуют только результаты
+//Возможно более сложный обмен сообщениями по определенному протоколу.
+  Например если пароль оказался слишком прост, то надо
+//Ввести новый.
+
+if (recv(s, username, sizeof(username), 0)&lt;0){
+perror("recv()");
+}
+
+printf("Result:%s\n",username);
+close(s);
+
+printf("Client done...\n");
+}
+</PRE>
+<P align=justify>Ну вот и все. Все просто. Но так и должно быть. пример-то
+учебный. Для реального воплощения идеи надо не мало потрудиться. Важное
+замечание. Клиент нигде не использует никаких функций, связанных с
+аутентификацией в ОС - то чего мы и добивались.
+<P>А вот с сервером дела обстоят несколько хуже. Он использует библиотеку PAM,
+хотя может производить все изменения и вручную. Но только зачем нам изобретать
+велосипед? <PRE>//Масса полезных включений
+
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;netdb.h&gt;
+
+#include &lt;ctype.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#include &lt;unistd.h&gt;
+#include &lt;sys/types.h&gt;
+
+#include &lt;security/pam_appl.h&gt;
+#include &lt;security/pam_misc.h&gt;
+
+#define USERNAME "stas"
+#define PASSWORD "1234"
+#define PORTNUM 1500
+
+
+// А это нужно для PAM. Так описывается функция диалога между программой и пользователем.
+// Путем этого диалога определяется что и как спрашивать. Диалог задает программа.
+   Это весьма разумно, ибо с РАМ могут
+// работать как консольные программы, так и программы с графическим интерфейсом.
+
+static struct pam_conv conv = {
+    misc_conv,
+    NULL
+};
+
+//Тут мы сохраним все самое дорогое
+char username[80]       = USERNAME; /* имя пользователя */
+char newPassword[80]    = PASSWORD; /* его пароль*/
+int s, ns; /*идентификаторы сокетов*/
+struct sockaddr_in serv_addr, clnt_addr; /*структуры описатели адресов*/
+
+//Итак, сначала инициализируем серверную часть
+
+server_init()
+{
+int pid;
+int nport;
+int nbytes;
+int fout;
+int addrlen;
+
+
+struct hostent *hp;
+
+char hname[80];
+
+nport=PORTNUM;
+nport=htons((u_short)nport);
+
+if((s=socket(AF_INET, SOCK_STREAM, 0))==-1){
+perror("socket()");
+exit(1);
+}
+
+bzero(&amp;serv_addr, sizeof(serv_addr));
+serv_addr.sin_family=AF_INET;
+serv_addr.sin_addr.s_addr=INADDR_ANY;
+serv_addr.sin_port=nport;
+
+if( bind(s, (struct sockaddr_in *)&amp;serv_addr, sizeof(serv_addr))==-1){
+perror("bind()");
+exit(1);
+}
+
+
+if(listen(s,5)==-1){
+perror("listen()");
+exit(1);
+}
+
+printf("server ready:%s\n",
+        inet_ntoa(serv_addr.sin_addr));
+
+}
+
+
+server_read()
+{
+
+/*это в последствии и должно стать рабочим циклом при обмене с клиентом*/
+
+int addrlen;
+bzero(&amp;clnt_addr,sizeof(clnt_addr));
+addrlen=sizeof(clnt_addr);
+
+if((ns=accept(s, (struct sockaddr_in *)&amp;clnt_addr, &amp;addrlen))==-1){
+perror("accept()");
+exit(1);
+}
+
+printf("Client: %s\n",
+        inet_ntoa(clnt_addr.sin_addr));
+
+
+
+/*Вот и пожаловал клиент*/
+close(s);
+printf("Receiving data ...\n");
+recv(ns, username, sizeof(username), 0);
+recv(ns, newPassword, sizeof(newPassword), 0);
+//Приняли от него имя пользователя и пароль
+}
+
+//По окончании всей работы не забудьте выключить свет и сообщить клиенту результат
+//обработки
+server_done()
+{
+printf("Sending data...\n");
+send(ns, username, sizeof(username), 0);
+close(ns);
+printf("Server done...\n");
+}
+
+// А это главная и хитрейшая функция
+// Именно она олицетворяет собой диалог человека с машиной. Только у нас она вырожденная
+// Просто копирует в формируемый специальный ответ имеющиесяф данные.
+// А вообще-то она может помимо всего этого
+// выводить всяуие радостные окна и приветствия
+
+static int stdin_conv(int num_msg, const struct pam_message **msgm,
+                      struct pam_response **response, void *appdata_ptr) {
+    struct pam_response *reply;
+    int count;
+
+    if (num_msg &lt;= 0)
+        return PAM_CONV_ERR;
+
+    reply = (struct pam_response *) calloc(num_msg,
+                                           sizeof(struct pam_response));
+    if (reply == NULL) {
+        return PAM_CONV_ERR;
+    }
+
+    for (count=0; count &lt; num_msg; ++count) {
+        reply[count].resp_retcode = 0;
+        reply[count].resp = strdup(appdata_ptr);
+    }
+
+    *response = reply;
+    reply = NULL;
+
+    return PAM_SUCCESS;
+}
+
+int main(int argc, char * const argv[])
+// Последняя, но не по значимости функция
+
+{
+    int retval;
+    pam_handle_t *pamh=NULL;
+
+
+    int i;
+    /*прочтем, то что нам хотел бы сказать клиент*/
+
+    server_init();
+    server_read();
+
+
+    /*И не долго думая установим новые значения*/
+ / Важно: PAM теперь работает совсем по другому.
+//Так как раньше он не позволил бы простому пользователю ввести себе
+//слабый пароль, а теперь нет проблем - администратору это можно.
+
+    conv.conv = stdin_conv;
+    conv.appdata_ptr = strdup(newPassword);
+// Мы только что заполнили структуры данных, необзодимые для диалога.
+// А именно Добавили пароль и указатель на функцию диалога.
+
+// Запускаем PAM. Говорим, что нужно читать файл /etc/pam.d/passwd,
+// указываем имя пользователя и функция для ведения
+// диалога.
+
+    retval = pam_start("passwd", username, &amp;conv, &amp;pamh);
+
+    while (retval == PAM_SUCCESS) {
+        retval = pam_chauthtok(pamh, 0);
+// Вот именно здесь все и происходит. PAM вызывает функцию-диалог,
+// анализирует ответ в месте с модулями заданными в
+// /etc/pam.d/passwd и изменяет пароль, если получается.
+
+        if (retval != PAM_SUCCESS)
+            break;
+        /* all done */
+        retval = pam_end(pamh, PAM_SUCCESS);
+        if (retval != PAM_SUCCESS)
+            break;
+        /* quit gracefully */
+        sprintf(username, "all right!...\n");
+//Поработали и хватит.
+        server_done();
+        exit(0);
+    }
+
+    if (retval != PAM_SUCCESS)
+        sprintf(username, "passwd: %s\n", pam_strerror(pamh, retval));
+
+    if (pamh != NULL) {
+        (void) pam_end(pamh,PAM_SUCCESS);
+        pamh = NULL;
+    }
+
+// Пусть нам сегодня не повезло, но клиента тоже надо огорчить.
+    server_done();
+    exit(1);
+}
+</PRE>
+<P>Вот и весь сервер. Функций аутентификации заметно прибавилось, хотя они и
+скрылись за тремя могучими буквами PAM. Итак, повторим увиденное.
+<P align=justify>Для приложения важно запустить PAM (pam_start) и получить
+некоторый дескриптор. Затем определиться с диалоговой функцией. Сам PAM она не
+волнует, а волнует только выдаваемый ею ответ в специальной форме. Сделав это,
+запускаем требуюмую функцию: аутентификации (pam_authentificate), изменения
+пользовательских данных (pam_chauthtok) или какую еще. Наконец, торжественно
+завершаем концерт функцией pam_end. По-моему все просто и понятно, а теперь
+вперед к компьютеру...
+<H4>4. Выводы.</H4>
+<P>Не правда ли PAM это здорово... :)) <BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end --></P>
+
+  </div>
+</div>
+</body>
+</html>

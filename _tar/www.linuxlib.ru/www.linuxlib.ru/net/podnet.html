@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Subnetting your local network with DHCP LG #83 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<center>
+        <BIG><BIG><STRONG><FONT COLOR="maroon">Разбиение вашей локальной сети
+        на подсети с помощью DHCP</FONT></STRONG></BIG></BIG><BR>
+
+        <STRONG><!--<A HREF="http://gazette.linux.ru.net/lg83/ward/misc/authors/ward.html">-->Alan Ward<!--</A>--></STRONG>
+      </center></TD></TR>
+</TABLE>
+<P>
+
+<!-- END header -->
+
+
+
+
+<p><b>Зачем это нужно?</b></p>
+
+<p>С понижением цен на аппаратное обеспечение размеры локальных сетей выросли.
+  Теперь обычным явлением являются локальные сети размером от малого офиса (5-10
+  хостов) до больших корпоративных сетей, охватывающих целое здание (более 50
+  хостов).</p>
+
+<p>При количестве хостов менее 10-ти управлять сетью, в общем, очень просто: все
+  узлы принадлежат одному Ethernet-сегменту, а безопасность, если она необходима,
+  реализована на уровне хоста: пароль и т.п. При количестве узлов более 50-ти
+  вы уже должны получать финансирование, достаточное для установки управляемого
+  коммутатора с поддержкой виртуальных сетей (VLAN'ов). Тогда бухгалтерия будет
+  работать в одном "вилане", отдел сбыта -- в другом и так далее. Каждый хост
+  будет иметь доступ к хостам из своего вилана и серверам компании, но не к хостам
+  из другого вилана. Кроме безопасности на уровне хоста появляется еще и сетевой
+  уровень безопасности.</p>
+
+<p>В сетях среднего размера мы часто вынуждены объединять все узлы в один сегмент.
+  Современные дешевые коммутаторы легко справляются с обработкой трафика 50-ти
+  узлов, но они не поддерживают функции виртуальных сетей. Коммутаторы же с такой
+  функцией на порядок дороже. Хорошо известные брэнды продают их начиная от $1200
+  за 24-портовый коммутатор. Возможно, он и стоит этих денег, однако он совершенно
+  не вписывается во многие сметы. Например, в мою.</p>
+
+<p><b>DHCP и подсети</b></p>
+
+<p>Одна из локальных сетей, которую я администрировал, была сетью школы, где я
+  работал. Она представляла собой длинную цепочку неуправляемых Ethernet-коммутаторов.
+  Такая архитектура была обусловлена планировкой здания. Мне приходилось управлять
+  трафиком нескольких типов. Для упрощения будем говорить о &quot;преподавательском&quot;
+  (группа А) и &quot;студенческом&quot; (группа Б) трафиках. Они не должны смешиваться.
+  Я не хочу, что бы люди из разных групп имели доступ к принтерам и файлам другой
+  группы (пароли были гораздо проще, чем мне бы хотелось).</p>
+
+<p>Простейшим путем разделение на группы является выделение каждой группе своей сети.
+  Например, группа А получит адреса из сети 192.168.10.0 (т.е. 192.168.10.12),
+  тогда как группа Б -- из сети 192.168.20.0 (т.е. 192.168.20.34). Сервера, доступ
+  к которым должен быть открыт для обеих групп, должны иметь адрес в каждой из
+  сетей.</p>
+
+<p align=center><img src="https://www.linuxlib.ru/net/map00000.jpg"><br>
+  <i>Топология нашей сети</i></p>
+
+<p>Хорошим решением проблемы является сервер DHCP. Это сервис, которым вы пользуетесь
+  при dial-up соединении с Internet: вы соединяетесь с провайдером, который назначает
+  вам временный (<font face="Verdana, Arial, Helvetica, sans-serif" size="-1">а
+  возможно и постоянный. - <i>Прим.пер.</i></font>) реальный IP адрес. Большинство
+  дистрибутивов Linux, включают в себя сервер DHCP, который можно использовать
+  и в локальной сети.</p>
+
+<p>В простейшем случае, вы задаете DHCP-серверу диапазон адресов: например от
+  192.168.1.100 до 192.168.1.199. Любой хост, который загружается и запрашивает
+  адрес, получит его из указанного диапазона. После отключения хоста адрес освобождается
+  и может быть использован повторно, уже для другого хоста.</p>
+
+<p>Все Ethernet-карты, содержат идентификационный номер, который называется MAC-адресом.
+  Это 12-цифровой номер, определяемый производителем, уникальный для всех Ethernet-устройств
+  в мире. Сервер DHCP может быть настроен на использование этого адреса, что бы
+  всегда присваивать одному и тому же хосту один и тот же IP адрес.</p>
+
+<p>Пользуясь этим, мы можем создать список MAC-адресов хостов группы А, и настроить
+  DHCP на раздачу им постоянных IP-адресов из подсети 192.168.10.0. А хостам с
+  MAC-адресами группы Б, будут отдаваться адреса из сети 192.168.20.0, хосты не
+  принадлежащие ни одной из групп (лаптопы визитеров, например) получат адрес
+  в подсети 192.168.1.0 .
+<p>В этом смысле у DHCP есть преимущество над VLAN'ами: "виланы" определяются для
+  физических портов, тогда как DHCP использует адрес карты. При использовании
+  виланов, если вы физически меняете сетевое подключение -- например при переезде
+  из одной комнаты в другую -- вы можете изменить и свой вилан. При использовании
+  DHCP, привязка к подсети останется прежней.</p>
+<p><i><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Это очень неполное
+  суждение. Вы можете привязать к порту коммутатора MAC-адрес, тогда несанкционированного
+  попадания в другой вилан не будет. Строго говоря, разбиение на подсети (и использование
+  разных адресов сетей) не имеет никакого отношения к безопасности, тогда как
+  одной из функций виланов может быть обеспечение безопасности на сетевом уровне.
+  - Прим.пер.</font></i></p>
+<p><b>Настройка DHCP</b></p>
+
+<p>В большинстве дистрибутивов сервер DHCP называется dhcpd и запускается стандартными
+  скриптами (теми же что и сервисы httpd, postfix, ...). Он может быть и в виде
+  пакета RPM, например <u>dhcp-3.0-3mdk.i386.rpm</u>. Если он уже установлен в
+  вашей системе, то просмотрите страницы руководства dhcpd и dhcpd.conf.</p>
+
+<p>Сначала, чтобы настроить сервис DHCP для основной сети, я использовал утилиту
+  webmin. Обратите внимание, что сервис должен работать в сети 192.168.0.0 с маской
+  255.255.0.0 . Это связано с тем, что он должен быть доступен из всех подсетей.</p>
+
+<p align=center><img src="https://www.linuxlib.ru/net/main0000.jpg"><br></p>
+
+<p>Далее, я внес в конфигурацию каждый хост, указывая его имя, аппаратный MAC-адрес
+  и IP-адрес, который я хотел ему выдать. IP-адреса принадлежали подсети 192.168.10.0
+  (Для группы А, естественно - Прим.пер.).</p>
+
+<p align=center><img src="https://www.linuxlib.ru/net/client00.jpg"><br></p>
+
+<p>Если вас интересует, где можно узнать MAC-адрес сетевой карты, то посмотрите
+  на нее внимательно. На большинстве из них есть наклейка, где он указан. Если
+  же на ваших картах наклейки нет, то пока пропустите этот шаг. Заканчивайте настройку
+  DHCP-сервиса, и запускайте хосты один за другим. Поскольку каждый хост получает
+  IP-адрес (в сети 192.168.1.0 пока что), вы увидите его в файле <u>/var/lib/dhcp/dhcpd.leases</u>.
+  Например: </p>
+
+<p><pre>
+lease 192.168.1.198 {
+   hardware ethernet 00:00:b4:38:cf:6a;
+   client-hostname "bis";
+}
+</pre><p></p>
+
+<p>Учтите, что в файле будут указаны <strong>только</strong> адреса, полученные
+  динамически, а не те, что вы жестко привязали к хостам.</p>
+
+<p>Закончите настройку фиксированных адресов в конфигурации DHCP-сервера.</p>
+
+<p>Запустите или перезапустите сервер DHCP. Узлы должны будут получить назначенные
+  им адреса <font size="-1" face="Verdana, Arial, Helvetica, sans-serif">(при
+  запросе от них. Например при загрузке - <i>Прим.пер.</i>)</font> На Linux в
+  этом можно убедится при помощи команды <u>ifconfig</u>. На Windows-машине используйте
+  <u>winipcfg</u> для Win95/98/ME, а <u>ipconfig</u> (в окне команд) для WinNT/2k.</p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="-1">Кстати, эти же
+  команды выведут вам и MAC-адрес сетевой карты компьютера. Для команды ipconfig
+  нужно еще задать параметр /all: ipconfig /all - <i>Прим.пер.</i></font></p>
+<p>Маска сети по умолчанию, однако, устанавливается равной 255.255.0.0. Это нехорошо,
+  т.к. хосты подсетей 192.168.10.0 и 192.168.20.0 будут видеть друг друга (попробуйте
+  пинг). Идем в конфигурацию каждого узла и нажимаем "edit client options". Устанавливаем
+  маску подсети 255.255.255.0 и маршрутизатор по умолчанию 192.168.X.1 для подсети
+  192.168.X.0 . Например, в сети 192.168.10.0:</p>
+
+<p align=center><img src="https://www.linuxlib.ru/net/client10.jpg"><br></p>
+
+<p>Не забудьте также установить маску 255.255.255.0 в общей настройке клиентов
+  сети 192.168.0.0.
+
+<p>Можно и вручную править файл <u>/etc/dhcpd.conf</u>. Это может быть даже более
+  понятно, чем интерфейс webmin. Вот что вы могли бы указать:</p>
+
+<p>
+<pre>
+#
+# главная подсеть, хосты, которые мы не знаем
+#
+subnet 192.168.0.0 netmask 255.255.0.0 {
+	option subnet-mask 255.255.255.0;
+	option routers 192.168.1.1;
+	range 192.168.1.101 192.168.1.199;
+	}
+
+#
+# настройка узла, одна на каждый известный узел нашей ЛВС
+#
+host bis {
+	option subnet-mask 255.255.255.0;
+	option routers 192.168.10.1;
+	hardware ethernet 00:00:b4:38:cf:6a;    # 12-цифровой MAC-адрес
+	fixed-address 192.168.10.34;
+	}
+
+</pre>
+<p></p>
+
+<p><b>Организация доступа к серверу</b></p>
+
+<p>В предыдущем примере, для каждой подсети
+вида 192.168.X.0 мы указали
+маршрутизатор 192.168.X.1 . Но при этом наш сервер имеет IP-адрес
+192.168.1.1 -- и это
+   значит, что:<br>
+
+<ul>
+  <li>узлы в сети 192.168.10.0 будут пытаться получить IP-адрес</li>
+  <li>они будут получать адрес от сервера 192.168.1.1</li>
+  <li>адрес будет из сети 192.168.10.0 с маской 255.255.255.0</li>
+  <li>и в результате узлы не смогут работать с сервером 192.168.1.1, <strong>поскольку
+    он принадлежит другой сети!!!</strong></li>
+</ul>
+
+<p>Поэтому наш сервер должен иметь дополнительные адреса для каждой из подсетей:
+  192.168.10.1, 192.168.20.1, и т.д. Это можно сделать очень просто, создавая
+  виртуальные сетевые карты (<font size="-1" face="Verdana, Arial, Helvetica, sans-serif">точнее
+  -- указывая дополнительные адреса сетевой карты - <i>Прим.пер.</i></font>) eth0:1,
+  eth0:2, и т.д. При помощи webmin:</p>
+
+<p align=center><img src="https://www.linuxlib.ru/net/virtual0.jpg"><br></p>
+
+<p>Все можно настроить и руками. Если у вас дистрибутив Mandrake или Red Hat,
+  нужные файлы расположены в каталоге <u>/etc/sysconfig/network-scripts</u>. У
+  вас уже должен быть файл <u>ifcfg-eth0</u>. Скопируйте его с именем <u>ifcfg-eth0:1</u>,
+  <u>ifcfg-eth0:2</u>, ... и измените в них соответственно адреса и сетевые маски
+  (<font face="Verdana, Arial, Helvetica, sans-serif" size="-1">а так же переменные
+  DEVICE, BROADCAST и NETWORK - <i>Прим.пер.</i></font>). Например, для eth0:1
+  :</p>
+
+<p><pre>
+BROADCAST=192.168.10.0
+DEVICE=eth0:1
+NETMASK=255.255.255.0
+IPADDR=192.168.10.1
+NETWORK=192.168.10.0
+ONBOOT=yes
+BOOTPROTO=none
+</pre><p></p>
+
+<p>Это, в основном, все, что вам нужно. Возможно, вам нужно будет разрешить маршрутизацию
+  на сервере, например для доступа к Internet. Но будьте аккуратны, при этом нужно
+  будет запретить маршрутизацию между локальными подсетями; 192.168.X.0 не должна
+  видеть 192.168.Y.0 . Чтобы избежать этого, используйте брандмауэр, такой как iptables.
+  Его же можно использовать для блокировки доступа в Internet для тех или иных подсетей
+  или хостов.</p>
+
+<hr>
+
+<p>PS. Для тех, кто захочет перевести эту статью: Я написал ее в духе лицензии
+  GPL, т.е. вы можете (это даже поощряется) копировать, пересылать и переводить
+  ее, только ПОЖАЛУЙСТА, пришлите мне сообщение по электронной почте! Я хочу быть
+  в курсе переводов -- это хорошо для составления учебных планов :-)</p>
+
+
+<!-- *** BEGIN copyright *** -->
+<p><font size="-1" face="Verdana, Arial, Helvetica, sans-serif"><i>Пожелание автора,
+  естественно, было выполнено:</i></font></p>
+<p><i><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">From: Alan
+  Ward &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="3c5d4b5d4e587c5d5258534e4e5d125d58">[email&#160;protected]</a>&gt;<br>
+  To: Ivan Pesin &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7f160f1a0c16113f0f100c0b5113091609510a1e">[email&#160;protected]</a>&gt;<br>
+  Subject: Re: translation</font></i></p>
+<p><i><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">Of course!
+  Go ahead with translation.<br>
+  <br>
+  &gt;Alan Ward! </font></i></p>
+<p><i><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">&gt;I'm going
+  to translate your article "Subnetting your local network with DHCP" <br>
+  &gt;from LG #83 within the framework of Russian Linux Gazette project. <br>
+  &gt;It will be available at http://gazette.linux.ru.net soon, <br>
+  &gt;if you don't mind, of course. </font></i></p>
+<p><i><font size="-1" face="Verdana, Arial, Helvetica, sans-serif">&gt;Regards,
+  <br>
+  &gt;Ivan Pesin</font></i></p>
+<p><i><b>Прим.пер.</b></i></p>
+<hr>
+<CENTER><SMALL><STRONG>
+
+Copyright &copy; 2002, Alan Ward.
+Copying license <!--<A HREF="http://gazette.linux.ru.net/lg83/ward/misc/copying.html">-->http://www.linuxgazette.com/copying.html<!--</A>--><BR>
+Published in Issue 83 of <i>Linux Gazette</i>, October 2002
+</STRONG></SMALL></CENTER>
+<!-- *** END copyright *** -->
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

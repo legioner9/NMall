@@ -1,0 +1,893 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини-HOWTO: Мосты Ethernet — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Мини-HOWTO: Мосты Ethernet</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Christopher Cole</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+>&nbsp;&nbsp;&nbsp;&nbsp;     <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="8deee2e1e8cdeee2e1e8e9e9a3eee2e0">[email&#160;protected]</a>
+    <br>
+&nbsp;&nbsp;&nbsp;</P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+>  Перевод: <A HREF="../cdn-cgi/l/email-protection.html#cdbeaca08dacbebde0a1a4a3b8b5e3aea2a0" TARGET="_top">Станислав Рогин</A
+>,
+  <!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>-->
+ </H3
+></DIV
+><P
+CLASS="PUBDATE"
+>v1.11, 7 September 1998<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN15"
+></A
+><P
+></P
+><P
+>В этом документе описывается процесс настройки ethernet-моста. Что такое
+ethernet-мост? Ethernet-мост - это устройство, контролирующее пакеты
+данных, передаваемых в подсети, существующее для уменьшения нагрузки на
+сеть. Мост обычно устанавливается между двумя отдельными группами
+компьютеров, которые часто общаются внутри группы, но значительно реже
+между группами. Хороший пример использования моста - группа Макинтошей
+и группа Unix-машин. Обе этих группы достаточно плотно общаются
+между собой, перегружая сеть, и, в результате, этого мешают другим машинам
+передавать данные. Мост должен быть помещен между этими двумя группами.
+Задачей моста будет следующее: определять местонахождение получателя
+каждого пакета данных, чтобы отфильтровывать пакеты, которые не должны
+попадать в противоположный от отправителя сегмент ethernet. Результатом
+этого будет более быстрая и незагруженная сеть с меньшим количеством
+столкновений пакетов.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Bridge.html#AEN17"
+>Настройка</A
+></DT
+><DT
+>2. <A
+HREF="Bridge.html#AEN60"
+>Общие проблемы</A
+></DT
+><DT
+>3. <A
+HREF="Bridge.html#AEN195"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN17"
+>1. Настройка</A
+></H1
+><P
+>&#13;<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Установите пакет "Конфигурирование моста":
+
+<PRE
+CLASS="SCREEN"
+><!--<A
+HREF="ftp://shadow.cabi.net/pub/Linux/BRCFG.tgz"
+TARGET="_top"
+>-->ftp://shadow.cabi.net/pub/Linux/BRCFG.tgz<!--</A
+>--></PRE
+>
+&#13;</P
+></LI
+><LI
+><P
+>Разрешите использование нескольких ethernet-устройств в вашей машине, добавив следующие строки в <TT
+CLASS="LITERAL"
+>/etc/lilo.conf</TT
+>,
+и перезапустив <TT
+CLASS="LITERAL"
+>lilo</TT
+>:
+
+<PRE
+CLASS="SCREEN"
+>append = "ether=0,0,eth1"
+        </PRE
+>
+
+Используйте следующие строки, если у вас будет три интерфейса в мосте:
+
+<PRE
+CLASS="SCREEN"
+>append = "ether=0,0,eth1 ether=0,0,eth2"
+        </PRE
+>
+
+
+Большее количество интерфейсов могут быть настроены добавлением большего
+количества опций "ether". По умолчанию стандартное ядро Linux ищет одну
+сетевую карту, и, обнаружив ее, прекращает поиск. Вышеприведенное добавление
+указывает ядру продолжать поиск дополнительных карт после того, как оно
+найдет первую.
+
+Существует возможность использовать этот параметр при загрузке ядра:
+
+<PRE
+CLASS="SCREEN"
+>linux ether=0,0,eth1
+        </PRE
+>
+
+Соответственно для трех интерфейсов:
+
+<PRE
+CLASS="SCREEN"
+>linux ether=0,0,eth1 ether=0,0,eth2
+        </PRE
+>
+&#13;</P
+></LI
+><LI
+><P
+>Пересоберите ядро с разрешенной опцией <TT
+CLASS="LITERAL"
+>BRIDGING</TT
+>.&#13;</P
+></LI
+><LI
+><P
+>Мосту не нужен IP-адрес. Он МОЖЕТ его иметь, но простой мост в нем не нуждается. Чтобы убрать IP-адрес с вашего моста, перейдите в каталог
+<TT
+CLASS="LITERAL"
+>/etc/sysconfig/network-scripts/</TT
+> (для систем с дистрибутивом RedHat)
+и скопируйте файл <TT
+CLASS="LITERAL"
+>ifcfg-lo0</TT
+> в <TT
+CLASS="LITERAL"
+>ifcfg-eth0</TT
+> и
+<TT
+CLASS="LITERAL"
+>ifcfg-eth1</TT
+>.
+В этих двух файлах измените строку
+``<TT
+CLASS="LITERAL"
+>DEVICE=lo</TT
+>'' на ``<TT
+CLASS="LITERAL"
+>DEVICE=eth0</TT
+>''
+и ``<TT
+CLASS="LITERAL"
+>DEVICE=eth1</TT
+>'' соответственно.
+В других дистрибутивах эта процедура может отличаться - сделайте то, что нужно сделать, чтобы достичь этого же результата! Если у вас больше двух интерфейсов на мосте, то скопируйте и настройте соответствующие конфигурации всем интерфейсам.&#13;</P
+></LI
+><LI
+><P
+>Перезагрузитесь с новым ядром, в котором разрешены мосты, и убедитесь в том, что интерфейсы не получили IP-адресов.&#13;</P
+></LI
+><LI
+><P
+>После того, как система загрузится, установите картам режим "promisc", чтобы
+они обрабатывали каждый пакет, проходящий по сети:
+
+<PRE
+CLASS="SCREEN"
+>ifconfig eth0 promisc ; ifconfig eth1 promisc
+        </PRE
+>
+
+Все интерфейсы, подключенные к сетевым сегментам, нуждающимся в этом мосте, должны быть переключены в режим "promisc".&#13;</P
+></LI
+><LI
+><P
+>Включите мост, используя команду <TT
+CLASS="LITERAL"
+>brcfg</TT
+>:
+
+<PRE
+CLASS="SCREEN"
+>brcfg -ena
+        </PRE
+>
+&#13;</P
+></LI
+><LI
+><P
+>Проверьте, различается ли трафик на интерфейсах:
+
+<PRE
+CLASS="SCREEN"
+>tcpdump -i eth0      (в одном окне)
+tcpdump -i eth1      (в другом окне)
+        </PRE
+>
+&#13;</P
+></LI
+><LI
+><P
+>Запустите <TT
+CLASS="LITERAL"
+>tcpdump</TT
+> на другой машине, чтобы проверить, правильно ли мост отделяет один сегмент сети от другого.</P
+></LI
+></OL
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN60"
+>2. Общие проблемы</A
+></H1
+><P
+>&#13;<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Я получаю сообщение
+
+<PRE
+CLASS="SCREEN"
+>ioctl(SIOCGIFBR) failed: Package not installed
+Ошибка ioctl(SIOCGIFBR): Пакет не установлен
+        </PRE
+>
+
+Что это означает?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>В ваше ядро не встроена поддержка мостов. Установите ядро версии 2.0 или новее, и пересоберите его со включенной опцией <TT
+CLASS="LITERAL"
+>Ethernet-МОСТ (BRIDGING)</TT
+>.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Машины в одном сегменте не видят другой сегмент даже при помощи ping!</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>&#13;<P
+></P
+><UL
+><LI
+><P
+>Включили ли вы мост командой ``<TT
+CLASS="LITERAL"
+>brcfg -ena</TT
+>''?
+(<TT
+CLASS="LITERAL"
+>brcfg</TT
+> должен вывести сообщение ``<TT
+CLASS="LITERAL"
+>bridging is ENABLED</TT
+>'')</P
+></LI
+><LI
+><P
+>Установили ли вы интерфейсы в режим "promisc"?
+(используйте команду ``<TT
+CLASS="LITERAL"
+>ifconfig</TT
+>''.
+Флаг ``<TT
+CLASS="LITERAL"
+>PROMISC</TT
+>'' должен быть установлен на всех интерфейсах.)</P
+></LI
+><LI
+><P
+>Если вы используете адаптеры, поддерживающие разные типы соединений (кабели), убедитесь в том, что выбран правильный. Возможно вам придется использовать программу настройки, поставляемую вместе с картой.</P
+></LI
+></UL
+>&#13;</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>У меня не работают команды <TT
+CLASS="LITERAL"
+>telnet</TT
+>/<TT
+CLASS="LITERAL"
+>ftp</TT
+> с машины с мостом! Почему?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Это происходит потому, что ни один интерфейс на мосте не имеет IP-адреса. Мост должен быть прозрачен для сети.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Как нужно настраивать маршрутизацию в мосте?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Никак! Все маршрутизация автоматически настраивается ядром. Чтобы узнать ethernet-адреса, обрабатываемые мостом, используйте программу <TT
+CLASS="LITERAL"
+>brcfg</TT
+> в режиме отладки:
+
+<PRE
+CLASS="SCREEN"
+>brcfg -deb
+        </PRE
+>&#13;</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Мост вроде бы работает, но почему "traceroute" не показывает мост, как часть пути соединения?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>"Traceroute" не должен показывать мост, как часть пути соединения, из-за специфической сути самого моста. Мост не должен быть виден сети.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Нужно ли включать опцию <TT
+CLASS="LITERAL"
+>IP&lowbar;FORWARD</TT
+> при сборке ядра?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Нет. Код моста в ядре работает на уровне транспорта пакетов.
+<TT
+CLASS="LITERAL"
+>IP&lowbar;FORWARD</TT
+> предназначен для шлюзов, в которых каждому интерфейсу назначается IP-адрес.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Почему физические ethernet-адреса интерфейсов идентичны (так показывает программа ``<TT
+CLASS="LITERAL"
+>brcfg</TT
+>'')?
+Не должны ли они различаться?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Нет. Каждый интерфейс на мосте получает одинаковый адрес от кода управления мостом в ядре.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Опция "Ethernet-мосты (Bridging)" не появляется при конфигурировании ядра. Как же мне ее включить?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>В процессе конфигурирования ядра ответьте "Да" (Y) на вопрос "Запрашивать установку экспериментальных и/или не полностью готовых частей кода/драйверов" (Prompt for development and/or incomplete code/drivers (CONFIG_EXPERIMENTAL) [Y/n/?]".</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Большое количество хабов (4 и больше), соединенных последовательно один за
+другим, вызывают задержки в сети ethernet. Какой эффект произведет мост на
+сеть, в котором используется несколько хабов?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Мост аннулирует эффект нескольких хабов. Мост обрабатывает пакеты по-другому, не так как хаб, поэтому не может вызвать проблем с задержками.</P
+></DD
+></DL
+></DIV
+>&#13;</P
+></LI
+><LI
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Вопрос</DT
+><DD
+><P
+>Может ли мост работать между 10- и 100-мегабитным сегментами? Замедлит ли подобная конфигурация трафик на быстром сегменте?</P
+></DD
+><DT
+>Ответ</DT
+><DD
+><P
+>Да, мост может соединить 10- и 100-мегабитные сегменты. Так как сетевая карта на быстрой части сети поддерживает 100 Мбит, TCP занимается всем остальным. Пакеты, идущие с хоста в 100-мегабитной части сети на хост, находящийся в 10-мегабитной части, идут, конечно, со скоростью 10 мегабит. На трафик, идущий внутри 100 мегабитной части сети (включая трафик через мост из 100Мб в 100Мб сегмент) медленная сеть влияния не оказывает.  </P
+></DD
+></DL
+></DIV
+></P
+></LI
+></OL
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN195"
+>3. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#05696c6b707d286d6a72716a45686071646964672b706b662b606170"><span class="__cf_email__" data-cfemail="f99590978c81d491968e8d96b9949c8d9895989bd78c979ad79c9d8c">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#412d282f34396c292e36352e012032312d282f34396f3334"><span class="__cf_email__" data-cfemail="88e4e1e6fdf0a5e0e7fffce7c8e9fbf8e4e1e6fdf0a6fafd">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

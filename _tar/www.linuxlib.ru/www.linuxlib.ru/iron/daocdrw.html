@@ -1,0 +1,1547 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Запись CD-R/CD-RW с помощью пакетов cdrtools и cdrdao. — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://ergro.ru/programmy/dlya-smetchika/smetnye-programmy/grand-smeta/" target="_blank">гранд смета</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>
+Дао CD-R.
+</h2>
+
+<p>
+Рано или поздно у любого владельца домашнего компьютера
+появляется желание &laquo;сотворить&raquo; что-то своё&nbsp;&mdash;
+разместить домашнюю страничку в Internet, перевести
+в &laquo;цифру&raquo; семейный фотоархив или снятый
+видеофильм, записать свой музыкальный альбом и&nbsp;т.&nbsp;д.&nbsp;&mdash;
+всё зависит от собственных интересов и фантазии.
+
+<p>
+Несмотря на сильно подросшие в последние годы ёмкости жёстких
+дисков, хранить всё это хозяйство на винчестере&nbsp;&mdash; не самая
+лучшая идея. Естественным образом возникший вопрос об использовании
+внешних носителей в настоящее время решается, как правило,
+покупкой CD-RW привода (&laquo;резака&raquo; в просторечии), поскольку
+все другие варианты заметно уступают этому в соотношении
+возможности/цена. Носители (почему-то назывемые нашим компьютерным
+людом &laquo;болванками&raquo;) также более чем доступны по цене.
+
+<p>
+Итак, решено&nbsp;&mdash; привод куплен и установлен, &laquo;болванки&raquo;
+разного вида припасены в необходимом количестве. Что дальше?
+
+<p>
+Прежде всего, необходимо, чтобы ОС могла с приводом
+работать. Будем исходить из того, что он имеет ATAPI
+интерфейс, т.&nbsp;к. сейчас такие наиболее распространены.
+Следует отметить, что никакие программы для записи CD
+ничего не знают про этот интерфейс, они общаются с резаком
+на языке SCSI команд, поэтому их взаимодействие реализуется
+с помощью специальных драйверов, позволяющих &laquo;прикинуться&raquo;
+такому приводу добропорядочным SCSI-устройством. В открытых
+системах, таких как Linux, это реализуется на уровне ядра,
+в Windows необходимо устанавливать ASPI (Advanced SCSI
+Programmer's Interface) драйверы, найти которые можно
+с помощью любого поисковика. Для работы в Linux ядро
+должно быть сконфигурировано с опциями SCSI emulation support,
+SCSI support, SCSI generic support (при установке современного
+дистрибутива вы это всё, скорее всего, получите в идущем
+в поставке ядре). Необходимо также сообщить загрузчику системы,
+что нужно использовать эмуляцию SCSI для привода
+<a name=back_1>&nbsp;</a><a href="daocdrw.html#foot_1">[1]</a>.
+В моём компьютере резак установлен &laquo;мастером&raquo; на втором
+IDE-канале, поэтому в настройках GRUB-а, который используется у меня
+в качестве загрузчика, добавлена опция hdc=ide-scsi:
+
+<pre class="edit">
+title linux-up
+kernel (hd0,3)/boot/vmlinuz-up root=/dev/hda4 hdc=ide-scsi
+initrd (hd0,3)/boot/initrd-up.img
+</pre>
+
+<p class="ni">
+(приведена часть файла <em>/boot/grub/menu.lst</em>). Если используется
+LILO, то в соответствующем разделе его настроек необходимо
+добавить
+
+<pre class="edit">
+append="hdc=ide-scsi"
+</pre>
+
+<p class="ni">
+и не забыть запустить LILO. Этого достаточно для наиболее сейчас
+распространённых линуксовых ядер серии 2.4.x. При установке
+современных дистрибутивов Linux необходимые настройки могут
+быть созданы и инсталлятором.
+
+<p>
+Запишем также полезные опции монтирования дисков для &laquo;читалки&raquo;
+и &laquo;писалки&raquo; в <em>/etc/fstab</em>:
+
+<pre class="edit">
+/dev/cdrom /mnt/cdrom auto user,mode=0444,ro,noauto 0 0
+/dev/cdrom2 /mnt/cdrom2 auto user,mode=0444,ro,noauto 0 0
+</pre>
+
+<p class="ni">
+Здесь /dev/cdrom и /dev/cdrom2&nbsp;&mdash; всего лишь ссылки:
+
+<pre class="bash">
+[ziga@localhost tmp]$ ls -l /dev/cdrom2
+lrwxrwxrwx    1 root     root            9 Июн 27 21:56 /dev/cdrom2 -> /dev/scd0
+[ziga@localhost tmp]$ ls -l /dev/scd0
+brw-rw----    1 root     cdwriter  11,   0 Апр  8  2002 /dev/scd0
+</pre>
+
+<p class="ni">
+Следует обратить внимание на права, владельца и группу /dev/scd0,
+а также ряда основных программ, использование которых мы и будем
+рассматривать:
+
+<pre class="bash">
+[ziga@localhost ziga]$ ls -l /usr/bin/cdrecord
+-rws--x---    1 root     cdwriter   228840 Май 14 08:22 /usr/bin/cdrecord
+[ziga@localhost ziga]$ ls -l /usr/bin/readcd
+-rws--x---    1 root     cdwriter   129064 Май 14 08:22 /usr/bin/readcd
+</pre>
+
+<p class="ni">
+Чтобы иметь возможность писать диски, работая обычным пользователем,
+необходимо предоставить себе соответствующие права. Посмотрим, к каким
+группам принадлежит пользователь ziga:
+
+<pre class="bash">
+[root@localhost root]# groups ziga
+ziga : ziga
+</pre>
+
+<p class="ni">
+Добавим себя в группу cdwriter&hellip;
+
+<pre class="bash">
+[root@localhost root]# usermod -G ziga,cdwriter ziga
+</pre>
+
+<p class="ni">
+и убедимся, что теперь всё в порядке:
+
+<pre class="bash">
+[root@localhost root]# groups ziga
+ziga : ziga cdwriter
+</pre>
+
+<p>
+Записывать диски мы будем с помощью следующих пакетов программ:
+<ul>
+<li>
+<!--<a href="http://www.fokus.gmd.de/research/cc/glone/employees/
+joerg.schilling/private/cdrecord.html" target="_blank">-->
+Cdrtools<!--</a>-->
+</li>
+<li>
+<!--<a href="http://cdrdao.sourceforge.net/" target="_blank">-->Cdrdao<!--</a>-->
+</li>
+<li>
+<!--<a href="http://www.xiph.org/paranoia/" target="_blank">-->CDParanoia<!--</a>-->
+</li>
+</ul>
+
+Все они являются свободными и кроссплатформенными
+<a name=back_2>&nbsp;</a><a href="daocdrw.html#foot_2">[2]</a>.
+
+<p>
+В пакет Cdrtools входят следующие утилиты:
+<ul>
+<li>mkisofs&nbsp;&mdash; создание &laquo;образа&raquo; диска
+с данными для последующей его записи на &laquo;болванку&raquo;;
+<li>Cdrecord&nbsp;&mdash; запись диска с данными или аудио;
+<li>Cdda2wav&nbsp;&mdash; копирование дорожек с аудио компакт-диска
+на винчестер;
+<li>Readcd&nbsp;&mdash; чтение (посекторное) компакт-диска;
+<li>Isoinfo&nbsp;&mdash; получение информации о CD или его
+&laquo;образе&raquo;;
+<li>Devdump, Isovfy, Isodump&nbsp;&mdash; проверка &laquo;образа&raquo;
+диска или его самого.
+</ul>
+
+<p>
+Cdrdao пишет аудио-диски и диски с данными в режиме DAO
+на основе созданного по специальным правилам текстового файла с описанием
+содержания (toc-файл). Этой программой можно очень удобно скопировать CD
+разного типа (CR-ROM, audio, CD-Text).
+
+<p>
+CDParanoia предназначена для копирования трэков с аудио-компактов
+с бескомпромиссным качеством. Копирование производится чисто в цифровом
+виде, без каких либо аналого-цифровых преобразований (в частности,
+при этом никак не задействуется звуковая плата и аудиокабель, соединяющий
+её с приводом, т.&nbsp;к. данные передаются по интерфейсному шлейфу);
+скорость копирования приносится в жертву качеству; проблемные
+участки перечитываются неоднократно; при копировании сильно
+повреждённых дисков&nbsp;&mdash; например, поцарапанных&nbsp;&mdash;
+делается попытка (более или менее успешная) восстановления утраченного
+интерполяционными методами. Название программы, впрочем, достаточно
+красноречиво само по себе.
+
+<p>
+Установка этих пакетов в свободных ОС не должна представлять
+сложностей, поскольку они включаются в состав дистрибутивов
+этих систем&nbsp;&mdash; можно воспользоваться для этого
+соответствующими штатными средствами. В дистрибутивах Linux
+<!--<a href="http://www.debian.org" target="_blank">-->Debian<!--</a>-->
+и от <!--<a href="http://www.altlinux.ru" target="_blank">-->ALT
+Linux Team<!--</a>--> сделать это наиболее просто:
+
+<pre class="bash">
+[root@localhost root]# apt-get install cdrtools cdrdao cdparanoia
+</pre>
+
+<p class="ni">
+Желающие могут, конечно, поставить всё это из исходных текстов, а
+пользователям Windows придётся скачать бинарники с сайтов
+разработчиков.
+
+<p>
+Пришло время проверить, как это работает. Воспользуемся программой
+cdrecord, имеющей следующий формат:
+
+<pre class="bash">
+cdrecord [общие опции] dev=device [опции для трэка] track1...trackn
+</pre>
+
+<p class="ni">
+Среди общих опций <kbd>-v</kbd> и <kbd>-dummy</kbd>&nbsp;&mdash; наши лучшие
+друзья; первая заставляет программу быть сильно &laquo;разговорчивее&raquo;,
+следовательно, позволяет быстрее разобраться с возможными ошибками;
+вторая реализует имитацию записи, что поможет вам обойти какие-либо
+&laquo;подводные камни&raquo;, проведя предварительную
+репетицию&nbsp;&mdash; полезная вещь, если вы никогда раньше не писали
+диски.
+
+<p>
+Дадим команду
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -scanbus
+</pre>
+
+<p class="ni">
+которая сканирует все SCSI устройства на всех SCSI шинах и выводит
+результат поиска; в нём следует найти строчку примерно такого вида:
+
+<pre>
+	0,0,0	  0) 'RICOH   ' 'CD-R/RW MP7200A ' '1.30' Removable CD-ROM
+</pre>
+
+<p class="ni">
+где <kbd>dev=0,0,0</kbd>&nbsp;&mdash; это как раз то, что нам нужно будет
+указывать в опции <kbd>dev=device</kbd> (SCSI адрес привода в формате
+scsibus,target,lun).
+
+<p>
+Если привод достаточно новый, то он, скорее всего, является
+SCSI-3/MMC-совместимым
+<a name=back_3>&nbsp;</a><a href="daocdrw.html#foot_3">[3]</a>,
+в этом случае можно воспользоваться опцией <kbd>-prcap</kbd>,
+чтобы узнать его возможности. Команда
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -prcap dev=0,0,0
+</pre>
+
+<p class="ni">
+выведет длиннющий список того, что может и что не может делать
+ваш резак (естественно, в этом примере и во всех дальнейших
+нужно, в случае необходимости, заменять в опции <kbd>dev=0,0,0</kbd>
+SCSI адрес тем, что вы обнаружите в выводе предыдущей команды).
+Советую его внимательно изучить&nbsp;&mdash; некоторые сведения обычно не
+приводятся в документации, а если её вообще нет (типично для
+OEM поставок)&nbsp;&mdash; тем более полезно. Является ли привод
+SCSI-3/MMC-совместимым, и какой драйвер для него используется,
+можно узнать командой
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -checkdrive dev=0,0,0
+</pre>
+
+<p class="ni">
+Если в выводе найдены строки вида
+
+<pre class="bash">
+Device seems to be: Generic mmc CD-RW.
+Using generic SCSI-3/mmc CD-R driver (mmc_cdr).
+</pre>
+
+<p class="ni">
+то это как раз такой привод. Cdrecord поддерживает
+многие опции, специфичные для устройств некоторых производителей&nbsp;&mdash;
+VariRec (Plextor), Audio Master и DiskT@2 (Yamaha), различные
+варианты защиты от опустошения буфера&nbsp;&mdash; Burn-Proof (Sanyo),
+Just Link (Ricoh) и&nbsp;т.&nbsp;п. Команда
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -checkdrive driveropts=help dev=0,0,0
+</pre>
+
+<p class="ni">
+поможет узнать, какие именно опции такого рода поддерживаются для
+вашего привода.
+
+<p>
+Начнём с чего-нибудь простенького&nbsp;&mdash; вставим в привод любую чистую
+болванку и узнаем её характеристики, считав ATIP:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -atip dev=0,0,0
+</pre>
+
+<p class="ni">
+ATIP (Absolute Time In Pregroove, т.&nbsp;е. абсолютная длительность
+ведущей дорожки)&nbsp;&mdash; это предварительно записанный раздел
+диска, в котором содержатся такие его характеристики, как размер
+блока, число блоков на диске (можно, следовательно, узнать ёмкость
+диска), является ли он перезаписывемым, имя изготовителя (не то, что
+указано на обложке&nbsp;&mdash; это всего лишь лейбл, под которым диск
+продаётся) и другие данные.
+
+<p class="bash">
+Попробуем почистить &laquo;эрвэшку&raquo; (CD-RW). Кладём её в привод и
+набираем команду
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v speed=10 blank=fast dev=0,0,0
+</pre>
+
+<p class="ni">
+Здесь опция <kbd>speed=10</kbd>, как нетрудно догадаться, означает
+скорость записи, а <kbd>blank=fast</kbd>&nbsp;&mdash; тип очистки, в данном
+примере fast говорит о том, что чистятся только служебные области
+диска&nbsp;&mdash; TOC (Table Of Contents&nbsp;&mdash; таблица содержания),
+PMA (Program Memory Area) и pregap&nbsp;&mdash; специальный промежуток
+перед первым трэком, сами данные остаются нетронутыми. Можно почистить
+диск полностью, указав <kbd>blank=all</kbd>; имеются и другие варианты
+чистки. Кому доводилось форматировать в разных режимах
+дискеты&nbsp;&mdash; легко увидит здесь некую аналогию.
+Чистить CD-RW надо каждый раз, когда мы хотим записать на
+ранее использованный диск что-то новое.
+
+
+<p>
+То, какие данные и каким образом могут быть размещены на CD,
+определяется рядом стандартов, созданных как международными
+организациями, так и отдельными фирмами. В частности, формат
+аудио CD описывается в так называемой &laquo;Красной Книге&raquo;
+(Red Book), дисков с различными цифровыми данными&nbsp;&mdash;
+в &laquo;Жёлтой Книге&raquo; (Yellow Book), записываемых
+CD&nbsp;&mdash; в &laquo;Оранжевой Книге&raquo; (Orange Book)
+и&nbsp;т.&nbsp;д.
+
+<p>
+CD-R или CD-RW может быть записан как в один присест&nbsp;&mdash; это
+запись в режиме DAO (Disc-At-Once, т.&nbsp;е. диск-за-раз), так
+и за несколько подходов&nbsp;&mdash; в режиме TAO (Track-At-Once,
+т.&nbsp;е. трэк-за-раз). Вариацией DAO является режим SAO
+(Session-At-Once&nbsp;&mdash; сессия-за-раз), он позволяет
+пользоваться возможностями DAO, но при этом можно писать
+несколько сессий. Сессия&nbsp;&mdash; это отдельный сегмент, который
+может содержать несколько трэков, причём любого вида.
+Чтобы обычный бытовой аудиоплеер или CD-ROM привод могли
+прочитать диск, последняя сессия на нём должна быть
+&laquo;закрытой&raquo;. Если пишется мультисессионный диск
+(т.&nbsp;е. содержащий несколько сессий), то
+после окончания записи и закрытия текущей сессии, должна
+быть открыта следующая, иначе диск окажется &laquo;закрытым&raquo;,
+и на него ничего нельзя будет дописать, даже при наличии
+на нём свободного места. Диск, записанный в одну сессию,
+имеет три основных области&nbsp;&mdash; lead-in (вводную, где
+размещается, в частности, TOC, в которой указывается, где и
+какие данные размещены), область с собственно данными и
+lead-out (выводную). Первая и последняя играют чисто
+служебную роль, на &laquo;открытом&raquo; диске, если он пишется не в
+режиме DAO, они ещё не записаны, такой диск, следовательно,
+не имеет TOC (она в это время помещается в PMA), поэтому на
+обычных приводах они и не могут быть прочитаны. При записи
+в режиме DAO lead-in пишется сразу, поскольку содержание диска
+известно заранее. Несколько сессий могут быть связаны
+в последовательную &laquo;цепочку&raquo;, в которой TOC предыдущей
+сессии указывает на TOC следующей, поэтому привод
+CD-ROM сможет &laquo;увидеть&raquo; данные, записанные во всех
+сессиях; бытовые аудиоплееры такой возможности лишены&nbsp;&mdash; они
+распознают только первую сессию, впрочем, это как раз позволяет
+создавать &laquo;смешанные&raquo; диски&nbsp;&mdash; такие, как
+CD-Extra.
+
+<p>
+Файловая система, в которой пишутся диски с данными, определена
+стандартом ISO-9660. Существует несколько уровней этого стандарта.
+Для всех уровней имена файлов и каталогов ограничены 31 символом,
+максимальная глубина вложенности каталогов&nbsp;&mdash; 8, общая длина
+пути не должна превышать 255 символов. Имена не должны содержать
+никаких символов, кроме латинских букв в верхнем регистре (A..Z),
+цифр, точки и знака подчёркивания. Первый уровень накладывает
+ещё большие ограничения&nbsp;&mdash; имена должны быть в формате 8+3
+(имя + точка + расширение) для максимальной совместимости
+со всеми операционками, фактически&nbsp;&mdash; с MS&nbsp;DOS и её клонами;
+в уровнях есть и другие различия. Если такая широкая совместимость
+не нужна, можно смело использовать третий уровень.
+
+<p>
+Rock Ridge является расширением ISO-9660, позволяя использовать
+в именах те же символы, что используются в вашей локальной
+файловой системе, в частности, буквы могут быть и в нижнем
+регистре и даже не из латинского алфавита&nbsp;&mdash; например,
+русскими; поддерживаются такие специфичные для файловых систем *nix
+вещи как ссылки и права доступа; глубина вложения каталогов может
+быть любой (применяется система переадресации); кроме того,
+Rock Ridge&nbsp;&mdash; расширяемый
+стандарт. Операционки от Microsoft его не поддерживают, но
+поскольку он является всего лишь расширением ISO-9660, то
+диск, записанный с использованием Rock Ridge, можно в них
+прочитать, только длинные имена файлов не будут доступны.
+
+<p>
+В Microsoft, в свою очередь, придумали ни с чем не совместимый
+&laquo;стандарт&raquo;&nbsp;&mdash; Joliet. В нём имена файлов
+и каталогов хранятся в юникоде, точнее говоря, в UTF-16, и имеют
+ограничение на длину в 64 символа.
+
+<p>
+В мире Макинтошей, где, как всегда, &laquo;think different&raquo;,
+используется повсеместно, в том числе и на CD, файловая
+система HFS (Hierarchical File System), хотя на Маках
+можно использовать и ISO-9660 и некоторые её расширения,
+сделанные в Apple, поддерживается и Joliet.
+
+<p>
+Имеется также файловая система UDF (Universal Disk Format),
+основанная на стандарте ISO/IEC 13346 (ECMA-167), она
+используется для так называемой пакетной записи&nbsp;&mdash; диск
+(обычно CD-RW) форматируется специальным образом, при
+этом теряется часть его ёмкости на размещение служебной
+информации, но после такой процедуры он превращается
+в своего рода &laquo;большую дискету&raquo;, на которую
+можно писать файлы, стирать их и&nbsp;т.&nbsp;д.
+
+<p>
+В Linux можно и писать и тем более читать диски в любой
+из этих файловых систем, в частности, можно записывать
+&laquo;гибридные&raquo; диски, содержащие в оглавлении деревья
+Rock Ridge, Joliet и HFS, ссылающиеся при этом на одни
+и те же файлы; поддержка UDF, правда, имеется
+в Cdrtools пока только на экспериментальном уровне (есть
+также неофициальный патч ядра), но читаются UDF-диски в
+Linux без проблем
+<a name=back_4>&nbsp;</a><a href="daocdrw.html#foot_4">[4]</a>.
+
+<p>
+Попробуем сейчас создать копию какого-либо CD-ROM, например,
+вашего дистрибутива Linux (подарите её потом вашему другу,
+это абсолютно законно, в отличие от копий любых проприетарных
+систем). Создадим для этого файл с &laquo;образом&raquo; этого CD.
+В просторечии &laquo;образ&raquo; диска часто называется &laquo;изошкой&raquo;,
+из-за обыкновения присваивать файлам с такими образами расширения
+<em>iso</em>, в частности, это относится и к размещаемым на ftp серверах
+файлам с образами дистрибутивных дисков Linux, FreeBSD и&nbsp;т.&nbsp;п.
+Можно воспользоваться стандартной утилитой dd, но лучше применить
+специально для этого предназначенную программу readcd из пакета
+Cdrtools:
+
+<pre class="bash">
+[ziga@localhost tmp]$ readcd dev=0,0,0 -v f=cd.iso
+</pre>
+
+<p class="ni">
+Опция <kbd>f=cd.iso</kbd> означает, что мы хотим присвоить
+файлу образа имя <em>cd.iso</em> (и он будет размещён в текущем
+каталоге; в противном случае следует указать путь к файлу).
+Если всё прочиталось нормально&nbsp;&mdash; пишем созданный
+&laquo;образ&raquo; на CD:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -dao dev=0,0,0 speed=20 -data cd.iso
+</pre>
+
+<p class="ni">
+Здесь опция <kbd>-dao</kbd> означает, что диск будет
+записываться в DAO режиме. Точнее говоря, cdrecord
+запишет его в SAO, если привод это поддерживает, в
+частности, диск будет закрыт по окончании записи данных.
+Опция <kbd>-data</kbd> говорит о том, что мы пишем диск
+с данными, а не аудио-компакт (можно не указывать, т.&nbsp;к.
+применяется по умолчанию для всех файлов, кроме тех, что
+оканчиваются на <em>.au</em> или <em>.wav</em>&nbsp;&mdash; для
+последних опция по умолчанию <kbd>-audio</kbd>). Перед
+записью можно сделать проверку &laquo;образа&raquo;&nbsp;&mdash;
+например, смонтировать его:
+
+<pre class="bash">
+[root@localhost root]# mount -o loop -t iso9660 /tmp/cd.iso /mnt/disk
+</pre>
+
+<p class="ni">
+и посмотреть его содержимое:
+
+<pre class="bash">
+[ziga@localhost tmp]$ ls -R /mnt/disk
+</pre>
+
+<p class="ni">
+или сделать куда более надёжный контроль читаемости всех
+файлов:
+
+<pre class="bash">
+[ziga@localhost tmp]$ tar cvf /dev/null /mnt/disk
+</pre>
+
+<p class="ni">
+Можно воспользоваться также специальной утилитой проверки
+&laquo;образа&raquo; isovfy:
+
+<pre class="bash">
+[ziga@localhost tmp]$ isovfy cd.iso
+</pre>
+
+<p class="ni">
+После записи диск тоже неплохо проверить на отсутствие ошибок
+чтения. Пофайловую проверку можно сделать, например, с помощью
+tar, как было описано выше&nbsp;&mdash; смонтировав диск и
+&laquo;заархивировав&raquo; его содержимое в /dev/null. Можно проверить
+его поблочную читаемость:
+
+<pre class="bash">
+[ziga@localhost tmp]$ readcd -v dev=0,0,0 f=/dev/null
+</pre>
+
+<p>
+Cdrdao также прекрасно справится с копированием диска, особенно
+удобно ей пользоваться при наличии двух приводов&nbsp;&mdash; CD-ROM и
+CD-RW. Её формат:
+
+<pre class="bash">
+cdrdao команда [опции] toc-file
+</pre>
+
+<p class="ni">
+Кладём CD-ROM в &laquo;читалку&raquo;, а болванку&nbsp;&mdash; в резак и даём команду:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrdao copy --source-device 0,1,0 --device 0,0,0 --source-driver generic-mmc --driver generic-mmc
+data.toc
+</pre>
+
+<p class="ni">
+Команда <kbd>copy</kbd> сама совершит все шаги по
+копированию&nbsp;&mdash; будет создан временный файл с образом диска
+(его имя и путь можно задать самому опцией <kbd>--datafile</kbd>),
+который после копирования на болванку будет удалён. Опции
+<kbd>--source-device</kbd> и <kbd>--device</kbd> задают
+адреса &laquo;читалки&raquo; и &laquo;писалки&raquo; соответственно, а опции
+<kbd>--source-driver</kbd> и <kbd>--driver</kbd>&nbsp;&mdash;
+применяемые для них драйверы. Опцией <kbd>--on-the-fly</kbd>
+можно провести копирование &laquo;на лету&raquo;, т.&nbsp;е. без создания
+временного &laquo;образа&raquo; диска. Если есть только один привод,
+то &laquo;на лету&raquo; копировать, конечно, не получится, при этом
+опции <kbd>--source-device</kbd> и <kbd>--source-driver</kbd>
+указывать не надо, и cdrdao сама запросит у вас болванку
+после создания файла &laquo;образа&raquo;. Точно так же можно
+использовать эту команду для копирования аудио-компакта. После
+создания копии можно с сервера CDDB запросить информацию для
+последующей передачи её вашему любимому CD-плееру:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrdao read-cddb --cddb-directory /home/ziga/.cddb data.toc
+</pre>
+
+<p class="ni">
+Команда <kbd>read-cddb</kbd> осуществляет этот запрос, опция
+<kbd>--cddb-directory</kbd> позволяет сохранить полученную
+информацию в вашем домашнем каталоге. Если не устраивает
+то, какие серверы опрашиваются по умолчанию (ряд зеркал
+freedb), можно задать их список самому опцией <kbd>--cddb-servers</kbd>;
+запрос можно также сделать уже во время копирования,
+используя опцию <kbd>--with-cddb</kbd>. С копированием
+аудио &laquo;на лету&raquo; советую быть осторожнее&nbsp;&mdash; cdrdao
+использует для копирования аудио-трэков paranoia, причём по
+умолчанию&nbsp;&mdash; в самом &laquo;строгом&raquo; режиме, так что
+если диск читается не идеально, то запись может сорваться; лучше
+скопировать в &laquo;образ&raquo;, а потом &laquo;прожечь&raquo;
+болванку:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrdao read-cd --device 0,0,0 --driver generic-mmc data.toc
+[ziga@localhost tmp]$ cdrdao write --speed 20 --device 0,0,0 --driver generic-mmc data.toc
+</pre>
+
+<p class="ni">
+Назначение команд <kbd>read-cd</kbd> и <kbd>write</kbd>, а
+также опции <kbd>--speed</kbd> полагаю, ясно без пояснений,
+файл &laquo;образа&raquo; по умолчанию получает имя <em>data.bin</em>.
+
+<p>
+Копировать аудио-трэки можно также программами cdda2wav из
+Cdrtools и CDParanoia. Формат cdda2wav:
+
+<pre class="bash">
+cdda2wav [опции] имя (имена) файла (файлов)/каталогов
+</pre>
+
+<p class="ni">
+Попробуем сделать не просто копию аудио-компакта, а превратим
+её в CD-Text диск. CD-Text&nbsp;&mdash; формат, созданный фирмой
+Philips для кодирования информации об исполнителе и композициях на
+аудио CD. Команда
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdda2wav -v255 -D0,0,0 -B -Owav -paranoia -L0
+</pre>
+
+<p class="ni">
+скопирует трэки с диска. Опция <kbd>-D</kbd> указывает на адрес
+привода, <kbd>-B</kbd>&nbsp;&mdash; на то, что каждый трэк должен быть
+сохранён в отдельный файл. <kbd>-O</kbd> определяет формат
+файла, возможные значения&nbsp;&mdash; <em>wav</em> (по умолчанию),
+<em>aiff</em>, <em>aiffc</em>, <em>au</em>, <em>sun</em>, <em>cdr</em>,
+<em>raw</em>. Трэки на аудио CD&nbsp;&mdash; это 16-битный
+стереозвук с частотой дискретизации 44100 Гц, закодированный
+в линейной PCM (Pulse Сode Modulation). В том же формате
+окажутся и их копии на диске, только при выборе в опции
+<kbd>-O</kbd> значения <em>wav</em> (или если она опущена), в начало
+всех файлов будут добавлены специальные заголовки, которые
+позволяют проигрывателям аудио-файлов узнавать их формат.
+Опция <kbd>-paranoia</kbd> заставит cdda2wav использовать
+для чтения соответствующую библиотеку, а <kbd>-L</kbd>
+устанавливает режим опроса cddb серверов&nbsp;&mdash; возможные значения
+0 (интерактивный режим) и 1 (используется первая найденная
+запись). Для всех трэков, копии которых сохраняются в файлах
+<em>audio_nn.wav</em>, создаются также текстовые файлы
+<em>audio_nn.inf</em>, содержащие информацию о
+трэке, в том числе, вытянутую с cddb; формат такого файла
+достаточно прозрачный, так что в дальнейшем вы при желании
+сможете писать по его образцу <em>inf</em>-файлы сами, например,
+для создания своего аудио CD. Интересная деталь&nbsp;&mdash; если
+подсчитать суммарный объём полученных <em>wav</em>-файлов, то
+он может показаться что-то уж очень большим. Например, 70-минутный
+альбом Queen &laquo;Made In Heaven&raquo; даёт в итоге 712&nbsp;MB копий его
+13 трэков. Болванки производятся, в основном, двух видов&nbsp;&mdash; на
+650&nbsp;MB (74&nbsp;мин. аудио) и 700&nbsp;MB (80&nbsp;мин. аудио).
+Возникает резонно вопрос&nbsp;&mdash; как столько поместилось на
+стандартный компакт и как теперь это записать? Объяснение
+&laquo;феномена&raquo; простое&nbsp;&mdash; секторы на аудио-диске
+имеют длину 2352&nbsp;байта, а на диске с данными&nbsp;&mdash;
+2048&nbsp;байтов, разница используется для контроля и исправления
+ошибок&nbsp;&mdash; для данных это критично, для аудио&nbsp;&mdash;
+нет (поменяйте, например, в созданном вами архиве 1&nbsp;бит и вы
+больше не сможете его открыть, а то же самое в аудиотрэке не
+почувствуете на слух совершенно точно).
+
+<p>
+Теперь &laquo;прожигаем&raquo; болванку:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v dev=0,0,0 speed=20 -dao -text -audio -useinfo *.wav
+</pre>
+
+<p class="ni">
+Опция <kbd>-text</kbd> использована здесь как раз для создания
+CD-Text, её надо применять совместно с <kbd>-useinfo</kbd>, чтобы
+сказать cdrecord использовать <em>inf</em>-файлы. Посмотрим, что
+мы получили в итоге:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdda2wav -D0,0,0 -H -J
+</pre>
+
+<p class="ni">
+Опция <kbd>-J</kbd>&nbsp;&mdash; не записывать трэки, только получить
+информацию о диске, <kbd>-H</kbd>&nbsp;&mdash; не создавать
+<em>inf</em>-файлы. Если будут выданы название альбома, имя
+(название) исполнителя и&nbsp;т.&nbsp;д.&nbsp;&mdash; всё в
+порядке. В настоящее время всё, что записывается в CD-Text,
+может быть только в ISO-8859-1 кодировке, поддержка других
+наборов символов пока в Cdrtools отсутствует.
+
+<p>
+Создадим теперь свой диск с данными. Подготовим то, что
+хотим на него записать&nbsp;&mdash; удобнее будет, если всё это собрать
+в одном каталоге, но можно использовать и любое число
+каталогов или создать нужные ссылки, чтобы не пришлось
+писать слишком длинную команду. Программа mkisofs подготовит
+нам &laquo;изошник&raquo; для последующей записи, её формат:
+
+<pre class="bash">
+mkisofs [опции] [-o имя файла] путь_к_данным
+</pre>
+
+<p class="ni">
+Даём команду:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -r -J -o cd.iso ~/my_data/
+</pre>
+
+<p class="ni">
+которая всё, что находится в каталоге <em>~/my_data</em>,
+запишет в &laquo;образ&raquo; с именем <em>cd.iso</em>. Опции <kbd>-r</kbd>
+и <kbd>-J</kbd> нужны для того, чтобы mkisofs создала в дополнение
+к ISO-9660 дереву в TOC ещё и Rock Ridge и Joliet деревья
+соответственно. Если используются русские имена в названиях
+файлов/каталогов, то для корректного их отображения на диске
+следует предпринять дополнительные действия: опции
+<kbd>-input-charset</kbd> и <kbd>-output-charset</kbd>
+определяют наборы символов, используемые в локальной файловой
+системе и в Rock Ridge именах файлов на диске соответственно
+(в России традиционно используется в *nix koi8-r, но в
+последнее время появились альтернативы). С Rock Ridge проблем
+никаких не будет, если использовать диск при той же
+локали, в которой он будет записан, а для Joliet необходимо
+указать обязательно <kbd>-input-charset</kbd>, можно и совместить
+эти две опции:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -v -r -jcharset koi8-r -o cd.iso ~/my_data/
+</pre>
+
+<p class="ni">
+Если в <em>~/my_data</em> есть ссылки, то надо использовать
+опцию <kbd>-f</kbd>, чтобы в созданном mkisofs &laquo;образе&raquo;
+появились файлы/каталоги, на которые эти ссылки указывают
+(разумеется, если это нужно).
+
+
+<p>
+Как узнать заранее, сколько места займут наши данные на CD?
+Можно использовать и стандартную утилиту du, но наиболее точно
+подсчитает размер сама mkisofs:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -q -r -J -print-size ~/my_data/
+</pre>
+
+<p class="ni">
+Размер будет выдан в секторах, поделив его на 512, получим
+результат в более привычных мегабайтах. Важно использовать
+при этом те же опции, что будут применены для создания
+&laquo;образа&raquo; диска (кроме <kbd>-v</kbd>/<kbd>-q</kbd>;
+последняя здесь была использована для пресечения ненужной
+в данный момент &laquo;болтливости&raquo;, поскольку интересовал
+только размер файла). Это поможет избежать ситуации, когда
+созданный mkisofs &laquo;образ&raquo; диска не помещается на
+болванку.
+
+<p>
+Можно писать диски &laquo;на лету&raquo;, используя каналы:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -r -J ~/my_data | cdrecord -v dev=0,0,0 fs=32m speed=20 -
+</pre>
+
+<p class="ni">
+Диск будет записан без создания его &laquo;образа&raquo;.
+Здесь применена опция <kbd>fs</kbd>, в которой указывается
+cdrecord объём оперативной памяти под буфер. В документации
+рекомендуется выбирать в пределах 4-32&nbsp;MB, но не более
+половины доступной RAM (4&nbsp;MB&nbsp;&mdash; значение по умолчанию).
+Оптимальный его размер зависит от вашего железа и других
+параметров; если не получается нормально записать диск
+без указания этой опции, следует поэкспериментировать.
+
+<p>
+Запишем теперь CD-Extra в качестве примера мультисессионного
+диска. CD-Extra (в девичестве CD-Plus)&nbsp;&mdash; формат двухсессионного
+компакта, первая сессия которого&nbsp;&mdash; CD-DA, т.&nbsp;е. аудио-трэки,
+а вторая сессия&nbsp;&mdash; данные. Аудио-трэки пишем именно в первой
+сессии, чтобы можно было послушать такой диск на бытовом
+плеере. На мультисессионных CD много места расходуется
+при открытии сессий на служебную информацию&nbsp;&mdash; 23&nbsp;MB
+для первой сессии, 14&nbsp;MB&nbsp;&mdash; для каждой последующей,
+учтите это при подсчётах.
+
+<p>
+Скопируем трэки аудио CD программой CDParanoia. Формат команды:
+
+<pre class="bash">
+cdparanoia [опции] span [файл]
+</pre>
+
+<p class="ni">
+Копируем:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdparanoia -v -d /dev/cdrom2 -B "1-"
+</pre>
+
+<p class="ni">
+Опция <kbd>-d</kbd> определяет устройство, с которого
+будут копироваться трэки (по умолчанию это /dev/cdrom),
+<kbd>-B</kbd> указывает копировать каждый трэк в отдельный
+файл (их имена при этом имеют вид <em>track01.cdda.wav</em>
+и&nbsp;т.&nbsp;п.), аргумент "1-"&nbsp;&mdash; то, что
+копирование должно быть с первого трэка до конца диска. Вывод
+программы очень нагляден&nbsp;&mdash; есть индикатор прогресса,
+процесс копирования иллюстрируется смайликами&nbsp;&mdash; в
+зависимости от успешности процедуры. Запишем теперь полученные
+трэки:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -dao -multi -audio *.wav
+</pre>
+
+<p class="ni">
+Назначение опции <kbd>-multi</kbd> очевидно. Получим информацию
+для создания &laquo;образа&raquo; второй сессии:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v dev=0,0,0 -msinfo
+</pre>
+
+<p class="ni">
+С опцией <kbd>-msinfo</kbd> cdrecord даст нам информацию
+в виде, например,
+
+<pre class="bash">
+0,179360
+</pre>
+
+<p class="ni">
+Здесь первое число&nbsp;&mdash; номер первого сектора первого трэка
+последней сессии&nbsp;&mdash; т.&nbsp;е. её начало, второе число&nbsp;&mdash; начало
+новой сессии. Создаём теперь &laquo;образ&raquo; для второй сессии:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -r -J -C 0,179360 -o cdextra.iso ~/my_data/
+</pre>
+
+<p class="ni">
+Опция <kbd>-C</kbd> предназначена для указания места,
+где дожны располагаться на CD наши данные (числа, как
+нетрудно заметить, взяты из вывода предыдущей команды).
+Записываем вторую сессию:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v dev=0,0,0 -data speed=20 cdextra.iso
+</pre>
+
+<p class="ni">
+Это всё. А как записать &laquo;обычный&raquo; мультисессионный
+диск?
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -r -J -o multi.iso ~/my_data/
+[ziga@localhost tmp]$ cdrecord -v speed=20 -multi -eject multi.iso
+</pre>
+
+<p class="ni">
+Добавим теперь в каталог <em>~/my_data</em> ещё файлов/каталогов.
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord dev=0,0,0 -msinfo
+0,18666
+[ziga@localhost tmp]$ mkisofs -o multi2.iso -r -J -C 0,18666 -M /dev/cdrom2 ~/my_data/
+</pre>
+
+<p class="ni">
+Опция <kbd>-M</kbd> служит для слияния уже существующих
+данных на CD с новым &laquo;образом&raquo; <em>multi2.iso</em>,
+должна использоваться совместно с <kbd>-C</kbd>.
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v speed=20 -multi -eject multi2.iso
+[ziga@localhost tmp]$ cdrecord dev=0,0,0 -msinfo
+18666,27958
+</pre>
+
+<p class="ni">
+Добавим ещё что-нибудь в <em>~/my_data</em> и продолжим:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -o multi3.iso -r -J -C 18666,27958 -M /dev/cdrom2 ~/my_data/
+[ziga@localhost tmp]$ cdrecord -v speed=20 -eject multi3.iso
+</pre>
+
+<p class="ni">
+Теперь всё&nbsp;&mdash; диск, содержащий 3 сессии, записан полностью,
+закрыт и даже &laquo;выехал&raquo; из привода (<kbd>-eject</kbd>).
+На нём доступны все данные, содержащиеся сейчас в каталоге
+<em>~/my_data</em>.
+
+<p>
+Программа mkisofs обладает рядом уникальных возможностей.
+Одна из них&nbsp;&mdash; создание образа диска, в котором файлы
+расположены в заданном вами порядке&nbsp;&mdash; полезная штука
+при записи компактов с музыкой в OGG Vorbis или mp3.
+Если писать диск обычным образом, то в соответствии
+со стандартом ISO-9660, файлы и каталоги будут на нём
+расположены в алфавитном порядке, мы же хотим, чтобы
+они оказались записаны в порядке следования композиций.
+Поэтому, если давать файлам осмысленные имена, а не просто
+<em>track01.ogg</em> и&nbsp;т.&nbsp;п., то чтобы диск проигрывателем
+не дёргался постоянно в поисках следующей композиции, надо
+подготовить специальный файл, который будет передан mkisofs
+в качестве аргумента опции <kbd>-sort</kbd>. Создадим
+тестовый каталог <em>test</em> с тремя каталогами в нём,
+в каждом из которых будет несколько файлов, например, так:
+
+<pre class="bash">
+[ziga@localhost tmp]$ ls -R test
+test:
+dir_1
+dir_2
+dir_3
+
+test/dir_1:
+file_a
+file_b
+file_c
+
+test/dir_2:
+file_k
+file_l
+
+test/dir_3:
+file_x
+file_y
+file_z
+</pre>
+
+<p class="ni">
+Делаем файл <em>file_sort</em>:
+
+<pre class="edit">
+test/dir_3 5000
+test/dir_3/file_y 6000
+test/dir_2/file_l 8000
+test/dir_1/file_c 1000
+</pre>
+
+<p class="ni">
+В этом файле каталогам/файлам присваиваются веса&nbsp;&mdash; в начале
+идёт имя файла/каталога, а затем через ровно один пробел
+или символ табуляции&nbsp;&mdash; вес. По умолчанию все веса имеют
+нулевое значение, их можно задать как положительными, так и
+отрицательными. В первой строке всем файлам из каталога
+<em>dir_3</em> мы присвоили вес 5000, но в следующей строке
+конкретному файлу <em>file_y</em> из этого каталога&nbsp;&mdash; больший
+вес, 6000. На диске файлы будут расположены в порядке
+уменьшения весов. Каталоги при этом не сортируются, они
+остаются расположенными в алфавитном порядке. Делаем
+теперь &laquo;образ&raquo; диска:
+
+<pre class="bash">
+[ziga@localhost tmp]$ mkisofs -r -J -sort file_sort -o cdsort.iso test
+</pre>
+
+<p class="ni">
+и смотрим, что получилось, командой:
+
+<pre class="bash">
+[ziga@localhost tmp]$ isoinfo -l -R -i cdsort.iso
+</pre>
+
+<p class="ni">
+Аргумент опции <kbd>-i</kbd> указывает на имя файла,
+<kbd>-R</kbd>&nbsp;&mdash; то, что информацию надо дать по дереву
+Rock Ridge, <kbd>-l</kbd>&nbsp;&mdash; вывод сформатировать
+в стиле команды <kbd>ls</kbd>. В выводе мы получим
+то, в каких секторах какие файлы расположены. Сделайте
+&laquo;образ&raquo; диска без опции <kbd>-sort</kbd> и сравните.
+Несколько замечаний:
+<ol>
+<li>
+В TOC файлы и каталоги не сортируются, поэтому и приходится
+смотреть результат программой isoinfo&nbsp;&mdash; ls тут не поможет.
+<li>
+С именами по-русски, к сожалению, всё это не работает.
+<li>
+Пустые файлы, т.&nbsp;е. имеющие нулевую длину, не сортируются.
+<li>
+Пути в файле <em>file_sort</em> должны быть такими, как
+их видит mkisofs.
+</ol>
+
+<p>
+Разумеется, я не описал и десятой доли возможностей
+рассматриваемых здесь программ. Остальное вы сможете
+найти в их документации.
+
+<p>
+Работа в консоли приятна и удобна, но можно сделать её ещё
+удобнее&nbsp;&mdash; почти все упомянутые здесь программы используют
+специальные переменные окружения и настроечные файлы.
+Например, cdrecord использует настройки, сделанные
+в файле <em>/etc/default/cdrecord</em> (в некоторых
+дистрибутивах <em>/etc/cdrecord.conf</em>). Мой файл
+<em>/etc/default/cdrecord</em>:
+
+<pre class="edit">
+CDR_DEVICE=ricoh
+CDR_SPEED=20
+CDR_FIFOSIZE=4m
+# drive name    device  speed   fifosize driveropts
+ricoh=          0,0,0   -1      -1       ""
+rw=             0,0,0   10      -1       ""
+fly=            0,0,0   -1      8m       ""
+</pre>
+
+<p class="ni">
+Теперь по умолчанию <kbd>dev=0,0,0</kbd>, <kbd>speed=20</kbd>,
+<kbd>fs=4m</kbd>, записать болванку из &laquo;образа&raquo; cd.iso
+в режиме DAO можно командой
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrecord -v -dao cd.iso
+</pre>
+
+<p class="ni">
+Можно поместить в <em>/etc/profile</em>
+
+<pre class="edit">
+CDDA_DEVICE=0,0,0
+export CDDA_DEVICE
+</pre>
+
+<p class="ni">
+и опускать в команде cdda2wav опцию <kbd>-D0,0,0</kbd>.
+Записав в <em>~/.bashrc</em>
+
+<pre class="edit">
+alias fblank='cdrecord -v dev=rw blank=fast'
+</pre>
+
+<p class="ni">
+делаем быструю очистку Hi-Speed CD-RW командой:
+
+<pre class="bash">
+[ziga@localhost tmp]$ fblank
+</pre>
+
+<p class="ni">
+mkisofs может использовать информацию из файла <em>.mkisofsrc</em>,
+который она ищет последовательно в текущем каталоге, домашнем и
+каталоге с её бинарником. Запишем в такой файл
+
+<pre class="edit">
+VOLI=Vasya Pupkin cOOL CD
+</pre>
+
+<p class="ni">
+и получим диск с соответствующим идентификатором тома
+(это то, что пользователи Windows и Mac&nbsp;OS видят
+как название вставленного в привод CD). Cdrdao смотрит
+настройки в файлах <em>/etc/cdrdao.conf</em>,
+<em>/etc/default/cdrdao</em>, <em>$HOME/.cdrdao</em>.
+Мой <em>.cdrdao</em>:
+
+<pre class="edit">
+write_device   : "0,0,0"
+write_driver   : "generic-mmc"
+write_speed    : 20
+read_device    : "0,1,0"
+read_driver    : "generic-mmc"
+cddb_directory : ".cddb"
+</pre>
+
+<p class="ni">
+Можно теперь скопировать диск командой:
+
+<pre class="bash">
+[ziga@localhost tmp]$ cdrdao copy data.toc
+</pre>
+
+<p class="ni">
+Во всех программах введённые в командной сроке опции
+изменяют соответствующие значения из настроечных файлов
+и переменных окружения.
+
+<p>
+Те, кто предпочитают работать с GUI-программами, могут
+попробовать различные графические оболочки над
+утилитами, которые мы рассматривали выше. Их очень
+много&nbsp;&mdash; достаточно взглянуть, например, на список
+из соответствующего раздела сайта
+<!--<a href="http://www.linuxlinks.com/Software/CD_Writing/" target="_blank">-->
+Linuxlinks<!--</a>-->. Одна из таких программ&nbsp;&mdash; Gnome CD
+Master&nbsp;&mdash; входит в пакет Cdrdao. Из других популярностью
+пользуются (среди многих прочих)
+<!--<a href="http://www.xcdroast.org/" target="_blank">-->
+X-CD-Roast<!--</a>-->,
+<!--<a href="http://gnometoaster.rulez.org/" target="_blank">-->
+Gnome Toaster<!--</a>-->,
+<!--<a href="http://cdbakeoven.sourceforge.net/" target="_blank">-->
+CD Bake Oven<!--</a>-->,
+<!--<a href="http://eclipt.uni-klu.ac.at/eroaster.php" target="_blank">-->
+ECLiPt Roaster<!--</a>-->,
+<!--<a href="http://www.abo.fi/~jmunsin/gcombust/" target="_blank">-->
+gcombust<!--</a>-->.
+Отличаются они своими возможностями, краткая сводка которых
+помещена в таблицу. Попробуйте сами все эти программы и выберите
+ту, что вам больше понравится. Удачной записи!
+
+<p>
+
+<table border=1 cellspacing=2 cellpadding=4 align="center">
+
+<caption align="top"><h3>Графические оболочки</h3></caption>
+
+<tr>
+       <td>&nbsp;</td>
+       <td>X-CD-Roast</td>
+       <td>Gnome Toaster</td>
+       <td>CD Bake Oven</td>
+       <td>ECLiPt Roaster</td>
+       <td>gcombust</td>
+</tr>
+
+<tr>
+       <td class="left">Интерфейс</td>
+       <td>gtk+</td>
+       <td>Gnome/gtk+</td>
+       <td>KDE/QT</td>
+       <td>Gnome/python</td>
+       <td>gtk+</td>
+</tr>
+
+<tr>
+       <td class="left">drag'n'drop</td>
+       <td>-</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td colspan=6>Поддержка программ:</td>
+</tr>
+
+<tr>
+       <td class="left">Cdrtools</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">Cdrdao</td>
+       <td>-</td>
+       <td>+</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+</tr>
+
+<tr>
+       <td class="left">CDParanoia</td>
+       <td>-</td>
+       <td>+</td>
+       <td>+</td>
+       <td>-</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td colspan=6>Поддержка записи:</td>
+</tr>
+
+<tr>
+       <td class="left">данные</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">аудио</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">CD-Text</td>
+       <td>+</td>
+       <td>+</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+</tr>
+
+<tr>
+       <td class="left">смешанные</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>-</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">мультисессионные</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">загрузочные</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">гибридные</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">&laquo;на лету&raquo;</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td class="left">прямое копирование CD</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+<tr>
+       <td colspan=6>Прочее:</td>
+</tr>
+
+<tr>
+       <td class="left">поддержка CDDB</td>
+       <td>+</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+       <td>-</td>
+</tr>
+
+<tr>
+       <td class="left">mp3&nbsp;&rarr;&nbsp;wav</td>
+       <td>-</td>
+       <td>+&nbsp;*</td>
+       <td>+</td>
+       <td>+</td>
+       <td>-</td>
+</tr>
+
+<tr>
+       <td class="left">wav&nbsp;&rarr;&nbsp;mp3</td>
+       <td>+</td>
+       <td>+&nbsp;*</td>
+       <td>+</td>
+       <td>+</td>
+       <td>+</td>
+</tr>
+
+</table>
+
+<p class="ni">
+* Практически любые аудио-файлы.
+
+<p>
+<hr>
+<p class="footnote"><a name=foot_1>[1]</a> Некоторые программы
+(Cdrdao, X-CD-Roast) требуют эмуляции SCSI и для &laquo;читалки&raquo;
+тоже, поэтому, если в системе есть два привода&nbsp;&mdash; CD-ROM
+и CD-RW, то для использования этих программ эмуляцию SCSI надо
+делать для обоих.
+<a href="daocdrw.html#back_1">[вернуться]</a>
+<p class="footnote"><a name=foot_2>[2]</a> CDParanoia пока работает
+только в Linux, но она делит код с одноимённой кроссплатформенной
+библиотекой, которую используют другие приложения, в частности,
+Cdda2wav и Cdrdao.
+<a href="daocdrw.html#back_2">[вернуться]</a>
+<p class="footnote"><a name=foot_3>[3]</a> Такие приводы
+(MMC&nbsp;&mdash; от Multi Media Command) используют общий набор SCSI
+команд, что позволяет программе записи поддержать все эти
+устройства скопом.
+<a href="daocdrw.html#back_3">[вернуться]</a>
+<p class="footnote"><a name=foot_4>[4]</a> Фирма Philips
+создала новый (открытый) формат
+<!--<a href="http://www.mt-rainier.org/" target="_blank">-->
+Mount Rainier<!--</a>--> (CD-MRW), которому, по-видимому, предстоит
+скоро стать новым стандартом для записи CD/DVD. В частности, этот
+формат позволяет создать на компакт-диске любую файловую систему,
+например, ext2, и пользоваться таким компактом так же как обычной,
+но очень большой и быстрой дискетой. При покупке нового привода
+CD-R/RW советую интересоваться поддержкой этого формата.
+<a href="daocdrw.html#back_4">[вернуться]</a>
+
+  </div>
+</div>
+</body>
+</html>

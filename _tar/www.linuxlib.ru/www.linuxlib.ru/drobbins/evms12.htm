@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Руководство по &laquo;продвинутым&raquo; файловым системам, часть 12. — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV id=MC style="BEHAVIOR: url(evms12.htm)"></DIV><IMG height=1
+alt=SpyLOG src="https://www.linuxlib.ru/drobbins/evms12.files/cnt.gif" width=1 border=0> </NOSCRIPT><!-- SpyLOG --><!--begin of Top100--><IMG height=1
+alt="Rambler's Top100" src="https://www.linuxlib.ru/drobbins/evms12.files/top100.gif" width=1 border=0> <!--end of Top100 code--><!--Rating@Mail.ru COUNTER-->
+
+<NOSCRIPT><IMG height=1 alt="" src="evms12.files/counter.gif"
+width=1></NOSCRIPT>
+
+<!--/COUNTER--> <!--/ctsearch_noindex-->
+<H1 align=center>Руководство по &laquo;продвинутым&raquo; файловым системам, часть 12.</H1>
+<P align=center>Автор: Владимир Холманов, <A href="../cdn-cgi/l/email-protection.html#9ff9f2f9f2dfece6f2f2faebedf0f1b1f2ecf4b1edea"><span class="__cf_email__" data-cfemail="ed8b808b80ad9e94808088999f8283c3809e86c39f98">[email&#160;protected]</span></A><BR>Опубликовано:
+31.12.2002</P><!--ctsearch_noindex-->
+<P>
+<HR noShade SIZE=1>
+<FONT size=-1>© 2002, Издательский дом &laquo;КОМПЬЮТЕРРА&raquo; | <!--<A
+href="http://www.computerra.ru/">-->http://www.computerra.ru/<!--</A>--><BR>Журнал
+&laquo;СОФТЕРРА&raquo; | <!--<A
+href="http://www.softerra.ru/">-->http://www.softerra.ru/<!--</A>--><BR>Этот материал Вы
+всегда сможете найти по его постоянному адресу:&nbsp;<!--<A
+href="http://www.softerra.ru/freeos/23072/">-->http://www.softerra.ru/freeos/23072/<!--</A>--></FONT>
+<HR noShade SIZE=1>
+
+<P></P><!--/ctsearch_noindex--><FONT class=article>
+<P class=maintext align=justify>Перевод <!--<A
+href="http://www-106.ibm.com/developerworks/linux/library/l-fs12/"
+target=_blank>-->статьи<!--</A>--> Daniel Robbins.</P>
+<H3 class=subhead1>Введение в EVMS.</H3>
+<P class=maintext align=justify>В серии статей &laquo;Руководство по &laquo;продвинутым&raquo;
+файловым системам&raquo;, Daniel Robbins описывает использование самых последних
+технологий файловых систем в Linux 2.4. По ходу изложения даются советы по их
+практическому использованию, информация о производительности и важные
+технические детали. В этой статье Daniel представляет Enterprise Volume
+Management System (EVMS) для Linux. Он объясняет, что такое EVMS, для чего это
+нужно и почему это наиболее вероятный путь развития управления storage на Linux
+системах.</P>
+<P class=maintext align=justify>Вы когда-нибудь задумывались, сколько мощных,
+storage-related технологий доступны для Linux? Вспомните хотя бы о журналируемых
+файловых системах: ReiserFS, ext3, XFS и JFS. А ведь ещё несколько лет назад для
+Linux такого не было. Теперь мы имеем сразу несколько журналируемых файловых
+систем и пользуемся преимуществами, которые следуют из возможности выбора
+наилучшей файловой системы под конкретную инсталляцию.</P>
+<P class=maintext align=justify>Однако только типами файловых систем богатство
+выбора не ограничивается. Возможности software RAID в Linux, доступные уже
+продолжительное время, открывают другой срез возможностей для Linux
+администратора (для подробной информации посмотрите ссылки на две моих статьи о
+Linux software RAID в разделе <!--<A
+href="http://www.softerra.ru/freeos/23072/print.html#resources">-->Resources<!--</A>-->).
+Относительно недавно появилась LVM технология от Sistina (менеджер логических
+томов). По этой технологии можно посмотреть ссылки еще на две статьи в разделе
+<!--<A
+href="http://www.softerra.ru/freeos/23072/print.html#resources">-->Resources<!--</A>-->.
+LVM позволяет администратору управлять дисковыми ресурсами более гибко, чем при
+традиционном методе статических дисковых разделов. При помощи LVM можно
+расширять и усекать файловые системы прямо на работающем сервере и пользоваться
+другими возможностями, например snapshots.</P>
+<H3 class=subhead1>Проблемы с управлением storage.</H3>
+<P class=maintext align=justify>Linux имеет очень большую подборку связанных с
+хранением информации технологий, и это порождает одну проблему. Имеются хорошие
+tools для отдельных технологий, но их совместное использование вызывает
+сложности. Представим, например, что мы хотим создать файловую систему ReiserFS
+на LVM (логическом томе, чтобы иметь возможность динамически расширять её при
+необходимости), а логический том, в свою очередь, находится на RAID-1
+(обеспечивая дополнительную защиту в случае отказа диска).</P>
+<P class=maintext align=justify>Чтобы это реализовать, сначала, мы добавляем два
+новых диска в систему и командой <I>fdisk</I> создаём на них разделы. Затем
+создаём и наполняем содержанием файл /etc/raidtab и командой <I>mkraid</I>
+инициализируем RAID-1 volume. После этого командами <I>pvcreate</I>,
+<I>vgcreate</I> и <I>lvcreate</I> создаются LVM логические тома поверх RAID-1.
+Только теперь, воспользовавшись <I>mkreiserfs</I>, создаём файловую систему на
+логическом томе. После этого файловая система может монтироваться.</P>
+<P class=maintext align=justify>Нетрудно подсчитать, что в этом примере были
+использованы четыре отдельных типа tools. Чтобы все прошло успешно,
+инструментальные средства должны иметь непротиворечивый интерфейс. В процессе
+эксплуатации файловой системы мы должны будем использовать и software RAID, и
+LVM tools по необходимости. При этом ни один из инструментов &laquo;не видит&raquo; дальше
+своего уровня, а уровни тесно связаны. Получается цепочка:</P>
+<P class=maintext align=justify>Имеются два диска.<BR>На каждом диске по одному
+разделу.<BR>Разделы объединены в RAID-1 volume.<BR>Этот том виден LVM как
+&laquo;физический&raquo;.<BR>Он добавляется к LVM группе томов.<BR>Из ресурсов группы томов
+создан логический том.<BR>На логическом томе находится файловая система
+ReiserFS.</P>
+<P class=maintext align=justify>Такое число вовлеченных инструментальных средств
+(и при этом каждое не подозревает о существовании смежников) достаточный
+аргумент, чтобы отбить желание администратора ими воспользоваться. Если новый
+администратор получает по наследству наш хитро сконфигурированный сервер, ему
+придется на время переквалифицироваться в детектива. Даже если вся конфигурация
+хорошо документирована (а это прямая обязанность предшественника), новый
+администратор поимеет немало проблем. Почему? Потому, что в Linux имеется
+множество storage-related технологий, а интерфейсы для управления ими не
+подчиняются единой политике. Этот недостаток проявляется особенно сильно на
+длинных последовательностях объединений в сложных конфигурациях storage.</P>
+<H3 class=subhead1>Введение в EVMS.</H3>
+<P class=maintext align=justify>Если вы заподозрили, что будет объявлено: EVMS
+решает все перечисленные проблемы, значит, интуиция вас не подвела. Все проблемы
+можно решить. EVMS предоставляет &laquo;униформу&raquo;, хорошо расширяемую, основанную на
+plug-in API для всех storage технологий под Linux. Что из этого следует? Это
+означает, что благодаря EVMS, можно использовать единый tool для разбиения
+дисков, создания объектов LVM и Linux software RAID. Можно использовать всего
+один инструмент для любой комбинации технологий. EVMS позволяет увидеть полную
+картину. Он реально показывает, как всё наслоено, начиная от файловой системы и
+кончая физическими дисками. Кроме того, EVMS совместим со всеми существующими
+Linux технологиями. Вам не потребуется вновь разбивать диски, создавать LVM или
+RAID тома. Просто ранее существовавшая конфигурация storage становится доступной
+через объединённый интерфейс управления. В настоящее время EVMS предлагает на
+выбор интерфейсы командной строки, ncurses-based и GUI, написанный на GTK+. Для
+возбуждения аппетита посмотрим пару screenshots GTK+ EVMS Administration Utility
+(из версии 1.0.0) в действии. На рисунке 1 можно видеть, что lvm/vg1/swap
+состоит из данных, которые физически находятся на разделе hda2 диска hda.</P>
+<P align=center>&nbsp;<IMG height=217 alt=1 hspace=10
+src="evms12.files/51761.jpg" width=390 border=0>
+<P class=caption>Рисунок 1. The Regions tab of the GTK+ EVMS Administration
+Utility</P>
+<P class=maintext align=justify>Рисунок 2 показывает snapshot от корневого тома.
+Этот snapshot является &laquo;замороженным видом&raquo; для lvm/vg1/root. Корневой snapshot
+остаётся неизменным с момента создания, даже если файлы в корневой файловой
+системе добавляются или удаляются.</P>
+<P align=center>&nbsp;<IMG height=217 alt=2 hspace=10
+src="evms12.files/51762.jpg" width=390 border=0>
+<P class=caption>Рисунок 2. The Volumes tab of the GTK+ EVMS Administration
+Utility </P>
+<P class=maintext align=justify>Заметим, EVMS не просто совместим с существующей
+конфигурацией storage, он предлагает новые, ранее недоступные возможности. Одна
+из таких возможностей в релизе 1.0.1 &#8211; EVMS snapshot feature. Возможно, вы уже
+знакомы с snapshotting от Linux LVM. Используя snapshots можно создавать
+&laquo;неизменяемые виды&raquo; реальных файловых систем, что очень удобно для резервного
+копирования. EVMS поддерживает LVM snapshots, но его собственная реализация
+расширенная и позволяет делать снимки томов любого типа, даже для стандартного
+Linux раздела! Кроме того, EVMS snapshotting позволяет создавать снимок в режиме
+чтения &#8211; записи, по существу, создавая отдельно развивающиеся клоны файловой
+системы. Разработчики EVMS работают над добавлением асинхронных snapshot
+(быстрый, временный снимок) и над поддержкой rollback, что позволит делать
+откаты на основном томе к любому состоянию, начиная с момента создания
+снимка.</P>
+<P class=maintext align=justify>Теперь вы можете оценить свою потребность в EVMS
+и имеете основные понятия, что с этим можно делать. Посмотрим что нужно для
+получения работающего EVMS.</P>
+<H3 class=subhead1>Инсталляция EVMS.</H3>
+<P class=maintext align=justify>EVMS состоит из нескольких kernel patches и
+userspace tools. Чтобы получить работающий EVMS, необходимо скачать EVMS source
+архив, распаковать его и наложить patches на kernel source tree. После этого
+компилируем EVMS userspace tools. В завершении инсталляции конфигурируем,
+компилируем и перезагружаемся на EVMS-enabled ядро. После перезагрузки системы
+ваш EVMS готов к использованию.</P>
+<P class=maintext align=justify>Если ищите простой способ начать работу с EVMS,
+загрузите Gentoo Linux Game mini-CD (смотрите ссылки в секции <!--<A
+href="http://www.softerra.ru/freeos/23072/print.html#resources">-->Resources<!--</A>-->).
+В дополнение ко всему прочему, на системах с видео карточками NVIDIA вы сразу
+получаете OpenGL-accelerated игру. Наш Games mini-CD загрузит runtime версию
+Gentoo Linux, включающую полную поддержку EVMS. Релиз 1.4 Gentoo Linux (еще не
+вышедший при написании этой статьи), разумеется, тоже будет иметь полную
+поддержку EVMS. Наш игровой/установочный mini-CD и официальный Gentoo Linux 1.4
+CD позволят вам инсталлировать Linux с корневой файловой системой на EVMS
+томе.</P>
+<P class=maintext align=justify>Для начала соединитесь с home page <!--<A
+href="http://www.sourceforge.net/projects/evms" target=_blank>-->проекта EVMS<!--</A>-->.
+В секции &laquo;Latest file releases&raquo; вы увидите ссылку на самую современную версию
+EVMS. Щелкните по ссылке &laquo;download&raquo; и перейдите на main download page. Далее
+процесс инсталляции описан для EVMS версия 1.0.1 из исходников (файл
+<I>evms-1.0.1.targz</I>). Выбирайте ближайшее зеркало и скачивайте.</P>
+<P class=maintext align=justify>Получив архивный файл, распакуйте его в
+temporary каталог:<BR>
+<BLOCKQUOTE><I># cd /tmp # tar xzvf /path/to/evms-1.0.1.tar.gz </I></BLOCKQUOTE>
+<P class=maintext align=justify>Этот архив содержит EVMS userspace tools и
+patches для kernel source tree. Для правильной компиляции EVMS userspace tools
+необходимо прежде инсталлировать patches. Чтобы увидеть, какой релиз ядра нужен
+для EVMS, войдите в каталог и введите <I>ls</I>: <B>Listing 1. EVMS directory
+listing</B>
+<TABLE cellSpacing=0 cellPadding=5 width="100%" bgColor=#cccccc border=1>
+  <TBODY>
+  <TR>
+    <TD><PRE><I>
+# cd evms-1.0.1/kernel
+# ls
+evms-1.0.1-linux-2.4.patch evms-linux-2.4.7-common-files.patch
+evms-1.0.1-linux-2.5.patch evms-linux-2.4.9-common-files.patch
+evms-linux-2.4.10-common-files.patch evms-linux-2.5.1-common-files.patch
+evms-linux-2.4.12-common-files.patch evms-linux-2.5.2-common-files.patch
+evms-linux-2.4.13-common-files.patch evms-linux-2.5.3-common-files.patch
+evms-linux-2.4.14-common-files.patch evms-linux-2.5.4-common-files.patch
+evms-linux-2.4.16-common-files.patch evms-linux-2.5.5-common-files.patch
+evms-linux-2.4.17-common-files.patch lilo-22.2-evms.patch
+evms-linux-2.4.18-common-files.patch linux-2.4.12-VFS-lock.patch
+evms-linux-2.4.4-common-files.patch linux-2.4.18-VFS-lock.patch
+evms-linux-2.4.5-common-files.patch linux-2.4.4-VFS-lock.patch
+evms-linux-2.4.6-common-files.patch linux-2.4.9-VFS-lock.patch
+</I></PRE></TD></TR></TBODY></TABLE>
+<P class=maintext align=justify>Из вывода команды видно, что данная версия EVMS
+совместима с ядрами от 2.4.10 до 2.4.18 и от 2.5.1 до 2.5.5. Для того чтобы
+получить EVMS-enabled ядро, нам необходимо применить patches к имеющемуся kernel
+source tree, загруженному из kernel.org. Далее описывается EVMS для 2.4.18
+source tree, что является хорошим выбором. Если у вас нет архива ядра, например,
+linux-2.4.18.tar.gz или .tar.bz2, скачайте его (смотри <!--<A
+href="http://www.softerra.ru/freeos/23072/print.html#resources">-->Resources<!--</A>-->).
+Распакуйте архив в /usr/src и apply соответствующие заплаты EVMS:</P>
+<P class=maintext align=justify><B>Listing 2. EVMS patches</B>
+<TABLE cellSpacing=0 cellPadding=5 width="100%" bgColor=#cccccc border=1>
+  <TBODY>
+  <TR>
+    <TD><PRE><I>
+# cd /usr/src
+
+(Если /usr/src/linux - symbolic link, введите:)
+# rm linux
+(а иначе:)
+# mv linux linux.old
+
+# tar xzvf /path/to/linux-2.4.18.tar.gz
+# mv linux linux-2.4.18-evms
+# ln -s linux-2.4.18-evms linux
+</I></PRE></TD></TR></TBODY></TABLE>
+<P class=maintext align=justify>В вашем распоряжении &laquo;ванильное&raquo; source tree в
+/usr/src/linux-2.4.18-evms и ссылка /usr/src/linux, указывающая на него. Теперь
+можно применить EVMS patches. Первым apply файл evms-1.0.1-linux-2.4.patch. Он
+содержит новые EVMS-related файлы и необходим для любого 2.4.x kernel source
+tree:<BR>
+<BLOCKQUOTE><I># cd linux # patch p1 &lt;
+  /tmp/evms-1.0.1/kernel/evms-1.0.1-linux-2.4.patch </I></BLOCKQUOTE>
+<P class=maintext align=justify>Далее, воспользуемся EVMS patch, специфическим
+для вашей версии ядра. Такой patch изменит уже существующие файлы в Linux kernel
+source tree, поэтому возможны проблемы, если версии ядра и patch не
+совпадают:<BR>
+<BLOCKQUOTE><I># patch -p1 &lt;
+  /tmp/evms-1.0.1/kernel/evms-linux-2.4.18-common-files.patch </I></BLOCKQUOTE>
+<P class=maintext align=justify>Проверьте, имеется ли VFS-lock patch для
+выбранной вами версии ядра. Если есть, следует apply и его, поскольку это
+поможет EVMS легче получать snapshots в непротиворечивом состоянии:<BR>
+<BLOCKQUOTE><I># patch -p1 &lt;
+  /tmp/evms-1.0.1/kernel/linux-2.4.18-VFS-lock.patch </I></BLOCKQUOTE>
+<P class=maintext align=justify>Если использовали &laquo;ванильное&raquo; ядро для
+исправлений и последовательность наложения не была нарушена, все patches
+отработают без ошибок. Убедитесь в этом, просканировав patched kernel source
+tree на предмет наличия '.rej' файлов:<BR>
+<BLOCKQUOTE><I># find -name '*.rej' </I></BLOCKQUOTE>
+<P class=maintext align=justify>Если имеется хотя бы один .rej файл, то из этого
+следует, что минимум один из patches был apply неправильно и требуется ручное
+вмешательство. Как правило, rejects появляются, если patches накладываются на
+-ac (или другие доработанные) ядра. Предполагается, что в этом случае вы сами
+должны знать, что следует предпринять. Например, я использую -ac-based ядро с
+EVMS patch. Многочисленных rejects это не порождает, но, даже отдельные проблемы
+при компиляции требовали нетривиальных исправлений. Столкнувшись с такого рода
+проблемами, вы можете обратиться за помощью к списку рассылки EVMS или посетить
+#evms channel на IRC (смотри секцию <!--<A
+href="http://www.softerra.ru/freeos/23072/print.html#resources">-->Resources<!--</A>-->).</P>
+<P class=maintext align=justify>Теперь пришло время конфигурировать новое ядро.
+Можно воспользоваться make menuconfig или make xconfig (что больше нравится) и
+сконфигурировать ядро. Выбирайте ваши любимые опции, но при этом не забудьте
+заблокировать &laquo;Multi-device support (RAID and LVM)&raquo;, поскольку EVMS содержит
+внутреннюю поддержку LVM и RAID. Подойдя к пункту &laquo;Enterprise Volume Management
+System&raquo; выберите enable для всех опций для статической компиляции:<BR><B>Listing
+3. EVMS Kernel configuration</B>
+<TABLE cellSpacing=0 cellPadding=5 width="100%" bgColor=#cccccc border=1>
+  <TBODY>
+  <TR>
+    <TD><PRE><I>
+&lt;*&gt; EVMS Kernel Runtime
+&lt;*&gt; EVMS Local Device Manager Plugin
+&lt;*&gt; EVMS DOS Partition Manager Plugin
+&lt;*&gt; EVMS SnapShot Feature
+&lt;*&gt; EVMS DriveLink Feature
+&lt;*&gt; EVMS Bad Block Relocation (BBR) Feature
+&lt;*&gt; EVMS Linux LVM Package
+&lt;*&gt; EVMS Linux MD Package
+&lt;*&gt; EVMS MD Linear (append) mode
+&lt;*&gt; EVMS MD RAID-0 (stripe) mode
+&lt;*&gt; EVMS MD RAID-1 (mirroring) mode
+&lt;*&gt; EVMS MD RAID-4/RAID-5 mode
+&lt;*&gt; EVMS AIX LVM Package
+&lt;*&gt; EVMS OS/2 LVM Package
+&lt;*&gt; EVMS Clustering Package
+(Default) EVMS Debug Level
+</I></PRE></TD></TR></TBODY></TABLE>
+<P class=maintext align=justify>Закончив конфигурирование, сохраните настройки и
+выполните стандартные шаги по компиляции и инсталляции ядра. Перезагружаться на
+новое ядро пока не следует. Еще до этого необходимо скомпилировать и
+инсталлировать EVMS userspace tools:<BR><B>Listing 4. Compile and install the
+EVMS userspace tools</B>
+<TABLE cellSpacing=0 cellPadding=5 width="100%" bgColor=#cccccc border=1>
+  <TBODY>
+  <TR>
+    <TD><PRE><I>
+# cd /tmp/evms-1.0.1/engine
+# ./configure --prefix=/usr --libdir=/lib --sbindir=/sbin
+# --includedir=/usr/include --with-kernel=/usr/src/linux
+# make
+# make install
+# ldconfig
+</I></PRE></TD></TR></TBODY></TABLE>
+<P class=maintext align=justify>Теперь userspace EVMS tools инсталлированы,
+имеется EVMS-enabled ядро и можно на него перегрузиться. Как воспользоваться
+вновь открывшимися возможностями будет описано в следующей статье. Если вы
+нетерпеливы (а кому из настоящих исследователей это не свойственно?) и хотите
+побыстрее увидеть некоторое EVMS &laquo;фичи&raquo;, введите evmsgui с правами root и
+загрузите GTK+ EVMS Administration Utility GUI.</P>
+<P class=maintext align=justify>Только несколько предупреждений. Будьте
+внимательны, сделанные вами изменения входят в силу после их закрепления на
+позиции &laquo;Commitchanges&raquo; меню EVMS Administration Utility. Не расслабляйтесь под
+воздействием дружелюбия графического GTK+ интерфейса, EVMS весьма сложная
+система и потребуется немало времени, чтобы освоить терминологию и применение.
+Следующая статья будет &laquo;обучающей&raquo;. До скорой встречи!</P><A name=resources>
+<H3 class=subhead1>Resources</H3></A>
+<UL class=maintext>
+  <LI>Загрузка <!--<A href="http://www.kernel.org/pub/linux/kernel/v2.4"
+  target=_blank>-->стабильного kernel source архива<!--</A>-->, например
+  linux-2.4.18.tar.gz или .tar.bz2, с kernel.org.
+  <LI>Посетите официальный сайт разработчиков <!--<A
+  href="http://www.sourceforge.net/projects/evms" target=_blank>-->EVMS project<!--</A>-->
+  на SourceForge, или subscribe на <!--<A
+  href="http://sourceforge.net/mail/?group_id=25076" target=_blank>-->лист
+  рассылки<!--</A>-->, или прочтите <!--<A
+  href="http://sourceforge.net/docman/?group_id=25076" target=_blank>-->EVMS
+  документацию<!--</A>-->.
+  <LI>Посетите <!--<A href="http://freenode.net/" target=_blank>-->#evms channel на
+  freenode<!--</A>--> IRC network. Там часто бывают EVMS developers.
+  <LI>Посетите <!--<A href="http://www.sistina.com/" target=_blank>-->Sistina<!--</A>--> для
+  знакомства с Linux LVM технологией.
+  <LI>Чтобы быстро начать работу с EVMS скачайте Gentoo Linux Game/Install
+  mini-CD -- grab <I>livecd-ut2003-i586-1.4.1.iso</I> из <!--<A
+  href="http://www.ibiblio.org/pub/Linux/distributions/gentoo/releases/1.4_rc1/x86"
+  target=_blank>-->the Gentoo 1.4 x86 download directory<!--</A>-->.
+  <LI>Познакомьтесь со статьями о Linux Software RAID от Daniel:
+  <UL class=maintext>
+    <LI><!--<A
+    href="http://www-106.ibm.com/developerworks/linux/library/l-raid1/index.html"
+    target=_blank>-->Part 1: Introduction and installation<!--</A>-->
+    (<I>developerWorks</I>, February 2001)
+    <LI><!--<A
+    href="http://www-106.ibm.com/developerworks/library/l-raid2/index.html"
+    target=_blank>-->Part 2: Setup in a production environment<!--</A>-->
+    (<I>developerWorks</I>, February 2001) </LI></UL>
+  <LI>Познакомьтесь со статьями о Linux Logical Volume Management из:
+  <UL class=maintext>
+    <LI><!--<A href="http://www-106.ibm.com/developerworks/linux/library/l-lvm/"
+    target=_blank>-->Part 1: Learning LVM<!--</A>--> (<I>developerWorks</I>, March 2001)
+    <LI><!--<A href="http://www-106.ibm.com/developerworks/library/l-lvm2.html"
+    target=_blank>-->Part 2: The cvs.gentoo.org upgrade<!--</A>--> (<I>developerWorks</I>,
+    April 2001) </LI></UL><BR>
+  <LI>Переводы предыдущих статей серии &laquo;Руководство по &laquo;продвинутым&raquo; файловым
+  системам&raquo; можно найти <!--<A
+  href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs_ru.html"
+  target=_blank>-->здесь<!--</A>-->. </LI></UL>
+<P></P></FONT>
+<HR noShade SIZE=1>
+
+<P><FONT size=-1>Телефон редакции: (095) 232-2261<BR>E-mail редакции: <A href="../cdn-cgi/l/email-protection.html#21484f474e534c61524e4755445353400f5354"><span class="__cf_email__" data-cfemail="e0898e868f928da0938f869485929281ce9295">[email&#160;protected]</span></A><BR>По вопросам
+размещения рекламы обращаться к Алене Шагиной по телефону +7 (095) 232-2263 или
+электронной почте <A href="../cdn-cgi/l/email-protection.html#235146404f424e4263404c4e535657465151420d5156"><span class="__cf_email__" data-cfemail="1e6c7b7d727f737f5e7d71736e6b6a7b6c6c7f306c6b">[email&#160;protected]</span></A></FONT></P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

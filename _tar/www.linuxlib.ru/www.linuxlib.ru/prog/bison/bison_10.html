@@ -1,0 +1,512 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Bison 1.35 - 8. Обработка контекстных зависимостей — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../index.htm#gl">графические библиотеки</a> |
+    <A HREF="../index.htm#tcl">Tcl</a> |
+    <A HREF="../index.htm#perl">Perl</a> |
+    <A HREF="../index.htm#php">PHP</a> |
+    <A HREF="../index.htm#java">Java &amp; C#</a> |
+    <A HREF="../index.htm#dbms">СУБД</a> |
+    <A HREF="../index.htm#cvs">CVS</a> |
+    <A HREF="../index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://best17.ru/mujchinam/obuv/muzhskie-sandalii" target="_blank">мужские шлепанцы crocs купить</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+ [<A HREF="https://www.linuxlib.ru/prog/bison/bison_toc.html">Содержание</A>] &#160; [<A HREF="bison_9.html">Назад</A>] &#160; [<A>Пред</A>] &#160; [<A>Вверх</A>] &#160; [<A>След</A>] &#160; [<A HREF="bison_11.html">Вперед</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC91">8. Обработка контекстных зависимостей</A></H1>
+
+<P>
+Основной принцип Bison в том, чтобы сначала разбираются лексемы, а затем они
+группируются в более крупные синтаксические единицы.  Во многих языках значение
+лексемы зависит от её контекста.  Хотя это и нарушает принципы Bison,
+существуют определённые приёмы (известные как <EM>кладжи</EM>), которые дают вам
+возможность писать анализаторы Bison для таких языков.
+
+
+<P>
+(На самом деле, "кладж" -- это всякий приём, который решает поставленную
+задачу, но не является ни чистым, ни надёжным.)
+
+
+
+
+<H2><A NAME="SEC92">8.1 Семантическая информация в типах лексем</A></H2>
+
+<P>
+Язык C содержит контекстную зависимость -- способ использования идентификаторов
+зависит от его текущего смысла.  Например, рассмотрим:
+
+
+
+<PRE>
+foo (x);
+</PRE>
+
+<P>
+Это выглядит как оператор вызова функции, но если <CODE>foo</CODE> -- имя определения
+типа, то на самом деле это объявление <CODE>x</CODE>.  Как анализатор Bison для C
+может решить, как разбирать такой входной текст?
+
+
+<P>
+В GNU C используется метод, состоящий в том, чтобы иметь два разных типа
+лексем: <CODE>IDENTIFIER</CODE> и <CODE>TYPENAME</CODE>.  Когда <CODE>yylex</CODE> обнаруживает
+идентификатор, она ищёт текущее объявление идентификтора чтобы решить, какой
+тип лексемы возвращать: <CODE>TYPENAME</CODE>, если идентификатор объявлен как
+определение типа, и <CODE>IDENTIFIER</CODE> в противном случае.
+
+
+<P>
+Правила грамматики могут затем выражать контекстную зависимость выбором
+типа лексемы при распознавании.  <CODE>IDENTIFIER</CODE> допустима в выражении,
+а <CODE>TYPENAME</CODE> -- нет.  Объявление может начинаться с <CODE>TYPENAME</CODE>,
+но не с <CODE>IDENTIFIER</CODE>.  В контекстах, где смысл идентификатора <EM>не
+имеет значения</EM>, таких как в объявлениях, которые могут затенять имя
+определения типа, принимаются как <CODE>TYPENAME</CODE>, так и <CODE>IDENTIFIER</CODE> --
+для каждого из двух типов лексем есть своё правило.
+
+
+<P>
+Этот приём просто использовать, если решение, какой тип идентификаторов
+допустим, принимается в месте, близком к тому, где разбирается этот
+идентификатор.  Но в C это не всегда так: C допускает, чтобы объявление
+переопределяло имя определения типа, при условии, что явный тип был задан
+ранее:
+
+
+
+<PRE>
+typedef int foo, bar, lose;
+static foo (bar);        /* переопределить <CODE>bar</CODE>
+                               как статическую переменную */
+static int foo (lose);   /* переопределить <CODE>foo</CODE>
+                               как функцию */
+</PRE>
+
+<P>
+К сожалению, объявляемое имя отделено от самой объявляющей конструкции
+сложной синтаксической структурой -- "объявлятелем".
+
+
+<P>
+В результате часть анализатора Bison для C должна быть продублирована с
+изменением имён всех нетерминалов: одно для разбора объявления, в котором
+имя определения типа может быть переопределено, и другое для разбора
+объявлений, в которых это невозможно.  Приведём часть такого дублирования,
+действия в котором опущены для краткости:
+
+
+
+<PRE>
+initdcl:
+          declarator maybeasm '='
+          init
+        | declarator maybeasm
+        ;
+
+notype_initdcl:
+          notype_declarator maybeasm '='
+          init
+        | notype_declarator maybeasm
+        ;
+</PRE>
+
+<P>
+Здесь <CODE>initdcl</CODE> может переопределить имя определения типа, а
+<CODE>notype_initdcl</CODE> -- нет.  Та же разница между <CODE>declarator</CODE> и
+<CODE>notype_declarator</CODE>.
+
+
+<P>
+Есть нечто общее между этим приёмом и лексической увязкой (описанной ниже),
+в том, что информация, изменяющая ход лексического анализа, изменяется
+во время разбора другим частями программы.  Различие в том, что здесь
+эта информация глобальна, и используется в программе для других целей.
+Истинная лексическая увязка имеет флаг специального назначения, управляемый
+синтаксическим контекстом.
+
+
+
+
+<H2><A NAME="SEC93">8.2 Лексическая увязка</A></H2>
+<P>
+<A NAME="IDX220"></A>
+
+
+<P>
+Одним из способов обработки контекстной зависимости является <EM>лексическая
+увязка</EM> -- флаг, устанавливаемый действиями Bison, предназначенный для
+изменения способа разбора лексем.
+
+
+<P>
+Например, предположим, что у нас есть язык, смутно похожий на C, но со
+специальной конструкцией <SAMP>`hex (<VAR>шестнадцатеричное_выражение</VAR>)'</SAMP>.
+После ключевого слова <CODE>hex</CODE> идёт выражение в скобках, в котором все
+целые числа записаны в шестнадцатеричной системе счисления.  В частности,
+при появлении в этом контекта лексема <SAMP>`a1b'</SAMP> должна рассматриваться как
+целое, а не как идентификатор.  Вот как вы можете это сделать:
+
+
+
+<PRE>
+%{
+int hexflag;
+%}
+%%
+...
+expr:   IDENTIFIER
+        | constant
+        | HEX '('
+                { hexflag = 1; }
+          expr ')'
+                { hexflag = 0;
+                   $$ = $4; }
+        | expr '+' expr
+                { $$ = make_sum ($1, $3); }
+        ...
+        ;
+
+constant:
+          INTEGER
+        | STRING
+        ;
+</PRE>
+
+<P>
+Здесь мы полагаем, что <CODE>yylex</CODE> проверяет значение <CODE>hexflag</CODE>, когда
+оно ненулевое, все числа рассматриваются как шестнадцатеричные, и лексемы,
+начинающиеся в букв, разбираются как целые, если это возможно.
+
+
+<P>
+Объявление <CODE>hexflag</CODE>, показанное в секции объявлений C файла анализатора,
+необходимо чтобы оно было доступно для действий (см. раздел <A HREF="bison_6.html#SEC41">4.1.1 Секция объявлений C</A>).  Вы также должны написать код <CODE>yylex</CODE> так, чтобы анализ
+подчинялся этому флагу.
+
+
+
+
+<H2><A NAME="SEC94">8.3 Лексическая увязка и восстановление после ошибок</A></H2>
+
+<P>
+Лексическая увязка предъявляет строгие требования ко всем имеющимся у вас
+правилам восстановления после ошибок.  См. раздел <A HREF="bison_9.html#SEC90">7. Восстановление после ошибок</A>.
+
+
+<P>
+Причина этого в том, что целью правил восстановления после ошибок является
+прервать анализ одной конструкии и возобновить анализ более крупных
+конструкций.  Например, в языках типа C типичное правило восстановления
+после ошибки пропускает лексемы до следующей точки с запятой, и затем
+начинает разбор нового оператора, как здесь:
+
+
+
+<PRE>
+stmt:   expr ';'
+        | IF '(' expr ')' stmt { ... }
+        ...
+        error ';'
+                { hexflag = 0; }
+        ;
+</PRE>
+
+<P>
+Если внутри конструкции <SAMP>`hex (<VAR>выражение</VAR>)'</SAMP> есть синтаксическая
+ошибка, будет применено это правило обработки ошибок, и тогда действия для
+законченного <SAMP>`hex (<VAR>выражение</VAR>)'</SAMP> никогда не будут выполнены. Поэтому
+<CODE>hexflag</CODE> останется установленным для всего остального входного текста
+или до следующего ключевого слова <CODE>hex</CODE>, в результате чего идентификаторы
+будут ошибочно интерпретироваться как целые числа.
+
+
+<P>
+Чтобы избежать этой проблемы, правило восстановления после ошибки само
+сбрасывает <CODE>hexflag</CODE>.
+
+
+<P>
+Также могут существовать правила восстановления после ошибок, работающие
+внутри выражений.  Например, может быть правило, применяющееся внутри
+скобок и пропускающее всё до закрывающей скобки:
+
+
+
+<PRE>
+expr:   ...
+        | '(' expr ')'
+                { $$ = $2; }
+        | '(' error ')'
+        ...
+</PRE>
+
+<P>
+Если это правило действует внутри конструкции <CODE>hex</CODE>, оно не приводит к
+выходу из этой конструкии (поскольку оно применяется к самому внутреннем
+уровню скобок внутри конструкции). Поэтому не нужно очищать флаг, оставшаяся
+часть конструкции <CODE>hex</CODE> должна быть разобрана пока флаг всё ещё действует.
+
+
+<P>
+Что если существует правило восстановления после ошибок, которое может прервать
+или не прерывать разбор конструкции <CODE>hex</CODE>, в зависимости от обстоятельств?
+Способа написать правило, определяющее, был ли прерван разбор конструкции
+<CODE>hex</CODE>, нет. Поэтому, если вы используете лексиечскую увязку, лучше быть
+уверенным в том, что ваши правила восстановления после ошибок не таковы.
+Каждое правило должно быть таким, что вы можете быть уверены в том, что оно
+всегда будет или никогда не будет сбрасывать флаг.
+
+
+<P></P><HR>
+ [<A HREF="https://www.linuxlib.ru/prog/bison/bison_toc.html">Содержание</A>] &#160; [<A HREF="bison_9.html">Назад</A>] &#160; [<A>Пред</A>] &#160; [<A>Вверх</A>] &#160; [<A>След</A>] &#160; [<A HREF="bison_11.html">Вперед</A>] &#160;
+
+  </div>
+</div>
+</body>
+</html>

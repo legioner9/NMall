@@ -1,0 +1,2636 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Эффективное использование GNU make — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="index.html"><img src="images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="index.html"># Главная</a></B><BR>
+    <B><a href="about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="distr/index.htm#server">серверный Linux</a> |
+    <A HREF="distr/index.htm#bsd">BSD</a> |
+    <A HREF="distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="inst/index.htm#general">каталоги софта</a> |
+    <A HREF="inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="Linux/index.htm#console">консоль</A> |
+    <A HREF="Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="Linux/index.htm#proc">процессы</A> |
+    <A HREF="Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="xwin/index.htm#kde">KDE</a> |
+    <A HREF="xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="text/index.htm#edit">редакторы</a> |
+    <A HREF="text/index.htm#office">офис</a> |
+    <A HREF="text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="gimp/index.htm#photo">фото</a> |
+    <A HREF="gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="net/index.htm#route">маршрутизация</a> |
+    <A HREF="net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="net/index.htm#www">веб-серверы</a> |
+    <A HREF="net/index.htm#apache">Apache</a> |
+    <A HREF="net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="net/index.htm#print">сетевая печать</a> |
+    <A HREF="net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="prog/index.htm#tcl">Tcl</a> |
+    <A HREF="prog/index.htm#perl">Perl</a> |
+    <A HREF="prog/index.htm#php">PHP</a> |
+    <A HREF="prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="prog/index.htm#dbms">СУБД</a> |
+    <A HREF="prog/index.htm#cvs">CVS</a> |
+    <A HREF="prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="kern/index.htm"># Ядро</a>
+    <br><a href="mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="internet/index.htm"># Интернет</a>
+    <br><a href="post/index.htm"># Почта</a>
+    <br><a href="secur/index.htm"># Безопасность</a>
+    <br><a href="iron/index.htm"># Железо</a>
+    <br><a href="other/index.htm"># Разное</a><br><br>
+
+    <a href="HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <h5> Версия 1.2.1b </h5>
+
+    <h1> Эффективное использование GNU Make </h1>
+    <h2> (C) <a href="cdn-cgi/l/email-protection.html#6a030d040b1e051c2a03040c05190f0944181f">Владимир Игнатов</a>, 2000 </h2>
+
+    <h3> Оглавление </h3>
+        <ul>
+        <li> <a href="Book_egm.htm#Intro">              0. Предисловие
+        <li> <a href="Book_egm.htm#Using_GNU_Make">     1. Моя методика использования GNU Make </a>
+            <ul>
+            <li> <a href="Book_egm.htm#Project_example">            1.1. Пример проекта </a>
+            <li> <a href="Book_egm.htm#Tradition-style_makefile">   1.2. "Традиционный" способ построения make-файлов </a>
+            <li> <a href="Book_egm.htm#Automatic_obj_list">         1.3. Автоматическое построение списка объектных файлов </a>
+            <li> <a href="Book_egm.htm#Auto_depend">                1.4. Автоматическое построение зависимостей от заголовочных файлов </a>
+            <li> <a href="Book_egm.htm#Multi-dirs">                 1.5. "Разнесение" файлов с исходными текстами по директориям </a>
+            <li> <a href="Book_egm.htm#Multi-config">               1.6. Сборка программы с разными параметрами компиляции </a>
+            <li> <a href="Book_egm.htm#Multi-config_multi-dirs">    1.7. "Разнесение" разных версий программы по отдельным директориям  </a>
+            </ul>
+        <li> <a href="Book_egm.htm#GNU_Make">           2. GNU Make </a>
+            <ul>
+            <li> <a href="Book_egm.htm#Two_kind_of_vars">   2.1. Две разновидности переменных </a>
+            <li> <a href="Book_egm.htm#Text_functions">     2.2. Функции манипуляции с текстом </a>
+            <li> <a href="Book_egm.htm#Template_rules">     2.3. Новый способ задания шаблонных правил </a>
+            <li> <a href="Book_egm.htm#vpath">              2.4. Переменная <b>VPATH</b> </a>
+            <li> <a href="Book_egm.htm#override">           2.5. Директива <b>override</b> </a>
+            <li> <a href="Book_egm.htm#include">            2.6. Директива <b>include</b>  </a>
+            <li> <a href="Book_egm.htm#append_text">        2.7. Добавление текста в строку </a>
+            <li> <a href="Book_egm.htm#auto_vars">          2.8. Автоматические переменные </a>
+            <li> <a href="Book_egm.htm#rule_combining">     2.9. "Комбинирование" правил  </a>
+            <li> <a href="Book_egm.htm#default_makefile">   2.10. Make-файл, используемый по умолчанию  </a>
+            <li> <a href="Book_egm.htm#PHONY_target">       2.11. Специальная цель <b>.PHONY</b> </a>
+            </ul>
+        <li> <a href="Book_egm.htm#Make">               3. Утилита <b>make</b> </a>
+            <ul>
+            <li> <a href="Book_egm.htm#Rules">              3.1. Правила </a>
+            <li> <a href="Book_egm.htm#Make_alg">           3.2. Алгоритм работы <b>make</b> </a>
+            <ul>
+                <li>    <a href="Book_egm.htm#Choose_default_goal"> 3.2.1. Выбор <i>главной цели</i>
+                <li>    <a href="Book_egm.htm#Process_target"> 3.2.2. Достижение <i>цели</i>
+                <li>    <a href="Book_egm.htm#Process_rule">   3.2.3. Обработка <i>правил</i>
+                <li>    <a href="Book_egm.htm#Process_dependency">  3.2.4. Обработка <i>зависимостей</i>
+                <li>    <a href="Book_egm.htm#Process_commands">  3.2.5. Обработка <i>команд</i>
+            </ul>
+            <li> <a href="Book_egm.htm#Phony_vs_filenames">       3.3. Абстрактные цели и имена файлов </a>
+            <li> <a href="Book_egm.htm#Make_example">       3.4. Пример работы <b>make</b> </a>
+            <li> <a href="Book_egm.htm#Another_make_example">       3.5. Еще один пример работы <b>make</b> </a>
+            <li> <a href="Book_egm.htm#vars">                   3.6. Переменные </a>
+            <li> <a href="Book_egm.htm#automatic_vars">         3.7. Автоматические переменные </a>
+            <li> <a href="Book_egm.htm#pattern_rules">          3.8. Шаблонные правила </a>
+            </ul>
+        <li> <a href="Book_egm.htm#pril_A">             Приложение A. Редактирование make-файлов в разных операционных системах </a>
+        <li> <a href="Book_egm.htm#pril_B">             Приложение B. Организация иерархии каталогов в сложных проектах </a>
+        <li> <a href="Book_egm.htm#pril_C">             Приложение C. Компилятор <b>GCC</b> </a>
+        <li> <a href="Book_egm.htm#pril_D">             Приложение D. "Гипотетический" проект - текстовой редактор </a>
+        </ul>
+
+    <h2>  <a name="Intro"></a>              0. Предисловие </h2>
+
+    В этой книге я описываю свой опыт работы с утилитой <b>GNU Make</b> и, в частности, мою
+    методику подготовки make-файлов. Я считаю свою методику довольно удобной, поскольку
+    она предполагает:
+
+        <ul>    <!-- преимущества моего способа -->
+            <li>    Автоматическое построение списка файлов с исходными текстами
+            <li>    Автоматическую генерацию зависимостей от включаемых файлов
+                    (с помощью компилятора <b>GCC</b>)
+            <li>    "Параллельную" сборку отладочной и рабочей версий программы
+        </ul>
+
+    Моя книга построена несколько необычным образом. Как правило, книги строятся
+    по принципу "от простого - к сложному". Для новичков это удобно,
+    но может вызвать затруднение у профессионалов. Опытный программист
+    будет вынужден "продираться" сквозь книгу, пропуская главы с известной
+    ему информацией.
+    Я решил построить книгу по другому принципу. Вся "квинтэссенция" книги,
+    ее "главная идея", содержится в первой главе. Остальные главы носят
+    более или менее дополнительный характер.
+
+    <p> В начале каждой главы я кратко описываю, о чем в ней будет вестись
+    речь, и какими знаниями нужно обладать, чтобы успешно воспринять
+    излагаемый в главе материал. Для тех, кто чувствует, что недостаточно
+    хорошо ориентируется в
+    предмете разговора, я указываю на дополнительные главы, с которыми следует
+    предварительно ознакомиться.
+
+    <p> Для работы я использовал <b>GNU Make</b> версии 3.79.1. Некоторые старые версии
+    <b>GNU Make</b> (например, версия 3.76.1 из дистрибутива <b>Slackware 3.5</b>) могут
+    неправильно работать с примером "традиционного" строения make-файла (по-видимому, они
+    "не воспринимают" старую форму записи шаблонных правил).
+
+
+    <h2>  <a name="Using_GNU_Make"></a>     1. Моя методика использования GNU Make </h2>
+
+    В этой главе я описываю свой способ построения make-файлов для сборки проектов
+    с использование программы <b>GNU Make</b> и компилятора
+    <!--<a href="http://www.gnu.org/software/gcc">--> <b>GCC</b>
+    (<i>GNU Compiler Collection</i>) <!--</a>-->.
+    Предполагается, что вы хорошо знакомы с утилитой <b>GNU Make</b>. Если
+    это не так, то прочтите сначала <a href="Book_egm.htm#GNU_Make">
+    главу 2 - "<i><b>GNU Make</b></i>" </a>.
+
+    <h3> <a name="Project_example"></a>             1.1. Пример проекта </h3>
+
+    <p> В качестве примера я буду использовать "гипотетический" проект - текстовой редактор.
+    Он состоит из нескольких файлов с исходным текстом на языке <b>C++</b> (<i>main.cpp</i>,
+    <i>Editor.cpp</i>,
+    <i>TextLine.cpp</i>) и нескольких включаемых файлов (<i>main.h</i>,<i>Editor.h</i>,
+    <i>TextLine.h</i>).
+    Если вы имеете доступ в интернет то "электронный"
+    вариант приводимых в книге примеров можно получить на моей домашней страничке по
+    адресу <!--<a href=http://www.geocities.com/SiliconValley/Office/6533>-->
+    <i>www.geocities.com/SiliconValley/Office/6533</i> <!--</a>-->. Если интернет для вас недоступен,
+    то в <a href="Book_egm.htm#pril_D"> Приложении <i>D</i></a> приведены листинги файлов, которые
+    используются в примерах.
+
+    <h3> <a name="Tradition-style_makefile"></a>    1.2. "Традиционный" способ построения make-файлов </h3>
+
+    <p> В первом примере make-файл построен "традиционным" способом.
+    Все исходные файлы собираемой программы находятся в одном каталоге:
+
+        <ul>
+        <li>    example_1-traditional /
+            <ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li>    <i>Editor.cpp</i>
+                <li>    <i>Editor.h</i>
+                <li>    <i>TextLine.cpp</i>
+                <li>    <i>TextLine.h</i>
+                <li>    <i>Makefile</i>
+            </ul>
+        </ul>
+
+    Предполагается, что для компиляции программы
+    используется компилятор <b>GCC</b>, и объектные файлы имеют расширение
+    "<i>.o"</i>.
+    Файл <i>Makefile</i> выглядит так:
+
+    <!-- пример "традиционного" строения make-файла -->
+    <pre>
+    #
+    #   example_1-traditional/Makefile
+    #
+    #   Пример "традиционного" строения make-файла
+    #
+
+    iEdit: main.o Editor.o TextLine.o
+        gcc $^ -o $@
+
+    .cpp.o:
+        gcc -c $<
+
+    main.o:     main.h Editor.h TextLine.h
+    Editor.o:   Editor.h TextLine.h
+    TextLine.o: TextLine.h </pre>
+
+    Первое правило заставляет <b>make</b> перекомпоновывать программу при изменении
+    любого из объектных файлов. Второе правило говорит о том, что объектные файлы зависят
+    от соответствующих исходных файлов. Каждое изменение файла с исходным текстом будет
+    вызывать его перекомпиляцию. Следующие несколько правил указывают, от каких заголовочных
+    файлов зависит каждый из объектных файлов.
+    Такой способ построения make-файла мне кажется неудобным потому что:
+
+        <ul>    <!-- недостатки традиционного способа -->
+            <li>    Требуется "явно" перечислять все объектные файлы, из которых
+                    компонуется программа
+            <li>    Требуется "явно" перечислять, от каких именно заголовочных файлов
+                    зависит тот или иной объектный файл
+            <li>    Исполняемый файл программы помещается в "текущую" директорию. Если мне
+                    нужно иметь несколько различных вариантов программы (например, отладочный
+                    и рабочий), то каждый раз при переходе от одного варианта
+                    к другому требуется полная
+                    перекомпиляция программы во избежание нежелательного
+                    "смешивания" разных версий объектных файлов.
+        </ul>
+
+    Видно, что традиционный способ построения make-файлов далек от идеала.
+    Единственно, чем этот способ может быть удобен -
+    своей "совместимостью". По-видимому, с таким make-файлом будут нормально
+    работать даже самые "древние" или "экзотические" версии <b>make</b> (например,
+    <b>nmake</b> фирмы <b>Microsoft</b>). Если подобная "совместимость"
+    не нужна,
+    то можно сильно облегчить себе жизнь,
+    воспользовавшись широкими возможностями утилиты <b>GNU Make</b>. Попробуем
+    избавиться от недостатков "традиционного" подхода.
+
+    <h3> <a name="Automatic_obj_list"></a>          1.3. Автоматическое построение списка объектных файлов </h3>
+
+    "Ручное" перечисление всех объектных файлов, входящих в программу - достаточно нудная
+    работа, которая, к счастью, может быть автоматизирована. Разумеется "простой трюк"
+    вроде:
+
+    <!-- трюк с *.o -->
+    <p>
+    <pre>    iEdit: *.o
+        gcc $< -o $@</pre>
+
+    <p> не сработает, так как будут учтены только <i>существующие</i> в данный момент объектные
+    файлы. Я использую чуть более сложный способ, который основан на предположении, что
+    <i>все</i> файлы с исходным текстом должны быть скомпилированы и
+    скомпонованы в собираемую программу. Моя методика состоит из двух шагов:
+
+        <ul>    <!-- мой способ -->
+            <li>    Получить список всех файлов с исходным текстом программы (всех
+                    файлов с расширением "<i>.cpp</i>"). Для этого можно использовать
+                    функцию <b>wildcard</b>.
+            <li>    Преобразовать список исходных файлов в список объектных файлов
+                    (заменить расширение "<i>.cpp</i>" на расширение "<i>.o</i>").
+                    Для этого можно воспользоваться функцией <b>patsubst</b>.
+        </ul>
+
+    Следующий пример содержит модифицированную версию make-файла:
+
+        <ul>
+        <li>    example_2-auto_obj /
+            <ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li>    <i>Editor.cpp</i>
+                <li>    <i>Editor.h</i>
+                <li>    <i>TextLine.cpp</i>
+                <li>    <i>TextLine.h</i>
+                <li>    <i>Makefile</i>
+            </ul>
+        </ul>
+
+    Файл <i>Makefile</i> теперь выглядит так:
+
+    <!-- пример "усовершенстованного" make-файла -->
+    <pre>    #
+    #   example_2-auto_obj/Makefile
+    #
+    #   Пример автоматического построения списка объектных файлов
+    #
+
+    iEdit: $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+        gcc $^ -o $@
+
+    %.o: %.cpp
+        gcc -c $<
+
+    main.o:     main.h Editor.h TextLine.h
+    Editor.o:   Editor.h TextLine.h
+    TextLine.o: TextLine.h </pre>
+
+    <p> Список
+    объектных файлов программы
+    строится автоматически. Сначала с помощью функции <b>wildcard</b> получается список всех
+    файлов с расширением "<i>.cpp</i>", находящихся в директории проекта. Затем, с помощью
+    функции <b>patsubst</b>, полученный
+    таким образом список исходных файлов, преобразуется в список объектных файлов.
+
+    Make-файл теперь стал более универсальным - с небольшими изменениями
+    его можно использовать для сборки разных программ.
+
+
+    <h3> <a name="Auto_depend"></a>                 1.4. Автоматическое построение зависимостей от заголовочных файлов </h3>
+
+    "Ручное" перечисления зависимостей объектных файлов от заголовочных файлов -
+    занятие еще более утомительное и неприятное, чем "ручное" перечисление
+    объектных файлов.
+    Указывать такие зависимости обязательно нужно - в процессе разработки программы
+    заголовочные файлы могут меняться довольно часто (описания классов, например, традиционно
+    размещаются в заголовочных файлах). Если не указывать зависимости объектных
+    файлов от соответствующих заголовочных файлов, то может сложиться ситуация,
+    когда разные объектные файлы программы будут скомпилированы с использованием разных
+    версии одного и того же заголовочного файла. А это, в свою очередь, может привести к
+    частичной или полной потере работоспособности собранной программы.
+
+    <p> Перечисление зависимостей "вручную" требует довольно кропотливой работы.
+    Недостаточно просто открыть файл с исходным текстом и перечислить имена всех заголовочных
+    файлов,
+    подключаемых с помощью <i>#include</i>.
+    Дело в том, что одни заголовочные файлы могут, в свою очередь, включать в себя
+    другие
+    заголовочные файлы, так что придется отслеживать всю "цепочку" зависимостей.
+
+    <p> Утилита <b>GNU Make</b> не сможет самостоятельно построить
+    список зависимостей, поскольку для этого придется "заглядывать" внутрь файлов с исходным
+    текстом - а это, разумеется, лежит уже за пределами ее "компетенции".
+    К счастью, трудоемкий процесс построения зависимостей можно автоматизировать,
+    если воспользоваться
+    помощью компилятора <b>GCC</b>.
+    Для совместной работы с <b>make</b> компилятор <b>GCC</b> имеет несколько
+    опций:
+
+       <p> <!-- ключи GCC для генерации зависимостей -->
+       <table border>
+       <!-- заголовок -->
+       <tr>
+       <td>
+           Ключ компиляции
+       </td>
+       <td>
+           Назначение
+       </td>
+       </tr>
+       <tr>
+       <td> <i>-M</i> </td>
+       <td> Для каждого файла с исходным текстом препроцессор будет выдавать на стандартный
+           вывод список зависимостей в виде
+           правила для программы <b>make</b>. В список зависимостей попадает сам
+           исходный файл, а также все файлы, включаемые с помощью директив
+           <i>#include <имя_файла></i> и <i>#include "имя_файла"</i>. После запуска
+           препроцессора
+           компилятор
+           останавливает работу, и генерации объектных файлов не происходит.
+       </td>
+       </tr>
+       <tr>
+       <td>
+           <i>-MM</i>
+       </td>
+       <td>
+           Аналогичен ключу <i>-M</i>, но в список зависимостей
+           попадает только сам
+           исходный файл, и файлы, включаемые с помощью директивы
+           <i>#include "имя_файла"</i>
+       </td>
+       </tr>
+       <tr>
+       <td>
+           <i>-MD</i>
+       </td>
+       <td>
+           Аналогичен ключу <i>-M</i>, но список зависимостей выдается не на стандартный
+           вывод, а записывается в отдельный файл зависимостей. Имя этого файла формируется
+           из имени исходного файла путем замены его расширения на "<i>.d</i>".
+           Например, файл зависимостей для файла <i>main.cpp</i> будет называться <i>main.d</i>.
+           В отличие от ключа <i>-M</i>, компиляция проходит обычным образом, а не прерывается
+           после фазы запуска препроцессора.
+       </td>
+       </tr>
+       <tr>
+       <td>
+           <i>-MMD</i>
+       </td>
+       <td>
+           Аналогичен ключу <i>-MD</i>, но в список зависимостей
+           попадает только сам
+           исходный файл, и файлы, включаемые с помощью директивы
+           <i>#include "имя_файла"</i>
+       </td>
+       </tr>
+       </table>
+
+    <p> Как видно из таблицы компилятор может работать двумя способами - в одном случае
+    компилятор выдает только список зависимостей и заканчивает работу (опции <i>-M</i> и
+    <i>-MM</i>). В другом случае компиляция
+    происходит как обычно, только в дополнении к объектному файлу генерируется еще и
+    файл зависимостей (опции <i>-MD</i> и <i>-MMD</i>). Я предпочитаю использовать
+    второй вариант - он мне кажется более удобным и экономичным потому что:
+
+        <ul>    <!-- преимущества отдельных файлов зависимостей -->
+            <li>    При изменении какого-либо из исходных файлов будет построен заново
+                    лишь один соответствующий ему файл зависимостей
+            <li>    Построение файлов зависимостей происходит "параллельно" с основной
+                    работой компилятора и практически не отражается на времени компиляции
+        </ul>
+
+    <p> Из двух возможных опций <i>-MD</i> и <i>-MMD</i>, я предпочитаю первую потому
+    что:
+
+        <ul>    <!-- преимущества отдельных файлов зависимостей -->
+            <li>    С помощью директивы <i>#include <имя_файла></i> я часто включаю не только
+                    "стандартные", но и свои собственные заголовочные файлы,
+                    которые могут иногда меняться
+                    (например, заголовочные
+                    файлы моей прикладной библиотеки <i>LIB</i>).
+            <li>    Иногда бывает полезно взглянуть на <i>полный</i> список
+                    включаемых в модуль заголовочных файлов, в том числе и "стандартных".
+        </ul>
+
+    <p> После того как файлы зависимостей сформированы, нужно сделать их доступными
+    утилите <b>make</b>. Этого можно добиться с помощью директивы <b>include</b>.
+
+    <pre>    include $(wildcard *.d) </pre>
+
+    <p> Обратите внимание на использование функции <b>wildcard</b>. Конструкция
+
+    <pre>    include *.d </pre>
+
+    будет правильно работать только в том случае, если в каталоге будет находиться
+    хотя бы один файл с расширением "<i>.d</i>". Если таких файлов нет, то <b>make</b>
+    аварийно завершится, так как потерпит неудачу при попытке "построить" эти
+    файлы (у нее ведь нет на этот счет ни каких инструкций!). Если же использовать
+    функцию <b>wildcard</b>, то при отсутствии искомых файлов, эта функция просто
+    вернет пустую строку. Далее, директива <b>include</b> с аргументом в виде пустой
+    строки, будет проигнорирована, не вызывая ошибки.
+    Теперь можно составить новый вариант make-файла для моего "гипотетического" проекта:
+
+        <ul> <li>    example_3-auto_depend /
+            <ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li>    <i>Editor.cpp</i>
+                <li>    <i>Editor.h</i>
+                <li>    <i>TextLine.cpp</i>
+                <li>    <i>TextLine.h</i>
+                <li>    <i>Makefile</i>
+            </ul>
+        </ul>
+
+    Вот как выглядит <i>Makefile</i> из этого примера:
+
+    <!-- пример "усовершенстованного" make-файла -->
+    <pre>    #
+    #   example_3-auto_depend/Makefile
+    #
+    #   Пример автоматического построения зависимостей от заголовочных файлов
+    #
+
+    iEdit: $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+        gcc $^ -o $@
+
+    %.o: %.cpp
+        gcc -c -MD $<
+
+    include $(wildcard *.d) </pre>
+
+    После завершения работы <b>make</b> директория проекта будет выглядеть так:
+
+        <ul> <li>    example_3-auto_depend /
+            <ul>
+                <li>    <i>iEdit</i>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li>    <i>main.o</i>
+                <li>    <i>main.d</i>
+                <li>    <i>Editor.cpp</i>
+                <li>    <i>Editor.o</i>
+                <li>    <i>Editor.d</i>
+                <li>    <i>Editor.h</i>
+                <li>    <i>TextLine.cpp</i>
+                <li>    <i>TextLine.o</i>
+                <li>    <i>TextLine.d</i>
+                <li>    <i>TextLine.h</i>
+                <li>    <i>Makefile</i>
+            </ul>
+        </ul>
+
+    Файлы с расширением "<i>.d</i>" - это сгенерированные компилятором <b>GCC</b> файлы
+    зависимостей. Вот, например, как выглядит файл <i>Editor.d</i>, в котором
+    перечислены зависимости для файла
+    <i>Editor.cpp</i>:
+
+    <pre>    Editor.o: Editor.cpp Editor.h TextLine.h </pre>
+
+    Теперь при изменении любого из файлов - <i>Editor.cpp</i>, <i>Editor.h</i> или
+    <i>TextLine.h</i>,
+    файл <i>Editor.cpp</i> будет перекомпилирован для получения новой версии файла
+    <i>Editor.o</i>.
+
+    <p> Имеет ли описанная методика недостатки? Да, к сожалению, имеется один недостаток.
+    К счастью, на мой взгляд, не слишком существенный. Дело в том, что утилита <b>make</b>
+    обрабатывает make-файл "в два приема". Сначала будет обработана директива <b>include</b>
+    и в make-файл будут включены файлы зависимостей, а затем, на "втором проходе", будут
+    уже выполняться необходимые действия для сборки проекта.
+
+    <p> Получается что для "текущей" сборки используются файлы зависимостей, сгенерированные
+    во время "предыдущей" сборки. Как правило, это не вызывает проблем. Сложности возникнут
+    лишь в том случае, если какой-нибудь из заголовочных файлом по какой-либо причине
+    прекратил свое существование.
+    Рассмотрим простой пример. Предположим, у меня имеются файлы <i>main.cpp</i>
+    и <i>main.h</i>:
+
+    <p> Файл <i>main.cpp</i>:
+
+    <pre>    #include "main.h"
+
+    void main()
+    {
+    } </pre>
+
+    <p> Файл <i>main.h</i>:
+
+    <pre>    // main.h</pre>
+
+    В таком случае, сформированный компилятором файл зависимостей <i>main.d</i> будет
+    выглядеть так:
+
+        <pre>    main.o: main.cpp main.h</pre>
+
+    Теперь, если я переименую файл <i>main.h</i> в <i>main_2.h</i>, и соответствующим
+    образом изменю файл <i>main.cpp</i>,
+
+    <p> Файл <i>main.cpp</i>:
+
+    <pre>    #include "main_2.h"
+
+    void main()
+    {
+    } </pre>
+
+    то очередная сборка проекта окончится неудачей, поскольку файл зависимостей <i>main.d</i>
+    будет ссылаться на не существующий более заголовочный файл <i>main.h</i>.
+
+    <p> Выходом в этой ситуации может
+    служить удаление файла зависимостей <i>main.d</i>. Тогда сборка проекта пройдет
+    нормально и будет создана новая версия этого файла, ссылающаяся уже на
+    заголовочный файл <i>main_2.h</i>:
+
+        <pre>    main.o: main.cpp main_2.h</pre>
+
+    <p> При переименовании или удалении какого-нибудь "популярного" заголовочного файла,
+    можно просто заново пересобрать проект, удалив предварительно все объектные файлы
+    и файлы зависимостей.
+
+    <h3> <a name="Multi-dirs"></a>                  1.5. "Разнесение" файлов с исходными текстами по директориям </h3>
+
+    Приведенный в предыдущем параграфе make-файл вполне работоспособен и с успехом может быть
+    использован для сборки небольших программ. Однако, с увеличением размера программы,
+    становится не
+    очень удобным хранить все файлы с исходными текстами в одном каталоге. В таком
+    случае я предпочитаю "разносить" их по разным директориям, отражающим
+    логическую структуру проекта. Для этого
+    нужно немного модифицировать
+    make-файл.
+    Чтобы неявное правило
+
+    <pre>   %.o: %.cpp
+        gcc -c $< </pre>
+
+    <p> осталось работоспособным, я использую переменную <b>VPATH</b>, в которой
+    перечисляются все директории, где могут располагаться исходные тексты.
+    В следующем примере я поместил файлы
+    <i>Editor.cpp</i> и <i>Editor.h</i> в каталог <i>Editor</i>,
+    а файлы <i>TextLine.cpp</i> и <i>TextLine.h</i> в каталог <i>TextLine</i>:
+
+        <ul> <li>    example_4-multidir /
+            <ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li> Editor /
+                    <ul>
+                    <li>    <i>Editor.cpp</i>
+                    <li>    <i>Editor.h</i>
+                    </ul>
+                <li> TextLine /
+                    <ul>
+                    <li>    <i>TextLine.cpp</i>
+                    <li>    <i>TextLine.h</i>
+                    </ul>
+                <li>    <i>Makefile</i>
+            </ul>
+        </ul>
+
+       Вот
+    как выглядит
+    <i>Makefile</i> для этого примера:
+
+    <!-- make-файл с VPATH -->
+    <pre>    #
+    #   example_4-multidir/Makefile
+    #
+    #   Пример "разнесения" исходных текстов по разным директориям
+    #
+
+    source_dirs := . Editor TextLine
+
+    search_wildcards := $(addsuffix /*.cpp,$(source_dirs))
+
+    iEdit: $(notdir $(patsubst %.cpp,%.o,$(wildcard $(search_wildcards))))
+        gcc $^ -o $@
+
+    VPATH := $(source_dirs)
+
+    %.o: %.cpp
+        gcc -c -MD $(addprefix -I,$(source_dirs)) $<
+
+    include $(wildcard *.d) </pre>
+
+    <p> По сравнению с предыдущим вариантом make-файла он претерпел следующие изменения:
+
+        <ul>    <!-- изменения -->
+            <li>    Для хранения списка директорий с исходными текстами я завел отдельную
+                    переменную <i>source_dirs</i>, поскольку этот список понадобится
+                    указывать
+                    в нескольких местах.
+            <li>    Шаблон поиска для функции <b>wildcard</b> (переменная <i>search_wildcards</i>)
+                    строится "динамически"
+                    исходя из списка директорий
+                    <i>source_dirs</i>
+            <li>    Используется переменная <b>VPATH</b> для того, чтобы шаблонное правило
+                    могло искать файлы исходных текстов в указанном списке директорий
+            <li>    Компилятору разрешается искать заголовочные файлы во всех директориях
+            с исходными текстами. Для этого используется функция <b>addprefix</b> и флажок
+            <i>-I</i> компилятора <b>GCC</b>.
+            <li>    При формировании списка объектных файлов,
+                    из
+                    имен исходных файлов "убирается" имя каталога, где они расположены
+                    (с помощью функции <b>notdir</b>)
+        </ul>
+
+    <h3> <a name="Multi-config"></a>                1.6. Сборка программы с разными параметрами компиляции </h3>
+
+    Часто возникает необходимость в получении нескольких вариантов программы, которые
+    были скомпилированы по-разному.
+    Типичный пример - отладочная
+    и рабочая версии программы. В таких случаях я использую простую методику:
+
+        <ul>    <!--  -->
+            <li>    Все варианты программы собираются с помощью одного и того же
+                make-файла.
+            <li>    Необходимые настройки компилятора "попадают" в make-файл через
+                    параметры, передаваемые программе <b>make</b> в командной строке.
+        </ul>
+
+    Для каждой конфигурации
+    программы я делаю маленький командный файл, который вызывает
+    <b>make</b> с нужными параметрами:
+
+        <ul> <li>    example_5-multiconfig /
+            <ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li> Editor /
+                    <ul>
+                    <li>    <i>Editor.cpp</i>
+                    <li>    <i>Editor.h</i>
+                    </ul>
+                <li> TextLine /
+                    <ul>
+                    <li>    <i>TextLine.cpp</i>
+                    <li>    <i>TextLine.h</i>
+                    </ul>
+                <li>    <i>Makefile</i>
+                <li>    <i>make_debug</i>
+                <li>    <i>make_release</i>
+            </ul>
+        </ul>
+
+    Файлы <i>make_debug</i> и <i>make_release</i> - это командные файлы, используемые
+    для сборки соответственно отладочной и рабочей версий программы.
+    Вот, например, как выглядит командный файл
+    <i>make_release</i>:
+
+    <pre>    make  compile_flags="-O3 -funroll-loops -fomit-frame-pointer" </pre>
+
+    Обратите внимание, что строка со значением переменной <i>compile_flags</i>
+    заключена в кавычки, так как она содержит пробелы. Командный файл
+    <i>make_debug</i> выглядит аналогично:
+
+    <pre>    make  compile_flags="-O0 -g" </pre>
+
+    <p> Вот как выглядит <i>Makefile</i> для этого примера:
+
+    <!-- make-файл с vpath -->
+    <pre>    #
+    #   example_5-multiconfig/Makefile
+    #
+    #   Пример получения нескольких версий программы с помощью одного make-файла
+    #
+
+    source_dirs := . Editor TextLine
+
+    search_wildcards       := $(addsuffix /*.cpp,$(source_dirs))
+    override compile_flags += -pipe
+
+    iEdit: $(notdir $(patsubst %.cpp,%.o,$(wildcard $(search_wildcards))))
+        gcc $^ -o $@
+
+    VPATH := $(source_dirs)
+
+    %.o: %.cpp
+        gcc -c -MD $(addprefix -I,$(source_dirs)) $(compile_flags) $<
+
+    include $(wildcard *.d) </pre>
+
+    <p> Переменная <i>compile_flags</i> получает свое значение из командной строки и, далее,
+    используется при компиляции исходных текстов. Для ускорения работы компилятора,
+    к
+    параметрам компиляции добавляется флажок <b>-pipe</b>. Обратите внимание на
+    необходимость использования директивы
+    <b>override</b> для изменения переменной <i>compile_flags</i> внутри make-файла.
+
+    <h3> <a name="Multi-config_multi-dirs"></a>     1.7. "Разнесение" разных версий программы по отдельным директориям </h3>
+
+    В том случае если я собираю несколько вариантов одной и той же программы (например,
+    отладочную и рабочую версию), становится неудобным помещать результаты компиляции
+    в один и тот же каталог. При переходе от одного варианта к другому приходится
+    полностью перекомпилировать программу во избежание нежелательного "смешивания"
+    объектных файлов разных версий.
+
+    <p>     Для решения этой проблемы я помещаю результаты компиляции каждой версии
+    программы в свой отдельный каталог. Так, например, отладочная версия
+    программы (включая все объектные файлы) помещается в каталог <i>debug</i>, а рабочая
+    версия программы - в каталог
+    <i>release</i>:
+
+        <ul> <li>    example_6-multiconfig-multidir /
+            <ul>
+                <li>    debug /
+                <li>    release /
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li> Editor /
+                    <ul>
+                    <li>    <i>Editor.cpp</i>
+                    <li>    <i>Editor.h</i>
+                    </ul>
+                <li> TextLine /
+                    <ul>
+                    <li>    <i>TextLine.cpp</i>
+                    <li>    <i>TextLine.h</i>
+                    </ul>
+                <li>    <i>Makefile</i>
+                <li>    <i>make_debug</i>
+                <li>    <i>make_release</i>
+            </ul>
+        </ul>
+
+    <p> Главная сложность заключалась в том, чтобы заставить программу
+    <b>make</b> помещать
+    результаты работы в
+    разные директории. Попробовав разные варианты, я пришел к выводу, что
+    самый легкий
+    путь - использование флажка <i>--directory</i> при вызове <b>make</b>.
+    Этот флажок заставляет
+    утилиту перед началом обработки make-файла, сделать
+    каталог, указанный в командной строке, "текущим".
+
+    <p> Вот, например, как выглядит командный файл <i>make_release</i>, собирающий
+    рабочую версию программы
+    (результаты компиляции помещается в каталог <i>release</i>):
+
+    <pre>    mkdir  release
+    make    compile_flags="-O3 -funroll-loops -fomit-frame-pointer" \
+          --directory=release \
+          --makefile=../Makefile </pre>
+
+    <p> Команда <i>mkdir</i> введена для удобства - если удалить каталог <i>release</i>,
+    то при следующей сборке он будет создан заново. В случае "составного" имени каталога
+    (например, <i>bin/release</i>) можно дополнительно использовать флажок <i>-p</i>.
+    Флажок <i>--directory</i> заставляет <b>make</b> перед началом работы сделать
+    указанную директорию <i>release</i> текущей.
+    Флажок <i>--makefile</i> укажет программе <b>make</b>, где находится make-файл
+    проекта. По отношению к "текущей" директории <i>release</i>, он будет располагаться
+    в
+    "родительском" каталоге.
+
+    <p> Командный файл для сборки отладочного варианта программы (<i>make_debug</i>)
+    выглядит аналогично.
+    Различие только в имени директории, куда помещаются результаты компиляции (<i>debug</i>) и
+    другом наборе флагов компиляции:
+
+    <pre>    mkdir   debug
+    make    compile_flags="-O0 -g" \
+          --directory=debug \
+          --makefile=../Makefile </pre>
+
+    Вот окончательная
+    версия make-файла для сборки "гипотетического" проекта текстового редактора:
+
+    <!-- "окончательный" пример make-файла -->
+    <pre>    #
+    #   example_6-multiconfig-multidir/Makefile
+    #
+    #   Пример "разнесения" разных версий программы по отдельным директориям
+    #
+
+    program_name := iEdit
+    source_dirs  := . Editor TextLine
+
+    source_dirs      := $(addprefix ../,$(source_dirs))
+    search_wildcards := $(addsuffix /*.cpp,$(source_dirs))
+
+    $(program_name): $(notdir $(patsubst %.cpp,%.o, $(wildcard $(search_wildcards) ) ) )
+        gcc $^ -o $@
+
+    VPATH := $(source_dirs)
+
+    %.o: %.cpp
+        gcc -c -MD $(compile_flags) $(addprefix -I,$(source_dirs)) $<
+
+    include $(wildcard *.d) </pre>
+
+    <p> В этом окончательном варианте я "вынес" имя исполняемого
+    файла программы в отдельную переменную <i>program_name</i>. Теперь для того чтобы
+    адаптировать
+    этот make-файл для сборки другой программы, в нем достаточно изменить всего лишь
+    несколько
+    первых строк.
+
+    <p> После запуска командных файлов <i>make_debug</i> и <i>make_release</i> директория
+    с последним примером выглядит так:
+
+        <ul> <li>    example_6-multiconfig-multidir /
+            <ul>
+                <li>    debug /
+                    <ul>
+                    <li>    <i>iEdit</i>
+                    <li>    <i>main.o</i>
+                    <li>    <i>main.d</i>
+                    <li>    <i>Editor.o</i>
+                    <li>    <i>Editor.d</i>
+                    <li>    <i>TextLine.o</i>
+                    <li>    <i>TextLine.d</i>
+                    </ul>
+                <li>    release /
+                    <ul>
+                    <li>    <i>iEdit</i>
+                    <li>    <i>main.o</i>
+                    <li>    <i>main.d</i>
+                    <li>    <i>Editor.o</i>
+                    <li>    <i>Editor.d</i>
+                    <li>    <i>TextLine.o</i>
+                    <li>    <i>TextLine.d</i>
+                    </ul>
+                <li>    <i>main.cpp</i>
+                <li>    <i>main.h</i>
+                <li> Editor /
+                    <ul>
+                    <li>    <i>Editor.cpp</i>
+                    <li>    <i>Editor.h</i>
+                    </ul>
+                <li> TextLine /
+                    <ul>
+                    <li>    <i>TextLine.cpp</i>
+                    <li>    <i>TextLine.h</i>
+                    </ul>
+                <li>    <i>makefile</i>
+                <li>    <i>make_debug</i>
+                <li>    <i>make_release</i>
+            </ul>
+        </ul>
+
+    Видно, что объектные файлы для рабочей и отладочной конфигурации программы помещаются
+    в разные директории. Туда же попадают готовые исполняемые файлы и файлы зависимостей.
+
+    <p> В этой главе я изложил свою методику работы с make-файлами. Остальные главы
+    носят более или менее "дополнительный" характер.
+
+        <ul>
+            <li> В <a href="Book_egm.htm#pril_A"><i> Приложении A </i></a>
+                 я описываю проблемы, которые
+                 могут возникнуть при редактировании make-файлов в разных операционных
+                 системах
+            <li> В <a href="Book_egm.htm#pril_B"><i> Приложении B </i></a> я описываю свой
+            личный способ организации дерева каталогов для сложных проектов.
+            <li> В <a href="Book_egm.htm#pril_C"><i> Приложении C </i></a> я делюсь некоторыми
+            мыслями по поводу использования компилятора <b>GCC</b>
+        </ul>
+
+
+    <h2>  <a name="GNU_Make"></a>           2. GNU Make </h2>
+
+    В этой главе я кратко опишу некоторые возможности программы <b>GNU Make</b>, которыми
+    я пользуюсь при написании своих make-файлов, а также укажу на ее отличия от "традиционных"
+    версий <b>make</b>.
+    Предполагается, что вы знакомы с принципом работы подобных программ.
+    В противном случае сначала прочтите
+    <a href="Book_egm.htm#Make"> главу 3 - <i>Утилита <b>make</b></i> </a>.
+
+    <p> <b>GNU Make</b> - это версия программы <b>make</b> распространяемая <b>Фондом
+    Свободного Программного Обеспечения</b> (<b>Free Software
+    Foundation</b> - <b>FSF</b>)
+    в рамках проекта <b>GNU</b> (<!--<a href=http://www.gnu.org>--> <i>www.gnu.org</i> <!--</a>-->).
+    Получить самую свежую версию программы и документации можно
+    на "домашней
+    страничке" программы
+    <!--<a href=http://www.gnu.org/software/make>--> <i>www.gnu.org/software/make </i><!--</a>-->
+    либо на страничке <b>Paul D. Smith</b> - одного из авторов <b>GNU Make</b>
+    (<!--<a href=http://www.paulandlesley.org/gmake>--> <i>www.paulandlesley.org/gmake</i><!--</a>-->).
+
+    <p> Программа <b>GNU Make</b> имеет очень подробную и хорошо написанную документацию,
+    с которой я настоятельно рекомендую ознакомиться.
+    Если у вас нет доступа в интернет, то пользуйтесь документацией в формате <i>Info</i>,
+    которая должна быть в составе вашего дистрибутива <b>Linux</b>. Будьте осторожны
+    с документацией в формате man-странички (<i>man make</i>) - как правило, она содержит
+    лишь отрывочную и сильно устаревшую информацию.
+
+    <h3> <a name="Two_kind_of_vars"></a>    2.1. Две разновидности переменных </h3>
+
+    <b>GNU Make</b> поддерживает два способа задания переменных, которые несколько
+    различаются по смыслу.
+    Первый способ - традиционный, с помощью оператора '<b>=</b>':
+
+    <pre>    compile_flags = -O3 -funroll-loops -fomit-frame-pointer </pre>
+
+    Такой способ поддерживают
+    все варианты утилиты <b>make</b>.
+    Его можно сравнить, например, с заданием макроса в языке <b>Си</b>.
+
+    <pre>    #define  compile_flags  "-O3 -funroll-loops -fomit-frame-pointer" </pre>
+
+    Значение переменной, заданной с помощью оператора '<b>=</b>', будет вычислено в момент
+    ее использования.
+    Например, при обработке make-файла:
+
+    <!-- переменные с = -->
+    <pre>    var1 = one
+    var2 = $(var1) two
+    var1 = three
+
+    all:
+        @echo $(var2) </pre>
+
+    на экран будет выдана строка "three two". Значение переменной <i>var2</i> будет
+    вычислено непосредственно в момент выполнения команды <i>echo</i>, и будет
+    представлять собой <i>текущее</i> значение переменной <i>var1</i>, к которому
+    добавлена строка <i>" two"</i>. Как следствие - одна и та же переменная не может
+    одновременно фигурировать в левой и правой части выражения, так как это может привести к
+    бесконечной рекурсии.
+    <b>GNU Make</b> распознает подобные ситуации и прерывает обработку make-файла.
+    Следующий пример
+    вызовет ошибку:
+
+    <pre>    compile_flags = -pipe $(compile_flags)</pre>
+
+    <p> <b>GNU Make</b> поддерживает также и второй, новый способ задания переменной - с
+    помощью оператора '<b>:=</b>':
+
+    <pre>    compile_flags := -O3 -funroll-loops -fomit-frame-pointer </pre>
+
+    В этом случае переменная работает подобно "обычным" текстовым переменным в каком-нибудь
+    из языков программирования. Вот приблизительный аналог этого выражения на языке
+    <b>C++</b>:
+
+        <pre>    string   compile_flags = "-O3 -funroll-loops -fomit-frame-pointer"; </pre>
+
+    Значение переменной вычисляется в момент обработки оператора присваивания.
+    Если, например, записать
+
+    <!-- переменные с := -->
+    <pre>    var1 := one
+    var2 := $(var1) two
+    var1 := three
+
+    all:
+        @echo $(var2) </pre>
+
+    то при обработке такого make-файла на экран будет выдана строка "one two".
+
+    <p> Переменная может "менять" свое поведение в зависимости от того, какой из операторов
+    присваивания был к ней применен последним. Одна и та же переменная на протяжении своей
+    жизни вполне может вести
+    себя и как "макрос" и как "текстовая переменная".
+
+    <p> Все
+    свои make-файлы я пишу с применением оператора '<b>:=</b>'. Этот
+    способ
+    кажется мне более удобным и надежным.
+    Вдобавок, это более эффективно, так как
+    значение переменной не вычисляется заново каждый раз при ее использовании.
+    Подробнее
+    о двух способах задания переменных можно прочитать в документации на <b>GNU Make</b>
+    в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC58">-->
+    "<i>The Two Flavors of Variables</i>"
+    <!--</a>-->.
+
+    <h3> <a name="Text_functions"></a>      2.2. Функции манипуляции с текстом </h3>
+
+    <p> Утилита <b>GNU Make</b> содержит большое число полезных функций,
+    манипулирующих
+    текстовыми строками и именами файлов. В частности в своих make-файлах я использую функции
+    <b>addprefix</b>,
+    <b>addsuffix</b>,
+    <b>wildcard</b>,
+    <b>notdir</b> и
+    <b>patsubst</b>. Для вызова функций используется синтаксис
+
+    <pre> $(имя_функции  параметр1, параметр2 ... ) </pre>
+
+    <p> Функция <b> addprefix </b>
+    рассматривает второй параметр как список слов разделенных пробелами.
+    В начало
+    каждого слова она добавляет строку, переданную ей в качестве первого параметра.
+    Например, в результате выполнения make-файла:
+
+    <pre>    src_dirs := Editor TextLine
+    src_dirs := $(addprefix ../../, $(src_dirs))
+
+    all:
+        @echo $(src_dirs)</pre>
+
+    на экран будет выведено
+
+    <pre>    ../../Editor ../../TextLine </pre>
+
+    <p> Видно, что к каждому имени директории добавлен префикс "<i>../../</i>".
+    Функция <b>addprefix</b> обсуждается в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC77">-->
+    "Functions for File Names"
+    <!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <p> Функция <b> addsuffix </b>
+    работает аналогично функции <b>addprefix</b>, только добавляет указанную строку в конец
+    каждого слова.
+    Например, в результате выполнения make-файла:
+
+    <pre>    source_dirs := Editor  TextLine
+    search_wildcards := $(addsuffix /*.cpp, $(source_dirs))
+
+    all:
+        @echo $(search_wildcards)</pre>
+
+    <p> на экран будет выведено
+
+    <pre>    Editor/*.cpp  TextLine/*.cpp </pre>
+
+    <p> Видно, что к каждому имени директории добавлен суффикс "<i>/*.cpp</i>".
+    Функция <b>addsuffix</b> обсуждается в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC77">-->
+    "Functions for File Names"
+    <!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <p> Функция <b> wildcard </b>
+    "расширяет" переданный ей шаблон или несколько шаблонов в список
+    файлов, удовлетворяющих этим шаблонам. Пусть
+    в директории <i>Editor</i> находится файл <i>Editor.cpp</i>,
+    а в директории <i>TextLine</i> - файл <i>TextLine.cpp</i>:
+
+        <ul> <li>    wildcard_example /
+            <ul>
+                <li> Editor /
+                    <ul>
+                    <li>    <i>Editor.cpp</i>
+                    </ul>
+                <li> TextLine /
+                    <ul>
+                    <li>    <i>TextLine.cpp</i>
+                    </ul>
+                <li>    <i>makefile</i>
+            </ul>
+        </ul>
+
+    Тогда в результате выполнения такого make-файла:
+
+    <pre>    search_wildcards := Editor/*.cpp  TextLine/*.cpp
+    source_files := $(wildcard $(search_wildcards))
+
+    all:
+        @echo $(source_files)</pre>
+
+    <p> на экран будет выведено
+
+    <pre>    Editor/Editor.cpp  TextLine/TextLine.cpp </pre>
+
+    <p> Видно, что шаблоны преобразованы в списки файлов.
+    Функция <b>wildcard</b> подробно обсуждается в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC24">-->
+    "The Function <b>wildcard</b>"
+    <!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <p> Функция <b> notdir </b>
+    позволяет "убрать" из имени файла имя директории, где он находится.
+    Например,
+    в результате выполнения make-файла:
+
+    <pre>    source_files := Editor/Editor.cpp  TextLine/TextLine.cpp
+    source_files := $(notdir $(source_files))
+
+    all:
+        @echo $(source_files)</pre>
+
+    <p> на экран будет выведено
+
+    <pre>    Editor.cpp TextLine.cpp </pre>
+
+    Видно, что из имен файлов убраны "пути" к этим файлам.
+    Функция <b>notdir</b> обсуждается в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC77">-->
+    "Functions for File Names"
+    <!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <p> Функция <b> patsubst </b>
+    позволяет изменить указанным образом слова, подходящие под шаблон. Она принимает три
+    параметра - шаблон, новый вариант слова и исходную строку. Исходная строка рассматривается
+    как список слов, разделенных пробелом. Каждое слово, подходящее под указанный
+    шаблон, заменяется новым вариантом слова. В шаблоне
+    может использоваться специальный символ '%', который означает "любое количество
+    произвольных
+    символов". Если символ '%' встречается в новом варианте слова (втором параметре), то
+    он заменяется текстом, соответствующим символу '%' в шаблоне.
+    Например,
+    в результате выполнения make-файла:
+
+    <pre>    source_files := Editor.cpp  TextLine.cpp
+    object_files := $(patsubst %.cpp, %.o, $(source_files))
+
+    all:
+        @echo $(object_files) </pre>
+
+    <p> на экран будет выведено
+
+    <pre>    Editor.o  TextLine.o </pre>
+
+    <p> Видно, что во всех словах окончание "<i>.cpp</i>" заменено на "<i>.o</i>".
+    Функция <b>patsubst</b> имеет второй, более короткий вариант записи для тех случаев,
+    когда надо изменить суффикс слова (например, заменить расширение в имени файла). Более
+    короткий
+    вариант выглядит так:
+
+    <pre>    $(имя_переменной:.старый_суффикс=.новый_суффикс) </pre>
+
+    Применяя "короткий" вариант записи предыдущий пример можно записать так:
+
+    <pre>    source_files := Editor.cpp  TextLine.cpp
+    object_files := $(source_files:.cpp=.o)
+
+    all:
+        @echo $(object_files)</pre>
+
+    <p>
+    Функция <b>patsubst</b> обсуждается в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC76">-->
+    "Functions for String Substitution and Analysis"<!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+
+    <h3> <a name="Template_rules"></a>      2.3. Новый способ задания шаблонных правил </h3>
+
+    В "традиционных" вариантах <b>make</b> шаблонное правило задается с помощью
+    конструкций, наподобие:
+
+    <pre>    .cpp.o:
+        gcc $^ -o $@ </pre>
+
+    То есть под действие правила попадают файлы с определенными расширениями
+    ("<i>.cpp</i>" и "<i>.o</i>" в данном случае).
+
+    <p> <b>GNU Make</b> поддерживает более универсальный подход - с использованием шаблонов
+    имен файлов.
+    Для задания шаблона используется символ <b>'%'</b>,
+    который означает "последовательность любых символов произвольной длины".
+    Символ <b>'%'</b> в правой части правила заменяется текстом, который соответствует
+    символу <b>'%'</b> в левой части. Пользуясь новой формой записи, приведенный выше пример
+    можно записать так:
+
+    <pre>    %.o: %.cpp
+        gcc $^ -o $@</pre>
+
+    <p> В своих make-файлах я пользуюсь новой формой записи шаблонных правил, потому
+    что считаю ее более удобной (шаблонные и нешаблонные правила теперь имеют аналогичный
+    синтаксис) и универсальной (можно задавать не только файлы, отличающиеся своими
+    расширениями).
+
+    <h3> <a name="vpath"></a>               2.4. Переменная <b>VPATH</b> </h3>
+
+    С помощью переменной <b>VPATH</b> можно задать список каталогов, где шаблонные
+    правила будут искать зависимости.
+    В следующем примере:
+
+    <pre>    VPATH := Editor TextLine
+
+    %.o: %.cpp
+        gcc -c $< </pre>
+
+    <b>make</b> будет искать файлы с расширением "<i>.cpp</i>" сначала в текущем каталоге,
+    а затем, при необходимости, в подкаталогах <i>Editor</i> и <i>TextLine</i>. Я часто
+    использую подобную
+    возможность, так как предпочитаю располагать исходные тексты в иерархии
+    каталогов, отражающих логическую структуру программы.
+
+    <p> Переменная <b>VPATH</b> описывается в главе
+    "VPATH: Search Path for All Dependencies" руководства по <b>GNU Make</b>.
+    На страничке
+    <b>Paul D. Smith</b> есть статья под названием "How Not to Use VPATH"
+    (<!--<a href="http://paulandlesley.org/gmake/vpath.html">-->
+    paulandlesley.org/gmake/vpath.html<!--</a>-->), в которой
+    обсуждается "неправильный" стиль использования переменной <b>VPATH</b>.
+
+    <h3> <a name="override"></a>            2.5. Директива <b>override</b> </h3>
+
+    Переменные в <b>GNU Make</b> могут создаваться и получать свое значение разными способами:
+
+        <ul>
+        <li>    Задаваться внутри make-файла
+        <li>    "Автоматически" создаваться программой <b>make</b> из переменных
+                среды
+        <li>    Задаваться через командную строку при вызове программы <b>make</b>
+        </ul>
+
+    Последний случай считается "специальным". Если переменная задана через командную строку,
+    то внутри make-файла нельзя изменить ее значение "обычным" способом.
+    Рассмотрим простой make-файл:
+
+    <pre>    compile_flags := -pipe $(compile_flags)
+
+    all:
+        echo $(compile_flags) </pre>
+
+    Предположим, что переменная <i>compile_flags</i> была задана через
+    командную строку при запуске программы <b>make</b>:
+
+    <pre>    make  compile_flags="-O0 -g" </pre>
+
+    В результате обработки make-файла на экран  будет выведена строка:
+
+    <pre>    -O0 -g </pre>
+
+    То есть попытка изменить значение переменной <i>compile_flags</i> внутри make-файла
+    была проигнорирована. Если все-таки возникает необходимость в изменении переменной,
+    которая была задана с помощью командной строки, нужно использовать директиву
+    <b>override</b>. Директива помещается перед именем переменной, которая должна
+    быть изменена:
+
+    <pre>    override compile_flags := -pipe $(compile_flags)
+
+    all:
+        echo $(compile_flags) </pre>
+
+    Теперь в результате обработки make-файла на экран будет выдана строка:
+
+    <pre>    -pipe -O0 -g </pre>
+
+
+    <h3> <a name="append_text"></a>         2.6. Добавление текста в строку </h3>
+
+    Часто возникает необходимость добавить текст к существующей переменной. Для этой
+    цели служит оператор "<i>+=</i>". Добавляемый текст может быть как текстовой константой,
+    так
+    и иметь ссылки на другие переменные:
+
+        <pre>    compile_flags += -pipe
+    compile_flags += $(flags) </pre>
+
+    <p> При использовании этого оператора, "тип" переменной
+    (см. раздел <a href="Book_egm.htm#Two_kind_of_vars">2.1 "Две разновидности переменных"</a>) не меняется -
+    "макросы" остаются "макросами", а "текстовые переменные" по-прежнему остаются
+    таковыми.
+
+    <p> Если переменная задана с помощью командной строки, то по-прежнему для изменения
+    ее значения внутри make-файла нужно использовать директиву <b>override</b>. В следующем
+    примере предполагается, что переменная <i>compile_flags</i> задана в командной строке:
+
+        <pre>    override compile_flags += -pipe
+    override compile_flags += $(flags) </pre>
+
+    <h3> <a name="include"></a>             2.7. Директива <b>include</b> </h3>
+
+    С помощью директивы <b>include</b> можно включать в обрабатываемый make-файл другие
+    файлы. Работает она аналогично директиве <b>#include</b> в языках C и C++.
+    Когда встречается эта директива, обработка "текущего" make-файла приостанавливается и
+    <b>make</b> временно "переключается" на обработку указанного в директиве файла.
+    Директива <b>include</b> может оказаться полезной для включения в
+    make-файл каких-либо "общих", или автоматически сгенерированных другими программами
+    фрагментов.
+
+    <p> В директиве <b>include</b> могут быть указаны одно или несколько имен файлов,
+    разделенных пробелами. В качестве имен файлов можно использовать шаблоны:
+
+    <pre>    include common.mak
+
+    include main.d Editor.d TextLine.d
+
+    include *.d </pre>
+
+    Указанные в директиве файлы должны существовать - иначе <b>make</b> предпримет попытку
+    "создать" их, а при невозможности этого достигнуть, выдаст сообщение об ошибке.
+    Директива <b>include</b> с пустым списком файлов:
+
+    <pre>    include </pre>
+
+    просто игнорируется.
+
+    <h3> <a name="auto_vars"></a>           2.8. Автоматические переменные </h3>
+
+    Программа <b>GNU Make</b> поддерживает большое число автоматических переменных.
+    В своих make-файлах я использую следующие
+    автоматические переменные:
+
+    <p> <!-- table - некоторые автоматические переменные -->
+    <table border>
+    <!-- заголовок -->
+    <tr>
+    <td>    Имя автоматической переменной
+    </td>
+    <td>    Значение
+    </td>
+    </tr>
+    <tr>
+    <td>    $@    </td>
+    <td>    Имя цели обрабатываемого правила </td>
+    </tr>
+    <tr>
+    <td>
+        $<
+    </td>
+    <td>
+        Имя первой зависимости обрабатываемого правила
+    </td>
+    </tr>
+    <tr>
+    <td>
+        $^
+    </td>
+    <td>
+        Список всех зависимостей обрабатываемого правила
+
+    </td>
+    </tr>
+    </table>
+
+    <p> Полный список автоматических переменных приводится в разделе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC97">-->
+    "Automatic Variables"<!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <h3> <a name="rule_combining"></a>      2.9. "Комбинирование" правил </h3>
+
+    В make-файле могут встречаться несколько правил, имеющих одинаковую цель.
+    В таком случае они как бы "комбинируются вместе". Например, следующие два правила:
+
+    <pre>    TextLine.o: TextLine.cpp
+        gcc -c $<
+
+    TextLine.o: TextLine.h </pre>
+
+    эквивалентны правилу:
+
+    <pre>    TextLine.o: TextLine.cpp TextLine.h
+        gcc -c $< </pre>
+
+    <p> Шаблонные и нешаблонные правила также могут "комбинироваться":
+
+    <pre>    %.o: %.cpp
+        gcc -c $<
+
+    TextLine.o: TextLine.h </pre>
+
+    <p> Обратите внимание на то, что в обоих примерах только в одном из правил указаны
+    исполняемые
+    команды -
+    именно они и будут при необходимости выполняться.
+    При наличии команд в обоих правилах, <b>make</b> выдаст предупреждающее сообщение и
+    "в расчет" будут приниматься только команды из последнего правила.
+
+    <h3> <a name="default_makefile"></a>    2.10. Make-файл, используемый по умолчанию </h3>
+
+    Если при вызове программы <b>GNU Make</b> не указывать явно, какой make-файл
+    следует обрабатывать, то она пытается найти и обработать файлы
+    <i>GNUmakefile</i>, <i>makefile</i>
+    и
+    <i>Makefile</i> (именно в таком порядке). Руководство по <b>GNU Make</b>
+    рекомендует имя <i>Makefile</i> для make-файлов, используемых по умолчанию. При
+    "алфавитной" сортировке имен файлов в директории, такое имя будет располагаться ближе
+    к началу списка.
+
+    <h3> <a name="PHONY_target"></a>        2.11. Специальная цель <b>.PHONY</b> </h3>
+
+    В традиционных реализациях, у программы <b>make</b> нет надежного способа
+    узнать,
+    чем именно является цель, указанная в правиле. Цель может быть как именем действия, так
+    и именем файла. Исходя только из "внешнего вида" правила, различить эти случаи невозможно.
+    Утилита <b>make</b> просто ищет на диске файл с именем, которое указано в качестве цели.
+    Если
+    такой файл существует, то цель считается именем файла.
+
+    <p> Для целей, которые являются именами действий, такой подход не очень хорош.
+    Во-первых, имя такой цели может случайно совпасть с именем какого-либо файла или
+    директории. И, во-вторых, <b>make</b> просто нерационально тратит свое время, занимаясь
+    поиском несуществующих файлов.
+
+    <p> В утилите <b>GNU Make</b> имеется способ явного объявления целей абстрактными.
+    Для этого используется механизм "специальных целей". <i>Специальная цель</i> -
+    это имя, которое
+    имеет специальное значение, когда используется в качестве цели. Для того, например, чтобы
+    объявить перечисленные цели абстрактными, достаточно поместить их в правило
+    со специальной целью <b>.PHONY</b>. В следующем примере цель <i>clean</i>
+    объявляется абстрактной:
+
+    <pre>    .PHONY: clean
+
+    clean:
+        rm *.o *.d </pre>
+
+    Все возможные специальные цели описаны в главе
+    <!--<a href="http://www.gnu.org/manual/make-3.77/html_mono/make.html#SEC35">-->
+    Special Built-in Target Names"<!--</a>-->
+    руководства по <b>GNU Make</b>.
+
+    <h2>  <a name="Make"></a>               3. Утилита <b>make</b> </h2>
+
+    Утилита <b>make</b>, входящая в состав практически всех
+    <i>Unix</i>-подобных операционных систем - это традиционное средство,
+    применяемое для сборки
+    программных
+    проектов. Она является универсальной программой для решения широкого
+    круга
+    задач, где одни файлы должны автоматически обновляться при
+    изменении других файлов.
+
+    <p> При запуске
+    программа <b>make</b> читает файл с описанием проекта (make-файл) и, интерпретируя его
+    содержимое,
+    предпринимает необходимые действия. Файл
+    с описанием проекта представляет собой текстовой файл,
+    где описаны отношения между файлами
+    проекта, и действия, которые необходимо выполнить для его сборки.
+
+    <h3>    <a name="Rules"></a>                3.1. Правила </h3>
+
+    <p> Основным "строительным элементом" make-файла являются <i>правила</i> (<i>rules</i>).
+    В общем виде правило выглядит так:
+
+    <!-- общий вид правил make -->
+    <pre>    <цель_1> <цель_2> ... <цель_n>: <зависимость_1> <зависимость_2> ... <зависимость_n>
+        <команда_1>
+        <команда_2>
+        ...
+        <команда_n> </pre>
+
+    <i>Цель</i> (<i>target</i>) - это некий желаемый результат, способ достижения
+    которого описан в
+    правиле. <i>Цель</i> может представлять собой имя файла. В этом случае правило описывает,
+    каким образом можно получить новую версию этого файла. В следующем примере:
+
+    <!-- пример правила -->
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit</pre>
+
+    <p> <i>целью</i> является файл <i>iEdit</i> (исполняемый файл программы). Правило
+    описывает, каким образом можно получить новую версию файла <i>iEdit</i> (скомпоновать из
+    перечисленных объектных файлов).
+
+    <p> <i>Цель</i> также может быть
+    именем некоторого действия. В таком случае правило описывает, каким образом
+    совершается указанное действие. В следующем примере <i>целью</i> является
+    действие <i>clean</i> (очистка).
+
+    <!-- пример phony target -->
+    <pre>    clean:
+        rm *.o iEdit</pre>
+
+    Подобного рода цели называются <i>псевдоцели</i> (<i>pseudotargets</i>) или <i>абстрактные
+    цели</i> (<i>phony targets</i>).
+
+    <p> <i>Зависимость</i> (<i>dependency</i>)- это некие "исходные данные", необходимые для
+    достижения
+    указанной в правиле <i>цели</i>. Можно сказать что <i>зависимость</i> - это
+    "предварительное условие" для достижения цели.
+    <i>Зависимость</i> может представлять собой имя файла. Этот файл должен существовать,
+    для того чтобы можно было достичь указанной цели. В следующем правиле:
+
+    <!-- пример правила -->
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit</pre>
+
+    <p> файлы <i>main.o</i>, <i>Editor.o</i> и <i>TextLine.o</i> являются <i>зависимостями</i>.
+    Эти файлы должны существовать для того, чтобы стало возможным достижение цели -
+    построение файла <i>iEdit</i>.
+
+    <p> <i>Зависимость</i> также может быть
+    именем некоторого действия. Это действие должно быть предварительно
+    выполнено перед достижением указанной в правиле цели.
+    В следующем примере зависимость <i>clean_obj</i> является
+    именем действия (удалить объектные файлы программы):
+
+    <!-- пример phony target -->
+    <pre>    clean_all:  clean_obj
+        rm iEdit
+
+    clean_obj:
+        rm *.o </pre>
+
+    <p> Для того чтобы цель <i>clean_all</i> была достигнута, нужно сначала
+    выполнить действие (достигнуть цели) <i>clean_obj</i>.
+
+    <p> <i>Команды</i> - это действия, которые необходимо выполнить для
+    обновления либо достижения <i>цели</i>.
+    В следующем примере:
+
+    <!-- пример правила -->
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit</pre>
+
+    <p> <i>командой</i> является вызов компилятора <b>GCC</b>. Утилита <b>make</b> отличает
+    строки, содержащие команды, от прочих строк make-файла по наличию символа табуляции
+    (символа с кодом 9) в начале строки. В приведенном выше примере строка:
+
+        <pre>    gcc  main.o Editor.o TextLine.o -o iEdit</pre>
+
+    должна начинаться с символа табуляции.
+
+
+    <h3>    <a name="Make_alg"></a>             3.2. Алгоритм работы <b>make</b> </h3>
+
+    Типичный make-файл проекта содержит несколько правил. Каждое из правил имеет
+    некоторую цель и некоторые зависимости. Смыслом работы <b>make</b>
+    является достижение цели, которую она выбрала в качестве <i>главной цели</i>
+    (<i>default goal</i>).
+    Если главная цель является именем действия (то есть абстрактной целью),
+    то смысл работы <b>make</b> заключается в выполнении соответствующего действия.
+    Если же главная цель является именем файла, то программа <b>make</b> должна
+    построить самую "свежую" версию указанного файла.
+
+    <h4>    <a name="Choose_default_goal"></a> 3.2.1 Выбор <i>главной цели</i> </h4>
+
+    <p> <i>Главная цель</i> может быть прямо указана в командной
+    строке при запуске <b>make</b>. В следующем примере <b>make</b> будет стремиться
+    достичь цели <i>iEdit</i> (получить новую версию файла <i>iEdit</i>):
+
+        <pre>    make iEdit</pre>
+
+    А в этом примере <b>make</b> должна достичь цели <i>clean</i> (очистить директорию
+    от объектных файлов проекта):
+
+        <pre>    make clean</pre>
+
+    Если не указывать какой-либо цели в командной строке, то <b>make</b> выбирает в качестве
+    главной первую, встреченную в make-файле цель. В следующем примере:
+
+    <!-- пример правила -->
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit
+
+    main.o: main.cpp
+        gcc -c main.cpp
+
+    Editor.o: Editor.cpp
+        gcc -c Editor.cpp
+
+    TextLine.o: TextLine.cpp
+        gcc -c TextLine.cpp
+
+    clean:
+        rm *.o</pre>
+
+    из четырех перечисленных в make-файле целей (<i>iEdit</i>, <i>main.o</i>, <i>Editor.o</i>,
+    <i>TextLine.o</i>, <i>clean</i>)
+    по умолчанию в качестве главной будет выбрана цель <i>iEdit</i>.
+    Схематично, "верхний уровень" алгоритма работы <b>make</b> можно представить так:
+
+        <pre>    make()
+    {
+        главная_цель = ВыбратьГлавнуюЦель()
+
+        ДостичьЦели( главная_цель )
+    }</pre>
+
+    <h4>    <a name="Process_target"></a>   3.2.2 Достижение <i>цели</i> </h4>
+
+    После того как <i>главная цель</i> выбрана, <b>make</b> запускает "стандартную"
+    процедуру достижения цели. Сначала в make-файле ищется правило, которое описывает
+    способ достижения этой цели (функция <i>НайтиПравило</i>). Затем, к найденному правилу
+    применяется обычный
+    алгоритм обработки правил (функция <i>ОбработатьПравило</i>).
+
+        <pre>    ДостичьЦели( Цель )
+    {
+        правило = НайтиПравило( Цель )
+
+        ОбработатьПравило( правило )
+    }</pre>
+
+    <h4>    <a name="Process_rule"></a>     3.2.3 Обработка <i>правил</i> </h4>
+
+    Обработка правила разделяется на два основных этапа. На первом этапе
+    обрабатываются все <i>зависимости</i>, перечисленные в правиле (функция
+    <i>ОбработатьЗависимости</i>). На втором
+    этапе принимается решение - нужно ли выполнять указанные в правиле
+    команды (функция <i>НужноВыполнятьКоманды</i>).
+    При необходимости, перечисленные в правиле команды выполняются (функция
+    <i>ВыполнитьКоманды</i>).
+
+    <pre>    ОбработатьПравило( Правило )
+    {
+        ОбработатьЗависимости( Правило )
+
+        если НужноВыполнятьКоманды( Правило )
+            {
+            ВыполнитьКоманды( Правило )
+            }
+    }</pre>
+
+    <h4>    <a name="Process_dependency"></a>   3.2.4 Обработка <i>зависимостей</i> </h4>
+
+    Функция <i>ОбработатьЗависимости</i> поочередно проверяет все перечисленные
+    в правиле зависимости. Некоторые из них могут оказаться <i>целями</i> каких-нибудь
+    правил. Для этих зависимостей выполняется обычная процедура достижения цели
+    (функция <i>ДостичьЦели</i>). Те зависимости, которые не являются целями, считаются
+    именами файлов. Для таких файлов проверяется факт их наличия. При их отсутствии,
+    <b>make</b> аварийно завершает работу с сообщением об ошибке.
+
+    <pre>    ОбработатьЗависимости( Правило )
+    {
+        цикл от i=1 до Правило.число_зависимостей
+            {
+            если ЕстьТакаяЦель( Правило.зависимость[ i ] )
+                {
+                ДостичьЦели( Правило.зависимость[ i ] )
+                }
+            иначе
+                {
+                ПроверитьНаличиеФайла( Правило.зависимость[ i ] )
+                }
+            }
+    }</pre>
+
+    <h4>    <a name="Process_commands"></a>     3.2.5 Обработка <i>команд</i> </h4>
+
+    На стадии обработки команд решается вопрос - нужно ли выполнять описанные в правиле
+    команды или нет. Считается, что нужно выполнять команды если:
+
+        <ul>    <!-- перечень -->
+        <li>    Цель является именем действия (абстрактной целью)
+        <li>    Цель является именем файла и этого файла не существует
+        <li>    Какая-либо из зависимостей является абстрактной целью
+        <li>    Цель является именем файла и какая-либо из зависимостей,
+                являющихся именем файла, имеет более позднее время модификации
+                чем цель.
+        </ul>
+
+    В противном случае (если ни одно из вышеприведенных условий не выполняется) описанные
+    в правиле команды не выполняются. Алгоритм принятия решения о выполнении команд схематично
+    можно представить так:
+
+    <!-- НужноВыполнятьКоманды() -->
+    <pre>    НужноВыполнятьКоманды( Правило )
+    {
+        если Правило.Цель.ЯвляетсяАбстрактной()
+            return  true
+
+        //  цель является именем файла
+
+        если ФайлНеСуществует( Правило.Цель )
+            return  true
+
+        цикл от i=1 до Правило.Число_зависимостей
+            {
+            если Правило.Зависимость[ i ].ЯвляетсяАбстрактной()
+                return  true
+            иначе
+                //  зависимость является именем файла
+                {
+                если ВремяМодефикации( Правило.Зависимость[ i ] )  >
+                     ВремяМодефикации( Правило.Цель )
+                    return  true
+                }
+            }
+
+        return  false
+    }</pre>
+
+    <h3>    <a name="Phony_vs_filenames"></a>   3.3. Абстрактные цели и имена файлов </h3>
+
+    Каким образом <b>make</b> отличает имена действий от имен файлов? Традиционные
+    варианты <b>make</b> поступают просто. Сначала ищется файл с таким именем. Если файл
+    найден, то считается что цель или зависимость являются именем файла.
+
+    <p> В противном случае
+    считается, что данное имя является либо именем несуществующего файла, либо именем действия.
+    Различия между этими двумя вариантами не делается, поскольку оба случая обрабатываются
+    одинаково.
+
+    <p> Подобный подход не слишком хорош по следующим соображениям. Во-первых, утилита
+    <b>make</b> не слишком рационально расходует время, занимаясь поиском несуществующих
+    имен файлов, которые на самом деле являются именами действий. Во-вторых, при подобном
+    подходе, имена действий не должны совпадать с именами каких-либо файлов или
+    директорий. Иначе подобный алгоритм даст сбой, и make-файл будет работать неправильно.
+
+    <p> Некоторые версии <b>make</b> предлагают свои варианты
+    решения этой проблемы. Так, например, в утилите <b>GNU Make</b> имеется
+    механизм (<i>специальная цель</i> <b>.PHONY</b>),
+    с помощью которого можно указать, что данное имя является именем действия.
+
+    <h3>    <a name="Make_example"></a>         3.4. Пример работы <b>make</b> </h3>
+
+    Рассмотрим, как утилита <b>make</b> будет обрабатывать такой make-файл:
+
+    <!-- пример правила -->
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit
+
+    main.o: main.cpp
+        gcc -c main.cpp
+
+    Editor.o: Editor.cpp
+        gcc -c Editor.cpp
+
+    TextLine.o: TextLine.cpp
+        gcc -c TextLine.cpp
+
+    clean:
+        rm *.o</pre>
+
+    Предположим, что в директории с проектом находятся следующие файлы:
+
+          <ul>
+          <li>  main.cpp
+          <li>  Editor.cpp
+          <li>  TextLine.cpp
+          </ul>
+
+    Предположим также, что программа <b>make</b> была вызвана следующим образом:
+
+        <pre>    make</pre>
+
+    Цель не указана в командной строке, поэтому запускается алгоритм выбора цели
+    (функция <i>ВыбратьГлавнуюЦель</i>). Главной целью становится файл <i>iEdit</i>
+    (первая цель из первого правила).
+
+    <p> Цель <i>iEdit</i> передается функции <i>ДостичьЦели</i>. Эта функция ищет правило,
+    которое
+    описывает обрабатываемую цель. В данном случае, это первое правило make-файла.
+    Для найденного правила запускается процедура обработки (функция <i>ОбработатьПравило</i>).
+
+    <p> Сначала поочередно обрабатываются описанные в правиле зависимости
+    (функция <i>ОбработатьЗависимости</i>). Первая зависимость - объектный файл <i>main.o</i>.
+    Поскольку в make-файле есть правило с такой целью (функция <i>ЕстьТакаяЦель</i> возвращает
+    true), то для цели <i>main.o</i> запускается процедура <i>ДостичьЦели</i>.
+
+    <p> Функция <i>ДостичьЦели</i> ищет правило, где описана цель <i>main.o</i>. Эта
+    цель описана во втором правиле make-файла. Для этого правила запускается функция
+    <i>ОбработатьПравило</i>.
+
+    <p> Функция <i>ОбработатьПравило</i> запускает процесс обработки зависимостей
+    (функция <i>ОбработатьЗависимости</i>). Во втором правиле указана единственная зависимость -
+    <i>main.cpp</i>. Такой цели в make-файле не существует, поэтому считается, что
+    зависимость <i>main.cpp</i> является именем файла. Далее, проверяется наличие этого
+    файла на диске (функция <i>ПроверитьНаличиеФайла</i>) - такой файл существует.
+    На этом
+    процесс обработки зависимостей завершается.
+
+    <p> После обработки зависимостей, функция <i>ОбработатьПравило</i> принимает
+    решение о том, нужно ли выполнять указанные в правиле команды (функция
+    <i>НужноВыполнятьКоманды</i>). Цели правила (файла <i>main.o</i>) не существует, поэтому
+    команды нужно выполнять. Функция <i>ВыполнитьКоманды</i> запускает указанную в
+    правиле команду (компилятор <b>GCC</b>), в результате чего создается файл
+    <i>main.o</i>.
+
+    <p> Цель main.o достигнута (объектный файл main.o построен). Теперь <b>make</b>
+    возвращается к обработке остальных зависимостей первого правила. Зависимости
+    <i>Editor.o</i> и <i>TextLine.o</i> обрабатываются аналогично.
+    Для них выполняются те же действия,
+    что и для зависимости <i>main.o</i>.
+
+    <p> После того, как все зависимости (<i>main.o</i>, <i>Editor.o</i> и
+    <i>TextLine.o</i>) обработаны,
+    решается вопрос о необходимости выполнения указанных в правиле команд
+    (функция <i>НужноВыполнятьКоманды</i>).
+
+    <p> Поскольку цель (<i>iEdit</i>) является именем файла, который в данный момент не
+    существует,
+    то принимается решение выполнить описанную в правиле команду (функция
+    <i>ВыполнитьКоманды</i>).
+
+    <p> Содержащаяся в правиле команда запускает компилятор <b>GCC</b>, в результате чего
+    создается исполняемый файл <i>iEdit</i>. Главная цель (<i>iEdit</i>)таким образом
+    достигнута.
+    На этом программа <b>make</b> завершает свою работу.
+
+    <h3>    <a name="Another_make_example"></a> 3.5. Еще один пример работы <b>make</b> </h3>
+
+    Рассмотрим, как будет действовать утилита <b>make</b>, если для обработки описанного
+    в предыдущей главе make-файла, она будет вызвана
+    следующим образом:
+
+        <pre>    make clean</pre>
+
+    Цель явно указана в командной строке, поэтому
+    главной целью становится абстрактная цель <i>clean</i>.
+
+    Цель <i>clean</i> передается функции <i>ДостичьЦели</i>. Эта функция ищет правило, которое
+    описывает обрабатываемую цель. Это будет пятое правило make-файла.
+    Для найденного правила запускается процедура обработки (функция <i>ОбработатьПравило</i>).
+
+    <p> Поскольку в правиле не указано каких-либо зависимостей, <b>make</b> сразу
+    переходит к этапу обработки указанных в правиле команд. Цель является
+    именем действия, поэтому команды нужно выполнять.
+
+    <p> Указанные в правиле команды выполняются, и цель <i>clean</i>, таким образом,
+    считается достигнутой.
+    На этом программа <b>make</b> завершает работу.
+
+    <h3>    <a name="vars"></a>                 3.6. Переменные </h3>
+
+    Возможность использования переменных внутри make-файла - очень удобное и часто используемое
+    свойство <b>make</b>. В традиционных версиях утилиты, переменные ведут себя подобно
+    макросам языка Си. Для задания значения переменной используется оператор присваивания.
+    Например, выражение:
+
+        <pre>    obj_list = main.o Editor.o TextLine.o</pre>
+
+    присваивает переменной <i>obj_list</i> значение "<i>main.o</i>
+    <i>Editor.o</i> <i>TextLine.o</i>" (без кавычек).
+    Пробелы между символом '<b>=</b>' и началом первого слова игнорируются. Следующие за
+    последним словом пробелы также игнорируются. Значение переменной можно использовать
+    с помощью конструкции:
+
+    <pre>    $(имя_переменной)</pre>
+
+    <p> Например, при обработке такого make-файла:
+
+    <pre>    dir_list = . .. src/include
+
+    all:
+        echo $(dir_list)</pre>
+
+    на экран будет выведена строка:
+
+        <pre>    . .. src/include</pre>
+
+    <p> Переменные могут не только содержать текстовые строки, но и "ссылаться" на другие
+    переменные. Например, в результате обработки make-файла:
+
+    <pre>    optimize_flags = -O3
+    compile_flags  = $(optimize_flags) -pipe
+
+    all:
+        echo $(compile_flags)</pre>
+
+    <p> на экран будет выведено:
+
+    <pre>    -O3 -pipe</pre>
+
+    <p> Во многих случаях использование переменных позволяет упростить make-файл и
+    повысить его наглядность.
+    Для того чтобы облегчить модификацию make-файла, можно разместить
+    "ключевые" имена и списки в отдельных переменных и поместить их в начало
+    make-файла:
+
+    <pre>    program_name = iEdit
+    obj_list     = main.o Editor.o TextLine.o
+
+    $(program_name): $(obj_list)
+        gcc $(obj_list) -o $(program_name)
+
+    ... </pre>
+
+    <p> Адаптация такого make-файла для сборки другой программы сведется к изменению
+    нескольких начальных строк.
+
+    <h3>    <a name="automatic_vars"></a>       3.7. Автоматические переменные </h3>
+
+    <i>Автоматические переменные</i> - это переменные со специальными именами, которые
+    "автоматически" принимают определенные значения перед выполнением описанных в правиле
+    команд.
+    Автоматические переменные можно использовать для "упрощения" записи правил.
+    Такое, например, правило:
+
+    <pre>  iEdit: main.o Editor.o TextLine.o
+        gcc  main.o Editor.o TextLine.o -o iEdit</pre>
+
+    с использованием автоматических переменных можно записать следующим образом:
+
+    <pre>  iEdit: main.o Editor.o TextLine.o
+        gcc  $^  -o $@</pre>
+
+    Здесь <i>$^</i> и <i>$@</i> являются автоматическими переменными. Переменная <i>$^</i>
+    означает "список зависимостей". В данном случае при вызове компилятора <b>GCC</b>
+    она будет ссылаться на строку "<i>main.o</i>
+    <i>Editor.o</i> <i>TextLine.o</i>". Переменная <i>$@</i> означает "имя цели" и будет
+    в этом примере ссылаться на имя "<i>iEdit</i>".
+
+    <p> Иногда использование автоматических переменных совершенно необходимо -
+    например, в шаблонных правилах (о них пойдет речь в следующей главе).
+
+    <h3>    <a name="pattern_rules"></a>        3.8. Шаблонные правила </h3>
+
+    <i>Шаблонные правила</i> (<i>implicit rules</i> или <i>pattern rules</i>) - это правила,
+    которые
+    могут быть применены к целой группе файлов. В этом их отличие от обычных правил -
+    описывающих отношения между конкретными файлами.
+
+    <p> Традиционные реализации <b>make</b> поддерживают так называемую "суффиксную"
+    форму записи шаблонных правил:
+
+        <pre>    .<расширение_файлов_зависимостей>.<расширение_файлов_целей>:
+        <команда_1>
+        <команда_2>
+        ...
+        <команда_n> </pre>
+
+    Например, следующее правило говорит о том, что все файлы с расширением "<i>o</i>"
+    зависят от соответствующих файлов с расширением "<i>cpp</i>":
+
+        <pre>    .cpp.o:
+        gcc -c $^ </pre>
+
+    Обратите внимание на использование автоматической переменной <i>$^</i> для
+    передачи компилятору имени файла-зависимости. Поскольку шаблонное правило может
+    применяться к разным файлам, использование автоматических переменных - это единственный
+    способ узнать для каких файлов сейчас задействуется правило.
+
+    <p> Шаблонные правила позволяют упростить make-файл и сделать его более универсальным.
+    Рассмотрим простой проектный файл:
+
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc $^ -o $@
+
+    main.o: main.cpp
+        gcc -c $^
+
+    Editor.o: Editor.cpp
+        gcc -c $^
+
+    TextLine.o: TextLine.cpp
+        gcc -c $^ </pre>
+
+    Все исходные тексты программы обрабатываются одинаково - для них вызывается компилятор
+    <b>GCC</b>.
+    С использованием шаблонных правил, этот пример можно переписать так:
+
+    <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc $^ -o $@
+
+    .cpp.o:
+        gcc -c $^</pre>
+
+    Когда <b>make</b> ищет в файле проекта правило, описывающее способ достижения
+    искомой цели (см. главу <a href="Book_egm.htm#Process_target">
+    3.2.2. "Достижение <i>цели</i>"</a>, функция <i>НайтиПравило</i>),
+    то в расчет принимаются и шаблонные правила. Для каждого из них
+    проверяется - нельзя ли задействовать это правило для достижения искомой цели.
+
+
+
+
+    <h2>  <a name="pril_A"></a>             Приложение A. Редактирование make-файлов в разных операционных
+    системах </h2>
+
+    Если, наряду с операционной системой <b>Linux</b>, вы работаете с операционными системами
+    фирмы <b>Microsoft</b> (<b>DOS</b>, <b>Windows</b>), то при редактировании make-файлов в
+    разных системах
+    могут возникнуть определенные трудности.
+
+    <p> Проблема состоит в том, что принятый в <i>Unix</i>-подобных операционных системах
+    формат хранения текстовых файлов, несколько отличается от формата
+    <b>DOS</b>/<b>Windows</b>.
+    В <b>Unix</b> каждая строка текстового файла заканчивается символом "перевод строки"
+    (код <i>0x0A</i>).
+    В <b>DOS</b> и <b>Windows</b> текстовые строки разделяются парой символов -
+    "возврат каретки",
+    "перевод строки"
+    (<i>0x0D</i>, <i>0x0A</i>).
+
+    <p> <i>Linux</i>-версия программы <b>GNU Make</b> будет нормально работать с make-файлами,
+    написанными
+    в среде <b>Linux</b>. Версия утилиты <b>GNU Make</b> для <b>Windows</b>
+    также будет нормально работать с make-файлами, подготовленными в среде <b>Windows</b>.
+    Проблема
+    возникнет лишь в том случае, если попытаться обработать <i>Linux</i>-версией программы
+    <b>GNU Make</b> текстовой файл, подготовленный в среде <b>DOS</b> или <b>Windows</b>.
+    Подобная ситуация
+    может возникнуть "нечаянно" - достаточно лишь "сохранить" make-файл для среды <b>Linux</b>
+    в текстовом
+    редакторе
+    <b>DOS</b>/<b>Windows</b>, чтобы он оказался "испорчен".
+
+    <p> В отличие от компилятора <b>GCC</b>, который просто игнорирует символы
+    "возврат каретки",
+    <b>GNU Make</b> рассматривает их как "обычные" символы, которые вполне могут быть частью
+    имени. В результате все слова, находящиеся в конце строк, искажаются, так как сзади
+    к ним добавляется невидимый символ "возврат каретки". В следующем примере
+    имя файла <i>TextLine.o</i> будет искажено (его длина будет составлять одиннадцать символов
+    из-за невидимого "возврата строки"):
+
+        <pre>    iEdit: main.o Editor.o TextLine.o
+        gcc $^ -o $@ </pre>
+
+    <p> Разумеется, на диске не найдется файла с таким "странным" именем и make-файл будет
+    работать неверно.
+    Дело осложняется еще и тем, что выдаваемые на экран диагностические сообщения также
+    искажаются (при выводе на экран символ "возврат каретки" возвращает курсор в начало строки)
+    и зачастую
+    представляют собой лишь бессмысленные "обрывки" слов.
+
+    <p> Описанную проблему можно решить разными способами. Организационный метод решения -
+    никогда не пытаться редактировать make-файл, находясь в "чужеродной" для него среде.
+    Другой возможный подход - "принудительно" удалять из make-файла символы  "возврат
+    каретки" (либо "вручную" - текстовым редактором, либо с помощью подходящей
+    программы).
+
+    <h2>  <a name="pril_B"></a>             Приложение B. Организация иерархии каталогов
+        в сложных проектах </h2>
+
+    Для сложных проектов, состоящих из большого количества файлов, я предпочитаю более
+    сложную организацию каталогов, чем та, которая приводилась в качестве примера
+    в разделе 1.7. <a href="Book_egm.htm#Multi-config_multi-dirs">
+    "Разнесение разных версий программы по отдельным директориям"</a>. Основная идея заключается
+    в том, чтобы файлы с разным "назначением" помещались в разные каталоги. В моих проектах
+    дерево каталогов выглядит примерно так:
+
+    <ul>
+        <li>имя_проекта /
+        <ul>
+        <li> bin /
+            <ul>
+            <li> linux_debug /
+            <li> linux_release /
+            <li> windows_debug /
+            <li> windows_release /
+            </ul>
+
+        <li> doc /
+            <ul>
+            <li> <i>README.txt</i>
+            </ul>
+
+        <li> project /
+            <ul>
+            <li> <i>Makefile</i>
+            <li> <i>make_debug</i>
+            <li> <i>make_release</i>
+            </ul>
+        <li> src /
+        </ul>
+    </ul>
+
+    В каталог <i>bin</i> помещаются результаты компиляции - объектные и исполняемые файлы, библиотеки
+    и тому подобное. Этот каталог можно "безболезненно" удалить - при следующей компиляции
+    он будет автоматически создан заново. В этом каталоге каждая из возможных конфигураций
+    программы имеет свою отдельную директорию. Как правило, я делаю четыре конфигурации
+    программы - для каждой из двух операционных систем (<b>Linux</b> и <b>Windows</b>) имеется
+    отладочная и рабочая версии программы.
+
+    <p>
+    В директорию <i>doc</i> я помещаю различные текстовые файлы - документацию,
+    замечания, список ошибок и тому подобное. Здесь же располагается и файл
+    <i>README.txt</i>.
+
+    <p> В каталоге <i>project</i> находится make-файл проекта и командные файлы, используемые
+    для сборки программы в разных конфигурациях.
+
+    <p> В каталог <i>src</i> я помещаю исходные тексты программы. Внутри директории
+    <i>src</i> имеется своя иерархия
+    каталогов, отражающая логическую структуру программы.
+
+    <p> Вот пример make-файла, который работает с подобной структурой
+    директорий проекта:
+
+    <pre>    #
+    #   example_7-complex/project/Makefile
+    #
+    #   Пример проекта со "сложной" структурой директорий
+    #
+
+    program_name := iEdit
+    source_dirs  := . Editor TextLine
+    include_dirs := /c/aproj/lib  /c/aproj/lib/linux
+    link_flags   := -static
+
+    source_dirs  := $(addprefix ../../src/, $(source_dirs) )
+    source_files := $(wildcard $(addsuffix /*.cpp, $(source_dirs) ) )
+    object_files := $(notdir $(source_files) )
+    object_files := $(object_files:.cpp=.o)
+
+    $(program_name): $(object_files)
+        gcc $^ -o $@ $(link_flags) -pipe
+
+    VPATH := $(source_dirs)
+
+    %.o: %.cpp
+        gcc $< -c $(compile_flags) $(addprefix -I, $(include_dirs)) $(addprefix -I, $(source_dirs)) -MD -pipe 2>log
+
+    include $(wildcard *.d) </pre>
+
+    Список директорий, где располагаются файлы с исходными текстами (<i>source_dirs</i>),
+    задается относительно каталога <i>src</i>.
+    Вот как выглядит командный файл, собирающий отладочную версию программы:
+
+    <pre>    mkdir -p ../bin/linux_debug
+    make  compile_flags="-O0 -g" \
+          --directory=../bin/linux_debug \
+          --makefile=../../project/Makefile</pre>
+
+    Командный файл, собирающий рабочую версию программы выглядит аналогично:
+
+    <pre>    mkdir -p ../bin/linux_release
+    make  compile_flags="-O3 -funroll-loops -fomit-frame-pointer" \
+          --directory=../bin/linux_release \
+          --makefile=../../project/Makefile</pre>
+
+
+    <h2>  <a name="pril_C"></a>             Приложение C. Компилятор GCC </h2>
+
+    <b>GNU Compiler Collection</b> (<b>GCC</b>) - это семейство компиляторов с языков
+    <b>C</b>, <b>C++</b> и <b>Object-C</b>, которые объединены общей технологией и распространяются в
+    рамках проекта <b>GNU</b>.
+    Домашняя страничка компилятора находится по адресу
+    <!--<a href="http://www.gnu.org/software/gcc/gcc.html">--> www.gnu.org/software/gcc/gcc.html<!--</a>-->
+
+    <p> Этот компилятор является "стандартным" средством для компиляции
+    всех программ, входящих в проект <b>GNU</b>. <b>GCC</b> также является основным
+    компилятором операционной системы <b>Linux</b> - с его помощью компилируется ядро системы.
+
+    <h3>    Версии компилятора </h3>
+
+    Компилятор GCC развивается весьма динамично - программа улучшается, исправляются обнаруженные
+    ошибки,
+    добавляются новые возможности. Всегда желательно знать с какой версией компиляторы
+    вы в данный момент работаете. Возможно, что эта версия еще не поддерживает
+    нужные вам возможности или содержит ошибки, которые могут повлиять на работоспособность
+    компилируемой программы. Узнать версию компилятора <b>GCC</b> можно с помощью ключа
+    <b>-v</b>:
+
+        <pre>    gcc -v </pre>
+
+    <h3>    Отладка </h3>
+
+    "Стандартным" средством для отладки программ, скомпилированных компилятором <b>GCC</b>,
+    является отладчик <b>GDB</b>. Этот отладчик свободно распространяется в рамках
+    проекта <b>GNU</b>. Домашняя страничка отладчика находится по адресу
+    <!--<a href="http://www.gnu.org/software/gdb/gdb.html">-->
+    www.gnu.org/software/gdb/gdb.html<!--</a>-->.
+
+    <p> Для подготовки отладочной версии программы с помощью компилятора <b>GCC</b>,
+    достаточно отключить оптимизацию и включить генерацию отладочной информации. Для
+    этого я использую следующие опции компиляции:
+
+    <p> <!-- Таблица опций компиляции GCC-debug -->
+    <table border>
+    <tr>
+    <td>
+        -g
+    </td>
+    <td>
+        Генерировать отладочную информацию
+    </td>
+    </tr>
+    <tr>
+    <td>
+        -O0
+    </td>
+    <td>
+        Отключить оптимизацию
+    </td>
+    </tr>
+    </table>
+
+    <p> Отладчик <b>GDB</b> имеет текстовой интерфейс командной строки. Мне этот интерфейс
+    кажется
+    не очень
+    удобными, поэтому я пользуюсь графической оболочкой <b>DataDisplayDebugger</b> (<b>DDD</b>).
+    Эта оболочка является надстройкой над "текстовыми" отладчиками, реализующей для них
+    удобный графический интерфейс.
+    Программа <b>DDD</b>
+    также входит в проект <b>GNU</b>. Ее домашняя страничка находится по адресу
+    <!--<a href="http://www.gnu.org/software/ddd">--> www.gnu.org/software/ddd <!--</a>-->.
+    <b>DataDisplayDebugger</b> работает в среде <b>X-Windows</b>.
+
+
+    <h3>    Рабочий вариант </h3>
+
+    При компиляции рабочего варианта программы, я включаю максимальную оптимизацию
+    по скорости. Возможно это приводит к некоторому увеличению размера программы, но я считаю
+    это не слишком важным. Вряд ли кто-нибудь заметит увеличение размера программы на
+    пять-десять килобайт. В то же время
+    быстродействия программам всегда не хватает.
+
+    <p> Компилятор <b>GCC</b> имеет большое
+    количество опций, управляющих процессом кодогенерации и оптимизации, с которыми вы
+    можете экспериментировать, добиваясь максимального быстродействия программы.
+    Для своих проектов я использую следующие настройки:
+
+    <p> <!-- table - GCC release switches -->
+    <table border>
+    <!-- заголовок -->
+    <tr>
+    <td>
+        Ключ
+    </td>
+    <td>
+        Назначение
+    </td>
+    </tr>
+    <tr> <td>   -O3
+    </td>
+    <td>
+        Максимальная оптимизация
+    </td>
+    </tr>
+    <tr> <td>   -fomit-frame-pointer
+    </td>
+    <td>
+        Не использовать указатель на стековый фрейм.
+        Компилятор будет адресовать переменные в стеке с помощью регистра
+        <i>ESP</i> а регистр <i>EBP</i> "высвобождается" для использования в качестве регистра
+        общего назначения.
+    </td>
+    </tr>
+    <tr><td>    -mcpu=pentium
+    </td>
+    <td>
+        Оптимизировать код для процессора <b>Pentium</b> (однако программа по прежнему будет
+        работать даже на <i>i386</i>)
+    </td>
+    </tr>
+    </table>
+
+    <h3>    Обработка исключений </h3>
+
+    Если вы используете механизм <i>исключений</i> (<i>exceptions</i>) языка <b>C++</b>,
+    то при компиляции должна быть
+    включена соответствующая опция:
+
+    <p> <!-- table - GCC common switches -->
+    <table border>
+    <!-- заголовок -->
+    <tr>
+    <td>
+        Ключ компиляции
+    </td>
+    <td>
+        Назначение
+    </td>
+    </tr>
+    <tr>
+    <td>
+        -fexceptions
+    </td>
+    <td>
+        Включить поддержку механизма исключительных ситуаций языка <b>C++</b>
+    </td>
+    </tr>
+    </table>
+
+    <h3>    Статическая и динамическая компоновка </h3>
+
+    По умолчанию компилятор компонует собранную программу с динамическими версиями
+    стандартных библиотек. Это не всегда удобно.
+    Для того чтобы стандартные библиотеки компоновались статически, нужно использовать
+    опцию <b>--static</b>. В этом случае генерируется полностью "статический" код, который
+    для своей работы не требует наличия каких-либо загружаемых библиотек.
+
+    <h3>    Получение листинга </h3>
+
+    Часто бывает полезным иметь ассемблерный листинг кода, генерируемого компилятором.
+    С помощью такого листинга можно:
+
+        <ul>
+        <li>    Посмотреть, как те или иные опции оптимизации отражаются на генерируемом
+            коде
+        <li>    Посмотреть, каким образом компилятор обрабатывает те или иные конструкции
+            языка программирования
+        <li>    Выявлять ошибки, связанные с неправильной работой кодогенерации в
+            компиляторе
+        <li>    Узнать, какие в точности опции были включены при компиляции программы
+        </ul>
+
+    Для получения ассемблерного листинга, я использую следующие опции компилятора
+    <b>GCC</b>:
+
+    <p> <!-- table - GCC listing switches -->
+    <table border>
+    <!-- заголовок -->
+    <tr>
+    <td>
+        Ключ компиляции
+    </td>
+    <td>
+        Назначение
+    </td>
+    </tr>
+    <tr>
+    <td>
+        <i>-S</i>
+    </td>
+    <td>
+        Остановиться после стадии компиляции, перед стадией ассемблирования.
+    </td>
+    </tr>
+    <tr>
+    <td>
+        <i>-fverbose-asm</i>
+    </td>
+    <td>
+        Генерировать дополнительные комментарии в ассемблерном листинге. Какие именно
+        "дополнительные комментарии" будут помещены в текст листинга, зависит от
+        версии компилятора.
+    </td>
+    </tr>
+    </table>
+
+    <p> Обратите внимание на то, что указание флажка <b>-S</b> просто "останавливает"
+    компилятор после фазы генерации ассемблерного листинга, то есть процесс компиляции
+    прерывается.
+    Как следствие - процесс сборки программы и процесс генерации ассемблерных листингов
+    "несовместимы" между собой. Можно либо получать листинги, либо собирать программу, но
+    не то и другое одновременно. Для получения листингов я обычно создаю отдельный
+    командный файл, который среди прочих опций компиляции содержит флажки <b>-S</b>
+    и <b>-fverbose-asm</b>.
+
+    <p> Весьма полезная возможность компилятора - помещать в листинг список всех опций
+    компиляции, которые были включены в данный момент. Дело в том, что включение одних опций
+    (например <b>-O3</b>) может "автоматически" приводить к включению других опций,
+    а документация к <b>GCC</b> не всегда точна в описании подобных зависимостей.
+    Некоторые версии <b>GCC</b> всегда помещают в листинг список используемых опций,
+    другие версии делают это только при наличии флажка <b>-fverbose-asm</b>.
+
+    <h3>    Переназначение ошибок в файл </h3>
+
+    По умолчанию, компилятор GCC выдает ошибки в стандартный поток сообщений об ошибках
+    (файл с дескриптором 2). Иногда это не очень удобно - сообщения об ошибках могут быть
+    очень длинными и подробными, а "прокрутка" экрана назад не всегда доступна. Поэтому,
+    я, обычно, перенаправляю сообщения компилятора в файл. Этот файл потом можно просмотреть
+    любым стандартным средством. Вот, например, как может выглядеть правило для компиляции
+    исходных
+    текстов:
+
+    <pre>    %.o: %.cpp
+        gcc -c $< 2>log</pre>
+
+    <h3>    Опция -pipe </h3>
+
+    Компилятор <b>GCC</b> обрабатывает программу за несколько проходов, помещая промежуточные
+    результаты
+    компиляции
+    во временные файлы. Процесс компиляцию можно ускорить, если воспользоваться
+    опцией
+    <b>-pipe</b>. При включении этой опции, различные этапы
+    компиляции начинают "общаться" между собой не через временные файлы, а через каналы
+    обмена (<i>pipes</i>).
+
+    <h3>    Тексты с символом "возврат каретки" </h3>
+
+    В отличие от утилиты <b>GNU Make</b>, компилятор <b>GCC</b> вполне "лояльно" относится
+    к наличию
+    символов "возврат каретки" в компилируемых текстах - такие символы попросту игнорируются.
+    Поэтому, проблем при компиляции исходных текстов, подготовленных в среде
+    <b>DOS</b>/<b>Windows</b>, возникнуть не должно.
+
+
+    <h2>  <a name="pril_D"></a>             Приложение D. "Гипотетический" проект - текстовой
+        редактор </h2>
+
+    В первой главе <a href="Book_egm.htm#Using_GNU_Make"> "Моя методика использования GNU Make"
+    </a> в качестве примера рассматривается
+    "гипотетический" проект - текстовой редактор.
+    Он состоит из трех файлов с исходным текстом на языке <b>C++</b> (<i>main.cpp</i>,
+    <i>Editor.cpp</i> и
+    <i>TextLine.cpp</i>), а также трех заголовочных файлов (<i>main.h</i>,
+    <i>Editor.h</i>, <i>TextLine.h</i>). Ниже
+    приведены листинги этих файлов.
+
+    <p> Файл <i>main.cpp</i>:
+
+    <pre>    #include "main.h"
+
+    void main()
+    {
+    } </pre>
+
+    <p> Файл <i>main.h</i>:
+
+    <pre>    // main.h</pre>
+
+    <p> Файл <i>Editor.cpp</i>:
+
+    <pre>    #include "Editor.h" </pre>
+
+    <p> Файл <i>Editor.h</i>:
+
+    <pre>    #include "TextLine.h" </pre>
+
+    <p> Файл <i>TextLine.cpp</i>:
+
+    <pre>    #include "TextLine.h" </pre>
+
+    <p> Файл <i>TextLine.h</i>:
+
+    <pre>    // TextLine.h</pre>
+
+
+    <!-- SpyLOG v2 f:0211 -->
+    <script data-cfasync="false" src="cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script language="javascript">
+    u="u561.10.spylog.com";d=document;nv=navigator;na=nv.appName;p=1;
+    bv=Math.round(parseFloat(nv.appVersion)*100);
+    n=(na.substring(0,2)=="Mi")?0:1;rn=Math.random(); z="p="+p+"&rn="+rn;y="";
+    y+="<!--<a href='http://"+u+"/cnt?f=3&p="+p+"&rn="+rn+"' target=_blank>-->";
+    y+="<img src='http://"+u+"/cnt?"+z+
+    "&r="+escape(d.referrer)+ "&pg="+escape(window.location.href)+"' border=0  width=88 height=31  alt='SpyLOG'>";
+    y+="<!--</a>-->";  d.write(y); if(!n) { d.write("<"+"!--"); } //--></script><noscript>
+    <!--<a href="http://u561.10.spylog.com/cnt?f=3&p=1" target=_blank>-->
+    <img src="http://u561.10.spylog.com/cnt?p=1" alt='SpyLOG' border='0'  width=88 height=31 >
+    <!--</a>--> </noscript><script language="javascript1.2"><!--
+    if(!n) { d.write("--"+">"); }//--></script>
+    <!-- SpyLOG  -->
+
+  </div>
+</div>
+</body>
+</html>

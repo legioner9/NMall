@@ -1,0 +1,1086 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования)
+      - OPENSSL сервер</H2><FONT size=+2>В этой главе</FONT><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#1">-->Linux OPENSSL
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#3">-->Команды<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#4">-->Организация
+      защиты Openssl<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#5">-->Linux
+      FreeS/WAN VPN<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#6">-->Настройка RSA
+      private keys secrets<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#7">-->Требования по
+      настройке сети для IPSec<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#8">-->Тестирование
+      инсталляции<!--</A>--><BR><FONT size=+1></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=163
+      src="ch16_1.files/27.jpg" width=210></TD></TR></TBODY></TABLE>
+<H2><A name=1>Linux OPENSSL сервер</A></H2><B>Краткий обзор</B>
+<P align=justify>Большинство серверов подобных IMAP &amp; POP, Samba, OpenLDAP,
+FTP, Apache и других, которым необходима аутентификация пользователей перед
+разрешением использования сервиса, по умолчанию, передают имя пользователя и
+пароль в простом текстовом виде. Альтернативные механизмы шифрования подобные
+SSL гарантируют надежность и безопасность транзакций. С этой технологией, данные
+передаются через сеть в зашифрованном виде. Однажды установив OpenSSL на своем
+сервере, вы можете использовать его как стороннюю утилиту в других приложениях,
+для включения в них возможностей SSL.</P>
+<P align=justify>Из описания OpenSSL:</P>
+<P align=justify>Проект OpenSSL &#8211; это совместная попытка разработать надежную,
+коммерчески независимую, полнофункциональную и распространяемую с открытыми
+кодами реализацию протоколов Secure Sockets Layer (SSL v2/v3) и Transport Layer
+Security (TLS v1) с полной криптографией. Проект управляется добровольцами
+всемирного сообщества, которые используют Интернет для общения, планирования и
+разработки инструментария OpenSSL и связанной с ним документацией.</P><IMG
+alt="" border=0 height=251 src="ch16_1.files/28.jpg"
+width=477><BR><BR><B>Преимущества криптографии</B>
+<P align=justify>Основные преимущества использования технологий шифрования
+следующие:</P>
+<UL>
+  <LI>Конфиденциальность данных<BR>
+  <DIV align=justify>Когда сообщение зашифровано, входной открытый текст
+  трансформируется по алгоритму в зашифрованный текст, который скрывает смысл
+  сообщения и может быть отправлен через общедоступный механизм. В этот процесс
+  вовлекается секретный ключ, который используется при шифровании, а позже при
+  расшифровании данных. Без этого ключа, зашифрованные данные становятся
+  бессмысленными.</DIV>
+  <LI>Целостность данных<BR>
+  <DIV align=justify>Криптографическая контрольная сумма, называемая message
+  authentication code (MAC), может рассчитываться на произвольном определенном
+  пользователем тексте для защиты целостности данных. Результат (текст и MAC)
+  отправляется принимающей стороне, который может проверить контрольный MAC
+  присоединенный к сообщению пересчитывая MAC для сообщения, используя
+  соответствующий секретный ключ и проверяя, что полученный MAC эквивалентен
+  контрольному.</DIV>
+  <LI>Аутентификация<BR>
+  <DIV align=justify>Персональная идентификация &#8211; это другое применение
+  криптографии, где пользователь/отправитель знает ключ, который может служить
+  для установления его/ее подлинности.</DIV>
+  <LI>Электронные подписи<BR>
+  <DIV align=justify>Цифровые подписи заверяет отправителя и получателя, что
+  сообщение подлинное и что только владелец ключа мог создать цифровую
+  подпись.</DIV></LI></UL><B>Патенты</B>
+<P align=justify>Несколько юридических проблем существует при использовании SSL
+технологии. Если вы планируете использовать OpenSSL для коммерческих целей, то
+необходимо получить у RSA лицензию на использование RSA библиотек.</P>
+<P align=justify>Здесь приведено извлечение из файла README OpenSSL:</P>
+<P align=justify>Разные компании владеют патентами на разные алгоритмы в разных
+местах мира. Вы сами отвечаете за то, что бы использование любых алгоритмов для
+вас было юридически законно, проверяя имеются ли какие-либо патенты у вас в
+стране. Этот файл включает некоторые патенты о которых мы точно или &#8220;по слухам&#8221;
+знаем. Это не точный список.</P>
+<P align=justify>RSA Data Security держит программный патент на алгоритмы RSA и
+RC5. Если принадлежащий им код используется в США (и Японии?), вы должны
+контактировать с RSA Data Security об условиях лицензии. Их веб-сервер: <!--<A
+href="http://www.rsa.com/" target=_blank>-->http://www.rsa.com/<!--</A>-->.</P>
+<P align=justify>RC4 &#8211; это торговая марка RSA Data Security, так что его
+использование возможно только с разрешения RSA Data Security.</P>
+<P align=justify>Алгоритм IDEA патентован Ascom в Австрии, Франции, Германии,
+Италии, Японии, Нидерландах, Испании, Швеции, Швейцарии, Соединенном Королевстве
+и США. С ними нужно войти в контакт если вы используете этот алгоритм; их
+веб-сервер: <!--<A href="http://www.ascom.ch/"
+target=_blank>-->http://www.ascom.ch/<!--</A>-->.</P>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>OpenSSL версии
+0.9.5a<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница OpenSSL: <!--<A
+href="http://www.openssl.org/" target=_blank>-->http://www.openssl.org/<!--</A>--><BR>Вы
+должны скачать: openssl-0.9.5a.tar.gz<BR></P>
+<P align=justify><B>Тарболы.</B></P>
+<P align=justify>Хорошей идеей будет создать список файлов установленных в вашей
+системе до инсталляции Sendmail и после, в результате, с помощью утилиты diff вы
+сможете узнать какие файлы были установлены. Например,<BR>До
+инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt; OpenSSL1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+OpenSSL2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff OpenSSL1 OpenSSL2 &gt; OpenSSL-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp openssl-version.tar.gz /var/tmp<BR>[root@deep /]# cd /var/tmp<BR>[root@deep
+tmp]# tar xzpf openssl-version.tar.gz<BR></FONT>
+<H3>Компиляция и оптимизация.</H3>
+<P align=justify>Перейдите в новый Openssl каталог и введите следующие команды
+на вашем терминале:</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл c_rehash (vi +11 tools/c_rehash) и измените
+следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>DIR=/usr/local/ssl</FONT><BR>Должен
+быть:<BR><FONT color=#008080 size=-1>DIR=/usr</FONT><BR></P>
+<P align=justify>Изменение этой строки будет создавать и инсталлировать OpenSSL
+в &#8220;/usr&#8221;.</P><B>Шаг 2</B>
+<P align=justify>По умолчанию, исходные файлы OpenSSL предполагают что Perl
+расположен в каталоге &#8220;/usr/local/bin/perl&#8221;. Мы должны модифицировать строку
+&#8220;#!/usr/local/bin/perl&#8221; во всех скриптах, которые зависят от perl, на
+месторасположение Perl в Red Hat Linux - &#8220;/usr/bin&#8221;.</P><FONT color=#008080
+size=-1>[root@deep openssl-0.9.5a]# perl util/perlpath.pl /usr/bin</FONT> (где
+находится ваша программа perl).<BR><BR><B>Шаг 3</B>
+<P align=justify>OpenSSL должен знать где находится необходимые OpenSSL исходные
+библиотеки. Командой приведенной ниже, мы устанавливаем переменную окружения
+PATH в каталог по умолчанию, где мы разместили исходные файлы OpenSSL.</P><FONT
+color=#008080 size=-1>[root@deep openssl-0.9.5a]# export
+LD_LIBRARY_PATH=`pwd`</FONT> <BR><BR><B>Шаг 4</B>
+<P align=justify>Сейчас, мы должны сконфигурировать OpenSSL под нашу
+систему:</P><FONT color=#008080 size=-1>CC="egcs" \<BR>./Configure linux-elf
+-DSSL_FORBID_ENULL \<BR>--prefix=/usr \<BR>--openssldir=/etc/ssl<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Опция &#8220;-DSSL_FORBID_ENULL&#8221; нужна, чтобы
+запретить нулевое шифрование из соображений безопасности.</P><B>Шаг 5</B>
+<P align=justify>Редактируйте файл Makefile.ssl (vi +50 Makefile.ssl) и внесите
+следующие изменения:</P>
+<P align=justify><FONT color=#008080 size=-1>CC= gcc</FONT><BR>Должен
+быть:<BR><FONT color=#008080 size=-1>CC= egcs</FONT><BR></P>
+<P align=justify>Редактируйте файл Makefile.ssl (vi +52 Makefile.ssl) и
+добавьте/измените следующие строки:</P><FONT color=#008080 size=-1>CFLAG=
+-DTHREADS -D_REENTRANT -DSSL_FORBID_ENULL -DL_ENDIAN -DTERMIO -O9 -funroll-loops
+-ffast-math -malign-double -mcpu=pentiumpro -march=pentiumpro
+-fomit-frame-pointer -fno-exceptions -Wall -DSHA1_ASM -DMD5_ASM
+-DRMD160_ASM</FONT>
+<P align=justify>Редактируйте файл Makefile.ssl (vi +79 Makefile.ssl) и измените
+следующее значение для процессора Pentium Pro:</P><FONT color=#008080
+size=-1>PROCESSOR= 686</FONT>
+<P align=justify>ЗАМЕЧАНИЕ. Три последние модификации выполненные нами
+устанавливают оптимизационные флаги для компиляции OpenSSL на сервере. Последняя
+модификация (PROCESSOR=), если у вас Pentium, то измените на 586, Pentium
+Pro/II/III на 686, a 486 на 486.</P><B>Шаг 6</B>
+<P align=justify>Редактируйте файл Makefile.ssl (vi +161 Makefile.ssl) и
+измените следующую строку:</P>
+<P align=justify><FONT color=#008080
+size=-1>MANDIR=$(OPENSSLDIR)/man</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>MANDIR=/usr/man</FONT><BR></P>
+<P align=justify>Этот шаг нужен для определения каталога, куда будут
+проинсталлированы страницы руководства (man pages) OpenSSL. В нашем случае это
+каталог &#8220;/usr/man&#8221;.</P><B>Шаг 7</B>
+<P align=justify>Сейчас мы должны скомпилировать и инсталлировать OpenSSL на
+сервере:</P><FONT color=#008080 size=-1>[root@deep openssl-0.9.5a]# make -f
+Makefile<BR>[root@deep openssl-0.9.5a]# make test<BR>[root@deep openssl-0.9.5a]#
+make install<BR>[root@deep openssl-0.9.5a]# mv /etc/ssl/misc/*
+/usr/bin/<BR>[root@deep openssl-0.9.5a]# rm -rf /etc/ssl/misc/<BR>[root@deep
+openssl-0.9.5a]# rm -rf /etc/ssl/lib/<BR>[root@deep openssl-0.9.5a]# rm -f
+/usr/bin/CA.pl<BR>[root@deep openssl-0.9.5a]# rm -f /usr/bin/CA.sh<BR>[root@deep
+openssl-0.9.5a]# install -m 644 libRSAglue.a /usr/lib/<BR>[root@deep
+openssl-0.9.5a]# install -m 644 rsaref/rsaref.h
+/usr/include/openssl/<BR>[root@deep openssl-0.9.5a]# strip
+/usr/bin/openssl<BR>[root@deep openssl-0.9.5a]# mkdir -p /etc/ssl/crl<BR></FONT>
+<P align=justify>Команда "make -f" создаст библиотеки OpenSSL (libcrypto.a и
+libssl.a) и двоичный файл "openssl". Библиотеки будут созданы в каталоге
+верхнего уровня, а двоичный файл в каталоге "apps". После успешного создания,
+команда "make test" будет тестировать библиотеки и в заключении "make install"
+создаст инсталляционный каталог и инсталлирует OpenSSL.</P>
+<P align=justify>Команда &#8220;mv&#8221; переместит все файлы из &#8220;/etc/ssl/misc/&#8221; в каталог
+&#8220;/usr/bin/&#8221;. Эти файлы двоичные и должны располагаться в &#8220;/usr/bin/&#8221;, так как
+там находятся все исполняемые файлы вашей системы. Также размещение их в этом
+каталоге поместит их в поле действия переменной окружения PATH.</P>
+<P align=justify>Команда &#8220;rm&#8221; удалит каталоги &#8220;/etc/ssl/misc/&#8221; и &#8220;/etc/ssl/lib/&#8221;
+из вашей системы, так как они сейчас располагаются в другом месте. Также, мы
+удаляем файлы &#8220;CA.pl&#8221; и &#8220;CA.sh&#8221;, представляющие из себя небольшие скрипты для
+создания ваших собственных CA сертификатов. Эти скрипты, связанные с &#8220;openssl
+ca&#8221; командами, имеют несколько странные требования, и по умолчанию конфигурация
+OpenSSL не позволяет вам легко напрямую использовать &#8220;openssl ca&#8221;.Так, что мы
+создадим скрипт &#8220;sign.sh&#8221; позже, чтобы заменить их.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Пакет bc-1.05a-4.i386.rpm или новее должен
+быть уже проинсталлирован на вашем Linux сервере или вы получите сообщение об
+ошибке во время тестирования библиотек OpenSSL.</P>
+<H3>Очистка после работы</H3><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# rm -rf openssl-version/
+openssl-version.tar.gz<BR></FONT>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции OpenSSL. Также будет удален
+сжатый архив OpenSSL из каталога &#8220;/var/tmp&#8221;.</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файл связанные с OpenSSL из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска OpenSSL сервера следующие файлы должны быть созданы
+или скопированы в нужный каталог:</P>
+<P align=justify>Копируйте файл openssl.cnf в каталог &#8220;/etc/ssl/&#8221;.<BR>Копируйте
+файл sign.sh в каталог &#8220;/usr/bin/&#8221;.<BR>Вы можете взять эти файлы из нашего
+архива floppy.tgz.<BR></P>
+<H3>Конфигурация файла &#8220;/etc/ssl/openssl.cnf&#8221;</H3>
+<P align=justify>Это общий конфигурационный файл для программы OpenSSL, где вы
+можете настроить срок хранения ваших ключей, имя организации, адрес и т.д. Эти
+параметры вы можете изменить в секциях [ CA_default ] и
+[req_distinguished_name].</P>
+<P align=justify>Редактируйте файл openssl.cnf (vi /etc/ssl/openssl.cnf):</P><PRE># Примерный конфигурационный файл OpenSSL.
+# Это главным образом используется для создания удостоверяющих запросов.
+#
+RANDFILE = $ENV::HOME/.rnd
+oid_file = $ENV::HOME/.oid
+oid_section = new_oids
+# Используйте этот конфигурационный файл с опцией "-extfile" из
+# утилиты "openssl x509", имя секции содержит
+# расширения  X.509v3, чтобы использовать:
+# extensions =
+# (Альтернативно, используйте конфигурационный файл который имеет только
+# X.509v3 расширения в основной [= default] секции.)
+[ new_oids ]
+# Мы можем добавить новый OIDs здесь для использования в 'ca' и 'req'.
+# Добавьте простой OID подобно этому:
+# testoid1=1.2.3.4
+# Или используйте подстановку конфигурационного файла наподобие этого:
+# testoid2=${testoid1}.5.6
+####################################################################
+[ ca ]
+default_ca = CA_default # Это ca секция по умолчанию
+####################################################################
+[ CA_default ]
+dir = /etc/ssl # где все хранится
+certs = $dir/certs # где хранятся штатные сертификаты
+crl_dir = $dir/crl # где хранятся штатные crl
+database = $dir/ca.db.index # файл с базой данных индексов.
+new_certs_dir = $dir/ca.db.certs # место по умолчанию для новых сертификатов.
+certificate = $dir/certs/ca.crt # CA сертификат
+serial = $dir/ca.db.serial # текущий регистрационный номер
+crl = $dir/crl.pem # текущий CRL
+private_key = $dir/private/ca.key # приватный ключ
+RANDFILE = $dir/ca.db.rand # приватный файл со случайным числом
+x509_extensions = usr_cert # расширение добавляемое к сертификату
+# Расширение добавляемое к CRL. Замечание: Netscape communicator
+# основывается на V2 CRL так что по умолчанию это закомментировано,
+# чтобы оставить V1 CRL.
+# crl_extensions = crl_ext
+default_days = 365 # сколько времени удостоверяет
+default_crl_days = 30 # сколько времени до следующего CRL
+default_md = md5 # какой использовать md.
+Preserve = no # сохранять порядок пройденных DN
+# Несколько различных путей для определения, как подобные запросы должны
+# выглядеть для CA, список атрибутов должен быть такой же и  плюс некоторые
+# необязательные поля
+policy = policy_match
+# Для CA политик
+[ policy_match ]
+countryName = match
+stateOrProvinceName = match
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+# Для 'чьих угодно' политик
+# В этом пункте вы должны перечислить все приемлемые типы объектов
+[ policy_anything ]
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+####################################################################
+[ req ]
+default_bits = 1024
+default_keyfile = privkey.pem
+distinguished_name = req_distinguished_name
+attributes = req_attributes
+x509_extensions = v3_ca # Расширение добавляемое к самоподписанным сертификатам
+[ req_distinguished_name ]
+countryName = Country Name (2-х буквенный код)
+countryName_default = CA
+countryName_min = 2
+countryName_max = 2
+stateOrProvinceName = State or Province Name (полное имя)
+stateOrProvinceName_default = Quebec
+localityName = Locality Name (например, город)
+localityName_default = Montreal
+0.organizationName = Organization Name (например, компания)
+0.organizationName_default = Open Network Architecture
+# мы можем сделать это, но обычно это не нужно :-)
+#1.organizationName = Second Organization Name (например, компания)
+#1.organizationName_default = World Wide Web Pty Ltd
+organizationalUnitName = Organizational Unit Name (например, подразделение)
+organizationalUnitName_default = Internet Department
+commonName = Common Name (например, ВАШЕ имя)
+commonName_default = www.openna.com
+commonName_max = 64
+emailAddress = Email Address
+emailAddress_default = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="3051545d595e705f40555e5e511e535f5d">[email&#160;protected]</a>
+emailAddress_max = 40
+# SET-ex3 = SET extension number 3
+[ req_attributes ]
+challengePassword = A challenge password
+challengePassword_min = 4
+challengePassword_max = 20
+unstructuredName = An optional company name
+[ usr_cert ]
+# Эти расширения добавляются, когда 'ca' подписанный запрос.
+# Это идет против рекомендаций PKIX, но некоторые CA делают это и
+# некоторые программы запрашивают это, чтобы уклониться от
+# интерпретирования сертификатов конечных пользователей как CA.
+basicConstraints=CA:FALSE
+# Здесь приведены некоторые примеры использования nsCertType. Если это
+# пропущено, то сертификат может использоваться для каких-нибудь пропусков
+# подписаний объектов.
+# Это OK для сервера SSL.
+# nsCertType = server
+# Это используется для объекта, подписывающего сертификат.
+# nsCertType = objsign
+# Это обычно используется для нормальных клиентов
+# nsCertType = client, email
+# и для всего, включая объекты подписания:
+# nsCertType = client, email, objsign
+# Это типично в keyUsage для клиентских сертификатов.
+# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+# Это будет выводится в списковом окне комментариев Netscape.
+nsComment = "OpenSSL Generated Certificate"
+# PKIX рекомендации, безопасно если включены  все сертификаты.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer:always
+# Это для subjectAltName и issuerAltname.
+# Импортирование почтового адрес.
+# subjectAltName=email:copy
+# Copy subject details
+# issuerAltName=issuer:copy
+#nsCaRevocationUrl = http://www.domain.dom/ca-crl.pem
+#nsBaseUrl
+#nsRevocationUrl
+#nsRenewalUrl
+#nsCaPolicyUrl
+#nsSslServerName
+[ v3_ca]
+# Расширение для типичного CA
+# Рекомендация PKIX.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+# Это то, что рекомендует PKIX, но некоторые  &#8220;неправильные&#8221; программы
+# засоряют критическими расширениями
+#basicConstraints = critical,CA:true
+#Так мы делаем это вместо вышеприведенного.
+basicConstraints = CA:true
+# Ключевое использование: это типично для CA сертификатов. Однако, так как
+# это предотвратит использование для проверки самоподписанных
+# сертификатов, лучше по умолчанию это не учитывать.
+# keyUsage = cRLSign, keyCertSign
+# Некоторые могли бы хотеть также
+# nsCertType = sslCA, emailCA
+# Включение почтового адреса в subject alt name: другая рекомендация PKIX
+# subjectAltName=email:copy
+# Копирование деталей запрашивающей стороны
+# issuerAltName=issuer:copy
+# RAW DER hex encoding of an extension: beware experts only!
+# 1.2.3.5=RAW:02:03
+# You can even override a supported extension:
+# basicConstraints= critical, RAW:30:03:01:01:FF
+[ crl_ext ]
+# CRL extensions.
+# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+# issuerAltName=issuer:copy
+authorityKeyIdentifier=keyid:always,issuer:always
+</PRE>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Файл &#8220;openssl.cnf&#8221; уже будет существовать на
+вашей системе, когда вы скомпилируете и проинсталлируете программу OpenSSL, и
+может быть найден в каталоге &#8220;/etc/ssl/&#8221;. Вам не нужно менять все опции
+установленные по умолчанию в этом файле; обычно, достаточно внести изменения в
+секции [CA_default] и [req_distinguished_name].</P>
+<H3>Создание программы &#8220;/usr/bin/sign.sh&#8221;</H3>
+<P align=justify>Команда &#8220;openssl ca&#8221; имеет некоторые странные требования и
+конфигурация OpenSSL по умолчанию не позволяет легко использовать ее напрямую.
+Поэтому мы будем создавать программу &#8220;sign.sh&#8221;, заменяющую собой &#8220;openssl
+ca&#8221;.<BR>Создайте программный файл sign.sh (touch /usr/bin/sign.sh) и добавьте в
+него следующие строки:</P><PRE>#!/bin/sh
+##
+## sign.sh -- Sign a SSL Certificate Request (CSR)
+## Copyright (c) 1998-1999 Ralf S. Engelschall, All Rights Reserved.
+##
+# argument line handling
+CSR=$1
+if [ $# -ne 1 ]; then
+echo "Usage: sign.sign &lt;whatever&gt;.csr"; exit 1
+fi
+if [ ! -f $CSR ]; then
+echo "CSR not found: $CSR"; exit 1
+fi
+case $CSR in
+*.csr ) CERT="`echo $CSR | sed -e 's/\.csr/.crt/'`" ;;
+* ) CERT="$CSR.crt" ;;
+esac
+# make sure environment exists
+if [ ! -d ca.db.certs ]; then
+mkdir ca.db.certs
+fi
+if [ ! -f ca.db.serial ]; then
+echo '01' &gt;ca.db.serial
+fi
+if [ ! -f ca.db.index ]; then
+cp /dev/null ca.db.index
+fi
+# create an own SSLeay config
+cat &gt;ca.config &lt;&lt;EOT
+[ ca ]
+default_ca = CA_own
+[ CA_own ]
+dir = /etc/ssl
+certs = /etc/ssl/certs
+new_certs_dir = /etc/ssl/ca.db.certs
+database = /etc/ssl/ca.db.index
+serial = /etc/ssl/ca.db.serial
+RANDFILE = /etc/ssl/ca.db.rand
+certificate = /etc/ssl/certs/ca.crt
+private_key = /etc/ssl/private/ca.key
+default_days = 365
+default_crl_days = 30
+default_md = md5
+preserve = no
+policy = policy_anything
+[ policy_anything ]
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+EOT
+# sign the certificate
+echo "CA signing: $CSR -&gt; $CERT:"
+openssl ca -config ca.config -out $CERT -infiles $CSR
+echo "CA verifying: $CERT &lt;-&gt; CA cert"
+openssl verify -CAfile /etc/ssl/certs/ca.crt $CERT
+# cleanup after SSLeay
+rm -f ca.config
+rm -f ca.db.serial.old
+rm -f ca.db.index.old
+# die gracefully
+exit 0</PRE>
+<P align=justify>Сейчас, сделаем эту программу исполняемой и изменим права
+доступа принятые по умолчанию:</P><FONT color=#008080 size=-1>[root@deep /]#
+chmod 755 /usr/bin/sign.sh</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Вы можете найти прогамму &#8220;sign.sh&#8221; в
+дистрибутиве mod_ssl в каталоге &#8220;mod_ssl-version/pkg.contrib/&#8221; или в нашем
+архиве floppy.tgz. Также заметим, что секция [CA_own] должна быть изменена в
+соответствии с вашим окружением и не забудьте изменит строку &#8221;openssl verify
+&#8211;Cafile /etc/ssl/certs/ca.crt $CERT&#8221;.</P>
+<H3><A name=3>Команды.</A></H3>
+<P align=justify>Команды описанные ниже мы будем часто использовать, но на самом
+деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P>
+<P align=justify>Для примера, мы покажем вам как создавать сертификат для вашего
+Веб сервера Apache и/или ваш личный CA (Certifying Authority (подтверждение
+полномочий)) для подписания ваших &#8220;Certificate Signing Request&#8221;.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Все команды перечисленные ниже выполняются в
+каталоге &#8220;/etc/ssl/&#8221;.</P>
+<P align=justify><FONT size=+1>1.1</FONT> Создание приватного ключа RSA
+защищенного парольной фразой для вашего сервера Apache.</P><FONT color=#008080
+size=-1>[root@deep ssl]# openssl genrsa -des3 -out server.key 1024<BR>Generating
+RSA private key, 1024 bit long
+modulus<BR>......................+++++<BR>.....+++++<BR>e is 65537
+(0x10001)<BR>Enter PEM pass phrase:<BR>Verifying password - Enter PEM pass
+phrase:<BR></FONT>
+<P align=justify>Пожалуйста, создайте резервную копию файла server.key и
+запомните парольную фразу.</P>
+<P align=justify><FONT size=+1>1.2</FONT> Создание Certificate Signing Request
+(CSR) с серверным приватным ключом RSA.</P><FONT color=#008080
+size=-1>[root@deep ssl]# openssl req -new -key server.key -out
+server.csr<BR>Using configuration from /etc/ssl/openssl.cnf<BR>Enter PEM pass
+phrase:<BR>You are about to be asked to enter information that will be
+incorporated<BR>into your certificate request.<BR>What you are about to enter is
+what is called a Distinguished Name or a DN.<BR>There are quite a few fields but
+you can leave some blank<BR>For some fields there will be a default value,
+<BR>If you enter '.', the field will be left blank.<BR>-----<BR>Country Name (2
+letter code) [CA]:<BR>State or Province Name (full name) [Quebec]:<BR>Locality
+Name (eg, city) [Montreal]:<BR>Organization Name (eg, company) [Open Network
+Architecture]:<BR>Organizational Unit Name (eg, section) [Internet
+Department]:<BR>Common Name (eg, YOUR name) [www.openna.com]:<BR>Email Address
+[<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="28494c4541466847584d464649064b4745">[email&#160;protected]</a>]:<BR>Please enter the following 'extra' attributes<BR>to be
+sent with your certificate request<BR>A challenge password []:.<BR>An optional
+company name []:.<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Убедитесь, что вы ввели FQDN (Полностью
+определенное доменное имя (&#8220;Fully Qualified Domain Name&#8221;)) сервера, когда
+OpenSSL спросил вас о &#8220;CommonName&#8221; (например, когда вы создаете CSR для Веб
+сервера который будет позже доступен через https://www.mydomain.com/, введите
+www.mydomain.com).</P>
+<P align=justify>После создания вашего Certificate Signing Request (CSR), у вас
+возникают два варианта: </P>
+<P align=justify>Первый, это послать этот сертификат в коммерческие структуры
+Certifying Authority (CA), подобные Verisign или Thawte, для подписания. Вы
+обычно отправляете CSR через Веб форму, оплачиваете подписание, ждете
+Сертификата и запоминаете его в файле &#8220;server.crt&#8221;. Результатом всех этих
+операций будет настоящий сертификат, который может быть использован с
+Apache.</P>
+<P align=justify>Второй, вы можете использовать ваш собственный CA и затем
+самостоятельно подписывать CSR этим CA. Это решение экономично, и позволяет
+организации поддерживать собственный CA сервер и создавать так много
+сертификатов, как нужно для внутреннего использования без выплаты каких-нибудь
+денег коммерческим CA.</P>
+<P align=justify>К сожалению использование ваших собственных CA для создания
+сертификатов создает ряд проблем в электронной коммерции, потому что заказчики
+должны иметь некоторое доверие вашей организации через использования признанных
+коммерческих CA. Смотрите ниже информацию о том, как самостоятельно подписать
+CSR собственным CA.</P>
+<P align=justify><FONT size=+1>1.3</FONT> Создание вашего приватного ключа RSA
+(CA).</P><FONT color=#008080 size=-1>[root@deep ssl]# openssl genrsa -des3 -out
+ca.key 1024<BR>Generating RSA private key, 1024 bit long
+modulus<BR>...........................+++++<BR>............................................+++++<BR>e
+is 65537 (0x10001)<BR>Enter PEM pass phrase:<BR>Verifying password - Enter PEM
+pass phrase:<BR></FONT>
+<P align=justify>Сделайте резервную копию этого файла ca.key и запомните
+парольную фразу (pass-phrase), которую вы ввели.</P>
+<P align=justify><FONT size=+1>1.4</FONT> Создание самоподписанного (CA)
+сертификата (структура x509) с ключом RSA из CA.</P><FONT color=#008080
+size=-1>[root@deep ssl]# openssl req -new -x509 -days 365 -key ca.key -out
+ca.crt<BR>Using configuration from /etc/ssl/openssl.cnf<BR>Enter PEM pass
+phrase:<BR>You are about to be asked to enter information that will be
+incorporated<BR>into your certificate request.<BR>What you are about to enter is
+what is called a Distinguished Name or a DN.<BR>There are quite a few fields but
+you can leave some blank<BR>For some fields there will be a default value,<BR>If
+you enter '.', the field will be left blank.<BR>-----<BR>Country Name (2 letter
+code) [CA]:<BR>State or Province Name (full name) [Quebec]:<BR>Locality Name
+(eg, city) [Montreal]:<BR>Organization Name (eg, company) [Open Network
+Architecture]:<BR>Organizational Unit Name (eg, section) [Internet
+Department]:CA Marketing<BR>Common Name (eg, YOUR name)
+[www.openna.com]:<BR>Email Address [<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="b5d4d1d8dcdbf5dac5d0dbdbd49bd6dad8">[email&#160;protected]</a>]:<BR>[root@deep ssl]# mv
+server.key private/<BR>[root@deep ssl]# mv ca.key private/<BR>[root@deep ssl]#
+mv ca.crt certs/<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Команда &#8220;req&#8221; создает самоподписанный
+сертификат, когда используется переключатель -x509.</P>
+<P align=justify><FONT size=+1>1.5</FONT> Подписание запросов сертификата. (Мы
+создаем и используем наш личный Certificate Authority (CA))</P>
+<P align=justify>Приготовьте скрипт для подписания (он нужен, потому что команда
+&#8220;openssl ca'' имеет некоторые странные требования и по умолчанию конфигурация
+OpenSSL не позволяет ее легко использовать напрямую). Скрипт с именем sign.sh
+находится в нашем архиве flopy.tgz в каталоге openssl. Используйте этот скрипт
+для подписания.</P>
+<P align=justify>Сейчас вы можете использовать CA для подписания CSR сервера,
+чтобы создать реальный сертификат для внутреннего использования в Веб сервере
+Apache (предполагаем, что вы уже имеете файл server.csr под рукой):</P><FONT
+color=#008080 size=-1>[root@deep ssl]# /usr/bin/sign.sh server.csr<BR>CA
+signing: server.csr -&gt; server.crt:<BR>Using configuration from
+ca.config<BR>Enter PEM pass phrase:<BR>Check that the request matches the
+signature<BR>Signature ok<BR>The Subjects Distinguished Name is as
+follows<BR>countryName :PRINTABLE:'CA'<BR>stateOrProvinceName
+:PRINTABLE:'Quebec'<BR>localityName :PRINTABLE:'Montreal'<BR>organizationName
+:PRINTABLE:'Open Network Architecture'<BR>organizationalUnitName
+:PRINTABLE:'Internet Department'<BR>commonName
+:PRINTABLE:'www.openna.com'<BR>emailAddress
+:IA5STRING:'<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="d7b6b3babeb997b8a7b2b9b9b6f9b4b8ba">[email&#160;protected]</a>'<BR>Certificate is to be certified until Dec 1
+14:59:29 2000 GMT (365 days)<BR>Sign the certificate? [y/n]:y<BR>1 out of 1
+certificate requests certified, commit? [y/n]y<BR>Write out database with 1 new
+entries<BR>Data Base Updated<BR>CA verifying: server.crt &lt;-&gt; CA
+cert<BR>server.crt: OK<BR>This signs the CSR and results in a server.crt
+file.<BR>[root@deep ssl]# mv server.crt certs/<BR></FONT>
+<P align=justify>Сейчас мы имеем два файла: server.key и server.crt. Они могут
+быть использованы в конфигурационном файле httpd.conf Веб-сервера Apache
+следующим образом:</P><FONT color=#008080 size=-1>SSLCertificateFile
+/etc/ssl/certs/server.crt</FONT> (публичный ключ веб сервера)<BR><FONT
+color=#008080 size=-1>SSLCertificateKeyFile /etc/ssl/private/server.key</FONT>
+(приватный ключ веб сервера)<BR>
+<P align=justify>Файл server.csr больше не нужен.</P><FONT color=#008080
+size=-1>[root@deep ssl]# rm -f server.csr</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Если вы получили сообщение об ошибке во время
+подписания сертификата, это потому что вы ввели неправильно FQDN (&#8220;Fully
+Qualified Domain Name&#8221;) для сервера, когда OpenSSL запросил у вас &#8220;CommonName&#8221;;
+&#8220;CommonName&#8221; должен представлять из себя что-то подобное &#8220;my.domain.com&#8221; и не
+&#8220;domain.com&#8221;. Также, так как вы создавали сертификат и CA сертификат, важно,
+чтобы хотя бы небольшая часть информации представленной в них отличалась, или вы
+можете столкнуться с проблемами во время подписания удостоверяющих запросов.</P>
+<H3><A name=4>Организация защиты OpenSSL</A></H3>
+<P align=justify>Сделайте ваши ключи &#8220;Для чтения и записи&#8221; только для
+пользователя root. Это важно, потому что никому не нужно работать к ним. Для
+этого выполните следующие команды.</P><FONT color=#008080 size=-1>[root@deep /]#
+chmod 600 /etc/ssl/certs/ca.crt<BR>[root@deep /]# chmod 600
+/etc/ssl/certs/server.crt<BR>[root@deep /]# chmod 600
+/etc/ssl/private/ca.key<BR>[root@deep /]# chmod 600
+/etc/ssl/private/server.key<BR></FONT>
+<H3>Некоторые варианты использования OpenSSL</H3>
+<P align=justify>OpenSSL может использоваться для:</P>
+<OL>
+  <LI>Создания вашего сертификационного сервера.
+  <LI>Обеспечения конфиденциальности данных, целостности, аутентификации и
+  электронных подписей при передачи для пользователей.
+  <LI>Безопасность электронных коммерческих транзакций. </LI></OL>
+<H3>Инсталлированные файлы</H3><PRE><FONT size=-1>&gt; /etc/ssl
+&gt; /etc/ssl/crl
+&gt; /etc/ssl/certs
+&gt; /etc/ssl/private
+&gt; /etc/ssl/openssl.cnf
+&gt; /usr/bin/openssl
+&gt; /usr/bin/c_rehash
+&gt; /usr/bin/sign.sh
+&gt; /usr/man/man1/verify.1
+&gt; /usr/man/man1/version.1
+&gt; /usr/man/man1/x509.1
+&gt; /usr/man/man3/BN_CTX_new.3
+&gt; /usr/man/man3/BN_CTX_start.3
+&gt; /usr/man/man3/BN_add.3
+&gt; /usr/man/man3/BN_add_word.3
+&gt; /usr/man/man3/BN_bn2bin.3
+&gt; /usr/bin/c_hash
+&gt; /usr/bin/c_info
+&gt; /usr/bin/c_issuer
+&gt; /usr/bin/c_name
+&gt; /usr/bin/der_chop
+&gt; /usr/include/openssl
+&gt; /usr/include/openssl/e_os.h
+&gt; /usr/include/openssl/e_os2.h
+&gt; /usr/include/openssl/crypto.h
+&gt; /usr/include/openssl/tmdiff.h
+&gt; /usr/include/openssl/opensslv.h
+&gt; /usr/include/openssl/opensslconf.h
+&gt; /usr/include/openssl/ebcdic.h
+&gt; /usr/include/openssl/md2.h
+&gt; /usr/include/openssl/md5.h
+&gt; /usr/include/openssl/sha.h
+&gt; /usr/include/openssl/mdc2.h
+&gt; /usr/include/openssl/hmac.h
+&gt; /usr/include/openssl/ripemd.h
+&gt; /usr/include/openssl/des.h
+&gt; /usr/include/openssl/rc2.h
+&gt; /usr/include/openssl/rc4.h
+&gt; /usr/include/openssl/rc5.h
+&gt; /usr/include/openssl/idea.h
+&gt; /usr/include/openssl/blowfish.h
+&gt; /usr/include/openssl/cast.h
+&gt; /usr/include/openssl/bn.h
+&gt; /usr/include/openssl/rsa.h
+&gt; /usr/include/openssl/dsa.h
+&gt; /usr/include/openssl/dh.h
+&gt; /usr/include/openssl/buffer.h
+&gt; /usr/include/openssl/bio.h
+&gt; /usr/include/openssl/stack.h
+&gt; /usr/include/openssl/safestack.h
+&gt; /usr/include/openssl/lhash.h
+&gt; /usr/include/openssl/rand.h
+&gt; /usr/include/openssl/err.h
+&gt; /usr/include/openssl/objects.h
+&gt; /usr/include/openssl/evp.h
+&gt; /usr/include/openssl/asn1.h
+&gt; /usr/include/openssl/asn1_mac.h
+&gt; /usr/include/openssl/pem.h
+&gt; /usr/include/openssl/pem2.h
+&gt; /usr/include/openssl/x509.h
+&gt; /usr/include/openssl/x509_vfy.h
+&gt; /usr/include/openssl/x509v3.h
+&gt; /usr/include/openssl/conf.h
+&gt; /usr/include/openssl/txt_db.h
+&gt; /usr/include/openssl/pkcs7.h
+&gt; /usr/include/openssl/pkcs12.h
+&gt; /usr/include/openssl/comp.h
+&gt; /usr/include/openssl/ssl.h
+&gt; /usr/include/openssl/ssl2.h
+&gt; /usr/include/openssl/ssl3.h
+&gt; /usr/include/openssl/ssl23.h
+&gt; /usr/include/openssl/tls1.h
+&gt; /usr/include/openssl/rsaref.h
+&gt; /usr/lib/libcrypto.a
+&gt; /usr/lib/libssl.a
+&gt; /usr/lib/libRSAglue.a
+&gt; /usr/man/man1/CA.pl.1
+&gt; /usr/man/man1/asn1parse.1
+&gt; /usr/man/man3/BN_cmp.3
+&gt; /usr/man/man3/BN_copy.3
+&gt; /usr/man/man3/BN_generate_prime.3
+&gt; /usr/man/man3/BN_mod_inverse.3
+&gt; /usr/man/man3/BN_mod_mul_montgomery.3
+&gt; /usr/man/man3/BN_mod_mul_reciprocal.3
+&gt; /usr/man/man3/BN_new.3
+&gt; /usr/man/man3/BN_num_bytes.3
+&gt; /usr/man/man3/BN_rand.3
+&gt; /usr/man/man3/BN_set_bit.3
+&gt; /usr/man/man3/BN_zero.3
+&gt; /usr/man/man3/CRYPTO_set_ex_data.3
+&gt; /usr/man/man3/DH_generate_key.3
+&gt; /usr/man/man3/DH_generate_parameters.3
+&gt; /usr/man/man3/DH_get_ex_new_index.3
+&gt; /usr/man/man3/DH_new.3
+&gt; /usr/man/man3/DH_set_method.3
+&gt; /usr/man/man3/DH_size.3
+&gt; /usr/man/man3/DSA_SIG_new.3
+&gt; /usr/man/man3/DSA_do_sign.3
+&gt; /usr/man/man3/DSA_dup_DH.3
+&gt; /usr/man/man3/DSA_generate_key.3
+&gt; /usr/man/man3/DSA_generate_parameters.3
+&gt; /usr/man/man3/DSA_get_ex_new_index.3
+&gt; /usr/man/man3/DSA_new.3
+&gt; /usr/man/man3/DSA_set_method.3
+&gt; /usr/man/man3/DSA_sign.3
+&gt; /usr/man/man3/DSA_size.3
+&gt; /usr/man/man3/ERR_GET_LIB.3
+&gt; /usr/man/man3/ERR_clear_error.3
+&gt; /usr/man/man3/ERR_error_string.3
+&gt; /usr/man/man3/ERR_get_error.3
+&gt; /usr/man/man3/ERR_load_crypto_strings.3
+&gt; /usr/man/man3/ERR_load_strings.3
+&gt; /usr/man/man3/ERR_print_errors.3
+&gt; /usr/man/man3/ERR_put_error.3
+&gt; /usr/man/man3/ERR_remove_state.3
+&gt; /usr/man/man3/EVP_DigestInit.3
+&gt; /usr/man/man3/EVP_EncryptInit.3
+&gt; /usr/man/man3/OPENSSL_VERSION_NUMBER.3
+&gt; /usr/man/man3/OpenSSL_add_all_algorithms.3
+&gt; /usr/man/man3/RAND_add.3
+&gt; /usr/man/man3/RAND_bytes.3
+&gt; /usr/man/man3/RAND_cleanup.3
+&gt; /usr/man/man3/RAND_egd.3
+&gt; /usr/man/man3/RAND_load_file.3
+&gt; /usr/man/man3/RAND_set_rand_method.3
+&gt; /usr/man/man3/RSA_blinding_on.3
+&gt; /usr/man/man3/RSA_check_key.3
+&gt; /usr/man/man3/RSA_generate_key.3
+&gt; /usr/man/man3/RSA_get_ex_new_index.3
+&gt; /usr/man/man3/RSA_new.3
+&gt; /usr/man/man3/RSA_padding_add_PKCS1_type_1.3
+&gt; /usr/man/man3/RSA_print.3
+&gt; /usr/man/man3/RSA_private_encrypt.3
+&gt; /usr/man/man3/RSA_public_encrypt.3
+&gt; /usr/man/man3/RSA_set_method.3
+&gt; /usr/man/man3/RSA_sign.3
+&gt; /usr/man/man3/RSA_sign_ASN1_OCTET_STRING.3
+&gt; /usr/man/man3/RSA_size.3
+&gt; /usr/man/man3/blowfish.3
+&gt; /usr/man/man3/bn.3
+&gt; /usr/man/man1/ca.1
+&gt; /usr/man/man1/ciphers.1
+&gt; /usr/man/man1/crl.1
+&gt; /usr/man/man1/crl2pkcs7.1
+&gt; /usr/man/man1/dgst.1
+&gt; /usr/man/man1/dhparam.1
+&gt; /usr/man/man1/dsa.1
+&gt; /usr/man/man1/dsaparam.1
+&gt; /usr/man/man1/enc.1
+&gt; /usr/man/man1/gendsa.1
+&gt; /usr/man/man1/genrsa.1
+&gt; /usr/man/man1/nseq.1
+&gt; /usr/man/man1/openssl.1
+&gt; /usr/man/man1/pkcs12.1
+&gt; /usr/man/man1/pkcs7.1
+&gt; /usr/man/man1/pkcs8.1
+&gt; /usr/man/man1/req.1
+&gt; /usr/man/man1/rsa.1
+&gt; /usr/man/man1/s_client.1
+&gt; /usr/man/man1/s_server.1
+&gt; /usr/man/man1/sess_id.1
+&gt; /usr/man/man1/smime.1
+&gt; /usr/man/man1/speed.1
+&gt; /usr/man/man1/spkac.1
+&gt; /usr/man/man3/bn_internal.3
+&gt; /usr/man/man3/buffer.3
+&gt; /usr/man/man3/crypto.3
+&gt; /usr/man/man3/d2i_DHparams.3
+&gt; /usr/man/man3/d2i_RSAPublicKey.3
+&gt; /usr/man/man3/dh.3
+&gt; /usr/man/man3/dsa.3
+&gt; /usr/man/man3/err.3
+&gt; /usr/man/man3/hmac.3
+&gt; /usr/man/man3/lh_stats.3
+&gt; /usr/man/man3/lhash.3
+&gt; /usr/man/man3/md5.3
+&gt; /usr/man/man3/mdc2.3
+&gt; /usr/man/man3/rand.3
+&gt; /usr/man/man3/rc4.3
+&gt; /usr/man/man3/ripemd.3
+&gt; /usr/man/man3/rsa.3
+&gt; /usr/man/man3/sha.3
+&gt; /usr/man/man3/threads.3
+&gt; /usr/man/man3/SSL_get_error.3
+&gt; /usr/man/man3/ssl.3
+&gt; /usr/man/man5/config.5
+&gt; /usr/man/man7/des_modes.7</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

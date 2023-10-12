@@ -1,0 +1,630 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 12 Программы обеспечения безопасности (Целостность системы) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://ttcprogress.ru/production/products/Zubchatye-remni-PU-Elatech/" target="_blank">зубчатые ремни каталог размеры</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch12_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#12">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch13_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 12 Программы обеспечения безопасности (Целостность системы) -
+      Tripwire ASR 1.3.1</H2><FONT size=+2>В этой главе</FONT><BR><FONT
+      size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#1">-->Linux Tripwire
+      2.2.1<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#3">-->Организация
+      защиты Tripwire для Linux<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#4">-->Команды<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#5">-->Linux Tripwire
+      ASR 1.3.1<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#6">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#7">-->Организация
+      защиты Tripwire<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#8">-->Команды<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=240
+      src="ch12_2.files/17.jpg" width=158></TD></TR></TBODY></TABLE>
+<H3><A name=5>Linux Tripwire ASR 1.3.1</A></H3>
+<P align=justify>Tripwire ASR 1.3.1 это &#8220;Academic Source Release (ASR)&#8221;
+программы Tripwire. Лично я предпочитаю версию 1.3.1 версии 2.2.1, так как она
+может быть скомпилирована и инсталлирована без каких-либо проблем с
+совместимостью на всех версиях Linux</P>
+<P align=justify>В задачах Tripwire ASR написано:</P>
+<P align=justify>С появлением все более и более сложных и тонких способов
+проникновений в систему UNIX, возникает необходимость в утилитах, помогающих
+обнаружить неправомочные модификации файлов. Tripwire &#8211; это утилита, которая
+помогает администраторам и пользователям контролировать обозначенный набор
+файлов на предмет любых изменений. Используемая на регулярной основе (например,
+ежедневно), Tripwire может предупредить администраторов о нарушении или
+разрушении файлов, так чтобы меры были предприняты в кратчайшие сроки.</P>
+<P align=justify>Tripwire &#8211; это программа для проверки целостности файлов и
+каталогов, утилита которая сравнивает обозначенный набор файлов и каталогов с
+информацией о них, сохраненной в базе данных, сформированной ранее. Помечаются и
+регистрируются любые изменения, в том числе добавление или удаление элементов.
+Системный администратор может заключить с высокой степенью уверенности, что
+требуемый набор файлов не был подвержен неправомочным модификациям, если
+Tripwire не сообщала об изменениях.</P>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>Tripwire версии
+1.3.1-1<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница Tripwire: <!--<A
+href="http://www.tripwiresecurity.com/"
+target=_blank>-->http://www.tripwiresecurity.com/<!--</A>--><BR>Вы должны скачать:
+Tripwire-1.3.1-1.tar.gz<BR></P>
+<P align=justify><B>Тарболы.</B></P>
+<P align=justify>Хорошей идеей будет создать список файлов установленных в вашей
+системе до инсталляции Tripwire и после, в результате, с помощью утилиты diff вы
+сможете узнать какие файлы были установлены. Например,</P>
+<P align=justify>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Tripwire1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Tripwire2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Tripwire1 Tripwire2 &gt;
+Tripwire-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp Tripwire-version.tar.gz /var/tmp<BR>[root@deep /]# cd /var/tmp<BR>[root@deep
+tmp]# tar xzpf Tripwire-version.tar.gz<BR></FONT>
+<H3>Компиляция и оптимизация.</H3>
+<P align=justify>Редактируйте файл utils.c (vi +462 src/utils.c) и измените
+следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>else if (iscntrl(*pcin))
+{</FONT><BR>Должна читаться:<BR><FONT color=#008080 size=-1>else if (!(*pcin
+&amp; 0x80) &amp;&amp; iscntrl(*pcin)) {</FONT><BR></P>
+<P align=justify>Редактируйте файл config.parse.c file (vi +356
+src/config.parse.c) и измените следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>rewind(fpout);</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>else
+{<BR>rewind(fpin);<BR>}</FONT><BR><BR></P>
+<P align=justify>Редактируйте файл config.h (vi +106 include/config.h) и
+измените следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>#define CONFIG_PATH
+"/usr/local/bin/tw"<BR>#define DATABASE_PATH "/var/tripwire"</FONT><BR>Должны
+читаться:<BR><FONT color=#008080 size=-1>#define CONFIG_PATH "/etc"<BR>#define
+DATABASE_PATH "/var/spool/tripwire"</FONT><BR></P>
+<P align=justify>Редактируйте файл config.h (vi +165 include/config.h) и
+измените следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>#define TEMPFILE_TEMPLATE
+"/tmp/twzXXXXXX"</FONT><BR>Должна читаться:<BR><FONT color=#008080
+size=-1>#define TEMPFILE_TEMPLATE "/var/tmp/.twzXXXXXX"</FONT><BR></P>
+<P align=justify>Редактируйте файл config.pre.y (vi +66 src/config.pre.y) и
+измените следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>#ifdef TW_LINUX</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>#ifdef TW_LINUX_UNDEF</FONT><BR></P>
+<P align=justify>Редактируйте файл Makefile (vi +13 Makefile) и измените
+следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>DESTDIR =
+/usr/local/bin/tw</FONT><BR>Должна читаться:<BR><FONT color=#008080
+size=-1>DESTDIR = /usr/sbin</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DATADIR =
+/var/tripwire</FONT><BR>Должна читаться:<BR><FONT color=#008080 size=-1>DATADIR
+= /var/spool/tripwire</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>LEX = lex</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>LEX = flex</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>CC=gcc</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>CC=egcs</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>CFLAGS = -O</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>CFLAGS = -O9 -funroll-loops -ffast-math
+-malign-double -mcpu=pentiumpro -march=pentiumpro -fomit-frame-pointer
+-fno-exceptions</FONT><BR></P><FONT color=#008080 size=-1>[root@deep
+tw_ASR_1.3.1_src]# make<BR>[root@deep tw_ASR_1.3.1_src]# make
+install<BR>[root@deep tw_ASR_1.3.1_src]# chmod 700
+/var/spool/tripwire/<BR>[root@deep tw_ASR_1.3.1_src]# chmod 500
+/usr/sbin/tripwire<BR>[root@deep tw_ASR_1.3.1_src]# chmod 500
+/usr/sbin/siggen<BR>[root@deep tw_ASR_1.3.1_src]# rm -f
+/usr/sbin/tw.config</FONT><BR>
+<P align=justify>Команды &#8220;make&#8221; и &#8220;make install&#8221; настаивают программное
+обеспечение, чтобы удостовериться, что ваша система имеет необходимые
+возможности и библиотеки для успешной компиляции пакета, компилируют все
+исходные файлы в исполняемые, и затем инсталлирует их и сопутствующие им файлы в
+определенное место.</P>
+<P align=justify>Команда &#8220;chmod&#8221; изменяет права доступа по умолчанию к каталогу
+&#8220;tripwire&#8221; на 700 (drwx------), чтение, запись и исполнение только для
+пользователя &#8220;root&#8221;. И изменяет права доступа на чтение и исполнение только
+пользователем root (- r-x------) для программ &#8220;/usr/sbin/tripwire&#8221; и
+&#8220;/usr/sbin/siggen&#8221;. Команда &#8220;rm&#8221; используется для удаления файла &#8220;tw.config&#8221;
+расположенного в &#8220;/usr/sbin&#8221;. Нам этот файл не нужен, так как мы создадим
+подобный новый файл позже в каталоге &#8220;/etc&#8221;.</P><B>Очистка после
+работы.</B><BR><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# rm -rf tw_ASR_version/
+Tripwire-version.tar.gz</FONT><BR>
+<P align=justify>Команда &#8220;rm&#8221;, использованная выше, будет удалять все исходные
+коды, которые мы использовали при компиляции и инсталляции Tripwire. Она также
+удалит .tar.gz архив.</P>
+<H3><A name=6>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файл из архива и измените его под свои требования.
+Затем поместите его в соответствующее место на сервере, так как это показано
+ниже. Файл с конфигурациями вы можете скачать с адреса:<BR><!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска Tripwire следующие файлы должны быть созданы или
+скопированы в нужный каталог:</P>
+<P align=justify>Копируйте файл tw.config в &#8220;/etc&#8221;.<BR>Копируйте скрипт
+tripwire.verify в каталог &#8220;/etc/cron.daily&#8221;. </P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Настройка файла &#8220;/etc/tw.config&#8221;</H3>
+<P align=justify>&#8220;/etc/tw.config&#8221; это конфигурационный файл для Tripwire, в
+котором определяется какие файл и каталоги должны контролироваться. Обратите
+внимание, что при редактировании этого файла необходимы обширные испытания и
+опыты, прежде чем удастся получить работающие файлы отчетов. Следующий
+работающий пример вы можете использовать, как стартовую площадку для ваших
+настроек.</P><B>Шаг 1.</B>
+<P align=justify>Создайте файл tw.config (touch /etc/tw.config) и добавьте в
+него все файлы и каталоги, которые вы хотите контролировать. Формат
+конфигурационного файла описан в его заголовке и в странице руководства (man)
+для tw.config (5):</P><FONT size=-1><PRE># Gerhard Mourani: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5c3b3133292e3d32351c2a35383933282e3332723f3d">[email&#160;protected]</a>
+# last updated: 1999/11/12
+# Первое, домашний каталог root-а
+/root			 R
+!/root/.bash_history
+/			 R
+# это ядро
+/boot/vmlinuz		 R
+# критичные файлы загрузки
+/boot			 R
+# Критичные каталоги и файлы
+/chroot			 R
+/etc			 R
+/etc/inetd.conf		 R
+/etc/nsswitch.conf	 R
+/etc/rc.d 		 R
+/etc/mtab 		 L
+/etc/motd		 L
+/etc/group		 R
+/etc/passwd		 L
+# другие популярные файловые системы
+/usr			 R
+/usr/local		 R
+/dev			 L-am
+/usr/etc			 R
+# исключаем home
+=/home R
+# каталог var
+=/var/spool		 L
+/var/log		 L
+/var/lib			 L
+/var/spool/cron	 L
+!/var/lock
+# особые каталоги
+=/proc			 E
+=/tmp
+=/mnt/cdrom
+=/mnt/floppy
+</PRE></FONT><B>Шаг 2.</B>
+<P align=justify>Сейчас, из соображений безопасности, изменим режим доступа к
+этому файлу:</P><FONT color=#008080 size=-1>[root@deep /]# chmod 600
+/etc/tw.config</FONT>
+<H3>Конфигурирование скрипта &#8220;/etc/cron.daily/tripwire.verify&#8221;.</H3>
+<P align=justify>&#8220;/etc/cron.daily/tripwire.verify&#8221; это небольшой скрипт,
+запускаемый crond-ом на вашем сервере каждый день, для сканирования жесткого
+диска на предмет возможных изменений в файлах и каталогах и отправки результатов
+по электронной почте системному администратору. Этот скрипт автоматически
+выполнит проверку целостности файловой системы. Если вы хотите автоматизировать
+эту задачу выполните шаги, описанные ниже.</P><B>Шаг 1.</B>
+<P align=justify>Создайте скрипт tripwire.verify (touch
+/etc/cron.daily/tripwire.verify) и добавьте в него:</P><FONT size=-1><PRE>#!/bin/sh
+/usr/sbin/tripwire -loosedir -q | (cat &lt;&lt;EOF
+Это отчет о возможных изменениях в целостности файловой системы,
+Автоматически созданный программой Tripwire. Чтобы сообщить Tripwire
+Что файлы и содержимое каталогов верно, выполните как root следующую
+команду:
+
+/usr/sbin/tripwire -update [pathname|entry]
+
+Если вы хотите войти в интерактивный режим проверки целостности и
+контроля сессии, выполните как root:
+
+/usr/sbin/tripwire -interactive
+
+Измененные файлы/каталоги включают:
+EOF
+cat
+) | /bin/mail -s "Отчет о целостности файлов" root
+</PRE></FONT><B>Шаг 2</B>
+<P align=justify>Сейчас, сделайте скрипт исполняемым и измените режим доступа к
+нему на 0700 следующей командой:</P><FONT color=#008080 size=-1>[root@deep /]#
+chmod 700 /etc/cron.daily/tripwire.verify</FONT>
+<H3><A name=7>Организация защиты Tripwire.</A></H3>
+<P align=justify>Рекомендуется, из соображений безопасности, переместить базы
+данных Tripwire (tw.db_[hostname]) в какое-либо место (например, на дискету),
+где они не могут быть модифицированы. Это важно, потому что данные Tripwire
+заслуживают такого же доверия, что и ее базы данных. Также рекомендуется сделать
+сразу распечатку базы данных. Если вы начнете подозревать, что целостность вашей
+базы данных нарушена, то сможете вручную проверить ее.</P>
+<H3>Дополнительная документация.</H3>
+<P align=justify>Для получения большей информации вы можете прочитать страницы
+руководства (man) перечисленные ниже.</P>
+<P align=justify>$ man siggen (8) &#8211; генератор сигнатур программ для
+Tripwire<BR>$ man tripwire (8) &#8211; программа проверки целостности файлов для
+UNIX<BR>$ man tw.config (5) &#8211; конфигурационный фал для Tripwire<BR></P>
+<H3><A name=8>Команды.</A></H3>
+<P align=justify>Ниже приведены команды из тех, что мы часто используем в
+регулярной работе, но из существует много больше. Читайте страницы руководства
+(man) для получения большей информации.</P><FONT size=+1>Запуск Tripwire в
+интерактивном режиме проверки.</FONT>
+<P align=justify>В &#8220;Интерактивном режиме проверки&#8221; Tripwire проверяет файлы и
+каталоги, выясняя какие были добавлены, удалены или изменены, сравнивая их со
+своей базой данных, а затем спрашивает у администратора, какие элементы базы
+данных должны быть обновлены. Это наиболее удобный путь поддерживать базу данных
+в актуальном состоянии, но он требует наличия администратора за консолью. Если
+вы хотите использовать этот режим, то следуйте шагам приведенным ниже.</P><B>Шаг
+1.</B>
+<P align=justify>Tripwire должна иметь базу данных, сравнивая с которой в
+дальнейшем файловую систему она сможет определить изменения. Первым нашим
+действием будет создание файла, называемого &#8220;tw.db_[hostname]&#8221; в каталоге,
+который вы определили для хранения базы данных ([hostname] будет заменен на имя
+вашей машины).</P>
+<P align=justify>Для создания информационной базы данных Tripwire, используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/spool/tripwire/<BR>[root@deep tripwire]# /usr/sbin/tripwire
+--initialize<BR></FONT>
+<P align=justify>Мы переходим в каталог, который определили для хранения баз
+данных, и затем создаем информационную базу данных, которая используется для
+всех последующих проверок целостности.</P><B>Шаг 2</B>
+<P align=justify>Так как файл с информационной базой данных Tripwire был создан,
+мы можем сейчас запустить Tripwire в &#8220;Интерактивном режиме проверки&#8221;. Этот режим
+будет запрашивать пользователя относительно того, действительно ли каждый
+измененный элемент системы должен быть обновлен в базе данных.</P>
+<P align=justify>Для запуска Интерактивного режима проверки используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/spool/tripwire/database/<BR>[root@deep database]# cp tw.db_myserverhostname
+/var/spool/tripwire/<BR>[root@deep database]# cd ..<BR>[root@deep tripwire]#
+/usr/sbin/tripwire --interactive<BR>Tripwire(tm) ASR (Academic Source Release)
+1.3.1<BR>File Integrity Assessment Software<BR>(c) 1992, Purdue Research
+Foundation, (c) 1997, 1999 Tripwire<BR>Security Systems, Inc. All Rights
+Reserved. Use Restricted to<BR>Authorized Licensees.<BR>### Phase 1: Reading
+configuration file<BR>### Phase 2: Generating file list<BR>### Phase 3: Creating
+file information database<BR>### Phase 4: Searching for
+inconsistencies<BR>###<BR>### Total files scanned: 15722<BR>### Files added:
+34<BR>### Files deleted: 42<BR>### Files changed: 321<BR>###<BR>### Total file
+violations: 397<BR>###<BR>added: -rwx------ root 22706 Dec 31 06:25:02 1999
+/root/tmp/firewall<BR>---&gt; File: '/root/tmp/firewall'<BR>---&gt; Update
+entry? [YN(y)nh?]<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> В интерактивном режиме Tripwire будет
+сообщать обо всех добавленных, удаленных и измененных файлах, затем позволяя
+пользователю обновить базу данных.</P><FONT size=+1>Запуск Tripwire в режиме
+обновления базы данных.</FONT>
+<P align=justify>Выполнение Tripwire в &#8220;Режиме обновления базы данных&#8221; совместно
+со скриптом &#8220;tripwire.verify&#8221;, который отправляет результаты системному
+администратору, будет сокращать время сканирования системы. Вместо запуска
+Tripwire в &#8220;Интерактивном режиме проверки&#8221; и ожидания завершения долгого
+сканирования, скрипт &#8220;tripwire.verify&#8221; будет сканировать систему и сообщать по
+электронной почте о результатах, а затем вы запускаете Tripwire в &#8220;Режиме
+обновления базы данных &#8221; и обновляете только единичные файлы и каталоги, которые
+были изменены.</P>
+<P align=justify>Например:</P>
+<P align=justify>Если один файл был изменен, вы можете:</P><FONT color=#008080
+size=-1>[root@deep /]# tripwire -update /etc/newly.installed.file</FONT>
+<P align=justify>Или, если был изменен набор файлов и каталогов, вы можете
+выполнить:</P><FONT color=#008080 size=-1>[root@deep /]# tripwire -update
+/usr/lib/Package_Dir</FONT> В
+<P align=justify>любом случае, Tripwire пересоздает элементы базы данных для
+каждого заданного файла. Резервная копия старой базы создается в
+каталоге&#8220;./databases&#8221;.</P>
+<H3>Некоторые возможные места использования Tripwire</H3>
+<P align=justify>Tripwire может быть использован для:</P>
+<OL>
+  <LI>Проверки целостности файловой системы.
+  <LI>Получения списка новых инсталлированных или удаленных файлов в вашей
+  системе. </LI></OL>
+<H3>Инсталлированные файлы.</H3><FONT size=-1><PRE>&gt; /etc/cron.daily/tripwire.verify
+&gt; /etc/tw.config
+&gt; /usr/man/man5/tw.config.5
+&gt; /usr/man/man8/siggen.8
+&gt; /usr/man/man8/tripwire.8
+&gt; /usr/sbin/tripwire
+&gt; /usr/sbin/siggen
+&gt; /var/spool/tripwire
+&gt; /var/spool/tripwire/tw.db_TEST</PRE></FONT>
+<H3>Альтернативы Tripwire</H3><B>ViperDB</B><BR>Домашняя страница ViperDB: <!--<A
+href="http://www.resentment.org/projects/viperdb/"
+target=_blank>-->http://www.resentment.org/projects/viperdb/<!--</A>--><BR><B>FCHECK</B><BR>Домашняя
+страница FCHECK: <!--<A href="http://sites.netscape.net/fcheck/fcheck.html"
+target=_blank>-->http://sites.netscape.net/fcheck/fcheck.html<!--</A>--><BR><B>Sentinel</B><BR>Домашняя
+страница Sentinel: <!--<A href="http://zurk.netpedia.net/zfile.html"
+target=_blank>-->http://zurk.netpedia.net/zfile.html<!--</A>--><BR>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch12_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#12">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch13_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

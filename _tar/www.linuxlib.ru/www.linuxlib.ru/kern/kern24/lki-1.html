@@ -1,0 +1,1132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Ядро Linux 2.4 изнутри: Загрузка — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <a
+     href="lki-2.html">Вперед</a> Назад <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc1">Содержание</a><br>
+     <br>
+
+    <hr>
+
+    <h2><a
+     name="s1">1. Загрузка</a></h2>
+
+    <h2><a
+     name="ss1.1">1.1 Построение образа ядра Linux</a></h2>
+
+    <p>В данном разделе рассматриваются этапы сборки ядра Linux и
+    обсуждается результат работы каждого из этапов. Процесс сборки в
+    значительной степени зависит от аппаратной платформы, поэтому
+    особое внимание будет уделено построению ядра Linux для платформы
+    x86.</p>
+
+    <p>Когда пользователь дает команду &#39;make zImage&#39; или
+    &#39;make bzImage&#39;, результат -- загрузочный образ ядра,
+    записывается как <code>arch/i386/boot/zImage</code> или
+    <code>arch/i386/boot/bzImage</code> соответственно. Вот что
+    происходит в процессе сборки:</p>
+
+    <ol>
+      <li>Исходные файлы на C и ассемблере компилируются в перемещаемый
+      [relocatable] объектный код в формате ELF (файлы с расширением
+      .o), при этом некоторые файлы, с помощью утилиты
+      <strong>ar(1)</strong>, дополнительно группируются в архивы (с
+      раширением .a)</li>
+
+      <li>Созданные на предыдущем шаге, файлы .o и .a объединяются
+      утилитой <strong>ld(1)</strong> в статически скомпонованный
+      исполняемый файл <code>vmlinux</code> в 32-разрядном формате ELF
+      80386 с включенной символической информацией.</li>
+
+      <li>Далее, посредством <strong>nm vmlinux</strong>, создается
+      файл <code>System.map</code>, при этом все не относящиеся к делу
+      символы отбрасываются.</li>
+
+      <li>Переход в каталог <code>arch/i386/boot</code>.</li>
+
+      <li>Текст asm-файла <code>bootsect.S</code> перерабатывается с
+      или без ключа <strong>-D__BIG_KERNEL__</strong>, в зависимости от
+      конечной цели bzImage или zImage, в <code>bbootsect.s</code> или
+      <code>bootsect.s</code> соответственно.</li>
+
+      <li><code>bbootsect.s</code> ассемблируется и конвертируется в
+      файл формата &#39;raw binary&#39; с именем <code>bbootsect</code>
+      (<code>bootsect.s</code> ассемблируется в файл
+      <code>bootsect</code> в случае сборки zImage).</li>
+
+      <li>Содержимое установщика <code>setup.S</code>
+      (<code>setup.S</code> подключает <code>video.S</code>)
+      преобразуется в <code>bsetup.s</code> для bzImage
+      (<code>setup.s</code> для zImage). Как и в случае с кодом
+      bootsector, различия заключаются в использовании ключа
+      -<strong>D__BIG_KERNEL__</strong>, при сборке bzImage.
+      Результирующий файл конвертируется в формат &#39;raw binary&#39;
+      с именем <code>bsetup</code>.</li>
+
+      <li>Переход в каталог <code>arch/i386/boot/compressed</code>.
+      Файл <code>/usr/src/linux/vmlinux</code> переводится в файл
+      формата &#39;raw binary&#39; с именем $tmppiggy и из него
+      удаляются ELF-секции <code>.note</code> и
+      <code>.comment</code>.</li>
+
+      <li><strong>gzip -9 &lt; $tmppiggy &gt;
+      $tmppiggy.gz</strong></li>
+
+      <li>Связывание $tmppiggy.gz в перемещаемый ELF-формат (<strong>ld
+      -r</strong>) <code>piggy.o</code>.</li>
+
+      <li>Компиляция процедур сжатия данных <code>head.S</code> и
+      <code>misc.c</code> (файлы находятся в каталоге
+      <code>arch/i386/boot/compressed</code>) в объектный ELF формат
+      <code>head.o</code> и <code>misc.o</code>.</li>
+
+      <li>Объектные файлы <code>head.o</code>, <code>misc.o</code> и
+      <code>piggy.o</code> объединяются в <code>bvmlinux</code> (или
+      <code>vmlinux</code> при сборке zImage, не путайте этот файл с
+      <code>/usr/src/linux/vmlinux</code>!). Обратите внимание на
+      различие: <strong>-Ttext 0x1000</strong>, используется для
+      <code>vmlinux</code>, а <strong>-Ttext 0x100000</strong>?-- для
+      <code>bvmlinux</code>, т.е. bzImage загружается по более высоким
+      адресам памяти.</li>
+
+      <li>Преобразование <code>bvmlinux</code> в файл формата &#39;raw
+      binary&#39; с именем <code>bvmlinux.out</code>, в процессе
+      удаляются ELF секции <code>.note</code> и
+      <code>.comment</code>.</li>
+
+      <li>Возврат в каталог <code>arch/i386/boot</code> и, с помощью
+      программы <strong>tools/build</strong>, <code>bbootsect</code>,
+      <code>bsetup</code> и <code>compressed/bvmlinux.out</code>
+      объединяются в <code>bzImage</code> (справедливо и для
+      <code>zImage</code>, только в именах файлов отсутствует начальный
+      символ &#39;b&#39;). В конец bootsector записываются такие важные
+      переменные, как <code>setup_sects</code> и
+      <code>root_dev</code>.</li>
+    </ol>
+
+    <p>Размер загрузочного сектора (bootsector) всегда равен 512 байт.
+    Размер установщика (setup) должен быть не менее чем 4 сектора, и
+    ограничивается сверху размером около 12K - по правилу:</p>
+
+    <p>512 + setup_sects * 512 + место_для_стека_bootsector/setup &lt;=
+    0x4000 байт</p>
+
+    <p>Откуда взялось это ограничение станет понятным дальше.</p>
+
+    <p>На сегодняшний день верхний предел размера bzImage составляет
+    примерно 2.5M, в случае загрузки через LILO, и 0xFFFF параграфов
+    (0xFFFF0 = 1048560 байт) для загрузки raw-образа, например с
+    дискеты или CD-ROM (El-Torito emulation mode).</p>
+
+    <p>Следует помнить, что <strong>tools/build</strong> выполняет
+    проверку размеров загрузочного сектора, образа ядра и нижней
+    границы установщика (setup), но не проверяет *верхнюю* границу
+    установщика (setup). Следовательно очень легко собрать
+    &quot;битое&quot; ядро, добавив несколько больший размер
+    &quot;.space&quot; в конец <code>setup.S</code>.</p>
+
+    <h2><a
+     name="ss1.2">1.2 Загрузка: Обзор</a></h2>
+
+    <p>Процесс загрузки во многом зависит от аппаратной платформы,
+    поэтому основное внимание будет уделено платформе IBM PC/IA32. Для
+    сохранения обратной совместимости, firmware-загрузчики загружают
+    операционную систему устаревшим способом. Процесс этот можно
+    разделить на несколько этапов:</p>
+
+    <ol>
+      <li>BIOS выбирает загрузочное устройство.</li>
+
+      <li>BIOS загружает bootsector с загрузочного устройства.</li>
+
+      <li>Код bootsector-а загружает установщика, процедуры
+      декомпрессии и сжатый образ ядра.</li>
+
+      <li>Ядро декомпрессируется в защищенном режиме (protected
+      mode).</li>
+
+      <li>Выполняется низкоуровневый инициализирующий ассемблерный
+      код.</li>
+
+      <li>Выполняется высокоуровневый инициализирующий C код.</li>
+    </ol>
+
+    <h2><a
+     name="ss1.3">1.3 Загрузка: BIOS POST</a></h2>
+
+    <ol>
+      <li>При включении питания запускается тактовый генератор и схема
+      контроля питания устанавливает на шине сигнал #POWERGOOD.</li>
+
+      <li>На вывод CPU #RESET подается сигнал (после чего CPU переходит
+      в реальный режим 8086).</li>
+
+      <li>%ds=%es=%fs=%gs=%ss=0, %cs=0xFFFF0000,%eip = 0x0000FFF0
+      (запуск кода Power On Self Test в ROM BIOS).</li>
+
+      <li>На время выполнения проверок, прерывания запрещены.</li>
+
+      <li>По адресу 0 инициализируется таблица векторов прерываний
+      (IVT, Interrupts Vector Table).</li>
+
+      <li>По прерыванию <strong>0x19</strong> вызывается начальный
+      (bootstrap) загрузчик BIOS, регистр %dl содержит &#39;номер
+      загрузочного устройства&#39;. В результате по физическому адресу
+      0x7C00 (0x07C0:0000) загружается содержимое первого сектора
+      нулевой дорожки.</li>
+    </ol>
+
+    <h2><a
+     name="ss1.4">1.4 Загрузка: bootsector и setup</a></h2>
+
+    <p>Для загрузки ядра Linux можно воспользоваться следующими
+    загрузочными секторами:</p>
+
+    <ul>
+      <li>Загрузочным сектором Linux из
+      (<code>arch/i386/boot/bootsect.S</code>),</li>
+
+      <li>Загрузочный сектор LILO (или другого менеджера загрузки),
+      или</li>
+
+      <li>обойтись без загрузочного сектора (loadlin и т.п.)</li>
+    </ul>
+
+    <p>А теперь подробнее рассмотрим загрузочный сектор. В первых
+    нескольких строках инициализируются вспомогательные макросы,
+    используемые как значения сегментов:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>29 SETUPSECS = 4                /* число секторов установщика по умолчанию */
+30 BOOTSEG   = 0x07C0           /* первоначальный адрес загрузочного сектора */
+31 INITSEG   = DEF_INITSEG      /* сюда перемещается загрузчик - чтобы не мешал */
+32 SETUPSEG  = DEF_SETUPSEG     /* здесь начинается установщик */
+33 SYSSEG    = DEF_SYSSEG       /* система загружается по адресу 0x10000 (65536) */
+34 SYSSIZE   = DEF_SYSSIZE      /* размер системы: в 16-байтных блоках */
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>(числа в начале - это номера строк в файле bootsect.S file)
+    Значения <code>DEF_INITSEG</code>, <code>DEF_SETUPSEG</code>,
+    <code>DEF_SYSSEG</code> и <code>DEF_SYSSIZE</code> берутся из файла
+    <code>include/asm/boot.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* Ничего не меняйте, если не уверены в том, что делаете. */
+#define DEF_INITSEG     0x9000
+#define DEF_SYSSEG      0x1000
+#define DEF_SETUPSEG    0x9020
+#define DEF_SYSSIZE     0x7F00
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Рассмотрим поближе код <code>bootsect.S</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>  54          movw    $BOOTSEG, %ax
+    55          movw    %ax, %ds
+    56          movw    $INITSEG, %ax
+    57          movw    %ax, %es
+    58          movw    $256, %cx
+    59          subw    %si, %si
+    60          subw    %di, %di
+    61          cld
+    62          rep
+    63          movsw
+    64          ljmp    $INITSEG, $go
+
+    65  # bde - 0xff00 изменено на 0x4000 для работы отладчика с 0x6400 и выше (bde).
+    66  # Если мы проверили верхние адреса, то об этом можно не беспокоиться. Кроме того,
+    67  # мой BIOS можно сконфигурировать на загрузку таблицы дисков wini в верхнюю память
+    68  # вместо таблицы векторов.  Старый стек может &quot;помесить&quot;
+    69  # таблицу устройств [drive table].
+
+    70  go:     movw    $0x4000-12, %di         # 0x4000 - произвольное значение &gt;=
+    71                                          # длины bootsect + длины
+    72                                          # setup + место для стека;
+    73                                          # 12 - размер параметров диска.
+    74          movw    %ax, %ds                # INITSEG уже в ax и es
+    75          movw    %ax, %ss
+    76          movw    %di, %sp                # разместим стек по INITSEG:0x4000-12.
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Строки 54-63 перемещают код начального загрузчика из адреса
+    0x7C00 в адрес 0x90000. Для этого:</p>
+
+    <ol>
+      <li>в регистровую пару %ds:%si заносится значение $BOOTSEG:0
+      (0x7C0:0 = 0x7C00)</li>
+
+      <li>в регистровую пару %es:%di заносится значение $INITSEG:0
+      (0x9000:0 = 0x90000)</li>
+
+      <li>в регистр %cx записывается число 16-битовых слов (256 слов =
+      512 байт = 1 сектор)</li>
+
+      <li>В регистре флагов EFLAGS сбрасывается флаг направления DF
+      (Direction Flag) (копирование с автоинкрементом адресных
+      регистров) (cld)</li>
+
+      <li>копируется 512 байт (rep movsw)</li>
+    </ol>
+
+    <p>Здесь умышленно не используется инструкция <code>rep
+    movsd</code> (обратите внимание на директиву - .code16).</p>
+
+    <p>В строке 64 выполняется переход на метку <code>go:</code>, в
+    только что созданную копию загрузчика, т.е. в сегмент 0x9000. Эта,
+    и следующие три инструкции (строки 64-76) переустанавливают регистр
+    сегмента стека и регистр указателя стека на $INITSEG:0x4000-0xC,
+    т.е. %ss = $INITSEG (0x9000) и %sp = 0x3FF4 (0x4000-0xC). Это и
+    есть то самое ограничение на размер setup, которое упоминалось
+    ранее (см. Построение образа ядра Linux).</p>
+
+    <p>Для того, чтобы разрешить считывание сразу нескольких секторов
+    (multi-sector reads), в строках 77-103 исправляются некоторые
+    значения в таблице параметров для первого диска :</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>  77   # Часто в BIOS по умолчанию в таблицы параметров диска не признают
+    78  # чтение по несколько секторов кроме максимального числа, указанного
+    79  # по умолчанию в таблице параметров дискеты - что может иногда равняться
+    80  # 7 секторам.
+    81  #
+    82  # Поскольку чтение по одному сектору отпадает (слишком медленно),
+    83  # необходимо позаботиться о создании в ОЗУ новой таблицы параметров
+    84  # (для первого диска).  Мы установим максимальное число секторов
+    85  # равным 36 - максимум, с которым мы столкнемся на ED 2.88.
+    86  #
+    87  # Много - не мало.  А мало - плохо.
+    88  #
+    89  # Сегменты устанавливаются так: ds = es = ss = cs - INITSEG, fs = 0,
+    90  # а gs не используется.
+
+
+    91          movw    %cx, %fs                # запись 0 в fs
+    92          movw    $0x78, %bx              # в fs:bx адрес таблицы
+    93          pushw   %ds
+    94          ldsw    %fs:(%bx), %si          # из адреса ds:si
+    95          movb    $6, %cl                 # копируется 12 байт
+    96          pushw   %di                     # di = 0x4000-12.
+    97          rep                             # инструкция cld не нужна - выполнена в строке 66
+    98          movsw
+    99          popw    %di
+   100          popw    %ds
+   101          movb    $36, 0x4(%di)           # записывается число секторов
+   102          movw    %di, %fs:(%bx)
+   103          movw    %es, %fs:2(%bx)
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Контроллер НГМД переводится в исходное состояние функцией 0
+    прерывания 0x13 в BIOS (reset FDC) и секторы установщика
+    загружаются непосредственно после загрузчика, т.е. в физические
+    адреса, начиная с 0x90200 ($INITSEG:0x200), с помощью функции 2
+    прерывания 0x13 BIOS (read sector(s)). Смотри строки 107-124:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code> 107  load_setup:
+   108          xorb    %ah, %ah                # переинициализация FDC
+   109          xorb    %dl, %dl
+   110          int     $0x13
+   111          xorw    %dx, %dx                # диск 0, головка 0
+   112          movb    $0x02, %cl              # сектор 2, дорожка 0
+   113          movw    $0x0200, %bx            # адрес в INITSEG = 512
+   114          movb    $0x02, %ah              # функция 2, &quot;read sector(s)&quot;
+   115          movb    setup_sects, %al        # (все под головкой 0, на дорожке 0)
+   116          int     $0x13                   # читать
+   117          jnc     ok_load_setup           # получилось - продолжить
+
+   118          pushw   %ax                     # запись кода ошибки
+   119          call    print_nl
+   120          movw    %sp, %bp
+   121          call    print_hex
+   122          popw    %ax
+   123          jmp     load_setup
+
+   124  ok_load_setup:
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Если загрузка по каким-либо причинам не прошла (плохая дискета
+    или дискета была вынута в момент загрузки), то выдается сообщение
+    об ошибке и производится переход на бесконечный цикл. Цикл будет
+    повторяться до тех пор, пока не произойдет успешная загрузка, либо
+    пока машина не будет перезагружена.</p>
+
+    <p>Если загрузка setup_sects секторов кода установщика прошла
+    благополучно, то производится переход на метку
+    <code>ok_load_setup:</code>.</p>
+
+    <p>Далее производится загрузка сжатого образа ядра в физические
+    адреса начиная с 0x10000, чтобы не затереть firmware-данные в
+    нижних адресах памяти (0-64K). После загрузки ядра управление
+    передается в точку $SETUPSEG:0
+    (<code>arch/i386/boot/setup.S</code>). Поскольку обращений к BIOS
+    больше не будет, данные в нижней памяти уже не нужны, поэтому образ
+    ядра перемещается из 0x10000 в 0x1000 (физические адреса, конечно).
+    И наконец, установщик <code>setup.S</code> завершает свою работу,
+    переводя процессор в защищенный режим и передает управление по
+    адресу 0x1000 где находится точка входа в сжатое ядро, т.е.
+    <code>arch/386/boot/compressed/{head.S,misc.c}</code>. Здесь
+    производится установка стека и вызывается
+    <code>decompress_kernel()</code>, которая декомпрессирует ядро в
+    адреса, начиная с 0x100000, после чего управление передается
+    туда.</p>
+
+    <p>Следует отметить, что старые загрузчики (старые версии LILO) в
+    состоянии загружать только первые 4 сектора установщика (setup),
+    это объясняет присутствие кода, &quot;догружающего&quot; остальные
+    сектора в случае необходимости. Кроме того, установщик содержит
+    код, обрабатывающий различные комбинации типов/версий загрузчиков и
+    zImage/bzImage.</p>
+
+    <p>Теперь рассмотрим хитрость, позволяющую загрузчику выполнить
+    загрузку &quot;больших&quot; ядер, известных под именем
+    &quot;bzImage&quot;. Установщик загружается как обычно, в адреса с
+    0x90200, а ядро, с помощью специальной вспомогательной процедуры,
+    вызывающей BIOS для перемещения данных из нижней памяти в верхнюю,
+    загружается кусками по 64К. Эта процедура определена в
+    <code>setup.S</code> как <code>bootsect_helper</code>, а вызывается
+    она из <code>bootsect.S</code> как <code>bootsect_kludge</code>.
+    Метка <code>bootsect_kludge</code>, определенная в
+    <code>setup.S</code>, содержит значение сегмента установщика и
+    смещение <code>bootsect_helper</code> в нем же, так что для
+    передачи управления загрузчик должен использовать инструкцию
+    <code>lcall</code> (межсегментный вызов). Почему эта процедура
+    помещена в <code>setup.S</code>? Причина банальна - в bootsect.S
+    просто больше нет места (строго говоря это не совсем так, поскольку
+    в <code>bootsect.S</code> свободно примерно 4 байта и по меньшей
+    мере еще 1 байт, но вполне очевидно, что этого недостаточно) Эта
+    процедура использует функцию прерывания BIOS 0x15 (ax=0x8700) для
+    перемещения в верхнюю память и переустанавливает %es так, что он
+    всегда указывает на 0x10000. Это гарантирует, что
+    <code>bootsect.S</code> не исчерпает нижнюю память при считывании
+    данных с диска.</p>
+
+    <h2><a
+     name="ss1.5">1.5 LILO в качестве загрузчика.</a></h2>
+
+    <p>Специализированные загрузчики (например LILO) имеют ряд
+    преимуществ перед чисто Linux-овым загрузчиком (bootsector):</p>
+
+    <ol>
+      <li>Возможность выбора загрузки одного из нескольких ядер Linux
+      или одной из нескольких ОС.</li>
+
+      <li>Возможность передачи параметров загрузки в ядро (существует
+      патч BCP который добавляет такую же возможность и к чистому
+      bootsector+setup).</li>
+
+      <li>Возможность загружать большие ядра (bzImage) - до 2.5M
+      (против обычного 1M).</li>
+    </ol>
+
+    <p>Старые версии LILO ( версии 17 и более ранние) не в состоянии
+    загрузить ядро bzImage. Более новые версии (не старше 2-3 лет)
+    используют ту же методику, что и bootsect+setup, для перемещения
+    данных из нижней в верхнюю память посредством функций BIOS.
+    Отдельные разработчики (особенно Peter Anvin) выступают за отказ от
+    поддержки ядер zImage. Тем не менее, поддержка zImage остается в
+    основном из-за (согласно Alan Cox) существования некоторых BIOS-ов,
+    которые не могут грузить ядра bzImage, в то время как zImage
+    грузятся ими без проблем.</p>
+
+    <p>В заключение, LILO передает управление в <code>setup.S</code> и
+    далее загрузка продолжается как обычно.</p>
+
+    <h2><a
+     name="ss1.6">1.6 Высокоуровневая инициализация</a></h2>
+
+    <p>Под &quot;высокоуровневой инициализацией&quot; следует понимать
+    действия, непосредственно не связанные с начальной загрузкой, даже
+    не смотря на то, что часть кода, выполняющая ее, написана на
+    ассемблере, а именно в файле <code>arch/i386/kernel/head.S</code>,
+    который является началом декомпрессированного ядра. При
+    инициализации выполняются следующие действия:</p>
+
+    <ol>
+      <li>Устанавливаются сегментные регистры (%ds = %es = %fs = %gs =
+      __KERNEL_DS = 0x18).</li>
+
+      <li>Инициализируются таблицы страниц.</li>
+
+      <li>Разрешается листание страниц, установкой бита PG в %cr0.</li>
+
+      <li>Обнуляется BSS (для SMP <em>(мультипроцессорных систем
+      (<strong>прим. перев.</strong>))</em>, это действие выполняет
+      только первый CPU).</li>
+
+      <li>Копируются первые 2k bootup параметров (kernel
+      commandline).</li>
+
+      <li>Проверяется тип CPU, используя EFLAGS и, если возможно,
+      cpuid, позволяющие обнаружить процессор 386 и выше.</li>
+
+      <li>Первый CPU вызывает <code>start_kernel()</code>, все
+      остальные -
+      <code>arch/i386/kernel/smpboot.c:initialize_secondary()</code>,
+      если переменная ready=1, которая только переустанавливает
+      esp/eip.</li>
+    </ol>
+
+    <p>Функция <code>init/main.c:start_kernel()</code> написана на C и
+    выполняет следующие действия:</p>
+
+    <ol>
+      <li>Выполняется глобальная блокировка (необходимая для того,
+      чтобы через процесс инициализации проходил только один CPU)</li>
+
+      <li>Выполняются платформо-зависимые настройки (анализируется
+      раскладка памяти, копируется командная строка и пр.).</li>
+
+      <li>Вывод &quot;баннера&quot; ядра, который содержит версию,
+      компилятор, использованные при сборке, и пр., в кольцевой буфер
+      для сообщений. Текст &quot;баннера&quot; задается в переменной
+      linux_banner, определенной в init/version.c. Текст этот можно
+      вывести на экран командой <strong>cat
+      /proc/version</strong>.</li>
+
+      <li>Инициализация ловушек.</li>
+
+      <li>Инициализация аппаратных прерываний (irqs).</li>
+
+      <li>Инициализация данных для планировщика.</li>
+
+      <li>Инициализация данных хранения времени.</li>
+
+      <li>Инициализация подсистемы программных прерываний
+      (softirq).</li>
+
+      <li>Разбор параметров командной строки.</li>
+
+      <li>Инициализация консоли.</li>
+
+      <li>Если ядро было скомпилировано с поддержкой загружаемых
+      модулей, инициализируется подсистема динамической загрузки
+      модулей.</li>
+
+      <li>Инициализируются профилирующие буферы, если командная строка
+      содержит указание &quot;profile=&quot;.</li>
+
+      <li><code>kmem_cache_init()</code>, начало инициализации
+      менеджера памяти.</li>
+
+      <li>Разрешаются прерывания.</li>
+
+      <li>Подсчет значения BogoMips для данного CPU.</li>
+
+      <li>Вызывается <code>mem_init()</code> которая подсчитывает
+      <code>max_mapnr</code>, <code>totalram_pages</code> и
+      <code>high_memory</code> и выводит строку &quot;Memory:
+      ...&quot;.</li>
+
+      <li><code>kmem_cache_sizes_init()</code>, завершение
+      инициализации менеджера памяти.</li>
+
+      <li>Инициализация структур данных для procfs.</li>
+
+      <li><code>fork_init()</code>, создает <code>uid_cache</code>,
+      инициализируется <code>max_threads</code> исходя из объема
+      доступной памяти и конфигурируется <code>RLIMIT_NPROC</code> для
+      <code>init_task</code> как <code>max_threads/2</code>.</li>
+
+      <li>Создаются различные кэши для VFS, VM, кэш буфера и пр..</li>
+
+      <li>Инициализируется подсистема IPC, если имеется поддержка
+      System V IPC. Обратите внимание, что для System V shm, это
+      включает монтирование внутреннего (in-kernel) экземпляра файловой
+      системы shmfs.</li>
+
+      <li>Создается и инициализируется специальный кэш, если поддержка
+      квот (quota) включена.</li>
+
+      <li>Выполняется платформо-зависимая &quot;проверка ошибок&quot;
+      (&quot;check for bugs&quot;) и, если это возможно, активируется
+      обработка ошибок процессора/шины/проч. Сравнение различных
+      архитектур показывает, что &quot;ia64 не имеет ошибок&quot; а
+      &quot;ia32 имеет несколько дефектов&quot;, хороший пример -
+      &quot;дефект f00f&quot; который проверен только для ядра,
+      собранного под процессор ниже, чем 686.</li>
+
+      <li>Устанавливается флаг, указывающий на то, что планировщик
+      должен быть вызван &quot;при первой возможности&quot; и создается
+      поток ядра <code>init()</code>, который выполняет
+      execute_command, если она имеется среди параметров командной
+      строки в виде &quot;init=&quot;, или пытается запустить
+      <strong>/sbin/init</strong>, <strong>/etc/init</strong>,
+      <strong>/bin/init</strong>, <strong>/bin/sh</strong> в указанном
+      порядке; если не удается ни один из запусков то ядро
+      &quot;впадает в панику&quot; с &quot;предложением&quot; задать
+      параметр &quot;init=&quot;.</li>
+
+      <li>Переход в фоновый поток с pid=0.</li>
+    </ol>
+
+    <p>Здесь важно обратить внимание на то, что задача
+    <code>init()</code> вызывает функцию <code>do_basic_setup()</code>,
+    которая в свою очередь вызывает <code>do_initcalls()</code> для
+    поочередного (в цикле) вызова функций, зарегистрированных макросом
+    <code>__initcall</code> или <code>module_init()</code> Эти функции
+    либо являются независимыми друг от друга, либо их взаимозависимость
+    должна быть учтена при задании порядка связывания в Makefile - ах.
+    Это означает, что порядок вызова функций инициализации зависит от
+    положения каталогов в дереве и структуры Makefile - ов. Иногда
+    порядок вызова функций инициализации очень важен. Представим себе
+    две подсистемы: А и Б, причем Б существенным образом зависит от
+    того как была проинициализирована подсистема А. Если А
+    скомпилирована как статическая часть ядра, а Б как подгружаемый
+    модуль, то вызов функции инициализации подсистемы Б будет
+    гарантированно произведен после инициализации подсистемы А. Если А
+    - модуль, то и Б так же должна быть модулем, тогда проблем не
+    будет. Но что произойдет, если и А, и Б скомпилировать с ядром
+    статически? Порядок, в котором они будут вызываться
+    (иницализироваться) зависит от смещения относительно точки
+    <code>.initcall.init</code> ELF секции в образе ядра <em>(грубо
+    говоря - от порядка вызова макроса <code>__initcall</code> или
+    <code>module_init()</code> <strong>прим. перев.</strong>)</em>.
+    Rogier Wolff предложил ввести понятие &quot;приоритетной&quot;
+    инфраструктуры, посредством которой модули могли бы задавать
+    компоновщику порядок связывания, но пока отсутствуют заплаты,
+    которые реализовали бы это качество достаточно изящным способом,
+    чтобы быть включенным в ядро. А посему необходимо следить за
+    порядком компоновки. Если А и Б (см. пример выше) скомпилированы
+    статически и работают корректно, то и при каждой последующей
+    пересборке ядра они будут работать, если порядок следования их в
+    Makefile не изменяется. Если же они не функционируют, то стоит
+    изменить порядок следования объектных файлов.</p>
+
+    <p>Еще одна замечательная особенность Linux - это возможность
+    запуска &quot;альтернативной программы инициализации&quot;, если
+    ядру передается командная строка &quot;init=&quot;. Эта особенность
+    может применяться для перекрытия <strong>/sbin/init</strong> или
+    для отладки скриптов инициализации (rc) и <code>/etc/inittab</code>
+    вручную, запуская их по одному за раз</p>
+
+    <h2><a
+     name="ss1.7">1.7 SMP Загрузка на x86</a></h2>
+
+    <p>В случае SMP (многопроцессорной системы), первичный процессор
+    проходит обычную последовательность - bootsector, setup и т.д.,
+    пока не встретится вызов функции <code>start_kernel()</code>, в
+    которой стоит вызов функции <code>smp_init()</code>, откуда
+    вызывается <code>arch/i386/kernel/smpboot.c:smp_boot_cpus()</code>.
+    Функция <code>smp_boot_cpus()</code> в цикле (от 0 до
+    <code>NR_CPUS</code>) вызывает <code>do_boot_cpu()</code> для
+    каждого apicid. Функция <code>do_boot_cpu()</code> создает (т.е.
+    <code>fork_by_hand</code>) фоновую задачу для указанного CPU и
+    записывает, согласно спецификации Intel MP (в 0x467/0x469)
+    трамплин-код, содержащийся в <code>trampoline.S</code>. Затем
+    генерирует STARTUP IPI, заставляя вторичный процессор выполнить код
+    из <code>trampoline.S</code>.</p>
+
+    <p>Ведущий процессор создает трамплин-код для каждого процессора в
+    нижней памяти. Ведомый процессор, при исполнении
+    &quot;трамплина&quot;, записывает &quot;магическое число&quot;,
+    чтобы известить ведущий процессор, что код исполнен. Требование, по
+    размещению трамплин-кода в нижней памяти, обусловлено спецификацией
+    Intel MP.</p>
+
+    <p>Трамплин-код просто записывает 1 в %bx, переводит процессор в
+    защищенный режим и передает управление на метку startup_32, которая
+    является точкой входа в <code>arch/i386/kernel/head.S</code>.</p>
+
+    <p>При исполнении кода <code>head.S</code>, ведомый CPU
+    обнаруживает, что он не является ведущим, перепрыгивает через
+    очистку BSS и входит в <code>initialize_secondary()</code> которая
+    переходит в фоновую задачу для данного CPU - минуя вызов
+    <code>init_tasks[cpu]</code>, поскольку она уже была
+    проинициирована ведущим процессором при исполнении
+    <code>do_boot_cpu(cpu)</code>.</p>
+
+    <p>Характерно, что код init_task может использоваться совместно, но
+    каждая фоновая задача должна иметь свой собственный TSS. Именно
+    поэтому <code>init_tss[NR_CPUS]</code> является массивом.</p>
+
+    <h2><a
+     name="ss1.8">1.8 Освобождение памяти после инициализации</a></h2>
+
+    <p>После выполнения инициализации операционной системы,
+    значительная часть кода и данных становится ненужной. Некоторые
+    системы (BSD, FreeBSD и пр.) не освобождают память, занятую этой
+    ненужной информацией. В оправдание этому приводится (см. книгу
+    McKusick-а по 4.4BSD): &quot;данный код располагается среди других
+    подсистем и поэтому нет никакой возможности избавиться от
+    него&quot;. В Linux, конечно же такое оправдание невозможно, потому
+    что в Linux &quot;если что-то возможно в принципе, то это либо уже
+    реализовано, либо над этим кто-то работает&quot;.</p>
+
+    <p>Как уже упоминалось ранее, ядро Linux может быть собрано только
+    в двоичном формате ELF. Причиной тому (точнее одна из причин) -
+    отделение инициализирующего кода/данных, для создания которых Linux
+    предоставляет два макроса:</p>
+
+    <ul>
+      <li><code>__init</code> - для кода инициализации</li>
+
+      <li><code>__initdata</code> - для данных</li>
+    </ul>
+
+    <p>Макросы подсчитывают размер этих секций в спецификаторах
+    аттрибутов gcc, и определены в
+    <code>include/linux/init.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>#ifndef MODULE
+#define __init        __attribute__ ((__section__ (&quot;.text.init&quot;)))
+#define __initdata    __attribute__ ((__section__ (&quot;.data.init&quot;)))
+#else
+#define __init
+#define __initdata
+#endif
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Что означает - если код скомпилирован статически (т.е. литерал
+    MODULE не определен), то он размещается в ELF-секции
+    <code>.text.init</code>, которая объявлена в карте компоновки
+    <code>arch/i386/vmlinux.lds</code>. В противном случае (т.е. когда
+    компилируется модуль) макрос ничего не делает.</p>
+
+    <p>Таким образом, в процессе загрузки, поток ядра &quot;init&quot;
+    (функция <code>init/main.c:init()</code>) вызывает функцию
+    <code>free_initmem()</code>, которая и освобождает все страницы
+    памяти между адресами <code>__init_begin</code> и
+    <code>__init_end</code>.</p>
+
+    <p>На типичной системе (на моей рабочей станции) это дает примерно
+    260K памяти.</p>
+
+    <p>Код, регистрирующийся через <code>module_init()</code>,
+    размещается в секции <code>.initcall.init</code>, которая так же
+    освобождается. Текущая тенденция в Linux - при проектировании
+    подсистем (не обязательно модулей) закладывать точки входа/выхода
+    на самых ранних стадиях с тем, чтобы в будущем, рассматриваемая
+    подсистема, могла быть модулем. Например: pipefs, см.
+    <code>fs/pipe.c</code>. Даже если подсистема никогда не будет
+    модулем напрмер bdflush (см. <code>fs/buffer.c</code>), все равно
+    считается хорошим тоном использовать макрос
+    <code>module_init()</code> вместо прямого вызова функции
+    инициализации, при условии, что не имеет значения когда эта функция
+    будет вызвана.</p>
+
+    <p>Имеются еще две макрокоманды, работающие подобным образом.
+    Называются они <code>__exit</code> и <code>__exitdata</code>, но
+    они более тесно связаны с поддержкой модулей, и поэтому будет
+    описаны ниже.</p>
+
+    <h2><a
+     name="ss1.9">1.9 Разбор командной строки</a></h2>
+
+    <p>Давайте посмотрим как выполняется разбор командной строки,
+    передаваемой ядру на этапе загрузки:</p>
+
+    <ol>
+      <li>LILO (или BCP) воспринимает командную строку через сервис
+      клавиатуры BIOS-а, и размещает ее в физической памяти.</li>
+
+      <li>Код <code>arch/i386/kernel/head.S</code> копирует первые 2k в
+      нулевую страницу (zeropage). Примечательно, что текущая версия
+      LILO (21) ограничивает размер командной строки 79-ю символами.
+      Это не просто ошибка в LILO (в случае включенной поддержки
+      EBDA<em>(LARGE_EBDA (Extended BIOS Data Area) --необходима для
+      некоторых современных мультипроцессорных систем. Заставляет LILO
+      загружаться в нижние адреса памяти, с целью оставить как можно
+      больше пространства для EBDA, но ограничивает максимальный размер
+      для &quot;малых&quot; ядер - т.е. &quot;Image&quot; и
+      &quot;zImage&quot; <strong>прим. перев.</strong> )</em>). Werner
+      пообещал убрать это ограничение в ближайшее время. Если
+      действительно необходимо передать ядру командную строку длиной
+      более 79 символов, то можно использовать в качестве загрузчика
+      BCP или подправить размер командной строки в функции
+      <code>arch/i386/kernel/setup.c:parse_mem_cmdline()</code>.</li>
+
+      <li><code>arch/i386/kernel/setup.c:parse_mem_cmdline()</code>
+      (вызывается из <code>setup_arch()</code>, которая в свою очередь
+      вызывается из <code>start_kernel()</code>), копирует 256 байт из
+      нулевой страницы в <code>saved_command_line</code>, которая
+      отображается в <code>/proc/cmdline</code>. Эта же функция
+      обрабатывает опцию &quot;mem=&quot;, если она присутствует в
+      командной строке, и выполняет соответствующие корректировки
+      параметра VM.</li>
+
+      <li>далее, командная строка передается в
+      <code>parse_options()</code> (вызывается из
+      <code>start_kernel()</code>), где обрабатываются некоторые
+      &quot;in-kernel&quot; параметры (в настоящее время
+      &quot;init=&quot; и параметры для init) и каждый параметр
+      передается в <code>checksetup()</code>.</li>
+
+      <li><code>checksetup()</code> проходит через код в ELF-секции
+      <code>.setup.init</code> и вызывает каждую функцию, передавая ей
+      полученное слово. Обратите внимание, что если функция,
+      зарегистрированная через <code>__setup()</code>, возвращает 0, то
+      становится возможной передача одного и того же
+      &quot;variable=value&quot; нескольким функциям. Одни из них
+      воспринимают параметр как ошибочный, другие -как правильный. Jeff
+      Garzik говорит по этом у поводу: &quot;hackers who do that get
+      spanked :)&quot; <em>(не уверен в точности перевода, но тем не
+      менее &quot;программисты, работающие с ядром, иногда получают
+      щелчок по носу&quot;. <strong>прим. перев.</strong>)</em>.
+      Почему? Все зависит от порядка компоновки ядра, т.е. в одном
+      случае functionA вызывается перед functionB, порядок может быть
+      изменен с точностью до наоборот, результат зависит от порядка
+      следования вызовов.</li>
+    </ol>
+
+    <p>Для написания кода, обрабатывающего командную строку, следует
+    использовать макрос <code>__setup()</code>, определенный в
+    <code>include/linux/init.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/*
+ * Used for kernel command line parameter setup
+ */
+struct kernel_param {
+        const char *str;
+        int (*setup_func)(char *);
+};
+
+extern struct kernel_param __setup_start, __setup_end;
+
+#ifndef MODULE
+#define __setup(str, fn) \
+   static char __setup_str_##fn[] __initdata = str; \
+   static struct kernel_param __setup_##fn __initsetup = \
+   { __setup_str_##fn, fn }
+
+#else
+#define __setup(str,func) /* nothing */
+endif
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Ниже приводится типичный пример, при написании собственного кода
+    (пример взят из реального кода драйвера BusLogic HBA
+    <code>drivers/scsi/BusLogic.c</code>):</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>static int __init
+BusLogic_Setup(char *str)
+{
+        int ints[3];
+
+        (void)get_options(str, ARRAY_SIZE(ints), ints);
+
+        if (ints[0] != 0) {
+                BusLogic_Error(&quot;BusLogic: Obsolete Command Line Entry &quot;
+                                &quot;Format Ignored\n&quot;, NULL);
+                return 0;
+        }
+        if (str == NULL || *str == &#39;\0&#39;)
+                return 0;
+        return BusLogic_ParseDriverOptions(str);
+}
+
+__setup(&quot;BusLogic=&quot;, BusLogic_Setup);
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Обратите внимание, что <code>__setup()</code> не делает ничего в
+    случае, когда определен литерал MODULE, так что, при необходимости
+    обработки командной строки начальной загрузки как модуль, так и
+    статически связанный код, должен вызывать функцию разбора
+    параметров &quot;вручную&quot; в функции инициализации модуля. Это
+    так же означает, что возможно написание кода, который обрабатывает
+    командную строку, если он скомпилирован как модуль, и не
+    обрабатывает, когда скомпилирован статически, и наоборот.</p>
+    <hr>
+    <a
+     href="lki-2.html">Вперед</a> Назад <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc1">Содержание</a><br>
+     <br>
+
+  </div>
+</div>
+</body>
+</html>

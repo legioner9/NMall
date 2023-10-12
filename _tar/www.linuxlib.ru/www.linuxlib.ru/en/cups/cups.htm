@@ -1,0 +1,591 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>An Overview of the Common UNIX Printing System — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR vAlign=top>
+    <TD><IMG height=120 src="cups.files/cups-large.gif" width=103></TD>
+    <TD>
+      <H1 align=right>An Overview of the<BR>Common UNIX Printing
+      System,<BR>Version 1.1</H1>
+      <P align=right>July 10, 2000<BR>Michael Sweet, Easy Software
+      Products<BR>Copyright 1998-2003, All Rights
+Reserved.</P></TD></TR></TBODY></TABLE>
+<P>This whitepaper describes the Common UNIX Printing System<SUP>TM</SUP>
+("CUPS<SUP>TM</SUP>"), a portable and extensible printing system for
+UNIX<SUP>&reg;</SUP>. CUPS is being developed by <!--<A
+href="http://www.easysw.com/">-->Easy Software Products<!--</A>-->, a software firm
+located in Hollywood, Maryland that has been selling commercial software for
+UNIX since 1993 through more than 40 distributors serving over 80 countries
+worldwide.
+<P>Additional information on CUPS is available on the World Wide Web at "<!--<A
+href="http://www.cups.org/">-->http://www.cups.org/<!--</A>-->".
+<H2>Background</H2>
+<P>Printing within UNIX has historically been done using one of two printing
+systems - the Berkeley Line Printer Daemon ("LPD") [RFC1179] and the AT&amp;T
+Line Printer system. These printing systems were designed in the 70's for
+printing text to line printers; vendors have since added varying levels of
+support for other types of printers.
+<P>Replacements for these printing systems have emerged [LPRng, Palladin, PLP],
+however none of the replacements change the fundamental capabilities of these
+systems.
+<P>Over the last few years several attempts at developing a standard printing
+interface have been made, including the draft POSIX Printing standard developed
+by the Institute of Electrical and Electronics Engineers, Inc. ("IEEE")
+[IEEE-1387.4] and Internet Printing Protocol ("IPP") developed by the Internet
+Engineering Task Force ("IETF") through the Printer Working Group ("PWG")
+[IETF-IPP]. The POSIX printing standard defines a common set of command-line
+tools as well as a C interface for printer administration and print jobs, but
+has been shelved by the IEEE.
+<P>The Internet Printing Protocol defines extensions to the HyperText Transport
+Protocol 1.1 [RFC2616] to provide support for remote printing services. IPP/1.0
+was accepted by the IETF as an experimental Request For Comments [RFC] document
+in October of 1999. Since then the Printer Working Group has developed an
+updated set of specifications for IPP/1.1 which have been accepted by the IETF
+and are awaiting publication as proposed standards. Unlike POSIX Printing, IPP
+enjoys widespread industry support and is poised to become the standard network
+printing solution for all operating systems.
+<P>CUPS uses IPP/1.1 to provide a complete, modern printing system for UNIX that
+can be extended to support new printers, devices, and protocols while providing
+compatibility with existing UNIX applications. CUPS is free software provided
+under the terms of the GNU General Public License and GNU Library General Public
+License.
+<H2>History</H2>
+<P>The first production release of CUPS (based on IPP/1.0) was released in
+October of 1999. Since then, we have released several patch updates to the
+original CUPS 1.0 release that addressed security, portability, and bugs found,
+but no new functionality was added to improve the stability of the CUPS code.
+<P>CUPS 1.1 is based on IPP/1.1 and adds many of the functional enhancements
+that have been requested by our users. As with 1.0, CUPS 1.1 will be followed by
+patch releases that address any problems found with the software but add no new
+features.
+<H2>Design Overview</H2>
+<P>Like most printing systems, CUPS is designed around a central print
+scheduling process that dispatches print jobs, processes administrative
+commands, provides printer status information to local and remote programs, and
+informs users as needed. Figure 1 shows the basic organization of CUPS.
+<CENTER><IMG height=170 src="cups.files/cups-block-diagram.gif"
+width=470></CENTER>
+<P align=center>Figure 1 - CUPS Block Diagram</P>
+<H3>Scheduler</H3>
+<P>The scheduler is a HTTP/1.1 server application that handles HTTP requests.
+Besides handling printer requests via IPP POST requests, the scheduler also acts
+as a full-featured web server for documentation, status monitoring, and
+administration.
+<P>The scheduler also manages a list of available printers on the LAN and
+dispatches print jobs as needed using the appropriate filters and backends.
+<H3>Configuration Files</H3>The configuration files consist of:
+<UL>
+  <LI>The HTTP server configuration file.
+  <LI>Printer and class definition files.
+  <LI>MIME type and conversion rule files.
+  <LI>PostScript Printer Description ("PPD") files. </LI></UL>
+<P>The HTTP server configuration file is purposely similar to the Apache server
+configuration file and defines all of the access control properties for the
+server.
+<P>The printer and class definition files list the available printer queues and
+classes. Printer classes are collections of printers. Jobs sent to a class are
+forwarded to the first available printer in the class, round-robin fashion.
+<P>The MIME type files list the supported MIME types (text/plain,
+application/postscript, etc.) and "magic" rules for automatically detecting the
+format of a file. These are used by the HTTP server to determine the
+<I>Content-Type</I> field for <I>GET</I> and <I>HEAD</I> requests and by the IPP
+request handler to determine the file type when a <I>Print-Job</I> or
+<I>Send-File</I> request is received with a <I>document-format</I> of
+<I>application/octet-stream</I>.
+<P>The MIME conversion rule files list the available filters. The filters are
+used when a job is dispatched so that an application can send a convenient file
+format to the printing system which then converts the document into a printable
+format as needed. Each filter has a relative cost associated with it, and the
+filtering algorithm chooses the set of filters that will convert the file to the
+needed format with the lowest total "cost".
+<P>The PPD files describe the capabilities of all printers, not just PostScript
+printers. There is one PPD file for each printer. PPD files for non-PostScript
+printers define additional filters through <I>cupsFilter</I> attributes to
+support printer drivers.
+<H3>CUPS API</H3>
+<P>The CUPS API contains CUPS-specific convenience functions for queuing print
+jobs, getting printer information, accessing resources via HTTP and IPP, and
+manipulating PPD files. Unlike the rest of CUPS, the CUPS API is provided under
+the terms of the GNU LGPL so it may be used by non-GPL applications.
+<H3>Berkeley and System V Commands</H3>
+<P>CUPS provides the System V and Berkeley command-line interfaces for
+submitting jobs and checking the printer status. The <CODE>lpstat</CODE> and
+<CODE>lpc status</CODE> commands also show network printers ("printer@server")
+when printer browsing is enabled.
+<P>The System V administation commands are supplied for managing printers and
+classes. The Berkeley printer administration tool (<CODE>lpc</CODE>) is only
+supported in a "read-only" mode to check the current status of the printer
+queues and scheduler.
+<H3>Filters</H3>
+<P>A filter program reads from the standard input or from a file if a filename
+is supplied. All filters must support a common set of options including printer
+name, job ID, username, job title, number of copies, and job options. All output
+is sent to the standard output.
+<P>Filters are provided for many file formats and include image file and
+PostScript raster filters that support non-PostScript printers. Multiple filters
+are run in parallel to produce the required output format.
+<P>The PostScript raster filter is based on the GNU Ghostscript 5.50 core.
+Instead of using the Ghostscript printer drivers and front-end, the CUPS filter
+uses a generic raster printer driver and CUPS-compliant front-end to support any
+kind of raster printer. This allows the same printer driver filter to be used
+for printing raster data from any filter.
+<H3>CUPS Imaging</H3>
+<P>The CUPS Imaging library provides functions for managing large images, doing
+colorspace conversion and color management, scaling images for printing, and
+managing raster page streams. It is used by the CUPS image file filters, the
+PostScript RIP, and all raster printers drivers.
+<H3>Backends</H3>
+<P>A backend program is a special filter that sends print data to a device or
+network connection. Backends for parallel, serial, USB, LPD, IPP, and AppSocket
+(JetDirect) connections are provided in CUPS 1.1.
+<P>SAMBA version 2.0.6 and higher includes a SMB backend
+(<CODE>smbspool(1)</CODE>) that can be used with CUPS 1.0 or 1.1 for printing to
+Windows.
+<H2>Network Printing</H2>
+<P>Traditionally, network printing has been one of the hardest things to get
+working under UNIX. One reason is because each vendor added their own extensions
+to the LPD protocol (the previous standard for network printing), making
+cross-platform printing difficult if not impossible.
+<P>Another reason is that you have to administer every network printer on every
+client machine. In some cases you can "clone" the printer configuration from a
+"master" client to each of the others, but even that can be time-consuming and
+error-prone. Something better is needed.
+<P>CUPS provides "printer browsing", which allows clients to automatically see
+and use printers from any server on a LAN. This means that you only need to
+configure the server and the clients will automatically see the printers and
+classes on it.
+<P>In addition, CUPS can automatically merge multiple identical network printers
+into "implicit classes". This allows clients to send jobs to the implicit class
+and have them print on the first available printer or server. In addition,
+failsafe and load-balancing functions are enabled simply by defining the same
+printer on multiple servers!
+<H2>New Features in CUPS 1.1</H2>
+<P>CUPS 1.1 includes many new features and capabilities:
+<OL>
+  <LI><!--<A href="http://www.cups.org/overview.html#BACKENDS">-->Backends<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#BANNERS">-->Banner Page
+  Support<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#DIGEST">-->Digest
+  Authentication<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#DIRSVC">-->Directory Services<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#FHS2">-->Directory Structure
+  Changes<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#DOCOS">-->Documentation<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#DRIVERS">-->Drivers<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#FILTERS">-->Filters<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#IPP">-->IPP Support<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#PERSISTENCE">-->Job
+  Persistence<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#LPD">-->LPD Client Support<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#USEROPTS">-->User-Defined Printers
+  and Options<!--</A>-->
+  <LI><!--<A href="http://www.cups.org/overview.html#WEB">-->Web Administration
+  Interface<!--</A>--> </LI></OL>
+<H3><A name=BACKENDS>1. Backends</A></H3>
+<P>CUPS 1.1 implements a new backend interface for retrieving a list of
+available devices for CUPS clients. This allows administration interfaces to
+query the CUPS scheduler for a list of available devices, automatically
+configure printers if the device identification information is available, and
+present the user with a list of available devices rather than relying on the
+user to know what devices are configured on the system.
+<P>The new release also includes a backend for USB printers under *BSD and
+Linux. Support for USB under Solaris 8 will be provided in a subsequent patch
+release.
+<H3><A name=BANNERS>2. Banner Page Support</A></H3>
+<P>CUPS 1.1 includes support for banner pages at the beginning and end of a job.
+Banner pages may be of any file format and support variable substitution for job
+titles, usernames, etc. Default banner pages are associated with each printer
+and can be overridden with command-line options by the user.
+<H3><A name=DIGEST>3. Digest Authentication</A></H3>
+<P>Digest authentication provides a more secure method of authenticating access
+to the printing system. Unlike Basic authentication, Digest authentication does
+not send passwords "in the clear" so it is more difficult to gain unauthorized
+access to your system.
+<P>CUPS 1.1 implements Digest authentication using a special MD5 password file
+instead of the UNIX password file. This file is managed using the new
+<CODE>lppasswd</CODE> command.
+<H3><A name=DIRSVC>4. Directory Services</A></H3>
+<P>CUPS 1.1 adds new directory service ("printer browsing") features to make
+using CUPS on large LANs and WANs easier. You can now poll a remote server for
+printer information and relay it to the LAN as well as restrict what printer
+information is processed (e.g. to "hide" servers, domains, or networks that you
+don't want to see.)
+<H3><A name=FHS2>5. Directory Structure Changes</A></H3>
+<P>CUPS 1.1 now uses a directory structure that complies with the Filesystem
+Hierarchy Standard ("FHS"), version 2.0. This should make integration into
+existing Linux and *BSD distributions a lot easier.
+<H3><A name=DOCOS>6. Documentation</A></H3>
+<P>The CUPS 1.1 documentation has gone through many revisions, including a
+completely rewritten administrators manual, a new programmers manual, and an IPP
+implementation reference manual.
+<H3><A name=DRIVERS>7. Drivers</A></H3>
+<P>CUPS 1.1 includes drivers for EPSON dot-matrix and inkjet printers. As with
+the HP PCL drivers, the EPSON drivers don't necessarily provide the best
+possible output for each printer but should provide adequate printing quality
+for general day-to-day printing.
+<H3><A name=FILTERS>8. Filters</A></H3>
+<P>CUPS 1.1 includes new image, PostScript, PDF, and text filters. The image
+filters have been upgraded to support Windows BMP and Alias PIX files.
+<P>The PostScript filter is now based off GNU Ghostscript 5.50. The new filter
+provides much better performance with higher-resolution printers and supports
+most Level 3 PostScript language features.
+<P>The new PDF filter is based off the excellent Xpdf software from Derek
+Noonburg and supports automatic page scaling. The new filter is a faster,
+smaller, more reliable replacement for the GNU Ghostscript PDF filtering that
+was used in CUPS 1.0.
+<P>The new text filter now supports bidirectional text and can embed fonts as
+needed.
+<H3><A name=IPP>9. IPP Support</A></H3>
+<P>Probably the least visible portion of CUPS is the IPP support. CUPS 1.1
+implements all of the required IPP/1.1 operations and attributes and most of the
+optional ones. The optional Create-Job and Send-File operations are now
+implemented, allowing for better System V printing system compatibility (one job
+ID per <CODE>lp</CODE> command) and support for banner pages.
+<H3><A name=PERSISTENCE>10. Job Persistence</A></H3>
+<P>CUPS 1.1 supports job persistence. This means that jobs are preserved even
+after a reboot, a feature that was sorely missing from CUPS 1.0.
+<P>In addition, CUPS 1.1 allows you to keep job information after the job has
+printed. The basic post-job persistence mode provides a job history (number of
+pages printed, time job was printed, etc.) but does not preserve the actual job
+files. This can be changed to discard all information after a job is printed or
+keep the job files after printing so you can reprint a job at some later time.
+<H3><A name=LPD>11. LPD Client Support</A></H3>
+<P>By popular request, CUPS 1.1 supports LPD-based clients using a new
+mini-daemon that handles LPD requests and passes them on to the main server.
+<H3><A name=USEROPTS>12. User-Defined Printers and Options</A></H3>
+<P>CUPS 1.1 includes support for user-defined printers and options via a new
+<CODE>lpoptions</CODE> command. User-defined printers are special instances of
+the available printers (e.g. "printer/instance" or "printer@server/instance")
+that can have their own default options such as media size, resolution, and so
+forth. The <CODE>lpoptions</CODE> command can also be used to set a different
+default printer queue.
+<H3><A name=WEB>13. Web Administration Interface</A></H3>
+<P>CUPS 1.0 provided a simple class, job, and printer monitoring interface for
+web browsers. CUPS 1.1 replaces this interface with an enhanced administration
+interface that allows you to add, modify, delete, configure, and control
+classes, jobs, and printers.
+<H2>Software Using CUPS</H2>
+<P>A lot has happened since CUPS 1.0 came out, and many software packages are
+supporting CUPS. We have contributed code to the SAMBA team to support CUPS, and
+parts of that are already available in SAMBA 2.0.6 and 2.0.7. With any luck the
+final pieces that provide a complete integration with SAMBA will be available in
+the next release of SAMBA.
+<P>Two graphical interfaces have appeared on the scene that use CUPS as well.
+The KUPS project provides a KDE-based interface for CUPS and can be found at:
+<UL><PRE><!--<A href="http://kups.sourceforge.net/">-->http://kups.sourceforge.net/<!--</A>-->
+</PRE></UL>
+<P>The X Printing Panel ("XPP") project provides a graphical printing panel for
+CUPS and can be found at:
+<UL><PRE><!--<A href="http://www.phy.uni-bayreuth.de/till/xpp">-->http://www.phy.uni-bayreuth.de/till/xpp<!--</A>-->
+</PRE></UL>
+<P>Numerous other filters, drivers, tutorials, etc. have been made available on
+the CUPS Links web page, available at:
+<UL><PRE><!--<A href="http://www.cups.org/links.php">-->http://www.cups.org/links.php<!--</A>-->
+</PRE></UL>
+<P>Finally, our own ESP Print Pro software uses CUPS to provide drivers for
+thousands of printers and can be found at:
+<UL><PRE><!--<A href="http://www.easysw.com/printpro">-->http://www.easysw.com/printpro<!--</A>-->
+</PRE></UL>
+<H2>Operating Systems Using CUPS</H2>
+<P>One of our goals has always been to get as many UNIX/Linux distributions
+using CUPS as possible. Debian is currently providing CUPS as part of its stable
+distribution, and many other distributions are considering it in their next
+releases.
+<H2>Summary</H2>
+<P>The Common UNIX Printing System provides a modern printing interface for UNIX
+applications that is both flexible and user-friendly. The software provides
+System V and Berkeley compatible command-line interfaces to ensure compatibility
+with existing applications. CUPS 1.1 adds many new features that make it an even
+better choice for printing under UNIX.
+<H2>Who to Contact</H2>
+<P>For more information on CUPS please contact us at:
+<UL><PRE>Attn: CUPS Information
+Easy Software Products
+44141 Airport View Drive Suite 204
+Hollywood, Maryland 20636-3111 USA
+
++1.301.373.9600
+
+<A href="../../cdn-cgi/l/email-protection.html#6a091f1a194703040c052a091f1a194405180d"><span class="__cf_email__" data-cfemail="89eafcf9faa4e0e7efe6c9eafcf9faa7e6fbee">[email&#160;protected]</span></A>
+</PRE></UL>
+<H2>References</H2>
+<DL>
+  <DT>IEEE-1387.4
+  <DD>System Administration - Part 4: Printing Interfaces (draft)
+  <DT><!--<A href="http://www.pwg.org/ipp/index.html">-->IETF-IPP<!--</A>-->
+  <DD>Internet Printing Protocol/1.1
+  <DT><!--<A href="http://www.astart.com/lprng.html">-->LPRng<!--</A>-->
+  <DD>An enhanced, extended, and portable implementation of the Berkeley LPR
+  print spooler functionality
+  <DT>Palladin
+  <DD>A printing system developed at the Massachussetts Institute of Technology
+  <DT><!--<A href="http://www-usa.iona.com//hyplan/jmason/plp.html">-->PLP<!--</A>-->
+  <DD>The Portable Line Printer spooler system
+  <DT><!--<A href="http://www.ietf.org/rfc/rfc1179.txt">-->RFC1179<!--</A>-->
+  <DD>Line Printer Daemon Protocol
+  <DT><!--<A href="http://www.ietf.org/rfc/rfc2046.txt">-->RFC2046<!--</A>-->
+  <DD>Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types
+  <DT><!--<A href="http://www.ietf.org/rfc/rfc2616.txt">-->RFC2616<!--</A>-->
+  <DD>Hypertext Transfer Protocol -- HTTP/1.1 </DD></DL>
+<H2>Trademarks</H2>
+<P>The Common UNIX Printing System, CUPS, and the CUPS logo are the trademark
+property of Easy Software Products. All other trademarks are the property of
+their respective owners. </P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

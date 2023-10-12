@@ -1,0 +1,920 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 12 Программы обеспечения безопасности (Целостность системы) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch11_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#12">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 12 Программы обеспечения безопасности (Целостность системы) -
+      Tripwire 2.2.1</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#1">-->Linux Tripwire
+      2.2.1<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#3">-->Организация
+      защиты Tripwire для Linux<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_1.html#4">-->Команды<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#5">-->Linux Tripwire
+      ASR 1.3.1<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#6">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#7">-->Организация
+      защиты Tripwire<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html#8">-->Команды<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=240
+      src="ch12_1.files/17.jpg" width=158></TD></TR></TBODY></TABLE>
+<H3><A name=1>Linux Tripwire 2.2.1</A></H3>
+<P align=justify>Инсталляция типичного Red Hat Linux сервера включает в среднем
+около 30400 файлов. Администратор не в состоянии проконтролировать целостность
+всех системных файлов, и если хакер получит доступ к серверу и сможет
+модифицировать какие-либо файлы, то вы можете об этом не узнать. Для решения
+этих проблем было создано несколько программ.</P>
+<P align=justify>Согласно информации опубликованной на официальном сайте
+Tripwire:<BR>Tripwire работает на самом фундаментальном уровне, защищая сервера
+и рабочие станции, представляющие основу корпоративной сети. Запускаемая первый
+раз, она сканирует компьютер и создает базу данных системных файлов, компактный
+цифровой &#8220;снимок&#8221; системы в безопасном состоянии. Пользователи могут настраивать
+Tripwire очень точно, определяя конкретные файлы и каталоги на каждой машине,
+или создавая стандартный шаблон, который может использоваться на всех машинах
+предприятия.</P>
+<P align=justify>Как только такая базовая база данных создана, администратор
+может запускать Tripwire для проверки целостности системы в любое время. Она
+сканирует текущую систему и сравнивает результаты со своей базой. Tripwire
+определяет и рапортует о любых дополнения, удаления и изменениях произошедших
+среди контролируемых ею файлов. Если изменения правильные, то администратор
+может обновить базу данных новой информацией. Если были найдены злонамеренный
+изменения, то администратор будет знать на какую часть системы было оказано
+воздействие.</P>
+<P align=justify>Эта версия Tripwire имеет значительные изменения по сравнению с
+предыдущей. Некоторые расширения включают:</P>
+<UL>
+  <LI>Множество уровней сообщений позволяет вам выбрать различную
+  информационность отчетов.
+  <LI>Опция Syslog посылает информация об инициализации и обновлении базы
+  данных, изменении политики, и целостности в syslog.
+  <LI>Производительность базы данных может быть оптимизирована для увеличения
+  эффективности проверки целостности
+  <LI>Разные разделы отчета могут быть посланы разным получателям
+  <LI>Поддержка отправки отчетов по почте через SMTP
+  <LI>Режим тестирования почты для проверки правильности почтовых настроек
+  <LI>Возможность создания нескольких независимо исполняемых секций с политиками
+  </LI></UL>
+<P align=justify><B>Эти инструкции предполагают</B>.<BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>Tripwire версии
+2.2.1</P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница Tripwire : <!--<A
+href="http://www.tripwiresecurity.com/"
+target=_blank>-->http://www.tripwiresecurity.com/<!--</A>--><BR>Вы должны скачать:
+Tripwire_221_for_Linux_x86_tar.gz<BR></P>
+<P align=justify>Раскройте тарбол:</P>[root@deep /]# cp
+Tripwire_version_for_Linux_x86_tar.gz /var/tmp<BR>[root@deep /]# cd /var/tmp
+<BR>[root@deep tmp]# tar xzpf Tripwire_version_for_Linux_x86_tar.gz<BR>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> После раскрытия архива Tripwire в каталоге
+&#8220;/var/tmp&#8221; вы увидите файлы, связанные с Tripwire: License.txt, README,
+Release_Notes, install.cfg, install.sh, созданный каталог и
+Tripwire_version_for_Linux_x86_tar.gz.</P>
+<H3>Конфигурирование файла &#8220;/var/tmp/install.cfg&#8221;.</H3>
+<P align=justify>Помните, что Tripwire не является программой с открытыми
+исходными кодами, поэтому процесс компиляции не выглядит как обычно; вместо
+этого, вы должны модифицировать файл &#8220;install.cfg&#8221; (который будет автоматически
+инсталлировать Tripwire), чтобы определить в нем все необходимые пути. Мы должны
+это сделать так, чтобы он был совместим со структурой файловой системы Red Hat и
+исполняемые файлы Tripwire попали под переменную PATH.</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл install.cfg (vi install.cfg) и измените этот
+файл следующим образом:</P><FONT size=-1><PRE>#
+# install.cfg
+#
+# default install.cfg for:
+# Tripwire(R) 2.2.1 for Unix
+#
+# NOTE: Это Bourne shell скрипт, который ваши запоминает инсталляционные
+# параметры. Инсталлятор будет выполнять этот файл, чтобы создать
+# ваш конфигурационный файл, а также определит место любой
+# специальной конфигурации нужной для инсталляции.
+# Защитите этот файл, потому что в нем могут разместить вредоносный
+# код.
+#
+# Определите ваш корневой каталог для инсталляции, установив TWROOT= во
+# что-нибудь иное, чем /usr/TSS.
+#
+#=======================================================
+# Если CLOBBER истина, то существующие файлы будут переписываться.
+# Если CLOBBER ложь, то существующие файлы не переписываются.
+CLOBBER=false
+# Корень дерева каталогов TSS.
+TWROOT="/usr"
+# Исполняемые файлы Tripwire хранятся в TWBIN.
+TWBIN="${TWROOT}/bin"
+# Файлы политик Tripwire хранятся в TWPOLICY.
+TWPOLICY="${TWROOT}/TSS/policy"
+# Руководства пользователя (manual pages) Tripwire хранятся в TWMAN.
+TWMAN="${TWROOT}/man"
+# Файлы базы данных Tripwire хранятся в TWDB.
+TWDB="${TWROOT}/TSS/db"
+# Файлы ключей сайта Tripwire хранятся в TWSITEKEYDIR.
+TWSITEKEYDIR="${TWROOT}/TSS/key"
+# Файлы локальных ключей Tripwire хранятся в TWLOCALKEYDIR.
+TWLOCALKEYDIR="${TWROOT}/TSS/key"
+# Файлы отчетов Tripwire хранятся TWREPORT.
+TWREPORT="${TWROOT}/TSS/report"
+# Определяется текстовый редактор по умолчанию для Tripwire.
+TWEDITOR="/bin/vi"
+# TWLATEPROMTING контролирует место когда tripwire спрашивает пароль.
+TWLATEPROMPTING=false
+# TWLOOSEDIRCHK определяет должен ли проверяться каталог на
+# свойства которые могут изменяться, когда файлы в нем проверена.
+TWLOOSEDIRCHK=false
+# TWMAILNOVIOLATIONS определяет должен ли Tripwire посылать отчет
+# когда при проверки целостности с опцией --email-report нарушений найдено
+# не было. Это позволяет администратору узнать, что проверка была
+# произведена.
+TWMAILNOVIOLATIONS=true
+# TWEMAILREPORTLEVEL определяет словесное наполнение e-mail отчетов.
+TWEMAILREPORTLEVEL=3
+# TWREPORTLEVEL определяет словесное наполнение печатаемых отчетов.
+TWREPORTLEVEL=3
+# TWSYSLOG определяет должен ли Tripwire регистрировать события в
+# системные файлы регистраций
+TWSYSLOG=false
+#####################################
+# Почтовые опции &#8211; Выберите подходящий
+# метод и комментируйте другие секции
+#####################################
+#####################################
+# Опции SENDMAIL &#8211; по умолчанию
+#
+# SENDMAIL или SMTP может быть использованы для отправки отчетов
+# через TWMAILMETHOD.
+# Определяет какая программа sendmail используется.
+#####################################
+TWMAILMETHOD=SENDMAIL
+TWMAILPROGRAM="/usr/lib/sendmail -oi -t"
+#####################################
+# Опции SMTP
+#
+# TWSMTPHOST выбирает SMTP сервер, используемый для отправки отчетов.
+# SMTPPORT выбирает SMTP порт, используемой почтовой программой SMTP.
+#####################################
+# TWMAILMETHOD=SMTP
+# TWSMTPHOST="mail.domain.com"
+# TWSMTPPORT=25
+#####################################################################
+###########
+# Copyright (C) 1998-2000 Tripwire (R) Security Systems, Inc. Tripwire (R) is a
+# registered trademark of the Purdue Research Foundation and is licensed
+# exclusively to Tripwire (R) Security Systems, Inc.
+#####################################################################
+###########
+</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Файл &#8220;install.cfg&#8221; используются Bourne shell
+скриптом при инсталляции для определения конфигурационных переменных. Они
+определяют места куда устанавливаются файлы и предпринимаемые действия, если
+подобные файлы существуют. </P><B>Шаг 2</B>
+<P align=justify>Сейчас мы должны запустить инсталляционный скрипт для установки
+исполняемых и сопутствующих файлов Tripwire.</P>
+<P align=justify>Для запуска инсталляционного скрипта и установки Tripwire,
+используйте следующую команду:</P><FONT color=#008080 size=-1>[root@deep tmp]#
+./install.sh</FONT>
+<P align=justify><B>Замечание</B>. Файл &#8220;install.sh&#8221; &#8211; это инсталляционный
+скрипт, который запускается для начала установки Tripwire.</P>
+<P align=justify>Во время инсталляции вы будете:</P>
+<OL>
+  <LI>Отвечать на некоторые вопросы, связанные с инсталляцией.
+  <LI>Задавать две парольные фразы (pass phrases) соответственно для ключа
+  сервера и локального ключа. </LI></OL><B>Шаг 3</B>
+<P align=justify>Когда Tripwire установится на вашу систему, она скопирует файлы
+&#8220;License.txt&#8221;, &#8220;README&#8221; и &#8220;Release_Notes&#8221; в каталог &#8220;/usr&#8221;. Конечно, после
+прочтения, вы можете спокойно удалить их следующей командой:</P><FONT
+color=#008080 size=-1>[root@deep /usr]# rm -f /usr/License.txt README
+Release_Notes</FONT> <BR><BR><B>Очистка после работы.</B> <FONT color=#008080
+size=-1>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# rm -rf License.txt README
+Release-Notes install.cfg install.sh
+pkg/Tripwire_version_for_Linux_x86_tar.gz<BR></FONT>
+<P align=justify>Команда &#8220;rm&#8221;, использованная выше, будет удалять все исходные
+коды, которые мы использовали при компиляции и инсталляции Tripwire. Она также
+удалит .tgz архив.</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файл из архива и измените его под свои требования.
+Затем поместите его в соответствующее место на сервере, так как это показано
+ниже. Файл с конфигурациями вы можете скачать с адреса:<BR><!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска Tripwire под Linux следующий файл должен быть
+создан или скопирован в требуемый каталог:</P>
+<P align=justify>Копируйте файл twpol.txt в каталог &#8220;/usr/TSS/policy&#8221;.</P>
+<H3>Настройка файла &#8220;/usr/TSS/policy/twpol.txt&#8221;.</H3>
+<P align=justify>&#8220;/usr/TSS/policy/twpol.txt&#8221; &#8211; это текстовый файл политик
+Tripwire, где вы можете определить файлы и каталог для проверки. Обратите
+внимание, что при редактировании этого файла необходимы обширные испытания и
+опыты, прежде чем удастся получить работающие файлы отчетов. Следующий
+работающий пример вы можете использовать, как стартовую площадку для ваших
+настроек. </P><B>Шаг 1.</B>
+<P align=justify>Вы должны редактировать файл политик, заданный по умолчанию,
+для получения вашей версии. Файл &#8220;policyguide.txt&#8221; в каталоге &#8220;/usr/TSS/policy&#8221;
+может вам помочь. Откройте файл &#8220;twpol.txt&#8221; в текстовом редакторе (vi
+/usr/TSS/policy/twpol.txt) и измените все, что нужно:</P><FONT size=-1><PRE>@@section GLOBAL
+TWROOT="/usr";
+TWBIN="/usr/bin";
+TWPOL="/usr/TSS/policy";
+TWDB="/usr/TSS/db";
+TWSKEY="/usr/TSS/key";
+TWLKEY="/usr/TSS/key";
+TWREPORT="/usr/TSS/report";
+HOSTNAME=deep.openna.com;
+@@section FS
+SEC_CRIT = $(IgnoreNone)-SHa; # Критические файлы &#8211; мы не можем пропустить любые изменения.
+SEC_SUID = $(IgnoreNone)-SHa; # Исполняемые с установленными флагами SUID или SGID.
+SEC_TCB = $(ReadOnly); # Члены базы доверенных компьютеров (Trusted Computing Base).
+SEC_BIN = $(ReadOnly); # Исполняемые, которые не должны изменяться
+SEC_CONFIG = $(Dynamic); # Конфигурационные файлы, которые изменяются редко, но часто читаются.
+SEC_LOG = $(Growing); # Файлы, которые растут, но которые никогда не должны изменять монопольное использование.
+SEC_INVARIANT = +pug; # Каталоги, которые никогда не изменяют права доступа и владельца.
+SIG_LOW = 33; # Не критичные файлы, которые имеют минимальный риск при проведении атаки
+SIG_MED = 66; # Не критичные файлы, которые важны при ударе по безопасности
+SIG_HI = 100; # Критические файлы, которые являются важным местом уязвимости
+# Исполняемы файлы Tripwire
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="741510191d1a341b04111a1a155a171b19">[email&#160;protected]</a>, rulename = "Tripwire Binaries", severity =
+$(SIG_HI))
+{
+$(TWBIN)/siggen -&gt; $(ReadOnly);
+$(TWBIN)/tripwire -&gt; $(ReadOnly);
+$(TWBIN)/twadmin -&gt; $(ReadOnly);
+$(TWBIN)/twprint -&gt; $(ReadOnly);
+}
+# Файлы данных Tripwire &#8211; конфигурационные файлы, файлы политик, ключи,
+отчеты, базы данных
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="452421282c2b052a35202b2b246b262a28">[email&#160;protected]</a>, rulename = "Tripwire Data Files", severity =
+$(SIG_HI))
+{
+# Замечание: Удаляем атрибут inode, потому что когда Tripwire создает
+# резервные копии он переименовывает старый файл и создает новый
+# (который будет иметь новый номер inode). Оставляем inode включенным
+# для ключей, которые никогда не должны изменяться.
+# ЗАМЕЧАНИЕ. это правило будет срабатывать при первой проверки целостности
+# после инициализации базы данных и каждый раз при проверке целостности
+# позже, пока не будет выполнена модификация базы данных, так как база
+# данных не будет существовать до этого момента
+$(TWDB) -&gt; $(Dynamic) -i;
+$(TWPOL)/tw.pol -&gt; $(SEC_BIN) -i;
+$(TWBIN)/tw.cfg -&gt; $(SEC_BIN) -i;
+$(TWLKEY)/$(HOSTNAME)-local.key -&gt; $(SEC_BIN) ;
+$(TWSKEY)/site.key -&gt; $(SEC_BIN) ;
+# не сканировать персональные отчеты
+$(TWREPORT) -&gt; $(Dynamic) (recurse=0);
+}
+# Эти файлы критичны для корректной загрузки системы.
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="93f2f7fefafdd3fce3f6fdfdf2bdf0fcfe">[email&#160;protected]</a>, rulename = "Critical system boot files", severity =
+100)
+{
+/boot -&gt; $(SEC_CRIT) ;
+!/boot/System.map ;
+!/boot/module-info ;
+}
+# Эти файлы изменяют поведение бюджета root
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="dcbdb8b1b5b29cb3acb9b2b2bdf2bfb3b1">[email&#160;protected]</a>, rulename = "Root config files", severity = 100)
+{
+/root -&gt; $(SEC_CRIT) ;
+/root/.bash_history -&gt; $(SEC_LOG) ;
+}
+# Общедоступные каталоги, которые должны оставаться статическими
+# относительно владельца и группы
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="a1c0c5ccc8cfe1ced1c4cfcfc08fc2cecc">[email&#160;protected]</a>, rulename = "Invariant Directories", severity =
+$(SIG_MED))
+{
+/ -&gt; $(SEC_INVARIANT) (recurse = 0);
+/home -&gt; $(SEC_INVARIANT) (recurse = 0);
+/etc -&gt; $(SEC_INVARIANT) (recurse = 0);
+/chroot -&gt; $(SEC_INVARIANT) (recurse = 0);
+/cache -&gt; $(SEC_INVARIANT) (recurse = 0);
+}
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="caabaea7a3a48aa5baafa4a4abe4a9a5a7">[email&#160;protected]</a>, rulename = "Shell Binaries")
+{
+/bin/bsh -&gt; $(SEC_BIN);
+/bin/csh -&gt; $(SEC_BIN);
+/bin/sh -&gt; $(SEC_BIN);
+}
+# Месторасположение критичных исполняемых файлов
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="741510191d1a341b04111a1a155a171b19">[email&#160;protected]</a>, rulename = "OS executables and libraries", severity
+= $(SIG_HI))
+{
+/bin -&gt; $(ReadOnly) ;
+/lib -&gt; $(ReadOnly) ;
+}
+# Локальные файлы
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="8eefeae3e7e0cee1feebe0e0efa0ede1e3">[email&#160;protected]</a>, rulename = "User binaries", severity =
+$(SIG_MED))
+{
+/sbin -&gt; $(SEC_BIN) (recurse = 1);
+/usr/sbin -&gt; $(SEC_BIN) (recurse = 1);
+/usr/bin -&gt; $(SEC_BIN) (recurse = 1);
+}
+# Каталоги с временными файлами
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="eb8a8f868285ab849b8e85858ac5888486">[email&#160;protected]</a>, rulename = "Temporary directories", recurse = false,
+severity =
+$(SIG_LOW))
+{
+/usr/tmp -&gt; $(SEC_INVARIANT);
+/var/tmp -&gt; $(SEC_INVARIANT);
+/tmp -&gt; $(SEC_INVARIANT);
+}
+# Библиотеки
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bedfdad3d7d0fed1cedbd0d0df90ddd1d3">[email&#160;protected]</a>, rulename = "Libraries", severity = $(SIG_MED))
+{
+/usr/lib -&gt; $(SEC_BIN);
+}
+# Включаемы файлы (Include)
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6203060f0b0c220d12070c0c034c010d0f">[email&#160;protected]</a>, rulename = "OS Development Files", severity =
+$(SIG_MED))
+{
+/usr/include -&gt; $(SEC_BIN);
+}
+# Разделяемые (Shared)
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="4021242d292e002f30252e2e216e232f2d">[email&#160;protected]</a>, rulename = "OS Shared Files", severity =
+$(SIG_MED))
+{
+/usr/share -&gt; $(SEC_BIN);
+}
+# Заголовочные файлы ядра
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6a0b0e0703042a051a0f04040b44090507">[email&#160;protected]</a>, rulename = "Kernel Headers Files", severity = $(
+SIG_HI))
+{
+/usr/src/linux-2.2.14 -&gt; $(SEC_BIN);
+}
+# setuid/setgid root программы
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ed8c89808483ad829d8883838cc38e8280">[email&#160;protected]</a>, rulename = "setuid/setgid", severity = $(SIG_HI))
+{
+/bin/su -&gt; $(SEC_SUID);
+/sbin/pwdb_chkpwd -&gt; $(SEC_SUID);
+/sbin/dump -&gt; $(SEC_SUID);
+/sbin/restore -&gt; $(SEC_SUID);
+/usr/bin/at -&gt; $(SEC_SUID);
+/usr/bin/passwd -&gt; $(SEC_SUID);
+/usr/bin/suidperl -&gt; $(SEC_SUID);
+/usr/bin/crontab -&gt; $(SEC_SUID);
+/usr/sbin/sendmail -&gt; $(SEC_SUID);
+/usr/bin/man -&gt; $(SEC_SUID);
+/usr/bin/sperl5.00503 -&gt; $(SEC_SUID);
+/usr/bin/slocate -&gt; $(SEC_SUID);
+/usr/sbin/utempter -&gt; $(SEC_SUID);
+/sbin/netreport -&gt; $(SEC_SUID);
+}
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0160656c686f416e71646f6f602f626e6c">[email&#160;protected]</a>, rulename = "Configuration Files")
+{
+/etc/hosts -&gt; $(SEC_CONFIG);
+/etc/inetd.conf -&gt; $(SEC_CONFIG);
+/etc/initlog.conf -&gt; $(SEC_CONFIG);
+/etc/inittab -&gt; $(SEC_CONFIG);
+/etc/resolv.conf -&gt; $(SEC_CONFIG);
+/etc/syslog.conf -&gt; $(SEC_CONFIG);
+}
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7716131a1e19371807121919165914181a">[email&#160;protected]</a>, rulename = "Security Control")
+{
+/etc/group -&gt; $(SEC_CRIT);
+/etc/security/ -&gt; $(SEC_CRIT);
+/lib/security/ -&gt; $(SEC_CRIT);
+/var/spool/cron -&gt; $(SEC_CRIT);
+}
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="4726232a2e29072837222929266924282a">[email&#160;protected]</a>, rulename = "Login Scripts")
+{
+/etc/csh.login -&gt; $(SEC_CONFIG);
+/etc/profile -&gt; $(SEC_CONFIG);
+}
+# Эти файлы изменяются при каждой загрузке системы
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="79181d1410173916091c171718571a1614">[email&#160;protected]</a>, rulename = "System boot changes", severity =
+$(SIG_HI))
+{
+/dev/log -&gt; $(Dynamic) ;
+/dev/cua0 -&gt; $(Dynamic) ;
+/dev/console -&gt; $(Dynamic) ;
+/dev/tty2 -&gt; $(Dynamic) ; # tty devices
+/dev/tty3 -&gt; $(Dynamic) ; # are extremely
+/dev/tty4 -&gt; $(Dynamic) ; # variable
+/dev/tty5 -&gt; $(Dynamic) ;
+/dev/tty6 -&gt; $(Dynamic) ;
+/dev/urandom -&gt; $(Dynamic) ;
+/dev/initctl -&gt; $(Dynamic) ;
+/var/lock/subsys -&gt; $(Dynamic) ;
+/var/run -&gt; $(Dynamic) ; # daemon PIDs
+/var/log -&gt; $(Dynamic) ;
+/etc/ioctl.save -&gt; $(Dynamic) ;
+/etc/.pwd.lock -&gt; $(Dynamic) ;
+/etc/mtab -&gt; $(Dynamic) ;
+/lib/modules -&gt; $(Dynamic) ;
+}
+# Критические конфигурационные файлы
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7e1f1a1317103e110e1b10101f501d1113">[email&#160;protected]</a>, rulename = "Critical configuration files", severity =
+$(SIG_HI))
+{
+/etc/conf.modules -&gt; $(ReadOnly) ;
+/etc/crontab -&gt; $(ReadOnly) ;
+/etc/cron.hourly -&gt; $(ReadOnly) ;
+/etc/cron.daily -&gt; $(ReadOnly) ;
+/etc/cron.weekly -&gt; $(ReadOnly) ;
+/etc/cron.monthly -&gt; $(ReadOnly) ;
+/etc/default -&gt; $(ReadOnly) ;
+/etc/fstab -&gt; $(ReadOnly) ;
+/etc/group- -&gt; $(ReadOnly) ; # изменения должны быть не частыми
+/etc/host.conf -&gt; $(ReadOnly) ;
+/etc/hosts.allow -&gt; $(ReadOnly) ;
+/etc/hosts.deny -&gt; $(ReadOnly) ;
+/etc/lilo.conf -&gt; $(ReadOnly) ;
+/etc/logrotate.conf -&gt; $(ReadOnly) ;
+/etc/pwdb.conf -&gt; $(ReadOnly) ;
+/etc/securetty -&gt; $(ReadOnly) ;
+/etc/sendmail.cf -&gt; $(ReadOnly) ;
+/etc/protocols -&gt; $(ReadOnly) ;
+/etc/services -&gt; $(ReadOnly) ;
+/etc/rc.d/init.d -&gt; $(ReadOnly) ;
+/etc/rc.d -&gt; $(ReadOnly) ;
+/etc/motd -&gt; $(ReadOnly) ;
+/etc/passwd -&gt; $(ReadOnly) ;
+/etc/passwd- -&gt; $(ReadOnly) ;
+/etc/profile.d -&gt; $(ReadOnly) ;
+/etc/rpc -&gt; $(ReadOnly) ;
+/etc/sysconfig -&gt; $(ReadOnly) ;
+/etc/shells -&gt; $(ReadOnly) ;
+/etc/nsswitch.conf -&gt; $(ReadOnly) ;
+}
+# Критичные устройства
+(emailto = <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6f0e0b0206012f001f0a01010e410c0002">[email&#160;protected]</a>, rulename = "Critical devices", severity = $(SIG_HI),
+recurse = false)
+{
+/dev/kmem -&gt; $(Device) ;
+/dev/mem -&gt; $(Device) ;
+/dev/null -&gt; $(Device) ;
+/dev/zero -&gt; $(Device) ;
+/proc/devices -&gt; $(Device) ;
+/proc/net -&gt; $(Device) ;
+/proc/tty -&gt; $(Device) ;
+/proc/sys -&gt; $(Device) ;
+/proc/cpuinfo -&gt; $(Device) ;
+/proc/modules -&gt; $(Device) ;
+/proc/mounts -&gt; $(Device) ;
+/proc/dma -&gt; $(Device) ;
+/proc/filesystems -&gt; $(Device) ;
+/proc/ide -&gt; $(Device) ;
+/proc/interrupts -&gt; $(Device) ;
+/proc/ioports -&gt; $(Device) ;
+/proc/scsi -&gt; $(Device) ;
+/proc/kcore -&gt; $(Device) ;
+/proc/self -&gt; $(Device) ;
+/proc/kmsg -&gt; $(Device) ;
+/proc/stat -&gt; $(Device) ;
+/proc/ksyms -&gt; $(Device) ;
+/proc/loadavg -&gt; $(Device) ;
+/proc/uptime -&gt; $(Device) ;
+/proc/locks -&gt; $(Device) ;
+/proc/version -&gt; $(Device) ;
+/proc/meminfo -&gt; $(Device) ;
+/proc/cmdline -&gt; $(Device) ;
+/proc/misc -&gt; $(Device) ;
+}</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Это пример файла политик, который мы вам
+предоставляем, конечно, вы должны модифицировать его под вашу систему.
+</P><B>Шаг 2</B>
+<P align=justify>Так как мы уже готовы использовать наш файл политик в первый
+раз, инсталлируйте его следующей командой:</P><FONT color=#008080
+size=-1>[root@deep /]# twadmin --create-polfile
+/usr/TSS/policy/twpol.txt<BR>Please enter your site passphrase:<BR>Wrote policy
+file: /usr/TSS/policy/tw.pol<BR></FONT>
+<H3><A name=3>Организация защиты Tripwire для Linux</A></H3>
+<P align=justify>Важно удостовериться, что целостность системы уже не была
+нарушена. Для максимальной безопасности вашей основной базы данных, вы должны
+инсталлировать систему с оригинальных носителей. Также рекомендуется удалить
+текстовую копию конфигурационного файла Tripwire &#8220;twcfg.txt&#8221;, расположенного в
+каталоге &#8220;/usr/bin&#8221;, для сокрытия месторасположения файлов Tripwire и
+предотвращения создания альтернативного конфигурационного файла.</P><FONT
+color=#008080 size=-1>[root@deep /]# rm -f /usr/bin/twcfg.txt</FONT>
+<H3>Дополнительная документация.</H3>
+<P align=justify>Здесь перечислены некоторые страницы руководства (man), которые
+могут дать вам дополнительную информацию.</P>
+<P align=justify>$ siggen (8) &#8211; сбор сигнатур кодов для Tripwire<BR>$ tripwire
+(8) &#8211; программа проверки целостности файлов UNIX систем<BR>$ twadmin (8) &#8211;
+административная и инструментальная программа Tripwire<BR>$ twconfig (4) &#8211;
+конфигурационный файл Tripwire<BR>$ twfiles (5) &#8211; краткий обзор фалов
+используемых Tripwire и процесса <BR>резервного копирования файлов<BR>$ twintro
+(8) &#8211; введение в Tripwire<BR>$ twpolicy (4) &#8211; файл политик Tripwire<BR>$ twprint
+(8) &#8211; база данных и печать отчетов Tripwire<BR></P>
+<H3><A name=4>Команды.</A></H3>
+<P align=justify>Ниже приведены команды из тех, что мы часто используем в
+регулярной работе, но из существует много больше. Читайте страницы руководства
+(man) для получения большей информации.</P><B>Создание базы данных в первый
+раз.</B>
+<P align=justify>Так как ваш файл с политиками инсталлирован, то наступило время
+создать базу данных объектов файловой системы, базирующуюся на файле с
+политиками. Эта база данных будет выступать как основание для дальнейших
+проверок целостности. </P>
+<P align=justify>Синтаксис для перехода в режим инициализации базы
+данных:</P><FONT color=#008080 size=-1>[root@deep /]# tripwire { --init }</FONT>
+
+<P align=justify>Инициализируем вашу базу данных:</P><FONT color=#008080
+size=-1>[root@deep /]# tripwire --init<BR>Please enter your local
+passphrase:<BR>Parsing policy file: /usr/TSS/policy/tw.pol<BR>Generating the
+database...<BR>*** Processing Unix File System ***<BR>Wrote database file:
+/usr/TSS/db/deep.openna.com.twd<BR>The database was successfully
+generated.<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Когда команда выполнена, база данных готова и
+вы можете выполнить проверку целостности файловой системы и просматривать
+отчеты.</P><B>Запуск режима проверки целостности и интерактивного режима
+проверки.</B>
+<P align=justify>Tripwire имеет возможность называемую &#8220;Режим проверки
+целостности&#8221;. Сейчас, когда наша база данных инициализована, мы можем
+использовать этот режим для сравнения текущих объектов файловой системы с их
+свойствами, записанными в базу данных Tripwire. Все файлы с нарушениями будут
+выводится в stdout; файл генератор отчетов будет создан и может быть использован
+в дальнейшем с помощью утилиты twprint.</P>
+<P align=justify>Синтаксис для режима проверки целостности:</P><FONT
+color=#008080 size=-1>[root@deep /]# tripwire { --check }</FONT>
+<P align=justify>Для запуска проверки целостности используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# tripwire --check</FONT>
+<P align=justify>Tripwire может быть также запущен в режиме &#8220;Интерактивный режим
+проверки&#8221;. В этом режиме вы можете автоматически обновлять ваши изменения с
+терминала.</P>
+<P align=justify>Для запуска интерактивного режима проверки используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# tripwire --check
+--interactive</FONT>
+<P align=justify>В Tripwire есть опция email, которая позволяет отправлять
+письма. Эта опция определяет, что отчет должен быть отправлен по электронной
+почте адресату, определенному в файле политик.</P>
+<P align=justify>Для запуска режима проверки целостности и отправки отчета по
+электронной почте, используйте команду:</P><FONT color=#008080
+size=-1>[root@deep /]# tripwire --check --email-report</FONT> <B>Обновление базы
+данных после проверки целостности.</B>
+<P align=justify>Если вы решили использовать &#8220;Режим проверки целостности &#8221;
+вместо &#8220;Интерактивного режима проверки &#8221;, вы должны обновить базу данных
+Tripwire, используя возможность &#8220;Режим обновления базы данных&#8221;. Этот процесс
+позволяет вам сэкономить время, обновляя базу данных без ее полного
+пересоздания, и также допускается выборочное обновление, которое не может быть
+осуществлена через восстановление.</P>
+<P align=justify>Синтаксис режима обновления базы данных:</P><FONT color=#008080
+size=-1>[root@deep /]# tripwire { --update -r}</FONT>
+<P align=justify>Для обновления базы данных дайте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# tripwire --update -r
+/usr/TSS/report/deep.openna.com-200001-021854.twr</FONT>
+<P align=justify>где &#8220;-r&#8221; читает определенный файл отчет
+(deep.openna.com-200001-021854.twr). Эта опция требуется, так как переменная
+REPORTFILE в текущем файле конфигурации использует $(DATE).</P>
+<P align=justify>ЗАМЕЧАНИЕ: В режиме обновления базы данных или режиме
+интерактивной проверки, Tripwire выводит отчет на вашем терминале с местом для
+отметки напротив каждого нарушения политики. Вы можете принять изменения в
+файловой системе установив знак &#8220;x&#8221; или не обновлять базу данных убрав &#8220;x&#8221;.
+После того, как вы вышли из редактора и ввели локальную парольную фразу,
+Tripwire будет обновлять и записывать изменения.</P><B>Обновление файла с
+политиками.</B>
+<P align=justify>Иногда вы можете захотеть изменить правила в вашей политике,
+чтобы отразить изменения правил и отразить расположение новых файлов и политик.
+Существуют специальные команды, чтобы выполнить работу по обновлению базы данных
+без полного обновления базы. Это поможет сохранить много времени и безопасность,
+сохраняя файлы политик синхронизированными с базой данных</P>
+<P align=justify>Синтаксис для режима обновления политик:</P><FONT color=#008080
+size=-1>[root@deep /]# tripwire { --update-policy
+/path/to/new/policy/file}</FONT>
+<P align=justify>Для обновления файла с политиками используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# tripwire --update-policy
+/usr/TSS/policy/newtwpol.txt</FONT>
+<P align=justify>Режим обновления политик по умолчанию запускается с опцией
+&#8220;--secure-mode high&#8221;. Вы можете столкнуться с ошибкой когда запускаете Tripwire
+с этой опцией, если файловая система изменилась по сравнению с последним
+обновлением базы данных, и если эти изменения будут причиной нарушений по новым
+правилам политики. После уточнения, что все отчеты о нарушениях в high security
+режиме санкционированы, вы можете обновить файл с политиками в low security
+режиме для решения этой проблемы:</P>
+<P align=justify>Для обновления файла политик в low security режиме используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# tripwire --update-policy
+--secure-mode low /usr/TSS/policy/newtwpol.txt</FONT>
+<P align=justify><B>Проинсталлированные файлы.</B></P><PRE><FONT size=-1>&gt; /usr/TSS
+&gt; /usr/bin
+&gt; /usr/bin/siggen
+&gt; /usr/bin/twprint
+&gt; /usr/bin/twadmin
+&gt; /usr/bin/tripwire
+&gt; /usr/bin/twcfg.txt
+&gt; /usr/bin/tw.cfg
+&gt; /usr/TSS/policy
+&gt; /usr/TSS/policy/policyguide.txt
+&gt; /usr/TSS/policy/twpol.txt
+&gt; /usr/TSS/policy/tw.pol
+&gt; /usr/TSS/policy/twpol.txt.bak
+&gt; /usr/TSS/report
+&gt; /usr/TSS/db
+&gt; /usr/TSS/key
+&gt; /usr/TSS/key/site.key
+&gt; /usr/TSS/key/deep.openna.com-local.key
+&gt; /usr/man
+&gt; /usr/man/man4
+&gt; /usr/man/man4/twconfig.4
+&gt; /usr/man/man4/twpolicy.4
+&gt; /usr/man/man5
+&gt; /usr/man/man5/twfiles.5
+&gt; /usr/man/man8
+&gt; /usr/man/man8/siggen.8
+&gt; /usr/man/man8/tripwire.8
+&gt; /usr/man/man8/twadmin.8
+&gt; /usr/man/man8/twintro.8
+&gt; /usr/man/man8/twprint.8
+&gt; /usr/README
+&gt; /usr/Release_Notes
+&gt; /usr/License.txt</FONT></PRE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch11_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#12">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch12_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

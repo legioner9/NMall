@@ -1,0 +1,958 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Printing to a NetWare Print Queue — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-ipx.othertools.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 15. IPX and the NCP Filesystem</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-ipx.ncpfs.server.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="X-087-2-IPX.NCPFS.PRINTING"
+>15.8. Printing to a NetWare Print Queue</A
+></H1
+><P
+>The <TT
+CLASS="FILENAME"
+>ncpfs</TT
+> package contains a small utility called
+<B
+CLASS="COMMAND"
+>nprint</B
+> that sends print jobs across an NCP
+connection to a NetWare print queue.  This command creates the
+connection if it doesn't currently exist and uses the
+<TT
+CLASS="FILENAME"
+>~/.nwclient</TT
+> file that we described earlier to
+hide the username and password from prying eyes. The command-line
+arguments used to manage the login process are the same as those used
+by the <B
+CLASS="COMMAND"
+>ncpmount</B
+>, so we won't go through those again
+here.  We will cover the most important command-line options in our
+examples; refer to the <TT
+CLASS="FILENAME"
+>nprint(1)</TT
+> manual page for
+details.</P
+><P
+>The only required option for <B
+CLASS="COMMAND"
+>nprint</B
+> is the name of
+the file to print. If the filename specified is &#8211; or if no filename
+is specified at all, <B
+CLASS="COMMAND"
+>nprint</B
+> will accept the print job
+from <TT
+CLASS="LITERAL"
+>stdin</TT
+>. The most important <B
+CLASS="COMMAND"
+>nprint</B
+>
+options specify the fileserver and print queue to which you wish the job to be
+sent. <A
+HREF="x-087-2-ipx.ncpfs.printing.html#X-087-2-IPX.NPRINT.OPTIONS"
+>Table 15-4</A
+> lists the most
+important options.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="X-087-2-IPX.NPRINT.OPTIONS"
+></A
+><P
+><B
+>Table 15-4. nprint Command-Line Options</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Option</TH
+><TH
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-S <TT
+CLASS="REPLACEABLE"
+><I
+>server_name</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The name of the NetWare fileserver supporting the print queue to which you wish
+to print. Usually it is convenient for the server to have an entry in
+<TT
+CLASS="FILENAME"
+>~/.nwclient</TT
+>. This option is mandatory.</P
+></TD
+></TR
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-q <TT
+CLASS="REPLACEABLE"
+><I
+>queue_name</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The print queue to which to send the print job. This option is mandatory.</P
+></TD
+></TR
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>job_description</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Text that will appear in the print console utility when displaying the
+list of queued jobs.</P
+></TD
+></TR
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-l <TT
+CLASS="REPLACEABLE"
+><I
+>lines</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The number of lines per printed page. This defaults to 66.</P
+></TD
+></TR
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-r <TT
+CLASS="REPLACEABLE"
+><I
+>columns</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The number of columns per printed page. This defaults to 80.</P
+></TD
+></TR
+><TR
+><TD
+WIDTH="1"
+ALIGN="LEFT"
+VALIGN="TOP"
+>-c <TT
+CLASS="REPLACEABLE"
+><I
+>copies</I
+></TT
+></TD
+><TD
+WIDTH="3"
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The number of copies of the job that will be printed. The default is 1.</P
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>A simple example using <B
+CLASS="COMMAND"
+>nprint</B
+> would look like:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ nprint -S REDS01 -q PSLASER -c 2 /home/matt/ethylene.ps</PRE
+></TD
+></TR
+></TABLE
+>
+
+This command would print two copies of the file
+<TT
+CLASS="FILENAME"
+>/home/matt/ethylene.ps</TT
+> to the printer named
+<TT
+CLASS="LITERAL"
+>PSLASER</TT
+> on the <TT
+CLASS="LITERAL"
+>REDS01</TT
+>
+fileserver using a username and password obtained from the
+<TT
+CLASS="FILENAME"
+>~/.nwclient</TT
+> file.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN12375"
+>15.8.1. Using nprint with the Line Printer Daemon</A
+></H2
+><P
+>&#13;
+You will recall we previously mentioned that the
+<TT
+CLASS="OPTION"
+>&#8211;c</TT
+> option for the <B
+CLASS="COMMAND"
+>ncpmount</B
+>
+is useful for printing. At last we'll explain why and how.</P
+><P
+>Linux usually uses BSD-style line printer software. The line printer daemon
+(<B
+CLASS="COMMAND"
+>lpd</B
+>&#8201;) is a daemon that checks a local spool directory
+for queued jobs that are to be printed. <B
+CLASS="COMMAND"
+>lpd</B
+> reads the
+printer name and some other parameters from the specially formatted spool
+file and writes the data to the printer, optionally passing the data
+through a filter to transform or manipulate it in some way.</P
+><P
+>The <B
+CLASS="COMMAND"
+>lpd</B
+> daemon uses a simple database called
+<TT
+CLASS="FILENAME"
+>/etc/printcap</TT
+> to store printer configuration
+information, including what filters are to be
+run. <B
+CLASS="COMMAND"
+>lpd</B
+> usually runs with the permissions of a
+special system user called <SPAN
+CLASS="SYSTEMITEM"
+>lp</SPAN
+>.</P
+><P
+>You could configure <B
+CLASS="COMMAND"
+>nprint</B
+> as a filter for
+the <B
+CLASS="COMMAND"
+>lpd</B
+> to use, which allows users of your Linux machine to
+output directly to remote printers hosted by a NetWare fileserver. To do this,
+the <SPAN
+CLASS="SYSTEMITEM"
+>lp</SPAN
+> user must be able to write NCP
+requests to the NCP connection to the server.</P
+><P
+>An easy way to achieve this without requiring the
+<SPAN
+CLASS="SYSTEMITEM"
+>lp</SPAN
+> user to establish its own connection
+and login is to specify <SPAN
+CLASS="SYSTEMITEM"
+>lp</SPAN
+> as the owner
+of a connection established by another user. A complete example of how to set
+up the Linux printing system to handle print jobs from clients over NetWare is listed in three steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Write a wrapper script.</P
+><P
+>The <TT
+CLASS="FILENAME"
+>/etc/printcap</TT
+> file doesn't permit options to
+be supplied to filters. Therefore, you need to write a short script
+that invokes the command you want along with its options.  The wrapper
+script could be as simple as:
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#!/bin/sh
+# p2pslaser - simple script to redirect stdin to the
+# PSLASER queue on the REDS01 server
+#
+/usr/bin/nprint -S REDS01 -U stuart -q PSLASER
+#</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>Store the script in the file <TT
+CLASS="FILENAME"
+>/usr/local/bin/p2pslaser</TT
+>.</P
+></LI
+><LI
+><P
+>Write the <TT
+CLASS="FILENAME"
+>/etc/printcap</TT
+> entry.</P
+><P
+>We'll need to configure the <TT
+CLASS="FILENAME"
+>p2pslaser</TT
+> script we
+created as the output filter in the <TT
+CLASS="FILENAME"
+>/etc/printcap</TT
+>.
+This would look something like:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>pslaser|Postscript Laser Printer hosted by NetWare server:\
+:lp=/dev/null:\
+:sd=/var/spool/lpd/pslaser:\
+:if=/usr/local/bin/p2pslaser:\
+:af=/var/log/lp-acct:\
+:lf=/var/log/lp-errs:\
+:pl#66:\
+:pw#80:\
+:pc#150:\
+:mx#0:\
+:sh:                                                                    </PRE
+></TD
+></TR
+></TABLE
+></P
+></LI
+><LI
+><P
+>Add the <TT
+CLASS="OPTION"
+>&#8211;c</TT
+> option to the <B
+CLASS="COMMAND"
+>ncpmount</B
+>.</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>ncpmount -S REDS01 .... -c lp ....</PRE
+></TD
+></TR
+></TABLE
+><P
+>Our local user <SPAN
+CLASS="SYSTEMITEM"
+>stuart</SPAN
+> must specify
+the <SPAN
+CLASS="SYSTEMITEM"
+>lp</SPAN
+> user as the owner of the
+connection when he mounts the remote NetWare server.</P
+></LI
+></OL
+><P
+>Now any Linux user may choose to specify <TT
+CLASS="LITERAL"
+>pslaser</TT
+> as the printer name
+when invoking <I
+CLASS="EMPHASIS"
+>lp</I
+>. The print job will be sent
+to the specified NetWare server and spooled for printing.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN12426"
+>15.8.2. Managing Print Queues</A
+></H2
+><P
+>&#13;
+The <B
+CLASS="COMMAND"
+>pqlist</B
+> command lists all of the print queues available
+to you on the specified server. If you do not specify a fileserver on
+the command line using the <TT
+CLASS="OPTION"
+>-S</TT
+> option, or a login name and
+password, these will be taken from the default entry in your
+<TT
+CLASS="FILENAME"
+>~/.nwclient</TT
+> file:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <TT
+CLASS="USERINPUT"
+><B
+>pqlist -S vbrew_f1 -U guest -n</B
+></TT
+>
+Server: ALES_F1
+Print queue name                                    Queue ID
+------------------------------------------------------------
+TEST                                                AA02009E
+Q2                                                  EF0200D9
+NPI223761_P1                                        DA03007C
+Q1                                                  F1060004
+I-DATA                                              0D0A003B
+NPI223761_P3                                        D80A0031</PRE
+></TD
+></TR
+></TABLE
+><P
+>Our example shows a list of the print queues available to the
+<TT
+CLASS="LITERAL"
+>guest</TT
+> user on the <TT
+CLASS="LITERAL"
+>ALES_F1</TT
+>
+fileserver.<A
+NAME="X-087-2-FNIX09"
+HREF="x-087-2-ipx.ncpfs.printing.html#FTN.X-087-2-FNIX09"
+>[1]</A
+></P
+><P
+>&#13;To view the print jobs on a print queue, use the
+<B
+CLASS="COMMAND"
+>pqstat</B
+> command. It takes the
+print queue name as an argument and lists all of the jobs in that queue.
+You may optionally supply another argument indicating how many of the jobs
+in the queue you'd like to list. The following sample output has been
+compressed a bit to fit the width of this book's page:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ pqstat -S ALES_F1 NPI223761_P1
+
+Server: ALES_F1     Queue: NPI223761_P1          Queue ID: 6A0E000C
+   Seq  Name      Description                    Status   Form  Job ID
+------------------------------------------------------------------------
+     1  TOTRAN    LyX document - proposal.lyx    Active      0  02660001</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>We can see just one print job in the queue, owned by user
+<TT
+CLASS="LITERAL"
+>TOTRAN</TT
+>. The rest of the options include a
+description of the job, its status, and its job identifier.</P
+><P
+>The <B
+CLASS="COMMAND"
+>pqrm</B
+> command is used to remove print jobs from
+a specified print queue. To remove the job in the queue we've just
+obtained the status of, we'd use:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ pqrm -S ALES_F1 NPI223761_P1 02660001</PRE
+></TD
+></TR
+></TABLE
+><P
+>The command is pretty straightforward but is clumsy to use in a hurry. It
+would be a worthwhile project to write a basic script to simplify this
+operation.</P
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNIX09"
+HREF="x-087-2-ipx.ncpfs.printing.html#X-087-2-FNIX09"
+>[1]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+> It looks like the
+system administrators had been sampling some of the Virtual Brewery's
+wares before they chose some of those print queue names. Hopefully
+your print queue names are more meaningful!</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-ipx.othertools.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-ipx.ncpfs.server.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Exploring Some of the Other IPX Tools</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x-087-2-ipx.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>NetWare Server Emulation</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

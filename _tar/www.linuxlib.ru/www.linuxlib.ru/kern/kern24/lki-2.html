@@ -1,0 +1,2274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Внутреннее устройство ядра Linux 2.4: Управление процессами
+    и прерываниями — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <a
+     href="lki-3.html">Вперед</a> <a
+     href="lki-1.html">Назад</a> <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc2">Содержание</a>
+    <hr>
+
+    <h2><a
+     name="s2">2. Управление процессами и прерываниями</a></h2>
+
+    <h2><a
+     name="ss2.1">2.1 Структура задачи и таблица процессов</a></h2>
+
+    <p>Каждый процесс динамически размещает структуру <code>struct
+    task_struct</code>. Максимальное количество процессов, которое
+    может быть создано в Linux, ограничивается только объемом
+    физической памяти и равно (см.
+    <code>kernel/fork.c:fork_init()</code>):</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>     /*
+         * В качестве максимально возможного числа потоков принимается безопасное
+         * значение: структуры потоков не могут занимать более половины
+         * имеющихся страниц памяти.
+         */
+        max_threads = mempages / (THREAD_SIZE/PAGE_SIZE) / 2;
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>что для архитектуры IA32 означает, как правило,
+    <code>num_physpages/4</code>. Например, на машине с 512M памяти,
+    возможно создать 32k потоков. Это значительное усовершенствование
+    по сравнению с 4k-epsilon пределом для ядер 2.2 и более ранних
+    версий. Кроме того, этот предел может быть изменен в процессе
+    исполнения, передачей значения KERN_MAX_THREADS в вызове
+    <strong>sysctl(2)</strong>, или через интерфейс procfs:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code># cat /proc/sys/kernel/threads-max
+32764
+# echo 100000 &gt; /proc/sys/kernel/threads-max
+# cat /proc/sys/kernel/threads-max
+100000
+# gdb -q vmlinux /proc/kcore
+Core was generated by `BOOT_IMAGE=240ac18 ro root=306 video=matrox:vesa:0x118&#39;.
+#0  0x0 in ?? ()
+(gdb) p max_threads
+$1 = 100000
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Множество процессов в Linux-системе представляет собой
+    совокупность структур <code>struct task_struct</code>, которые
+    взаимосвязаны двумя способами.</p>
+
+    <ol>
+      <li>как хеш-массив, хешированный по pid, и</li>
+
+      <li>как кольцевой двусвязный список, в котором элементы ссылаются
+      друг на друга посредством указателей <code>p-&gt;next_task</code>
+      и <code>p-&gt;prev_task</code>.</li>
+    </ol>
+
+    <p>Хеш-массив определен в <code>include/linux/sched.h</code> как
+    <code>pidhash[]</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* PID hashing. (shouldnt this be dynamic?) */
+#define PIDHASH_SZ (4096 &gt;&gt; 2)
+extern struct task_struct *pidhash[PIDHASH_SZ];
+
+#define pid_hashfn(x)   ((((x) &gt;&gt; 8) ^ (x)) &amp; (PIDHASH_SZ - 1))
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Задачи хешируются по значению pid, вышеприведенной хеш-функцией,
+    которая равномерно распределяет элементы по диапазону от
+    <code>0</code> до <code>PID_MAX-1</code>. Хеш-массив используется
+    для быстрого поиска задачи по заданному pid с помощью
+    inline-функции <code>find_task_by_pid()</code>, определенной в
+    <code>include/linux/sched.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>static inline struct task_struct *find_task_by_pid(int pid)
+{
+        struct task_struct *p, **htable = &amp;pidhash[pid_hashfn(pid)];
+
+        for(p = *htable; p &amp;&amp; p-&gt;pid != pid; p = p-&gt;pidhash_next)
+                ;
+
+        return p;
+}
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Задачи в каждом хеш-списке (т.е. хешированные с тем же самым
+    значением) связаны указателями
+    <code>p-&gt;pidhash_next/pidhash_pprev</code>, которые используются
+    функциями <code>hash_pid()</code> и <code>unhash_pid()</code> для
+    добавления/удаления заданного процесса в/из хеш-массив. Делается
+    это под блокировкой (spinlock) <code>tasklist_lock</code>,
+    полученной на запись.</p>
+
+    <p>Двусвязный список задач организован таким образом, чтобы
+    упростить навигацию по нему, используя указатели
+    <code>p-&gt;next_task/prev_task</code>. Для прохождения всего
+    списка задач, в системе предусмотрен макрос
+    <code>for_each_task()</code> из
+    <code>include/linux/sched.h</code>:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>#define for_each_task(p) \
+        for (p = &amp;init_task ; (p = p-&gt;next_task) != &amp;init_task ; )
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Перед использованием <code>for_each_task()</code> необходимо
+    получить блокировку tasklist_lock на ЧТЕНИЕ. Примечательно, что
+    <code>for_each_task()</code> использует <code>init_task</code> в
+    качестве маркера начала (и конца) списка - благодаря тому, что
+    задача с pid=0 всегда присутствует в системе.</p>
+
+    <p>Функции, изменяющие хеш-массив и/или таблицу связей процессов,
+    особенно <code>fork()</code>, <code>exit()</code> и
+    <code>ptrace()</code>, должны получить блокировку (spinlock)
+    <code>tasklist_lock</code> на ЗАПИСЬ. Что особенно интересно -
+    перед записью необходимо запрещать прерывания на локальном
+    процессоре, по той причине, что функция <code>send_sigio()</code>,
+    при прохождении по списку задач, захватывает
+    <code>tasklist_lock</code> на ЧТЕНИЕ, и вызывается она из
+    <code>kill_fasync()</code> в контексте прерывания. Однако, если
+    требуется доступ ТОЛЬКО ДЛЯ ЧТЕНИЯ, запрещать прерывания нет
+    необходимости.</p>
+
+    <p>Теперь, когда достаточно ясно представляется как связаны между
+    собой структуры <code>task_struct</code>, можно перейти к
+    рассмотрению полей <code>task_struct</code>.</p>
+
+    <p>В других версиях UNIX информация о состоянии задачи разделяется
+    на две части, в одну часть выделяется информация о состоянии задачи
+    (называется &#39;proc structure&#39;, которая включает в себя
+    состояние процесса, информацию планировщика и пр.) и постоянно
+    размещается в памяти, другая часть, необходима только во время
+    работы процесса (&#39;u area&#39;, которая включает в себя таблицу
+    дескрипторов, дисковые квоты и пр.) Единственная причина такого
+    подхода - дефицит памяти. Современные операционные системы (не
+    только Linux, но и другие, современная FreeBSD например) не
+    нуждаются в таком разделении и поэтому вся информация о состоянии
+    процесса постоянно хранится в памяти.</p>
+
+    <p>Структура task_struct объявлена в
+    <code>include/linux/sched.h</code> и на сегодняшний день занимает
+    1680 байт.</p>
+
+    <p>Поле state объявлено как:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>volatile long state;    /* -1 unrunnable, 0 runnable, &gt;0 stopped */
+
+#define TASK_RUNNING            0
+#define TASK_INTERRUPTIBLE      1
+#define TASK_UNINTERRUPTIBLE    2
+#define TASK_ZOMBIE             4
+#define TASK_STOPPED            8
+#define TASK_EXCLUSIVE          32
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Почему константа <code>TASK_EXCLUSIVE</code> имеет значение 32 а
+    не 16? Потому что раньше значение 16 имела константа
+    <code>TASK_SWAPPING</code> и я просто забыл сместить значение
+    <code>TASK_EXCLUSIVE</code>, когда удалял все ссылки на
+    <code>TASK_SWAPPING</code> (когда-то в ядре 2.3.x).</p>
+
+    <p>Спецификатор <code>volatile</code> в объявлении
+    <code>p-&gt;state</code> означает, что это поле может изменяться
+    асинхронно (в обработчиках прерываний):</p>
+
+    <ol>
+      <li><strong>TASK_RUNNING</strong>: указывает на то, что задача
+      &quot;вероятно&quot; находится в очереди запущенных задач
+      (runqueue). Причина, по которой задача может быть помечена как
+      <code>TASK_RUNNING</code>, но не помещена в runqueue в том, что
+      пометить задачу и вставить в очередь - не одно и то же. Если
+      заполучить блокировку <code>runqueue_lock</code> на чтение-запись
+      и просмотреть runqueue, то можно увидеть, что все задачи в
+      очереди имеют состояние <code>TASK_RUNNING</code>. Таким образом,
+      утверждение &quot;Все задачи в runqueue имеют состояние
+      <code>TASK_RUNNING</code>&quot; не означает истинность обратного
+      утверждения. Аналогично, драйверы могут отмечать себя (или
+      контекст процесса, под которым они запущены) как
+      <code>TASK_INTERRUPTIBLE</code> (или
+      <code>TASK_UNINTERRUPTIBLE</code>) и затем производить вызов
+      <code>schedule()</code>, который удалит их из runqueue (исключая
+      случай ожидания сигнала, тогда процесс остается в runqueue).</li>
+
+      <li><strong>TASK_INTERRUPTIBLE</strong>: задача в состоянии
+      &quot;сна&quot;, но может быть &quot;разбужена&quot; по сигналу
+      или по истечении таймера.</li>
+
+      <li><strong>TASK_UNINTERRUPTIBLE</strong>: подобно
+      <code>TASK_INTERRUPTIBLE</code>, только задача не может быть
+      &quot;разбужена&quot;.</li>
+
+      <li><strong>TASK_ZOMBIE</strong>: задача, завершившая работу, до
+      того как родительский процесс (&quot;естественный&quot; или
+      &quot;приемный&quot;) произвел системный вызов
+      <code>wait(2)</code>.</li>
+
+      <li><strong>TASK_STOPPED</strong>: задача остановлена, либо по
+      управляющему сигналу, либо в результате вызова
+      <strong>ptrace(2)</strong>.</li>
+
+      <li><strong>TASK_EXCLUSIVE</strong>: не имеет самостоятельного
+      значения и используется только совместно с
+      <code>TASK_INTERRUPTIBLE</code> или с
+      <code>TASK_UNINTERRUPTIBLE</code> (по OR). При наличии этого
+      флага, будет &quot;разбужена&quot; лишь эта задача, избегая тем
+      самым порождения проблемы &quot;гремящего стада&quot; при
+      &quot;пробуждении&quot; всех &quot;спящих&quot; задач.</li>
+    </ol>
+
+    <p>Флаги задачи представляют не взаимоисключающую информацию о
+    состоянии процесса:</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>unsigned long flags;    /* флаги процесса, определены ниже */
+/*
+ * Флаги процесса
+ */
+#define PF_ALIGNWARN    0x00000001      /* Print alignment warning msgs */
+                                        /* Not implemented yet, only for 486*/
+#define PF_STARTING     0x00000002      /* создание */
+#define PF_EXITING      0x00000004      /* завершение */
+#define PF_FORKNOEXEC   0x00000040      /* создан, но не запущен */
+#define PF_SUPERPRIV    0x00000100      /* использует привилегии супер-пользователя */
+#define PF_DUMPCORE     0x00000200      /* выполнен дамп памяти */
+#define PF_SIGNALED     0x00000400      /* &quot;убит&quot; по сигналу */
+#define PF_MEMALLOC     0x00000800      /* Распределение памяти */
+#define PF_VFORK        0x00001000      /* &quot;Разбудить&quot; родителя в mm_release */
+#define PF_USEDFPU      0x00100000      /* задача использует FPU this quantum (SMP) */
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <p>Поля <code>p-&gt;has_cpu</code>, <code>p-&gt;processor</code>,
+    <code>p-&gt;counter</code>, <code>p-&gt;priority</code>,
+    <code>p-&gt;policy</code> и <code>p-&gt;rt_priority</code> связаны
+    с планировщиком и будут рассмотрены позднее.</p>
+
+    <p>Поля <code>p-&gt;mm</code> и <code>p-&gt;active_mm</code>
+    указывают, соответственно, на адресное пространство процесса,
+    описываемое структурой <code>mm_struct</code> и активное адресное
+    пространство, если процесс не имеет своего (например потоки ядра).
+    Это позволяет минимизировать операции с TLB при переключении
+    адресных пространств задач во время их планирования. Так, если
+    запланирован поток ядра (для которого поле <code>p-&gt;mm</code> не
+    установлено), то <code>next-&gt;active_mm</code> будет установлено
+    в значение <code>prev-&gt;active_mm</code> предшествующей задачи,
+    которое будет иметь то же значение, что и <code>prev-&gt;mm</code>
+    если <code>prev-&gt;mm != NULL</code>. Адресное пространство может
+    разделяться потоками, если в системный вызов
+    <strong>clone(2)</strong> был передан флаг <code>CLONE_VM</code>,
+    либо был сделан системный вызов <strong>vfork(2)</strong>.</p>
+
+    <p>Поле <code>p-&gt;fs</code> ссылается на информацию о файловой
+    системе, которая в Linux делится на три части:</p>
+
+    <ol>
+      <li>корень дерева каталогов и точка монтирования,</li>
+
+      <li>альтернативный корень дерева каталогов и точка
+      монтирования,</li>
+
+      <li>текущий корень дерева каталогов и точка монтирования.</li>
+    </ol>
+
+    <p>Эта структура включает в себя так же счетчик ссылок, поскольку
+    возможно разделение файловой системы между клонами, при передаче
+    флага <code>CLONE_FS</code> в вызов <strong>clone(2)</strong>.</p>
+
+    <p>Поле <code>p-&gt;files</code> ссылается на таблицу файловых
+    дескрипторов, которая так же может разделяться между задачами при
+    передаче флага <code>CLONE_FILES</code> в вызов
+    <strong>clone(2)</strong>.</p>
+
+    <p>Поле <code>p-&gt;sig</code> содержит ссылку на обработчики
+    сигналов и может разделяться между клонами, которые были созданы с
+    флагом <code>CLONE_SIGHAND</code>.</p>
+
+    <h2><a
+     name="ss2.2">2.2 Создание и завершение задач и потоков
+    ядра.</a></h2>
+
+    <p>В литературе можно встретить самые разные определения термина
+    &quot;процесс&quot;, начиная от &quot;экземпляр исполняемой
+    программы&quot; и заканчивая &quot;то, что является результатом
+    работы системного вызова clone(2) или fork(2)&quot;. В Linux,
+    существует три типа процессов:</p>
+
+    <ul>
+      <li>фоновая задача(и),</li>
+
+      <li>потоки ядра,</li>
+
+      <li>пользовательские задачи.</li>
+    </ul>
+
+    <p>Фоновая задача создается во время компиляции (at compile time)
+    для первого CPU; и затем &quot;вручную&quot; размножается для
+    каждого процессора вызовом <code>fork_by_hand()</code> из
+    <code>arch/i386/kernel/smpboot.c</code>. Фоновая задача имеет общую
+    структуру init_task, но для каждого процессора создается свой
+    собственный TSS, в массиве <code>init_tss</code>. Все фоновые
+    задачи имеют pid = 0 и никакой другой тип задач больше не может
+    разделять pid, т.е. не могут клонироваться с флагом
+    <code>CLONE_PID</code> через <strong>clone(2)</strong>.</p>
+
+    <p>Потоки ядра порождаются с помощью функции
+    <code>kernel_thread()</code>, которая делает системный вызов
+    <strong>clone(2)</strong> в режиме ядра. Потоки ядра обычно не
+    имеют пользовательского адресного пространства, т.е. <code>p-&gt;mm
+    = NULL</code>, поэтому они явно вызывают <code>exit_mm()</code>,
+    например через функцию <code>daemonize()</code>. Потоки ядра всегда
+    имеют прямой доступ к адресному пространству ядра. Получают pid из
+    нижнего диапазона. Работают в нулевом кольце защиты и,
+    следовательно, имеют высший приоритет во всех операциях
+    ввода/вывода и имеют преимущество перед планировщиком задач.</p>
+
+    <p>Пользовательские задачи создаются через системные вызовы
+    <strong>clone(2)</strong> или <strong>fork(2)</strong>. И тот и
+    другой обращаются к <strong>kernel/fork.c:do_fork()</strong>.</p>
+
+    <p>Давайте рассмотрим что же происходит, когда пользовательский
+    процесс делает системный вызов <strong>fork(2)</strong>. Хотя
+    <strong>fork(2)</strong> и является аппаратно-зависимым из-за
+    различий в организации стека и регистров, тем не менее основную
+    часть действий выполняет функция <code>do_fork()</code>, которая
+    является переносимой и размещена в <code>kernel/fork.c</code>.</p>
+
+    <p>При ветвлении процесса выполняются следующие действия:</p>
+
+    <ol>
+      <li>Локальной переменной <code>retval</code> присваивается
+      значение <code>-ENOMEM</code>, которое возвращается в случае
+      невозможности распределить память под новую структуру задачи</li>
+
+      <li>Если установлен флаг <code>CLONE_PID</code> в параметре
+      <code>clone_flags</code>, тогда возвращается код ошибки
+      (<code>-EPERM</code>). Наличие этого флага допускается только
+      если <code>do_fork()</code> была вызвана из фонового потока (idle
+      thread), т.е. из задачи с <code>pid == 0</code> (только в
+      процессе загрузки). Таким образом, пользовательские потоки не
+      должны передавать флаг <code>CLONE_PID</code> в
+      <strong>clone(2)</strong>, ибо этот номер все равно не
+      &quot;проскочит&quot;.</li>
+
+      <li>Инициализируется <code>current-&gt;vfork_sem</code> (позднее
+      будет очищен потомком). Он используется функцией
+      <code>sys_vfork()</code> (системный вызов
+      <strong>vfork(2)</strong>, передает <code>clone_flags =
+      CLONE_VFORK|CLONE_VM|SIGCHLD</code>) для того, чтобы
+      &quot;усыпить&quot; родителя пока потомок не выполнит
+      <code>mm_release()</code>, например , в результате исполнения
+      <code>exec()</code> или <strong>exit(2)</strong>.</li>
+
+      <li>В памяти размещается новая структура с помощью макроса
+      <code>alloc_task_struct()</code>. На x86 это производится с
+      приоритетом <code>GFP_KERNEL</code>. Это главная причина, по
+      которой системный вызов <strong>fork(2)</strong> может
+      &quot;заснуть&quot;. Если разместить структуру не удалось, то
+      возвращается код ошибки <code>-ENOMEM</code>.</li>
+
+      <li>Все поля структуры текущего процесса копируются во вновь
+      созданную структуру посредством присваивания <code>*p =
+      *current</code>. Может быть следует заменить на memset? Позднее,
+      в поля, которые не наследуются потомком, будут записаны
+      корректные значения.</li>
+
+      <li>Для сохранения реентерабельности кода, выполняется big kernel
+      lock.</li>
+
+      <li>Если &quot;родитель&quot; является пользовательским ресурсом,
+      то проверяется - не превышен ли предел <code>RLIMIT_NPROC</code>,
+      если превышен - тогда возвращается код ошибки
+      <code>-EAGAIN</code>, если нет - увеличивается счетчик процессов
+      для заданного uid <code>p-&gt;user-&gt;count</code>.</li>
+
+      <li>Если превышено системное ограничение на общее число задач -
+      max_threads, возвращается код ошибки <code>-EAGAIN</code>.</li>
+
+      <li>Если исполняемый формат программы принадлежит домену
+      исполнения, поддерживаемому на уровне модуля, увеличивается
+      счетчик ссылок соответствующего модуля.</li>
+
+      <li>Если исполняемый формат программы принадлежит двоичному
+      формату, поддерживаемому на уровне модуля, увеличивается счетчик
+      ссылок соответствующего модуля.</li>
+
+      <li>Потомок помечается как &#39;has not execed&#39;
+      (<code>p-&gt;did_exec = 0</code>)</li>
+
+      <li>Потомок помечается как &#39;not-swappable&#39;
+      (<code>p-&gt;swappable = 0</code>)</li>
+
+      <li>Потомок переводится в состояние TASK_UNINTERRUPTIBLE, т.е.
+      <code>p-&gt;state = TASK_UNINTERRUPTIBLE</code> (TODO: зачем это
+      делается? Я думаю, что в этом нет необходимости - следует
+      избавиться от этого, Linus подтвердил мое мнение)</li>
+
+      <li>Устанавливаются флаги потомка <code>p-&gt;flags</code> в
+      соответствии с clone_flags; в случае простого
+      <strong>fork(2)</strong>, это будет <code>p-&gt;flags =
+      PF_FORKNOEXEC</code>.</li>
+
+      <li>Вызовом функции, <code>kernel/fork.c:get_pid()</code>,
+      реализующей быстрый алгоритм поиска, находится pid потомка
+      (<code>p-&gt;pid</code>) (TODO: блокировка (spinlock)
+      <code>lastpid_lock</code> может быть опущена, так как
+      <code>get_pid()</code> всегда выполняется под блокировкой ядра
+      (big kernel lock) из <code>do_fork()</code>, так же можно удалить
+      входной параметр flags для <code>get_pid()</code>, патч (patch)
+      отправлен Алану (Alan) 20/06/2000).</li>
+
+      <li>Далее инициализируется остальная часть структуры
+      <code>task_struct</code> потомка. В самом конце структура
+      хешируется в таблицу <code>pidhash</code> и потомок активируется
+      (TODO: вызов <code>wake_up_process(p)</code> устанавливает
+      <code>p-&gt;state = TASK_RUNNING</code> и добавляет процесс в
+      очередь runqueue, поэтому, вероятно, нет нужды устанавливать
+      <code>p-&gt;state</code> в состояние <code>TASK_RUNNING</code>
+      ранее в <code>do_fork()</code>). Обратите внимание на установку
+      <code>p-&gt;exit_signal</code> в значение <code>clone_flags &amp;
+      CSIGNAL</code>, которое для <strong>fork(2)</strong> может быть
+      только <code>SIGCHLD</code>, и на установку
+      <code>p-&gt;pdeath_signal</code> в 0. Сигнал
+      <code>pdeath_signal</code> используется когда процесс лишается
+      &quot;родителя&quot; (в случае его &quot;смерти&quot;) и может
+      быть получен/установлен посредством команд
+      <code>PR_GET/SET_PDEATHSIG</code> системного вызова
+      <strong>prctl(2)</strong></li>
+    </ol>
+
+    <p>Задача создана. Для завершения задачи имеется несколько
+    способов.</p>
+
+    <ol>
+      <li>выполнить системный вызов <strong>exit(2)</strong>;</li>
+
+      <li>передать сигнал, приказывающий &quot;умереть&quot;;</li>
+
+      <li>вынужденная &quot;смерть&quot; в результате возникновения
+      некоторых исключений;</li>
+
+      <li>вызвать <strong>bdflush(2)</strong> с <code>func == 1</code>
+      (эта особенность Linux оставлена для сохранения совместимости со
+      старыми дистрибутивами, которые имели строку &#39;update&#39; в
+      <code>/etc/inittab</code> - на сегодняшний день эта работа
+      выполняется процессом ядра <code>kupdate</code>).</li>
+    </ol>
+
+    <p>Имена функций, реализующих системные вызовы, в Linux начинаются
+    с префикса <code>sys_</code>, но они, как правило, ограничиваются
+    только проверкой аргументов или платформо-зависимой передачей
+    информации, а фактически всю работу выполняют функции
+    <code>do_</code>. Это касается и <code>sys_exit()</code>, которая
+    вызывает<code>do_exit()</code> для выполнения необходимых действий.
+    Хотя, в других частях ядра иногда встречается вызов <code>sys_exit
+    ()</code>, на самом деле вызывается <code>do_exit ()</code>.</p>
+
+    <p>Функция <code>do_exit()</code> размещена в
+    <code>kernel/exit.c</code>. Некоторые примечания по поводу функции
+    <code>do_exit()</code>:</p>
+
+    <ul>
+      <li>Устанавливает глобальную блокировку ядра (устанавливает, но
+      не снимает).</li>
+
+      <li>Вызывает <code>schedule()</code>, которая уже не возвращает
+      управление.</li>
+
+      <li>Переводит задачу в состояние <code>TASK_ZOMBIE</code>.</li>
+
+      <li>Передает всем потомкам
+      <code>current-&gt;pdeath_signal</code>, если он не ноль.</li>
+
+      <li>Передает &quot;родителю&quot;
+      <code>current-&gt;exit_signal</code>, который обычно равен
+      <code>SIGCHLD</code>.</li>
+
+      <li>Освобождает ресурсы, захваченные при ветвлении, закрывает
+      открытые файлы и т.д.</li>
+
+      <li
+       style="list-style: none">
+        <h2><a
+         name="ss2.3">2.3 Планировщик</a></h2>
+
+        <p>Работа планировщика заключается в разделении CPU между
+        несколькими процессами. Реализация планировщика размещена в
+        файле <code>kernel/sched.c</code>. Соответствующий заголовочный
+        файл <code>include/linux/sched.h</code> подключается (прямо или
+        косвенно) фактически к каждому файлу с исходным текстом
+        ядра.</p>
+
+        <p>Поля task_struct, которые используются планировщиком:</p>
+
+        <ul>
+          <li><code>p-&gt;need_resched</code>: это поле устанавливается
+          если <code>schedule()</code> должна быть вызвана при
+          &#39;первом удобном случае&#39;.</li>
+
+          <li><code>p-&gt;counter</code>: число тактов системных часов,
+          оставшихся до окончания выделенного кванта времени,
+          уменьшается по таймеру. Когда значение этого поля становится
+          меньше либо равно нулю, то в него записывается ноль и
+          взводится флаг <code>p-&gt;need_resched</code>. Иногда это
+          поле называют &quot;динамическим приоритетом&quot;
+          (&#39;dynamic priority&#39;) процесса потому как он может
+          меняться..</li>
+
+          <li><code>p-&gt;priority</code>: статический приоритет
+          процесса, может изменяться только через системные вызовы,
+          такие как <strong>nice(2)</strong>, POSIX.1b
+          <strong>sched_setparam(2)</strong> или 4.4BSD/SVR4
+          <strong>setpriority(2)</strong>.</li>
+
+          <li><code>p-&gt;rt_priority</code>: приоритет реального
+          времени (realtime priority)</li>
+
+          <li><code>p-&gt;policy</code>: политика планирования,
+          определяет класс планирования задачи. Класс планирования
+          может быть изменен системным вызовом
+          <strong>sched_setscheduler(2)</strong>. Допустимые значения:
+          <code>SCHED_OTHER</code> (традиционные процессы UNIX),
+          <code>SCHED_FIFO</code> (процессы реального времени POSIX.1b
+          FIFO) и <code>SCHED_RR</code> (процессы реального времени
+          POSIX round-robin). Допускается комбинирование любого из этих
+          значений с <code>SCHED_YIELD</code> по ИЛИ (OR) чтобы
+          показать, что процесс решил уступить CPU, например при вызове
+          <strong>sched_yield(2)</strong>. Процесс реального времени
+          FIFO будет работать до тех пор, пока не:<br>
+           a) запросит выполнение блоковой операции ввода/вывода,<br>
+           b) явно не отдаст CPU или<br>
+           c) будет вытеснен другим процессом реального времени с более
+          высоким приоритетом (значение в
+          <code>p-&gt;rt_priority</code>).<br>
+           <code>SCHED_RR</code> то же самое, что и
+          <code>SCHED_FIFO</code>, за исключением того, что по
+          истечении выделенного кванта времени, процесс помещается в
+          конец очереди runqueue.</li>
+        </ul>
+
+        <p>Алгоритм планировщика достаточно прост, несмотря на
+        очевидную сложность функции <code>schedule()</code>. Сложность
+        функции объясняется реализацией трех алгоритмов планирования, а
+        так же из-за учета особенностей SMP (мультипроцессорной
+        обработки).</p>
+
+        <p>Бесполезные, на первый взгляд, операторы goto в коде
+        <code>schedule()</code> используются с целью генерации более
+        оптимального (для i386) кода. Планировщик для ядра 2.4 (как и в
+        более ранних версиях) был полностью переписан, поэтому
+        дальнейшее обсуждение не относится к ядрам версии 2.2 и
+        ниже.</p>
+
+        <p>Разберем код функции подробнее:</p>
+
+        <ol>
+          <li>Если <code>current-&gt;active_mm == NULL</code>, то
+          значит что-то не так. Любой процесс, даже поток ядра (для
+          которого <code>current-&gt;mm == NULL</code>), всегда должен
+          иметь <code>p-&gt;active_mm</code>.</li>
+
+          <li>Если что либо планируется сделать с очередью
+          <code>tq_scheduler</code>, то делать это надо здесь. Механизм
+          очередей позволяет отложить выполнение отдельных функций на
+          некоторое время. Этой теме будет уделено больше внимания
+          несколько позднее.</li>
+
+          <li>Локальным переменным <code>prev</code> и
+          <code>this_cpu</code> присваиваются значения current (текущая
+          задача) и CPU текущей задачи соответственно.</li>
+
+          <li>Проверяется контекст вызова <code>schedule()</code>. Если
+          функция вызвана из обработчика прерываний (по ошибке), то
+          ядро &quot;впадает в панику&quot;.</li>
+
+          <li>Освобождается глобальная блокировка ядра.</li>
+
+          <li>Если надлежить выполнить что-то, работающее через
+          &quot;мягкие&quot; прерывания, то сделать это надо
+          сейчас.</li>
+
+          <li>Устанавливается указатель <code>struct schedule_data
+          *sched_data</code> на область данных планирования для
+          заданного CPU, которая содержит значение TSC для
+          <code>last_schedule</code> и указатель на последнюю
+          запланированную задачу (task_struct) (TODO:
+          <code>sched_data</code> используется только для
+          мультипроцессорных систем, зачем тогда
+          <code>init_idle()</code> инициализирует ее и для
+          однопроцессорной системы?).</li>
+
+          <li>&quot;Запирается&quot; <code>runqueue_lock</code>.
+          Обратите внимание на вызов <code>spin_lock_irq()</code>,
+          который используется ввиду того, что в
+          <code>schedule()</code> прерывания всегда разрешены. Поэтому,
+          при &quot;отпирании&quot; <code>runqueue_lock</code>,
+          достаточно будет вновь разрешить их, вместо
+          сохранения/восстановления регистра флагов (вариант
+          <code>spin_lock_irqsave/restore</code>).</li>
+
+          <li>task state machine: если задача находится в состоянии
+          <code>TASK_RUNNING</code>, то она остается в этом состоянии;
+          если задача находится в состоянии
+          <code>TASK_INTERRUPTIBLE</code> и для нее поступили сигналы,
+          то она переводится в состояние <code>TASK_RUNNING</code>. В
+          любом другом случае задача удаляется из очереди
+          runqueue.</li>
+
+          <li>Указатель <code>next</code> (лучший кандидат)
+          устанавливается на фоновую задачу для данного CPU. Признак
+          goodness для этого кандидата устанавливается в очень малое
+          значение (-1000), в надежде на то, что найдется более лучший
+          претендент.</li>
+
+          <li>если задача <code>prev</code> (текущая) находится в
+          состоянии <code>TASK_RUNNING</code>, то значение goodness
+          принимает значение goodness задачи и она (задача) помечается
+          как кандидат, лучший чем задача idle.</li>
+
+          <li>Далее начинается проверка очереди runqueue, признак
+          goodness каждого процесса сравнивается с текущим. Конкуренцию
+          выигрывает процесс с более высоким goodness. Необходимо
+          уточнить концепцию &quot;может быть намечена на этом
+          CPU&quot;: на однопроцессорной системе любой процесс из
+          очереди runqueue может быть запланирован; на
+          многопроцессорной системе, только тот, который не запущен на
+          другом CPU, может быть запланирован для этого процессора.
+          Признак goodness определяется функцией
+          <code>goodness()</code>, которая для процессов реального
+          времени возвращает их goodness очень высоким (<code>1000 +
+          p-&gt;rt_priority</code>), значение больше 1000 гарантирует,
+          что не найдется такого процесса <code>SCHED_OTHER</code>,
+          который выиграл бы конкуренцию; таким образом конкуренция
+          идет только между процессами реального времени, которую
+          выигрывает процесс с более высоким
+          <code>p-&gt;rt_priority</code>. Функция
+          <code>goodness()</code> возвращает 0 для процессов, у которых
+          истек выделенный квант времени (<code>p-&gt;counter</code>).
+          Для процессов не реального времени значение goodness
+          устанавливается равным <code>p-&gt;counter</code> - таким
+          способом понижается вероятность захвата процессора задачей,
+          которая уже получала его на некоторое время, т.е.
+          интерактивные процессы получают преимущество перед
+          продолжительными вычислительными процессами. Далее, реализуя
+          принцип &quot;cpu affinity&quot;, вес задачи, исполнявшейся
+          на этом же процессоре, увеличивается на константу
+          <code>PROC_CHANGE_PENALTY</code>, что дает небольшое
+          преимущество перед другими процессами. Дополнительное
+          преимущество придается и процессам, у которых mm указывает на
+          текущий <code>active_mm</code> или не имееющим
+          пользовательского адресного пространства, т.е. потокам
+          ядра.</li>
+
+          <li>
+            если текущее значение goodness получается равным 0, то
+            производится просмотр всего списка процессов (не только
+            runqueue!) и производится перерасчет динамических
+            приоритетов следуя простому алгоритму:
+
+            <blockquote>
+              <hr>
+<pre>
+<code>recalculate:
+        {
+                struct task_struct *p;
+                spin_unlock_irq(&amp;runqueue_lock);
+                read_lock(&amp;tasklist_lock);
+                for_each_task(p)
+                        p-&gt;counter = (p-&gt;counter &gt;&gt; 1) + p-&gt;priority;
+                read_unlock(&amp;tasklist_lock);
+                spin_lock_irq(&amp;runqueue_lock);
+        }
+</code>
+</pre>
+              <hr>
+            </blockquote>
+            Следует отметить, что перед выполнением цикла перерасчета
+            сбрасывается <code>runqueue_lock</code>, поскольку цикл
+            может занять довольно продолжительное время, в течение
+            которого <code>schedule()</code> может быть вызвана другим
+            процессором, в результате чего может быть найдена задача с
+            goodness достаточным для запуска на этом процессоре. По
+            общему признанию это выглядит несколько непоследовательным,
+            потому что в то время как один процессор отбирает задачи с
+            наивысшим goodness, другой вынужден производить перерасчет
+            динамических приоритетов.
+          </li>
+
+          <li>В этой точке <code>next</code> указывает на задачу,
+          которая должна быть запланирована, далее в
+          <code>next-&gt;has_cpu</code> заносится 1 и в
+          <code>next-&gt;processor</code> заносится значение
+          <code>this_cpu</code>. Блокировка <code>runqueue_lock</code>
+          может быть снята.</li>
+
+          <li>Если происходит возврат к предыдущей задаче (<code>next
+          == prev</code>) то просто повторно устанавливается блокировка
+          ядра и производится возврат, т.е. минуя аппаратный уровень
+          (регистры, стек и т.п.) и настройки VM (переключение каталога
+          страницы, пересчет <code>active_mm</code> и т.п.).</li>
+
+          <li>Макрос <code>switch_to()</code> является
+          платформо-зависимым. На i386 это имеет отношение к:<br>
+           a) обработке FPU (Floating Point Unit - арифметический
+          сопроцессор)<br>
+           b) обработке LDT (Local Descriptor Table)<br>
+           c) установке сегментных регистров<br>
+           d) обработке TSS (Task State Segment) и<br>
+           e) установке регистров отладки.</li>
+        </ol>
+
+        <h2><a
+         name="ss2.4">2.4 Реализация связанных списков в Linux</a></h2>
+
+        <p>Прежде чем приступить к знакомству с реализацией очередей
+        ожидания, следует поближе рассмотреть реализацию двусвязных
+        списков в ядре Linux. Очереди ожидания (так же как и все
+        остальное в Linux) считаются тяжелыми в использовании и на
+        жаргоне называются &quot;list.h implementation&quot; потому что
+        наиболее используемый файл -
+        <code>include/linux/list.h</code>.</p>
+
+        <p>Основная структура данных здесь - это <code>struct
+        list_head</code>:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>struct list_head {
+        struct list_head *next, *prev;
+};
+
+#define LIST_HEAD_INIT(name) { &amp;(name), &amp;(name) }
+
+#define LIST_HEAD(name) \
+        struct list_head name = LIST_HEAD_INIT(name)
+
+#define INIT_LIST_HEAD(ptr) do { \
+        (ptr)-&gt;next = (ptr); (ptr)-&gt;prev = (ptr); \
+} while (0)
+
+#define list_entry(ptr, type, member) \
+        ((type *)((char *)(ptr)-(unsigned long)(&amp;((type *)0)-&gt;member)))
+
+#define list_for_each(pos, head) \
+        for (pos = (head)-&gt;next; pos != (head); pos = pos-&gt;next)
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Первые три макроопределения предназначены для инициализации
+        пустого списка с указателями <code>next</code> и
+        <code>prev</code>, указывающими на сам список. Из
+        синтаксических ограничений языка C явствует область
+        использования каждого из них - например,
+        <code>LIST_HEAD_INIT()</code>может быть использован для
+        инициализирующих элементов структуры в объявлении,
+        <code>LIST_HEAD</code> - может использоваться для
+        инициализирующих объявлений статических переменных, а
+        <code>INIT_LIST_HEAD</code> - может использоваться внутри
+        функций.</p>
+
+        <p>Макрос <code>list_entry()</code> предоставляет доступ к
+        отдельным элементам списка, например (из
+        <code>fs/file_table.c:fs_may_remount_ro()</code>):</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>struct super_block {
+   ...
+   struct list_head s_files;
+   ...
+} *sb = &amp;some_super_block;
+
+struct file {
+   ...
+   struct list_head f_list;
+   ...
+} *file;
+
+struct list_head *p;
+
+for (p = sb-&gt;s_files.next; p != &amp;sb-&gt;s_files; p = p-&gt;next) {
+     struct file *file = list_entry(p, struct file, f_list);
+     do something to &#39;file&#39;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Хороший пример использования макроса
+        <code>list_for_each()</code> можно найти в коде планировщика,
+        где производится просмотр очереди runqueue при поиске
+        наивысшего goodness:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>static LIST_HEAD(runqueue_head);
+struct list_head *tmp;
+struct task_struct *p;
+
+list_for_each(tmp, &amp;runqueue_head) {
+    p = list_entry(tmp, struct task_struct, run_list);
+    if (can_schedule(p)) {
+        int weight = goodness(p, this_cpu, prev-&gt;active_mm);
+        if (weight &gt; c)
+            c = weight, next = p;
+    }
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Где поле <code>p-&gt;run_list</code> объявлено как
+        <code>struct list_head run_list</code> внутри структуры
+        <code>task_struct</code> и служит для связи со списком.
+        Удаление элемента из списка и добавление к списку (в начало или
+        в конец) выполняются макросами
+        <code>list_del()/list_add()/list_add_tail()</code>. Пример,
+        приведенный ниже, добавляет и удаляет задачу из очереди
+        runqueue:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>static inline void del_from_runqueue(struct task_struct * p)
+{
+        nr_running--;
+        list_del(&amp;p-&gt;run_list);
+        p-&gt;run_list.next = NULL;
+}
+
+static inline void add_to_runqueue(struct task_struct * p)
+{
+        list_add(&amp;p-&gt;run_list, &amp;runqueue_head);
+        nr_running++;
+}
+
+static inline void move_last_runqueue(struct task_struct * p)
+{
+        list_del(&amp;p-&gt;run_list);
+        list_add_tail(&amp;p-&gt;run_list, &amp;runqueue_head);
+}
+
+static inline void move_first_runqueue(struct task_struct * p)
+{
+        list_del(&amp;p-&gt;run_list);
+        list_add(&amp;p-&gt;run_list, &amp;runqueue_head);
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <h2><a
+         name="ss2.5">2.5 Очереди ожидания (Wait Queues)</a></h2>
+
+        <p>Когда процесс передает ядру запрос, который не может быть
+        исполнен сразу же, то процесс &quot;погружается в сон&quot; и
+        &quot;пробуждается&quot;, когда запрос может быть удовлетворен.
+        Один из механизмов ядра для реализации подобного поведения
+        называется &quot;wait queue&quot; (очередь ожидания).</p>
+
+        <p>Реализация в Linux позволяет использовать семантику
+        &quot;индивидуального пробуждения&quot; с помощью флага
+        <code>TASK_EXCLUSIVE</code>. При использовании механизма
+        waitqueues, можно использовать существующую очередь и просто
+        вызывать
+        <code>sleep_on/sleep_on_timeout/interruptible_sleep_on/interruptible_sleep_on_timeout</code>,
+        либо можно определить свою очередь ожидания и использовать
+        <code>add/remove_wait_queue</code> для добавления и удаления
+        задач в/из нее и <code>wake_up/wake_up_interruptible</code> -
+        для &quot;пробуждения&quot; их по мере необходимости</p>
+
+        <p>Пример первого варианта использования очередей ожидания -
+        это взаимодействие между менеджером страниц (page allocator) (в
+        <code>mm/page_alloc.c:__alloc_pages()</code>) и демоном
+        <code>kswapd</code> (в <code>mm/vmscan.c:kswap()</code>).
+        Посредством очереди ожидания <code>kswapd_wait,</code>,
+        объявленной в <code>mm/vmscan.c</code>; демон
+        <code>kswapd</code> бездействует в этой очереди и
+        &quot;пробуждается&quot; как только менеджеру страниц (page
+        allocator) требуется освободить какие-либо страницы.</p>
+
+        <p>Примером использования автономной очереди может служить
+        взаимодействие между пользовательским процессом, запрашивающим
+        данные через системный вызов <strong>read(2)</strong>, и ядром,
+        передающим данные, в контексте прерывания. Пример обработчика
+        может выглядеть примерно так (упрощенный код из
+        <code>drivers/char/rtc_interrupt()</code>):</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>static DECLARE_WAIT_QUEUE_HEAD(rtc_wait);
+
+void rtc_interrupt(int irq, void *dev_id, struct pt_regs *regs)
+{
+        spin_lock(&amp;rtc_lock);
+        rtc_irq_data = CMOS_READ(RTC_INTR_FLAGS);
+        spin_unlock(&amp;rtc_lock);
+        wake_up_interruptible(&amp;rtc_wait);
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Обработчик прерывания считывает данные с некоторого
+        устройства (макрокоманда <code>CMOS_READ()</code>) и затем
+        &quot;будит&quot; всех, кто находится в очереди ожидания
+        <code>rtc_wait</code>.</p>
+
+        <p>Системный вызов <strong>read(2)</strong> мог бы быть
+        реализован так:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>ssize_t rtc_read(struct file file, char *buf, size_t count, loff_t *ppos)
+{
+        DECLARE_WAITQUEUE(wait, current);
+        unsigned long data;
+        ssize_t retval;
+
+        add_wait_queue(&amp;rtc_wait, &amp;wait);
+        current-&gt;state = TASK_INTERRUPTIBLE;
+        do {
+                spin_lock_irq(&amp;rtc_lock);
+                data = rtc_irq_data;
+                rtc_irq_data = 0;
+                spin_unlock_irq(&amp;rtc_lock);
+
+                if (data != 0)
+                        break;
+
+                if (file-&gt;f_flags &amp; O_NONBLOCK) {
+                        retval = -EAGAIN;
+                        goto out;
+                }
+                if (signal_pending(current)) {
+                        retval = -ERESTARTSYS;
+                        goto out;
+                }
+                schedule();
+        } while(1);
+        retval = put_user(data, (unsigned long *)buf);
+        if (!retval)
+                retval = sizeof(unsigned long);
+
+out:
+        current-&gt;state = TASK_RUNNING;
+        remove_wait_queue(&amp;rtc_wait, &amp;wait);
+        return retval;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Разберем функцию <code>rtc_read()</code>:</p>
+
+        <ol>
+          <li>Объявляется новый элемент очереди ожидания указывающий на
+          текщий процесс.</li>
+
+          <li>Этот элемент добавляется в очередь
+          <code>rtc_wait</code>.</li>
+
+          <li>Текущий процесс переводится в состояние
+          <code>TASK_INTERRUPTIBLE</code> которое предполагает, что
+          процесс не должен учавствовать в процессе планирования.</li>
+
+          <li>Проверяется - доступны ли данные. Если да - то цикл
+          прерывается, данные копируются в пользовательский буфер,
+          процесс переводится в состояние <code>TASK_RUNNING</code>,
+          удаляется из очереди и производится возврат.</li>
+
+          <li>Если данные недоступны, а пользователь запросил
+          неблокирующую опрацию ввода-вывода, то возвращается код
+          ошибки <code>EAGAIN</code> (который имеет тоже значение, что
+          и <code>EWOULDBLOCK</code>)</li>
+
+          <li>При наличии ожидающих обработки сигналов - &quot;верхнему
+          уровню&quot; сообщается, что системный вызов должен быть
+          перезапущен, если это необходимо. Под &quot;если это
+          необходимо&quot; подразумеваются детали размещения сигнала,
+          как это определено в системном вызове
+          <strong>sigaction(2)</strong></li>
+
+          <li>Далее задача &quot;отключается&quot;, т.е.
+          &quot;засыпает&quot;, до &quot;пробуждения&quot; обработчиком
+          прерывания. Если не переводить процесс в состояние
+          <code>TASK_INTERRUPTIBLE</code> то планировщик может вызвать
+          задачу раньше, чем данные будут доступны, выполняя тем самым
+          ненужную работу.</li>
+        </ol>
+
+        <p>Следует так же указать, что с помощью очередей ожидания
+        реализация системного вызова <strong>poll(2)</strong>
+        становится более простой.</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>static unsigned int rtc_poll(struct file *file, poll_table *wait)
+{
+        unsigned long l;
+
+        poll_wait(file, &amp;rtc_wait, wait);
+
+        spin_lock_irq(&amp;rtc_lock);
+        l = rtc_irq_data;
+        spin_unlock_irq(&amp;rtc_lock);
+
+        if (l != 0)
+                return POLLIN | POLLRDNORM;
+        return 0;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Вся работа выполняется независимой от типа устройства
+        функцией <code>poll_wait()</code>, которая выполняет
+        необходимые манипуляции; все что требуется сделать - это
+        указать очередь,, которую следует &quot;разбудить&quot;
+        обработчиком прерываний от устройства.</p>
+
+        <h2><a
+         name="ss2.6">2.6 Таймеры</a></h2>
+
+        <p>Теперь обратим наше внимание на таймеры ядра. Таймеры
+        используются для передачи управления различным функциям
+        (называющимся &#39;timer handler&#39;) в назначенное время.
+        Основная структура данных - это <code>struct timer_list</code>
+        объявленная в <code>include/linux/timer.h</code>:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>struct timer_list {
+        struct list_head list;
+        unsigned long expires;
+        unsigned long data;
+        void (*function)(unsigned long);
+        volatile int running;
+};
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Поле <code>list</code> служит для связи с внутренним
+        списком, защищенным блокировкой (spinlock)
+        <code>timerlist_lock</code>. Поле <code>expires</code> содержит
+        значение времени (<code>jiffies</code>), оставшееся до вызова
+        указанной <code>function</code> с входным параметром
+        <code>data</code>. Поле <code>running</code> используется на
+        SMP-системах для предотвращения запуска одного и того же
+        обработчика на нескольких процессорах.</p>
+
+        <p>Функции <code>add_timer()</code> и <code>del_timer()</code>
+        добавляют и удаляют таймер в/из списка. По достижении заданного
+        времени, таймер удаляется автоматически. Перед использованием
+        таймер ДОЛЖЕН быть инициализирован вызовом функции
+        <code>init_timer()</code>. А перед тем как добавить таймер в
+        список должны быть установлены поля <code>function</code> и
+        <code>expires</code>.</p>
+
+        <h2><a
+         name="ss2.7">2.7 Нижние половины (Bottom Halves)</a></h2>
+
+        <p>Иногда бывает благоразумным разбить выполнение работы на
+        исполняемую внутри обработчика прерываний (т.е. подтверждение
+        прерывания, изменение состояния и пр.) и работу, которая может
+        быть отложена на некоторое время (например постобработка
+        данных, активизация процессов, ожидающих эти данные и
+        т.п.).</p>
+
+        <p>Bottom halves - это самый старый механизм отложенного
+        исполнения задач ядра и был доступен еще в Linux 1.x.. В Linux
+        2.0 появился новый механизм - &quot;очереди задач&quot;
+        (&#39;task queues&#39;), который будет рассмотрен ниже.</p>
+
+        <p>Bottom halves упорядочиваются блокировкой (spinlock)
+        <code>global_bh_lock</code>, т.е. только один bottom half может
+        быть запущен на любом CPU за раз. Однако, если при попытке
+        запустить обработчик, <code>global_bh_lock</code> оказывается
+        недоступна, то bottom half планируется на исполнение
+        планировщиком - таким образом обработка может быть продолжена
+        вместо того, чтобы стоять в цикле ожидания на
+        <code>global_bh_lock</code>.</p>
+
+        <p>Всего может быть зарегистрировано только 32 bottom halves.
+        Функции, необходимые для работы с ними перечислены ниже (все
+        они экспортируются в модули):</p>
+
+        <ul>
+          <li><code>void init_bh(int nr, void (*routine)(void))</code>:
+          устанавливает обработчик <code>routine</code> в слот
+          <code>nr</code>. Слоты должны быть приведены в
+          <code>include/linux/interrupt.h</code> в форме
+          <code>XXXX_BH</code>, например <code>TIMER_BH</code> или
+          <code>TQUEUE_BH</code>. Обычно подпрограмма инициализации
+          подсистемы (<code>init_module()</code> для модулей)
+          устанавливает необходимый обработчик (bottom half) с помощью
+          этой функции.</li>
+
+          <li><code>void remove_bh(int nr)</code>: выполняет действия
+          противоположные <code>init_bh()</code>, т.е. удаляет
+          установленный обработчик (bottom half) из слота
+          <code>nr</code>. Эта функция не производит проверок на
+          наличие ошибок, так, например <code>remove_bh(32)</code>
+          вызовет panic/oops. Обычно подпрограммы очистки подсистемы
+          (<code>cleanup_module()</code> для модулей) используют эту
+          функцию для освобождения слота, который может быть позднее
+          занят другой подсистемой. (TODO: Не плохо бы иметь
+          <code>/proc/bottom_halves</code> - перечень всех
+          зарегистрированных bottom halves в системе? Разумеется, что
+          <code>global_bh_lock</code> должна быть типа
+          &quot;read/write&quot;)</li>
+
+          <li><code>void mark_bh(int nr)</code>: намечает bottom half в
+          слоте <code>nr</code> на исполнение. Как правило, обработчик
+          прерывания намечает bottom half на исполнение в наиболее
+          подходящее время.</li>
+        </ul>
+
+        <p>Bottom halves, по сути своей, являются глобальными
+        &quot;блокированными&quot; тасклетами (tasklets), так, вопрос:
+        &quot;Когда исполняются обработчики bottom half ?&quot;, в
+        действительности должен звучать как: &quot;Когда исполняются
+        тасклеты?&quot;. На этот вопрос имеется два ответа:<br>
+         а) при каждом вызове <code>schedule()</code><br>
+         б) каждый раз, при исполнении кода возврата из
+        прерываний/системных вызовов (interrupt/syscall return path) в
+        <code>entry.S</code>.</p>
+
+        <h2><a
+         name="ss2.8">2.8 Очереди задач</a></h2>
+
+        <p>Очереди задач могут рассматриваться как, своего рода,
+        динамическое расширение bottom halves. Фактически, в исходном
+        коде, очереди задач иногда называются как &quot;новые&quot;
+        bottom halves. Старые bottom halves, обсуждавшиеся в предыдущей
+        секции, имеют следующие ограничения:</p>
+
+        <ol>
+          <li>Фиксированное количество (32).</li>
+
+          <li>Каждый bottom half может быть связан только с одним
+          обработчиком.</li>
+
+          <li>Bottom halves используются с захватом блокировки
+          (spinlock) так что они не могут блокироваться.</li>
+        </ol>
+
+        <p>В очередь же, может быть вставлено произвольное количество
+        задач. Создается новая очередь задач макросом
+        <code>DECLARE_TASK_QUEUE()</code>, а задача добавляется
+        функцией <code>queue_task()</code>. После чего, очередь может
+        быть обработана вызовом <code>run_task_queue()</code>. Вместо
+        того, чтобы создавать собственную очередь (и работать с ней
+        &quot;вручную&quot;), можно использовать одну из
+        предопределенных в Linux очередей:</p>
+
+        <ol>
+          <li><strong>tq_timer</strong>: очередь таймера, запускается
+          на каждом прерывании таймера и при освобождении устройства
+          tty (закрытие или освобождение полуоткрытого терминального
+          устройства). Так как таймер запускается в контексте
+          прерывания, то и задачи из очереди <code>tq_timer</code> так
+          же запускаются в контексте прерывания и следовательно не
+          могут быть заблокированы.</li>
+
+          <li><strong>tq_scheduler</strong>: очередь обслуживается
+          планировщиком (а так же при закрытии устройств tty,
+          аналогично <code>tq_timer</code>). Так как планировщик
+          работает в контексте процесса, то и задачи из
+          <code>tq_scheduler</code> могут выполнять действия,
+          характерные для этого контекста, т.е. блокировать,
+          использовать данные контекста процесса (для чего бы это?) и
+          пр.</li>
+
+          <li><strong>tq_immediate</strong>: в действительности
+          представляет собой bottom half <code>IMMEDIATE_BH</code>,
+          таким образом драйверы могут установить себя в очередь
+          вызовом <code>queue_task(task, &amp;tq_immediate)</code> и
+          затем <code>mark_bh(IMMEDIATE_BH)</code> чтобы использоваться
+          в контексте прерывания.</li>
+
+          <li><strong>tq_disk</strong>: используется при низкоуровневом
+          доступе к блоковым учтройствам (и RAID). Эта очередь
+          экспортируется в модули но должна использоваться только в
+          исключительных ситуациях.</li>
+        </ol>
+
+        <p>Нет необходимости в драйвере вызывать
+        <code>run_tasks_queues()</code>, если не используется своя
+        собственная очередь задач, за исключением случаев, приведенных
+        ниже.</p>
+
+        <p>Драйвер, если помните, может запланировать задачи в очереди,
+        но исполнение этих задач имеет смысл лишь до тех пор, пока
+        экземпляр устройства остается верным - что обычно означает до
+        тех пор, пока приложение не закрыло его. Поскольку очереди
+        <code>tq_timer/tq_scheduler</code> используются не только в
+        обычном месте (например они вызываются при закрытии tty
+        устройств), то может возникнуть необходимость в вызове
+        <code>run_task_queue()</code> из драйвера. для выталкивания
+        задач из очереди, поскольку дальнейшее их исполнение не имеет
+        смысла. По этой причине, иногда можно встретить вызов
+        <code>run_task_queue()</code> для очередей
+        <code>tq_timer</code> и <code>tq_scheduler</code> не только в
+        обработчике прерываний от таймера и в <code>schedule()</code>,
+        соответственно, но и в других местах.</p>
+
+        <h2><a
+         name="ss2.9">2.9 Tasklets</a></h2>
+
+        <p>Секция будет написана в одной из последующих версий
+        документа.</p>
+
+        <h2><a
+         name="ss2.10">2.10 &quot;Мягкие&quot; IRQ</a></h2>
+
+        <p>Секция будет написана в одной из последующих версий
+        документа..</p>
+
+        <h2><a
+         name="ss2.11">2.11 Как реализуются системные вызовы в
+        архитектуре i386?</a></h2>
+
+        <p>В Linux существует два механизма реализации системных
+        вызовов:</p>
+
+        <ul>
+          <li>вентили lcall7/lcall27;</li>
+
+          <li>программное прерывание int 0x80.</li>
+        </ul>
+
+        <p>Чисто Линуксовые программы используют int 0x80, в то время
+        как программы из других UNIX систем (Solaris, UnixWare 7 и пр.)
+        используют механизм lcall7. Название lcall7 может ввести в
+        заблуждение, поскольку это понятие включает в себя еще и
+        lcall27 (например для Solaris/x86), но тем не менее,
+        функция-обработчик называется lcall7_func.</p>
+
+        <p>Во время начальной загрузки системы вызывается функция
+        <code>arch/i386/kernel/traps.c:trap_init()</code>, которая
+        настраивает IDT (Interrupt Descriptor Table) так, чтобы вектор
+        0x80 (of type 15, dpl 3) указывал на точку входа system_call из
+        <code>arch/i386/kernel/entry.S</code>.</p>
+
+        <p>Когда пользовательское приложение делает системный вызов,
+        аргументы помещаются в регистры и приложение выполняет
+        инструкцию int 0x80. В результате приложение переводится в
+        привелигированный режим ядра и выполняется переход по адресу
+        system_call в <code>entry.S</code>. Далее:</p>
+
+        <ol>
+          <li>Сохраняются регистры.</li>
+
+          <li>В регистры %ds и %es заносится KERNEL_DS, так что теперь
+          они ссылаются на адресное пространство ядра.</li>
+
+          <li>Если значение %eax больше чем <code>NR_syscalls</code>
+          (на сегодняшний день 256), то возвращается код ошибки
+          <code>ENOSYS</code>.</li>
+
+          <li>Если задача исполняется под трассировщиком
+          (<code>tsk-&gt;ptrace &amp; PF_TRACESYS</code>), то
+          выполняется специальная обработка. Сделано это для поддержки
+          программ типа strace (аналог SVR4 <strong>truss(1)</strong>)
+          и отладчиков.</li>
+
+          <li>Вызывается <code>sys_call_table+4*(syscall_number из
+          %eax)</code>. Эта таблица инициализируется в том же файле
+          (<code>arch/i386/kernel/entry.S</code>) и содержит указатели
+          на отдельные обработчики системных вызовов, имена которых, в
+          Linux, начинаются с префикса <code>sys_</code>, например
+          <code>sys_open</code>, <code>sys_exit</code>, и т.п.. Эти
+          функции снимают со стека свои входные параметры, которые
+          помещаются туда макросом <code>SAVE_ALL</code>.</li>
+
+          <li>Вход в &#39;system call return path&#39;. Это - отдельная
+          метка, потому что этот код используется не только int 0x80 но
+          и lcall7, lcall27. Это связано с обработкой тасклетов
+          (tasklets) (включая bottom halves), проверяется необходимость
+          вызова планировщика (<code>tsk-&gt;need_resched != 0</code>)
+          и имеются ли ожидающие сигналы.</li>
+        </ol>
+
+        <p>Linux поддерживает до 6-ти входных аргументов в системных
+        вызовах. Они передаются через регистры %ebx, %ecx, %edx, %esi,
+        %edi (и %ebp для временного хранения, см.
+        <code>_syscall6()</code> в <code>asm-i386/unistd.h</code>).
+        Номер системного вызова передается в регистре %eax.</p>
+
+        <h2><a
+         name="ss2.12">2.12 Атомарные (неделимые) операции</a></h2>
+
+        <p>Имеется два типа атомарных операций: операции над битовыми
+        полями и над переменными типа <code>atomic_t</code>. Битовые
+        поля очень удобны, когда необходимо &quot;устанавливать&quot;
+        или &quot;сбрасывать&quot; отдельные биты в больших коллекциях
+        битов (битовых картах), в которых каждый бит идентифицируется
+        некоторым порядковым номером, Они (битовые операции), так же,
+        могут широко использоваться для выполнения простой блокировки,
+        например для предоставлении исключительного доступа к открытому
+        устройству. Пример можно найти в
+        <code>arch/i386/kernel/microcode.c</code>:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>/*
+ *  Bits in microcode_status. (31 bits of room for future expansion)
+ */
+#define MICROCODE_IS_OPEN       0       /* set if device is in use */
+
+static unsigned long microcode_status;
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Очищать <code>microcode_status</code> нет необходимости,
+        поскольку BSS обнуляется в Linux явно</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>/*
+ * We enforce only one user at a time here with open/close.
+ */
+static int microcode_open(struct inode *inode, struct file *file)
+{
+        if (!capable(CAP_SYS_RAWIO))
+                return -EPERM;
+
+        /* one at a time, please */
+        if (test_and_set_bit(MICROCODE_IS_OPEN, &amp;microcode_status))
+                return -EBUSY;
+
+        MOD_INC_USE_COUNT;
+        return 0;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Битовые операции:</p>
+
+        <ul>
+          <li><strong>void set_bit(int nr, volatile void
+          *addr)</strong>: устанавливает бит <code>nr</code> в карте,
+          адресуемой параметром <code>addr</code>.</li>
+
+          <li><strong>void clear_bit(int nr, volatile void
+          *addr)</strong>: сбрасывает бит <code>nr</code> в карте,
+          адресуемой параметром <code>addr</code>.</li>
+
+          <li><strong>void change_bit(int nr, volatile void
+          *addr)</strong>: изменяет состояние бита <code>nr</code>
+          (если бит установлен, то он сбрасывается, если сброшен -
+          устанавливается) в карте, адресуемой <code>addr</code>.</li>
+
+          <li><strong>int test_and_set_bit(int nr, volatile void
+          *addr)</strong>: устанавливается бит <code>nr</code> и
+          возвращается его предыдущее состояние.</li>
+
+          <li><strong>int test_and_clear_bit(int nr, volatile void
+          *addr)</strong>: сбрасывается бит <code>nr</code> и
+          возвращается его предыдущее состояние.</li>
+
+          <li><strong>int test_and_change_bit(int nr, volatile void
+          *addr)</strong>: изменяется состояние бита <code>nr</code> и
+          возвращается его предыдущее состояние.</li>
+        </ul>
+
+        <p>Эти операции используют макрос <code>LOCK_PREFIX</code>,
+        который для SMP ядра представляет из себя префиксную инструкцию
+        &quot;lock&quot; и пустой для UP ядра
+        (<code>include/asm/bitops.h</code>). Он гарантирует неделимость
+        доступа на мультипроцессорной платформе.</p>
+
+        <p>В некоторых ситуациях требуется выполнение атомарных
+        арифметических операций - сложение, вычитание, инкремент,
+        декремент. Типичный пример - счетчики ссылок. Такого рода
+        действия предоставляются следующими операциями над типом
+        <code>atomic_t</code>:</p>
+
+        <ul>
+          <li><strong>atomic_read(&amp;v)</strong>: возвращает значение
+          <code>atomic_t</code> переменной <code>v</code>.</li>
+
+          <li><strong>atomic_set(&amp;v, i)</strong>: записывает в
+          <code>atomic_t</code> переменную <code>v</code> целое число
+          <code>i</code>.</li>
+
+          <li><strong>void atomic_add(int i, volatile atomic_t
+          *v)</strong>: складывает целое <code>i</code> и значение
+          переменной <code>v</code>, результат помещается в
+          переменную.</li>
+
+          <li><strong>void atomic_sub(int i, volatile atomic_t
+          *v)</strong>: из переменной <code>v</code> вычитается целое
+          <code>i</code>, результат помещается в переменную.</li>
+
+          <li><strong>int atomic_sub_and_test(int i, volatile atomic_t
+          *v)</strong>: из переменной <code>v</code> вычитается целое
+          <code>i</code>; возвращается 1 если новое значение переменной
+          == 0, и 0 - в противном случае.</li>
+
+          <li><strong>void atomic_inc(volatile atomic_t *v)</strong>:
+          увеличивает значение переменной на 1.</li>
+
+          <li><strong>void atomic_dec(volatile atomic_t *v)</strong>:
+          уменьшает значение переменной на 1.</li>
+
+          <li><strong>int atomic_dec_and_test(volatile atomic_t
+          *v)</strong>: уменьшает значение переменной на 1. Возвращает
+          1, если новое значение переменной == 0, 0 - в противном
+          случае.</li>
+
+          <li><strong>int atomic_inc_and_test(volatile atomic_t
+          *v)</strong>: увеличивает значение переменной на 1.
+          Возвращает 1, если новое значение переменной == 0, 0 - в
+          противном случае.</li>
+
+          <li><strong>int atomic_add_negative(int i, volatile atomic_t
+          *v)</strong>: к переменной <code>v</code> прибавляется целое
+          <code>i</code>, если результат меньше 0 - возвращается 1.
+          Если результат больше либо равен 0 - возвращается 0. Эта
+          операция используется в реализации семафоров.</li>
+        </ul>
+
+        <h2><a
+         name="ss2.13">2.13 Блокировки (Spinlocks), Read-write
+        блокировки и Big-Reader блокировки;</a></h2>
+
+        <p>Начиная с первых дней Linux, разработчики сталкивались с
+        классической проблемой доступа к данным, общим для процессов с
+        различными типами контекста исполнения (пользовательские
+        процессы и обработчики прерываний) и различных экземпляров
+        одного и того же контекста на нескольких CPU.</p>
+
+        <p>Поддержка SMP была добавлена в Linux в версии 1.3.42 - 15
+        ноября 1995 (оригинальный патч был выпущен для 1.3.37 в октябре
+        того же года).</p>
+
+        <p>Если критическая секция кода, исполняется на
+        однопроцессорной системе, либо в контексте процесса, либо в
+        контексте прерывания, то установить защиту можно использованием
+        пары инструкций <code>cli/sti</code>:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>unsigned long flags;
+
+save_flags(flags);
+cli();
+/* критичный код */
+restore_flags(flags);
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Вполне понятно, что такого рода защита, на SMP непригодна,
+        поскольку критическая секция кода может исполняться
+        одновременно и на другом процессоре, а <code>cli()</code>
+        обеспечивает защиту на каждом процессоре индивидуально и
+        конечно же не может воспрепятствовать исполнению кода на другом
+        процессоре. В таких случаях и используются блокировки
+        (spinlocks).</p>
+
+        <p>Имеется три типа блокировок: vanilla (базовая), read-write и
+        big-reader блокировки (spinlocks). Read-write блокировки должны
+        использоваться в случае, когда имеется &quot;много процессов -
+        работающих только на чтение, и немного - на запись&quot;.
+        Пример: доступ к списку зарегистрированных файловых систем (см.
+        <code>fs/super.c</code>). Список защищен read-write блокировкой
+        <code>file_systems_lock</code>, потому что исключительный
+        доступ необходим только в случае регистрации/дерегистрации
+        файловой системы, но любые процессы должны иметь возможность
+        &quot;читать&quot; файл <code>/proc/filesystems</code> или
+        делать системный вызов <strong>sysfs(2)</strong> для получения
+        списка файловых систем. Такого рода ограничение вынуждает
+        использовать read-write блокировки. Для случая read-write
+        блокировки доступ &quot;только для чтения&quot; могут получить
+        одновременно несколько процессов, в то время как доступ
+        &quot;на запись&quot; - только один, при чем, чтобы получить
+        доступ &quot;на запись&quot; не должно быть
+        &quot;читающих&quot; процессов. Было бы прекрасно, если бы
+        Linux мог корректно &quot;обходить&quot; проблему
+        удовлетворения зароса &quot;на запись&quot;, т.е. чтобы запросы
+        &quot;на чтение&quot;, поступившие после запроса &quot;на
+        запись&quot;, удовлетворялись бы только после того, как будет
+        выполнена операция записи, избегая тем самым проблемы
+        &quot;подвешивания&quot; &quot;пишущего&quot; процесса
+        несколькими &quot;читающими&quot; процессами. Однако, на
+        текущий момент пока не ясно - следует ли вносить изменения в
+        логику работы, контраргумент - &quot;считывающие&quot; процессы
+        запрашивают доступ к данным на очень короткое время, так должны
+        ли они &quot;подвисать&quot;, пока &quot;записывающий&quot;
+        процесс ожидает получение доступа потенциально на более
+        длительный период?</p>
+
+        <p>Блокировка big-reader представляет собой разновидность
+        блокировки read-write сильно оптимизированной для облегчения
+        доступа &quot;на чтение&quot; в ущерб доступу &quot;на
+        запись&quot;. На текущий момент существует пока только две
+        таких блокировки, первая из которых используется только на
+        платформе sparc64 (global irq), и вторая - для сетевой
+        поддержки (networking). В любом другом случае, когда логика
+        доступа не вписывается ни в один из этих двух сценариев,
+        следует использовать базовые блокировки. Процесс не может быть
+        блокирован до тех пор, пока владеет какой либо блокировкой
+        (spinlock).</p>
+
+        <p>Блокировки могут быть трех подтипов: простые,
+        <code>_irq()</code> и <code>_bh()</code>.</p>
+
+        <ol>
+          <li>Простые <code>spin_lock()/spin_unlock()</code>: если
+          известно, что в момент прохождения критической секции
+          прерывания всегда запрещены или отсутствует конкуренция с
+          контекстом прерывания (например с обработчиком прерывания),
+          то можно использовать простые блокировки. Они не касаются
+          состояния флага разрешения прерываний на текущем CPU.</li>
+
+          <li><code>spin_lock_irq()/spin_unlock_irq()</code>: если
+          известно, что в момент прохождения критической секции
+          прерывания всегда разрешены, то можно использовать эту версию
+          блокировок, которая просто запрещает (при захвате) и
+          разрешает (при освобождении) прерывания на текущем CPU.
+          Например, <code>rtc_read()</code> использует
+          <code>spin_lock_irq(&amp;rtc_lock)</code> (внутри
+          <code>read()</code> прерывания всегда разрешены) тогда как
+          <code>rtc_interrupt()</code> использует
+          <code>spin_lock(&amp;rtc_lock)</code> (iвнутри обработчика
+          прерывания всегда запрещены). Обратите внимание на то, что
+          <code>rtc_read()</code> использует
+          <code>spin_lock_irq()</code>, а не более универсальный
+          вариант <code>spin_lock_irqsave()</code> поскольку на входе в
+          системный вызов прерывания всегда разрешены.</li>
+
+          <li>
+          <code>spin_lock_irqsave()/spin_unlock_irqrestore()</code>:
+          более строгая форма, используется, когда состояние флага
+          прерываний неизвестно, но только если вопрос в прерываниях
+          вообще. Не имеет никакого смысла, если обработчик прерываний
+          не выполняет критический код.</li>
+        </ol>
+
+        <p>Не следует использовать простые <code>spin_lock()</code>,
+        когда процесс конкурирует с обработчиком прерываний, потому что
+        когда процесс выполняет <code>spin_lock()</code>, а затем
+        происходит прерывание на этом же CPU, возникает ситуация
+        &quot;вечного ожидания&quot;: процесс, выполнивший
+        <code>spin_lock()</code> будет прерван и не сможет продолжить
+        работу, пока обработчик прерываний не вернет управление, а
+        обработчик прерываний не сможет вернуть управление, поскольку
+        будет стоять в ожидании снятия блокировки.</p>
+
+        <p>В общем случае, доступ к данным, разделяемым между
+        контекстом пользовательского процесса и обработчиком
+        прерываний, может быть оформлен так:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>spinlock_t my_lock = SPIN_LOCK_UNLOCKED;
+
+my_ioctl()
+{
+        spin_lock_irq(&amp;my_lock);
+        /* критическая секция */
+        spin_unlock_irq(&amp;my_lock);
+}
+
+my_irq_handler()
+{
+        spin_lock(&amp;lock);
+        /* критическая секция */
+        spin_unlock(&amp;lock);
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Следует обратить внимание на:</p>
+
+        <ol>
+          <li>Контекст процесса, представленный типичным методом
+          (функцией) драйвера - <code>ioctl()</code> (входные параметры
+          и возвращаемое значение опущены для простоты), должен
+          использовать <code>spin_lock_irq()</code>, поскольку заранее
+          известно, что при исполнении метода <code>ioctl()</code>
+          прерывания всегда разрешены.</li>
+
+          <li>Контекст прерываний, представленный
+          <code>my_irq_handler()</code> может использовать простую
+          форму <code>spin_lock()</code>, поскольку внутри обработчика
+          прерывания всегда запрещены.</li>
+        </ol>
+
+        <h2><a
+         name="ss2.14">2.14 Семафоры</a></h2>
+
+        <p>Иногда возникает необходимость в запрещении доступа к
+        разделяемым данным, например, при копировании данных в
+        пользовательское пространство. Для этих целей Linux
+        предоставляет стандартные средства, называемые семафорами.
+        Семафоры бывают двух типов: базовые и read-write семафоры. В
+        зависимости от начального значения семафоры могут обеспечить
+        либо взаимоисключающий (начальное значение 1), либо более
+        сложный тип доступа.</p>
+
+        <p>Read-write семафоры отличаются от базовых тем же самым, чем
+        read-write блокировки отличаются от базовых блокировок: они
+        разрешают множественный доступ &quot;на чтение&quot;
+        одновременно нескольким процессам, но доступ &quot;на
+        запись&quot; может получить только один процесс.</p>
+
+        <p>Кроме того, семафоры могут быть прерываемыми - при
+        использовании <code>down/up_interruptible()</code> вместо
+        простых <code>down()/up()</code>. Если возвращаемое из
+        <code>down_interruptible()</code> значение не ноль - то
+        операция была прервана</p>
+
+        <p>Использование взаимоисключающего типа доступа является
+        идеальным в ситуациях, когда из критической секции кода
+        производится вызов функции по ссылке, т.е. когда в точке вызова
+        заранее не известно производит функция блокировки или нет.</p>
+
+        <p>Простой пример использования семафоров можно найти в
+        реализации системных вызовов
+        <strong>gethostname(2)/sethostname(2)</strong>
+        (<code>kernel/sys.c</code>).</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>asmlinkage long sys_sethostname(char *name, int len)
+{
+        int errno;
+
+        if (!capable(CAP_SYS_ADMIN))
+                return -EPERM;
+        if (len &lt; 0 || len &gt; __NEW_UTS_LEN)
+                return -EINVAL;
+        down_write(&amp;uts_sem);
+        errno = -EFAULT;
+        if (!copy_from_user(system_utsname.nodename, name, len)) {
+                system_utsname.nodename[len] = 0;
+                errno = 0;
+        }
+        up_write(&amp;uts_sem);
+        return errno;
+}
+
+asmlinkage long sys_gethostname(char *name, int len)
+{
+        int i, errno;
+
+        if (len &lt; 0)
+                return -EINVAL;
+        down_read(&amp;uts_sem);
+        i = 1 + strlen(system_utsname.nodename);
+        if (i &gt; len)
+                i = len;
+        errno = 0;
+        if (copy_to_user(name, system_utsname.nodename, i))
+                errno = -EFAULT;
+        up_read(&amp;uts_sem);
+        return errno;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Комментарии к примеру:</p>
+
+        <ol>
+          <li>Блокировка может выполняться на время копирования в/из
+          пространство пользователя в
+          <code>copy_from_user()/copy_to_user()</code>. Поэтому здесь
+          не используются какого либо рода блокировки.</li>
+
+          <li>В системе возможно параллельное исполнение нескольких
+          <strong>gethostname(2)</strong>, для которых не требуется
+          исключительного доступа, поэтому используется read-write
+          семафор, а не базовый.</li>
+        </ol>
+
+        <p>Хотя реализация семафоров в Linux очень сложна, тем не менее
+        возможны сценарии, которые еще не реализованы, например: нет
+        концепции прерываемых read-write семафоров. Очевидно потому,
+        что не встречалась реальная ситуация, которая требовала бы
+        наличия таких экзотических свойств от семафоров.</p>
+
+        <h2><a
+         name="ss2.15">2.15 Поддержка загружаемых модулей</a></h2>
+
+        <p>Linux - это монолитная операционная система и не смотря на
+        навязчивую рекламу &quot;преимуществ&quot;, предлагаемых
+        операционными системами, базирующимися на микроядре, тем не
+        менее (цитирую Линуса Торвальдса (Linus Torvalds)):</p>
+
+        <blockquote>
+          <code>... message passing as the fundamental operation of the
+          OS is just an exercise in computer science masturbation. It
+          may feel good, but you don&#39;t actually get anything
+          DONE.</code>
+        </blockquote>
+
+        <p>Поэтому Linux есть и всегда будет монолитным, это означает,
+        что все подсистемы работают в привелигированном режиме и
+        используют общее адресное пространство; связь между ними
+        выполняется через обычные C-функции.</p>
+
+        <p>Однако, не смотря на то, что выделение функциональности ядра
+        в отдельные &quot;процессы&quot; (как это делается в ОС на
+        микро-ядре) - определенно не лучшее решение, тем не менее, в
+        некоторых случаях, желательно наличие поддержки динамически
+        загружаемых модулей (например: на машинах с небольшим объемом
+        памяти или для ядер, которые автоматически подбирают
+        (auto-probing) взаимоисключающие драйверы для ISA устройств).
+        Поддержка загружаемых модулей устанавливается опцией
+        <code>CONFIG_MODULES</code> во время сборки ядра. Поддержка
+        автозагружаемых модулей через механизм
+        <code>request_module()</code> определяется отдельной опцией
+        (<code>CONFIG_KMOD</code>).</p>
+
+        <p>Ниже приведены функциональные возможности, которые могут
+        быть реализованы как загружаемые модули:</p>
+
+        <ol>
+          <li>Драйверы символьных и блочных устройств.</li>
+
+          <li>Terminal line disciplines.</li>
+
+          <li>Виртуальные (обычные) файлы в <code>/proc</code> и в
+          devfs (например <code>/dev/cpu/microcode</code> и
+          <code>/dev/misc/microcode</code>).</li>
+
+          <li>Обработка двоичных форматов файлов (например ELF, a.out,
+          и пр.).</li>
+
+          <li>Обработка доменов исполнения (например Linux, UnixWare7,
+          Solaris, и пр.).</li>
+
+          <li>Файловые системы.</li>
+
+          <li>System V IPC.</li>
+        </ol>
+
+        <p>А здесь то, что нельзя вынести в модули (вероятно потому,
+        что это не имеет смысла):</p>
+
+        <ol>
+          <li>Алгоритмы планирования.</li>
+
+          <li>Политики VM (VM policies).</li>
+
+          <li>Кэш буфера, кэш страниц и другие кзши.</li>
+        </ol>
+
+        <p>Linux предоставляет несколько системных вызовов, для
+        управления загружаемыми модулями:</p>
+
+        <ol>
+          <li><code>caddr_t create_module(const char *name, size_t
+          size)</code>: выделяется <code>size</code> байт памяти, с
+          помощью <code>vmalloc()</code>, и отображает структуру модуля
+          в ней. Затем новый модуль прицепляется к списку module_list.
+          Этот системный вызов доступен только из процессов с
+          <code>CAP_SYS_MODULE</code>, все остальные получат ошибку
+          <code>EPERM</code>.</li>
+
+          <li><code>long init_module(const char *name, struct module
+          *image)</code>: загружается образ модуля и запускается
+          подпрограмма инициализации модуля. Этот системный вызов
+          доступен только из процессов с <code>CAP_SYS_MODULE</code>,
+          все остальные получат ошибку <code>EPERM</code>.</li>
+
+          <li><code>long delete_module(const char *name)</code>:
+          предпринимает попытку выгрузить модуль. Если <code>name ==
+          NULL</code>, то выгружает все неиспользуемые модули.</li>
+
+          <li><code>long query_module(const char *name, int which, void
+          *buf, size_t bufsize, size_t *ret)</code>: возвращает
+          информацию о модуле (или о модулях).</li>
+        </ol>
+
+        <p>Командный интерфейс, доступный пользователю:</p>
+
+        <ul>
+          <li><strong>insmod</strong>: вставляет одиночный модуль.</li>
+
+          <li><strong>modprobe</strong>: вставляет модуль, включая все
+          другие модули с соблюдением зависимостей.</li>
+
+          <li><strong>rmmod</strong>: удаляет модуль.</li>
+
+          <li><strong>modinfo</strong>: выводит информацию о модуле,
+          например автор, описание, параметры принимаемые модулем и
+          пр.</li>
+        </ul>
+
+        <p>Помимо загрузки модулей через <strong>insmod</strong> или
+        <strong>modprobe</strong>, существует возможность загрузки
+        модулей ядром автоматически, по мере необходимости. Интерфейс
+        для этого, предоставляется функцией
+        <code>request_module(name)</code>, которая экспортируется в
+        модули, чтобы предоставить им возможность загрузки других
+        модулей. Функция <code>request_module(name)</code> создает
+        поток ядра, который исполняет команду <strong>modprobe -s -k
+        module_name</strong>, используя стандартный интерфейс ядра
+        <code>exec_usermodehelper()</code> (так же экспортируется в
+        модули). В случае успеха функция возвращает 0, но обычно
+        возвращаемое значение не проверяется, вместо этого используется
+        идиома прграммирования:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>if (check_some_feature() == NULL)
+    request_module(module);
+if (check_some_feature() == NULL)
+    return -ENODEV;
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Например, код из <code>fs/block_dev.c:get_blkfops()</code>,
+        который загружает модуль <code>block-major-N</code> при попытке
+        открыть блочное устройство со старшим номером N. Очевидно, что
+        нет такого модуля <code>block-major-N</code> (разработчики
+        выбирают достаточно осмысленные имена для своих модулей), но
+        эти имена отображаются в истинные названия модулей с помощью
+        файла <code>/etc/modules.conf</code>. Однако, для наиболее
+        известных старших номеров (и других типов модулей) команды
+        <strong>modprobe/insmod</strong> &quot;знают&quot; какой
+        реальный модуль нужно загрузить без необходимости явно
+        указывать псевдоним в <code>/etc/modules.conf</code>.</p>
+
+        <p>Неплохой пример загрузки модуля можно найти в системном
+        вызове <strong>mount(2)</strong>. Этот системный вызов
+        принимает тип файловой системы в строке <code>name</code>,
+        которую <code>fs/super.c:do_mount()</code> затем передает в
+        <code>fs/super.c:get_fs_type()</code>:</p>
+
+        <blockquote>
+          <hr>
+<pre>
+<code>static struct file_system_type *get_fs_type(const char *name)
+{
+        struct file_system_type *fs;
+
+        read_lock(&amp;file_systems_lock);
+        fs = *(find_filesystem(name));
+        if (fs &amp;&amp; !try_inc_mod_count(fs-&gt;owner))
+                fs = NULL;
+        read_unlock(&amp;file_systems_lock);
+        if (!fs &amp;&amp; (request_module(name) == 0)) {
+                read_lock(&amp;file_systems_lock);
+                fs = *(find_filesystem(name));
+                if (fs &amp;&amp; !try_inc_mod_count(fs-&gt;owner))
+                        fs = NULL;
+                read_unlock(&amp;file_systems_lock);
+        }
+        return fs;
+}
+</code>
+</pre>
+          <hr>
+        </blockquote>
+
+        <p>Комментарии к этой функции:</p>
+
+        <ol>
+          <li>В первую очередь предпринимается попытка найти файловую
+          систему по заданному имени среди зарегистрированных.
+          Выполняется эта проверка под защитой &quot;только для
+          чтения&quot; <code>file_systems_lock</code>, (поскольку
+          список зарегистрированных файловых систем не
+          изменяется).</li>
+
+          <li>Если файловая система найдена, то делается попытка
+          получить новую ссылку и увеличить счетчик ссылок. Она всегда
+          возвращает 1 для статически связанных файловых систем или для
+          загруженных модулей. Если <code>try_inc_mod_count()</code>
+          вернула 0, то это может рассматриваться как неудача, т.е,
+          если модуль и имеется, то он был выгружен (удален).</li>
+
+          <li>Освобождается <code>file_systems_lock</code>, потому что
+          далее предполагается (<code>request_module()</code>)
+          блокирующая операция и поэтому следует отпустить блокировку
+          (spinlock). Фактически, в этом конкретном случае, отпустить
+          блокировку <code>file_systems_lock</code> пришлось бы в любом
+          случае, даже если бы <code>request_module()</code> не была
+          блокирующей и загрузка модуля производилась бы в том же самом
+          контексте. Дело в том, что далее, функция инициализации
+          модуля вызовет <code>register_filesystem()</code>, которая
+          попытается захватить ту же самую read-write блокировку
+          <code>file_systems_lock</code> &quot;на запись&quot;</li>
+
+          <li>Если попытка загрузить модуль удалась, то далее опять
+          захватывается блокировка <code>file_systems_lock</code> и
+          повторяется попытка найти файловую систему в списке
+          зарегистрированных Обратите внимание - здесь в принципе
+          возможна ошибка, в результате которой команда modprobe
+          &quot;вывалится&quot; в coredump после удачной загрузки
+          запрошенного модуля. Произойдет это в случае, когда вызов
+          <code>request_module()</code> зарегистрирует новую файловую
+          систему, но <code>get_fs_type()</code> не найдет ее.</li>
+
+          <li>Если файловая система была найдена и удалось получить
+          ссылку на нее, то она возвращается в качестве результата, в
+          противном случае возвращается NULL.</li>
+        </ol>
+
+        <p>Когда модуль загружен, он может обратиться к любому символу
+        (имени), которые экспортируются ядром, или другими в настоящее
+        время загруженными модулями, как public, используя макрокоманду
+        <code>EXPORT_SYMBOL()</code>. Если модуль использует символы
+        другого модуля, то он помечается как в зависящий от того модуля
+        во время пересчета зависимостей, при выполнении команды
+        <strong>depmod -a</strong> на начальной загрузке (например
+        после установки нового ядра).</p>
+
+        <p>Обычно необходимо согласовывать набор модулей с версией
+        интерфейсов ядра, используемых ими, в Linux это означает
+        &quot;версия ядра&quot;, так как не пока существует механизма
+        определения версии интерфейса ядра вообще. Однако, имеется
+        ограниченная возможность, называемыя &quot;module
+        versioning&quot; или <code>CONFIG_MODVERSIONS</code>, которая
+        позволяет избегать перекомпиляцию модулей при переходе к новому
+        ядру. Что же происходит, если таблицы экспортируемых символов
+        ядра для внутреннего доступа и для доступа из модуля имеют
+        различия? Для элементов раздела public таблицы символов
+        вычисляется 32-битная контрольная сумма C-объявлений. При
+        загрузке модуля производится проверка полного соответствия
+        символов, включая контрольные суммы. Загрузка модуля будет
+        прервана если будут обнаружены отличия. Такая проверка
+        производится только если и ядро и модуль собраны с включенной
+        опцией <code>CONFIG_MODVERSIONS</code>. В противном случае
+        загрузчик просто сравнивает версию ядра, объявленную в модуле,
+        и экспортируемую ядром, и прерывает загрузку, модуля, если
+        версии не совпадают.</p>
+        <hr>
+        <a
+         href="lki-3.html">Вперед</a> <a
+         href="lki-1.html">Назад</a> <a
+         href="https://www.linuxlib.ru/kern/kern24/lki.html#toc2">Содержание</a>
+      </li>
+    </ul>
+
+  </div>
+</div>
+</body>
+</html>

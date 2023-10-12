@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Валидатор — необходимость использования и практические советы — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Валидатор — необходимость использования и практические советы</h1>
+
+<FONT size=-1><EM>HTML-стандарт
+однозначно определяет основную структуру Web-документа. Язык HTML является
+подмножеством языка описания документов SGML (Structured Generalized Markup
+Language), таким образом, html-документ &#8211; это текстовый документ, состоящий из
+html-кодов и основного текста документа. Для просмотра этого документа необходим
+WEB-браузер &#8211; специальная программа для интерпретации и корректного отображения
+страницы на экране.</EM></FONT>
+<P><STRONG>Что такое стандарт HTML?</STRONG>
+<UL>
+  <LI>HTML был первоначально разработан <!--<A
+  href="http://www.faqs.org/rfcs/rfc1866.html" target=_blank>-->Tim Berners-Lee<!--</A>-->
+  и популяризован браузером Mosaic, разработанным NCSA. В течение 90х гг. он
+  буквально расцвёл в связи с бурным развитием Web. Было время, когда
+  веб-разработчики вынуждены были использовать html-стандарт 2.0 (<EM>был
+  разработан под эгидой Internet Engineering Task Force (IETF) для упорядочения
+  общепринятых положений в конце 1994 года</EM>), который поддерживал только
+  форматирование текста и встраивание простой графики.
+  <LI>В 1995 году были опубликованы некоторые предложения по расширенному
+  стандарту HTML 3.0, которые стали использоваться как неофициальные
+  HTML-рекомендации, воплотившиеся в различных браузерах.
+  <LI>В мае 1996 года появился стандарт версии 3.2. За стандарт несет
+  ответственность организация &#8211; WWW-Консорциум (<!--<A href="http://www.w3.org/"
+  target=_blank>-->W3C - world wide web consortium<!--</A>-->), она представляет собой
+  объединение представителей промышленности и науки.
+  <LI>18 декабря 1997 года вышел первый релиз <!--<A href="http://www.w3.org/"
+  target=_blank>-->W3C<!--</A>--> спецификации на HTML 4.0. Второй выпуск (24 апреля 1998
+  года) содержал некоторые редакторские корректировки.
+  <LI>24 Декабря 1999 года вышел стандарт HTML 4.01 &#8211; исправлены некоторые
+  ошибки предыдущего стандарта &#8211; 4.0
+  <LI>Наличие стандарта предполагает необходимость в специальной программе
+  (собственно VALIDATOR), которая проверяет наличие в HTML-документе нарушение
+  спецификаций, согласно которой составлен документ, если эти нарушения там
+  действительно есть. </LI></UL>
+<P><STRONG>Что такое Валидатор?</STRONG>&nbsp;</P>
+<DIR><STRONG>определение:</STRONG>
+<DIR>Validator: a conforming SGML parser that can find and report a reportable
+markup error if (and only if) one exists.<BR>Валидатор: анализатор соответствия
+стандарту SGML, который находит и сообщает о подлежащей отчету ошибке разметки,
+если (и только если) она существует. </DIR></DIR>
+<P><I>ISO 8896, параграф 15.4.</I></P>
+<P>Таким образом HTML-система является валидирующей HTML-системой, если<BR>1)
+она является валидирующим SGML-анализатором согласно ISO 8879, п.15.4;<BR>2) она
+способна обрабатывать любой согласующийся с HTML документ;<BR>3) она находит и
+сообщает об ошибке в HTML, если она существует;<BR>4) она не сообщает об ошибке
+в HTML, если она не существует.<BR><BR><I>ISO/IEC 15445:2000/DCOR 1:2001(E),
+параграф 2.2.</I></P>
+<P>Следует помнить о том, что html-документ &#8211; явление не самодостаточное, и само
+по себе никак не выглядит. Сайт обретает зримую форму лишь в конкретном
+браузере. Как показывает практика &#8211; различные браузеры показывают конкретную
+страницу разными способами (отображение страниц зависит от работы алгоритмов
+коррекции, встроенных в браузер, а в разных браузерах эти алгоритмы весьма
+различны), и, как правило, все эти способы &#8211; правильные. На самом деле это одно
+из важных достоинств сети - скажем, человек с плохим зрением может увеличить
+себе шрифт или использовать читающий браузер, причём для этого не требуется
+готовить отдельную, специальную версию сайта.</P>
+<P>Два самых распространённых браузера для Windows отображают страницы примерно
+одинаково, отличаясь лишь в таких деталях, как поля и отступы. Браузеры для
+Macintosh или *никсов обычно отличаются от этих двух более глобально. Очевидная
+выгода наличия стандарта в том, что проконтролировать одну спецификацию
+значительно легче, чем многие браузеры.</P>
+<DIR><STRONG><EM><!--<A href="http://www.w3.org/"
+target=_blank>-->цитата:<!--</A>--></EM></STRONG><BR><EM>&laquo;...Для людей с проблемами зрения
+HTML предоставляет многообещающие возможности уравнять их в правах с обычными
+людьми при использовании базового графического пользовательского интерфейса
+Windows. Табличная модель HTML включает атрибуты для пометки каждой ячейки,
+чтобы поддержать высококачественный текст для речевого интерфейса. Эти же
+атрибуты могут использоваться при поддержке автоматизированного импорта и
+экспорта данных таблиц в базы данных или электронные таблицы...&raquo;</EM> </DIR>
+<P>Многие разработчики (преимущественно начинающие веб-дизайнеры) могут не
+согласиться с необходимостью соответствия кода спецификации: "Валидатор
+оставляет после себя тоскливые сайты, убивает творчество". Такое мнение
+возникает от простой лени. Корректный HTML-текст вполне допускает динамику,
+мультимедийные объекты, использование сценариев и т.д.; просто все эти эффекты
+можно сделать грамотно, а можно - неграмотно. Надо также помнить, что во всякой
+творческой области надо сначала изучить правила, а уже потом суметь превзойти
+их. Кроме того, даже опытные разработчики не застрахованы от ошибок, мы все
+можем допускать опечатки или забывать закрыть тег. Валидатор способен отследить
+подобные ошибки и явным образом указать место с некорректным
+форматированием.</P><!-- Сокращения:
+Optional\Не обязателен,
+Forbidden\Запрещён,
+Empty\Пустой,
+Deprecated\Не рекомендуется,
+Loose DTD\Отсутствует ОТД,
+Frameset DTD\ОТД набора фрэймов. --><!-- примеры -->
+<P>Приведем конкретные примеры ошибок, которые определяются валидатором:</P>
+<DIR><CODE>&lt;P&gt;&lt;I&gt;ISO 8896, параграф 15.4.&lt;/P&gt;&lt;/I&gt; -
+неправильно<BR>(<EM>Error: start tag was here</EM>).<BR>&lt;P&gt;&lt;I&gt;ISO
+8896, параграф 15.4.&lt;/I&gt;&lt;/P&gt; - правильно.<BR><BR>&lt;P&gt;&lt;IMG
+SRC="гиф.gif" alt="аль"&gt; вставлен текст&lt;/P&gt; -
+неправильно<BR>(<EM>Error: element "P" not allowed here; possible cause is an
+inline element containing a block-level element </EM>)<BR>&lt;IMG SRC="гиф.gif"
+alt="аль"&gt;&lt;P&gt; вставлен текст&lt;/P&gt; - правильно.</CODE> </DIR><!-- <P>Существует печальное мнение, что "многие сайты и так живут, даже сайты важных компаний!". Но будем помнить, что важные компании получают посетителей за счёт своей марки и своей продукции. Если бы они относились к производству фирменной продукции столь же халтурно, как и к стремлению создать "чистый" код,  разорение не заставило бы себя ждать. Вы тоже можете скомпенсировать недостатки сайта достоинствами своего товара?<BR> -->
+<P>Если вы пришли к тому, что вам необходимо проверить ваш код на соответствие
+спецификации, прочтите несколько советов:</P>
+<P><STRONG>Где взять валидатор?</STRONG></P>
+<P>Валидатор в форме веб-страницы предлагается на <!--<A
+href="http://validator.w3.org/">-->http://validator.w3.org/<!--</A>-->. Он основывается на
+SP Кларка.<BR><BR>Есть также и валидатор на <!--<A
+href="http://htmlhelp.com/">-->http://htmlhelp.com/<!--</A>--> . Он тоже основывается на
+SP, хотя и немного изменённом. Авторами декларируется, что он более строг в
+оценке и объявляет потенциально опасные, хотя и допустимые места (скажем,
+незакрытый тег с необязательным закрытием). Предлагают исходники
+валидатора<BR><BR>Доступный подо все платформы бесплатный валидатор можно
+скачать с сайта Дж. Кларка (<!--<A
+href="http://www.jclark.com/sp/)">-->http://www.jclark.com/sp/)<!--</A>-->. Вместе с
+парсером/валидатором в поставке прилагается потоковый нормализатор.<BR><BR><!--<A
+href="http://www.w3.org/" target=_blank>-->W3C<!--</A>--> раздаёт исходники валидатора на
+<!--<A href="http://validator.w3.org/">-->http://validator.w3.org/<!--</A>-->, но это, на
+самом деле, не валидатор. Это лишь адаптация кларковского валидатора к
+веб-интерфейсу, исполненная на перле. В описании этой адаптации недвусмысленно
+сказано, что следует иметь на машине кларковский валидатор.</P>Еще ссылки:<BR> 
+<!--<A href="http://ugweb.cs.ualberta.ca/~gerald/validate/"
+target=_blank>-->http://ugweb.cs.ualberta.ca/~gerald/validate/<!--</A>--><BR>  <!--<A
+href="http://www.webtechs.com/html-val-svc/"
+target=_blank>-->http://www.webtechs.com/html-val-svc/<!--</A>--><BR>  <!--<A
+href="http://www2.imagiware.com/RxHTML/"
+target=_blank>-->http://www2.imagiware.com/RxHTML/<!--</A>-->
+<P><STRONG>Можно ли назвать валидатором инструмент из HomeSite &#8211; Validate
+Document?</STRONG></P>
+<P>Разработчики Allaire HomeSite объявляют, что что "&#8230;проверяющая программа
+выпускается ими под названием "валидатор" сугубо из коммерческих соображений&#8230;",
+и настоящий валидатор выпускаться ими не будет.</P>
+<P>Программа, идущая в комплекте с HomeSite, нарушает определение валидатора:
+она находит и показывает ошибки, которые не были допущены, и не находит ошибок,
+которые были допущены.<BR>Вот пример её неправильных действий:<BR><CODE>а)
+&lt;img src=" 3621/g1x1.gif" alt=""&gt;&lt;img src="
+3621/g1x1.gif"&gt;</CODE><BR>Реакция: нет реакции.<BR>В действительности, здесь
+ошибка: не выставлен ALT второго IMG.<BR><CODE>б) &lt;br
+/&gt;</CODE><BR>Реакция: ошибка.<BR>В действительности, этот тег возможен в
+рамках XHTML.</P>
+<P>Стремление к безупречности - первый признак профессионализма, и нет
+необходимости ориентироваться на популярные, однако далекие от совершенства
+html-кода порталы. Возможно, менеджеры подобных сайтов, проанализировав
+статистику посещений, выяснили, что 99% приходящих пользователей увидят все так,
+как предполагал дизайнер... Возможно, авторы сайта намеренно исключают из числа
+своих посетителей пользователей с ограниченными возможностями... однако следует
+помнить такие понятия, как гуманизм и требования закона. С появлением
+официального стандарта из-за нарушений спецификации есть опасность попасть в суд
+по обвинению в недоступности сайта для тех, кто не может использовать "обычный"
+браузер. Хотя в регионах стран бывшего СНГ законодательство довольно ограничено
+в этом отношении, в просвещённом мире вопрос решается лучше. Доступность
+понемногу приобретает силу закона. Валидатор не гарантирует доступности (потому
+что не может быть заменой здравого смысла), но помогает обеспечить должную меру
+поддержки всех пользователей.</P>
+<P>Удачных сайтов и безупречного кода вам, уважаемые разработчики!</P>
+<P align=left>Автор: <A href="../cdn-cgi/l/email-protection.html#a8dcc9dcd1c9c6c9e8cddbcc86c3c0c9dac3c7de86ddc9">Татьяна
+Зяблицева</A></P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

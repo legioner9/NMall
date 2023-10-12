@@ -1,0 +1,681 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>lf229, Software Development: GCC - корень всего — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="index.htm#gl">графические библиотеки</a> |
+    <A HREF="index.htm#tcl">Tcl</a> |
+    <A HREF="index.htm#perl">Perl</a> |
+    <A HREF="index.htm#php">PHP</a> |
+    <A HREF="index.htm#java">Java &amp; C#</a> |
+    <A HREF="index.htm#dbms">СУБД</a> |
+    <A HREF="index.htm#cvs">CVS</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<I>Об авторе:</I><BR>
+<P>
+Лорн живет в Чикаго и работает консультантом по информатике,
+специализируясь по вводу-выводу для баз данных Oracle. Сделав когда-то
+выбор - программировать исключительно в среде *nix - Лорн полностью избежал
+'Ада DLL'. Сейчас он работает над своей ученой степенью по информатике. </P>
+<!-- TRANSLATED TO ru -->
+<BR><I>Перевод на Русский:</I>
+Алексей Отвагин <font size="1">&lt;forlelik(at)yahoo.com&gt;</font>
+<!-- TRANSLATED TO STOP -->
+<BR><i>Содержание</i>:
+<UL>
+  <LI><A HREF="gcc.htm#229lfindex0"> Правила GCC </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex1"> В начале... </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex2">
+ Препроцессинг(Pre-compile)
+</A></LI>
+  <LI><A HREF="gcc.htm#229lfindex3"> <a
+name="comp">Компиляция (Compile) </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex4"> Ассемблирование(Assembly) </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex5">
+Компоновка(Link)
+</A></LI>
+  <LI><A HREF="gcc.htm#229lfindex6"> <a
+name="lasttwo">Две очень важные опции </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex7"> Отладка(Debugging) </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex8"> Заключение </A></LI>
+  <LI><A HREF="gcc.htm#229lfindex9"> Ссылки </A></LI>
+</UL>
+
+</TD></TR></TABLE>
+<!-- HEAD OF THE ARTICLE -->
+<br>&nbsp;
+<H2>GCC - корень всего</H2>
+
+<P><i>Резюме</i>:
+<P>
+
+Эта статья предполагает, что Вы знакомы с основами языка Си, и хочет
+познакомить Вас с использованием gcc в качестве компилятора. Мы хотим быть
+уверенными, что Вы сможете вызвать компилятор из командной строки для простого
+кода на Си. Затем мы сделаем краткий обзор того, что же на самом деле
+происходит, и того, как Вы можете контролировать компиляцию Ваших программ.
+Также мы очень кратко рассмотрим использование отладчика.
+
+</P>
+<HR size="2" noshade align="right"><BR>
+<!-- BODY OF THE ARTICLE -->
+
+
+
+<H2> Правила GCC </H2>
+
+<p>
+Можете ли Вы представить компиляцию свободного программного обеспечения
+компилятором с закрытыми кодами, находящимся в чьей-либо собственности?
+Откуда Вы будете знать, что происходит в Вашем исполняемом файле? Здесь может
+присутствовать черный вход для любого трояна.  Ken Thompson, при одном из
+величайших взломов всех времен, написал компилятор, который оставлял черный
+ход в программе 'login' и увековечил трояна, когда компилятор, реализующий его,
+компилировал сам себя. Прочтите описание этой вечной классики здесь: <!--<a
+href="http://www.acm.org/classics/sep95">--><!--</a>-->. К счастью, у нас есть gcc.
+Как только Вы выполняете <code> configure; make; make install
+</code>, gcc выполняет за кадром массу тяжелой работы. Как нам заставить gcc
+работать на себя? Мы начнем писать карточную игру, но напишем лишь столько,
+сколько нам понадобится для демонстрации функциональности компилятора.
+Поскольку мы начинаем с пустого места, нам потребуется понимание процесса
+компиляции для того, чтобы знать, что нужно сделать для создания исполняемого
+файла и в каком порядке. Мы сделаем общий обзор того, как компилируется
+программа на Си, и обзор опций, которые заставляют gcc делать то, что нам
+нужно. Этапами (и выполняющими их инструментами являются) <a
+href="gcc.htm#precomp">Препроцессинг(Pre-compile)</a> (gcc -E), <a
+href="gcc.htm#comp">Компиляция(Compile)</a> (gcc), <a
+href="gcc.htm#assem">Ассемблирование(Assembly)</a> (as), and <a
+href="gcc.htm#link">Компоновка(Link)</a> (ld). </p>
+
+<A NAME="229lfindex1">&nbsp;</A>
+<H2> В начале... </H2>
+
+<p>
+Во-первых,однако, мы должны знать, как вызвать компилятор в первый раз. Это
+действительно просто. Мы начнем с вечной классической первой программы на Си.
+(Старики должны меня простить). </p> <p>
+<pre>
+#include &lt;stdio.h&gt;
+
+int main()<br/>
+{
+  printf("Hello World!\n");
+}
+</pre>
+</p>
+
+<p>
+Сохраните этот файл с именем <code>game.c</code>. Вы можете скомпилировать его
+из командной строки, запустив:
+<pre>
+gcc game.c
+</pre>
+По умолчанию, компилятор Си создает исполняемый файл с названием
+<code>a.out</code>. Вы можете запустить его, набрав:
+<pre> a.out
+<b>Hello World</b>
+
+</pre>
+Всегда, когда Вы компилируете программу, новый <code>a.out</code> будет
+замещать предыдущую программу. Вы не можете сказать, какая из программ
+создала текущий <code>a.out</code>. Мы можем решить эту проблему, сообщив gcc,
+как мы хотим назвать исполняемый файл, с помощью ключа <code>-o </code>. Мы
+хотим назвать эту программу <code>game</code>, хотя мы могли бы назвать ее
+как угодно, поскольку Си не имеет ограничений на имена, которые дает Java.
+<pre> gcc -o game game.c </pre> <pre>
+game
+<b>Hello World</b>
+
+</pre>
+</p>
+<p>
+В этом месте мы еще очень далеки от получения полезной программы. Если Вы
+думаете, что это плохо, Вы можете принять во внимание факт, что у нас есть
+программа, которая компилируется и работает. Как только мы мало-помалу начнем
+добавлять программе функциональности, мы захотим убедиться в том, что
+программа осталась работоспособной. Известно, что каждый начинающий программист
+хочет написать 1,000 строк исходного кода, а затем сразу их исправить. Я
+думаю, что никто этого не сможет. Вы создаете маленькую работающую программу,
+Вы изменяете ее и вновь заставляете ее работать. Это ограничит количество
+ошибок, которые Вам нужно будет исправить за один раз. Плюс к тому, Вы
+точно знаете, что Вы сделали и это не работает, так что Вы знаете, на чем
+сосредоточиться. Это сдержит Вас от создания чего-то, что, <b>по Вашему
+мнению</b> должно работать, и возможно даже компилируется, но никогда не
+станет исполняемым файлом. Помните - то, что программа компилируется,
+вовсе не означает, что она верна. </p>
+<p> Следующий шаг - создание заголовочного файла для нашей игры. Заголовочный
+файл собирает в одном месте типы данных и описания функций. Это обеспечивает
+единообразное определение структур данных, так что каждая часть нашей программы
+воспринимает что-либо одинаково. </p> <pre> #ifndef DECK_H #define DECK_H
+
+#define DECKSIZE 52
+
+typedef struct deck_t
+{
+  int card[DECKSIZE];
+  /* number of cards used */
+  int dealt;
+}deck_t;
+
+#endif /* DECK_H */
+</pre>
+<p>
+Сохраните этот файл как <code>deck.h</code>. Так как компилируются только
+файлы <code>.c</code>, мы должны изменить наш game.c. В строке 2 файла game.c,
+напишите <code>#include "deck.h"</code>.  В строке 5, напишите <code>deck_t
+deck;</code>  Чтобы убедиться, что мы ничего не сломали, скомпилируйте
+его снова. <pre> gcc -o game game.c
+</pre>
+</p>
+<p>
+Нет ошибок - нет проблем. Если он не компилируется, поработайте с ним, пока он
+не заработает. </p>
+<A NAME="229lfindex2">&nbsp;</A>
+<H2>
+<a name="precomp"> Препроцессинг(Pre-compile)</a>
+</H2>
+
+<p>
+Откуда компилятор знает, какого типа <code>deck_t</code>? Потому что во время
+препроцессинга он действительно копирует файл "deck.h" в файл "game.c".
+Директивы препроцессора в исходном коде предваряются префиксом "#". Вы можете
+вызвать препроцессор через надстройку gcc с помощью ключа <code>-E</code>.
+<pre> gcc -E -o game_precompile.txt game.c wc -l game_precompile.txt 3199
+game_precompile.txt </pre> Почти 3,200 строк вывода! Большинство из них
+происходят из заголовочного файла <code>stdio.h</code>, но если Вы посмотрите
+на них, Вы увидите также и наши описания.  Если Вы не задали имя выходного
+файла через ключ <code>-o</code>, он будет выведен на консоль. Препроцессинг
+дает коду большую гибкость, выполняя три главных цели. <ol> <li>Копирует
+"включаемые(#include)" файлы в компилируемый исходный файл.</li>
+<li>Заменяет "определяемый(#define)" текст действительными значениями.</li>
+<li>Заменяет макросы в строках, в которых они вызываются.</li> </ol> Это
+позволяет Вам иметь именованные константы (например, DECKSIZE,
+представляющую количество карт в колоде), которые используются сквозным образом
+во всем коде, определяясь в одном месте и автоматически обновляясь везде, как
+только значение меняется. На практике, Вы почти никогда не воспользуетесь ключом
+<code>-E</code> самим по себе, а вместо этого пропустите его вывод к
+компилятору. </p>
+<A NAME="229lfindex3">&nbsp;</A>
+<H2> <a
+name="comp">Компиляция (Compile)</a> </H2>
+ <p> В качестве промежуточного шага,
+gcc транслирует Ваш код в язык Ассемблера. Чтобы сделать это, он должен
+представить, что Вы имели в виду, разбирая Ваш код. Если Вы сделали
+синтаксическую ошибку, он сообщит Вам об этом и компиляция прервется. Люди
+иногда ошибочно думают, что это единственный шаг всего процесса. Однако для gcc
+остается еще очень много работы.
+</p> <A NAME="229lfindex4">&nbsp;</A>
+<H2> <a name="assem">Ассемблирование(Assembly)</a> </H2>
+ <p>
+<code>as</code> переводит код на Ассемблере в объектный код. Объектный код
+не может реально работать в процессоре, но он очень близок к этому. Опция
+компилятора <code>-c</code> превращает файл .c в объектный файл с расширением
+.o. Если мы запускаем <pre> gcc -c game.c </pre>, мы автоматически
+создаем файл с именем game.o.Здесь мы остановимся на важной точке. Мы можем
+взять любой файл .c и создать из него объектный файл. Как мы увидим ниже, мы
+можем комбинировать эти объектные файлы в исполняемый файл на этапе компоновки.
+Давайте вернемся к нашему примеру. Поскольку мы программируем карточную
+игру и определили колоду карт как <code>deck_t</code>, нам нужно написать
+функцию, которая тасует колоду. Эта функция получает указатель на тип колоды
+и заполняет его случайными значениями для карт. Она следит за картами, которые
+уже использовались, с помощью массива 'drawn'. Этот массив из DECKSIZE
+элементов предотвратит повторения значения карты. </p>
+<pre>
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;time.h&gt;
+#include "deck.h"
+
+static time_t seed = 0;
+
+void shuffle(deck_t *pdeck)
+{
+  /* Keeps track of what numbers have been used */
+  int drawn[DECKSIZE] = {0};
+  int i;
+
+  /* One time initialization of rand */
+  if(0 == seed)
+  {
+    seed = time(NULL);
+    srand(seed);
+  }
+  for(i = 0; i < DECKSIZE; i++)
+  {
+    int value = -1;
+    do
+    {
+      value = rand() % DECKSIZE;
+    }
+    while(drawn[value] != 0);
+
+    /* mark value as used */
+    drawn[value] = 1;
+
+    /* debug statement */
+    printf("%i\n", value);
+    pdeck->card[i] = value;
+  }
+  pdeck->dealt = 0;
+  return;
+}
+</pre>
+<p>
+Сохраните этот файл с именем <code>shuffle.c</code>.
+Мы поместили отладочный блок в этот код, чтобы при запуске он выводил
+генерируемые номера карт. Это не добавит нашей программе функциональности, но
+сейчас важно, чтобы мы видели, что происходит.  Поскольку мы только
+начинаем нашу игру, у нас нет другого способа убедиться, что наша функция
+делает то, что мы хотим. С помощью printf, мы можем точно увидеть, что
+происходит прямо сейчас, так что, когда мы перейдем к нашей следующей фазе, мы
+будем знать, что колода хорошо перетасована. После того, как мы убедимся,
+что она работает правильно, мы уберем эти строчки из нашего кода. Эта
+техника отладки программ выглядит грубой, но она делает это с минимумом суеты.
+Мы обсудим более сложные отладчики позже. </p>
+Отметьте две вещи. <ol> <li> Мы передали параметр по его адресу, который Вы
+можете получить с помощью оператора '&amp;' (адрес). Он передает машинный
+адрес переменной в функцию, так что функция сама может изменить переменную.
+Это возможно в программах с глобальными переменными, но они должны
+использоваться лишь в очень редких случаях. Указатели являются важной
+частью Си и Вы должны хорошо понимать их. </li> <li> Мы используем вызов
+функции из нового файла .c. Операционная система всегда ищет функцию, называемую
+'main' и начинает выполнение с нее. <code>shuffle.c</code> не содержит
+функции 'main' и поэтому не может быть самостоятельным исполняемым файлом. Мы
+должны компилировать его с другой программой, которая содержит 'main' и
+вызывает функцию 'shuffle'. </li> </ol> <p> Запустите команду <pre> gcc -c
+shuffle.c </pre> и убедитесь, что она создала новый файл с именем
+<code>shuffle.o</code>. Отредактируйте файл game.c, и в строке 7,
+после описания переменной deck_t <code>deck</code>, добавьте строку <pre>
+shuffle(&amp;deck); </pre> Теперь, если мы попробуем создать исполняемый
+файл также, как и раньше, мы получим сообщение об ошибке <pre>
+gcc -o game game.c
+
+/tmp/ccmiHnJX.o: In function `main':
+/tmp/ccmiHnJX.o(.text+0xf): undefined reference to `shuffle'
+collect2: ld returned 1 exit status
+</pre>
+Компиляция была успешной, поскольку синтаксис был правильным. Этап компоновки
+завершился с ошибкой, поскольку мы не сказали компилятору, где находится
+функция 'shuffle'. Что такое <i>link</i> и как нам указать компилятору, где
+найти эту функцию?
+</p> <A NAME="229lfindex5">&nbsp;</A>
+<H2>
+<a name="link">Компоновка(Link)</a>
+</H2>
+
+<p>
+Компоновщик, <code>ld</code>, берет объектный код, созданный ранее
+<code>as</code> и превращает его в исполняемый командой
+ <pre> gcc -o game game.o shuffle.o
+</pre>
+Это скомбинирует два объекта вместе  и создаст исполняемый файл <code>game</code>.
+</p>
+<p>
+Компоновщик находит функцию <code>shuffle</code> в объектном коде shuffle.o и
+включает ее в исполняемый файл. Настоящая прелесть объектных файлов в том,
+что если нам нужно использовать эту функцию вновь, то все, что нам
+потребуется - это подключить файл "deck.h" и связать
+объектный файл <code>shuffle.o</code> с новым исполняемым файлом. </p>
+<p> Повторное использование кода, как этот пример, удовлетворяет всех. Хотя
+мы не писали функцию <code>printf</code>, которую мы вызывали выше в отладочной
+конструкции, компоновщик нашел ее определение в файле, который мы включили с
+помощью <code>#include &lt;stdlib.h&gt;</code> и связал с объектным кодом,
+хранящимся в библиотеке Си (/lib/libc.so.6). Этот способ мы можем
+использовать где угодно, если известные нам функции работают правильно и
+заботятся о решении наших проблем. Это является причиной, почему
+заголовочные файлы обычно содержат только определения данных и функций, а не
+тела функций. Обычно Вы создаете объектные файлы или библиотеки для
+компоновщика, чтобы поместить их в исполняемый файл. С Вашим кодом могут
+возникнуть проблемы, поскольку мы не поместили определений функций в наш
+заголовочный файл. Что мы можем сделать, чтобы убедиться, что все пройдет
+гладко? </p>
+<A NAME="229lfindex6">&nbsp;</A>
+<H2> <a
+name="lasttwo">Две очень важные опции</a> </H2>
+ <p> Опция <code>-Wall</code>
+подключает все виды синтаксических предупреждений языка, чтобы помочь нам
+удостовериться, что Ваш код правильный и максимально переносимый. Когда мы
+используем эту опцию и компилируем наш код, мы видим что-то вроде: <pre> game.c:9: warning:
+implicit declaration of function `shuffle' </pre>
+
+Это сообщает нам, что у нас есть еще немного работы.  Нам нужно поместить в
+заголовочный файл строку, в которой мы сообщим компилятору все о нашей функции
+<code>shuffle</code>, чтобы он мог проверить все, что ему нужно. Это звучит,
+как ограничение, но разделяет определение от реализации и позволяет нам
+использовать нашу функцию везде простым включением нашего заголовочного файла
+и присоединением нашего объектного кода. Мы должны поместить одну строку в
+файл deck.h. <pre> void shuffle(deck_t
+*pdeck); </pre>
+Это избавит нас от предупреждающего сообщения. </p>
+<p> Еще одной общей опцией компилятора является оптимизация <code>-O#</code>
+(например, -O2).
+Она сообщает компилятору, какой уровень оптимизации Вам нужен. У компилятора
+полная сумка "примочек", чтобы сделать Ваш код выполняющимся чуть-чуть
+быстрее. Для маленьких программ, как наша, Вы можете не заметить разницы, но
+для больших программ можно получить заметное ускорение. Вы увидите эту опцию
+везде, так что Вы должны знать, что она означает. </p>
+<A NAME="229lfindex7">&nbsp;</A>
+<H2> <a name="debug">Отладка(Debugging)</a> </H2>
+ <p>
+Как нам всем известно, то, что наш код компилируется, вовсе не означает, что
+он работает так, как мы этого хотим. Вы можете проверить, что все
+числа используются только один раз, запустив
+ <pre> game | sort - n | less </pre>
+и убедившись, что ничего не пропало. Что нам нужно сделать, если здесь
+возникнет проблема? Как мы можем посмотреть под крышку и найти ошибку? </p>
+Вы можете проверить Ваш код с помощью отладчика. Большинство дистрибутивов
+предлагают классический отладчик - gdb.  Если опции командной строки подавляют
+Вас, как и меня, KDE предлагает очень хорошую надстройку KDbg<!--<a href="http://members.nextra.at/johsixt/kdbg.html">--><!--</a>-->.
+Существуют и другие надстройки, и они очень подобны. Для запуска отладки, Вы
+выбираете File-&gt;Executable, а затем находите Вашу программу
+<code>game</code>. Когда Вы нажимаете F5 или выбираете Execution-&gt;Run из
+меню, Вы должны увидеть вывод в отдельном окне. Что происходит?  Мы ничего не
+видим в окне. Не волнуйтесь, KDbg не сломался. Проблема состоит в том, что мы
+не поместили в исполняемый файл отладочную информацию, так что KDbg
+не может сказать нам, что происходит внутри. Флаг компилятора <code>-g</code>
+помещает необходимую информацию в объектные файлы. Вы должны компилировать
+объектные файлы(расширение .o) с этим флагом, так что команда станет такой
+<pre>
+gcc -g -c shuffle.c game.c
+gcc -g -o game game.o shuffle.o
+</pre>
+Это поместит в исполняемый файл метки, которые позволяют gdb и KDbg показать,
+что же происходит. Отладка является важным навыком, и очень полезно
+потратить Ваше время, чтобы научиться работать с отладчиком. Способом, которым
+отладчик помогает программисту, является возможность установки "Точки
+останова" 'Breakpoint' в исходном коде. Попробуйте поставить ее сейчас нажатием
+правой кнопки на строке с вызовом функции <code>shuffle</code>. На этой строке
+должен появиться маленький красный кружок. Теперь, когда Вы нажмете F5,
+программа остановит выполнение на этой строке. Нажмите F8, чтобы войти в
+функцию shuffle. Ого, теперь мы смотрим на код из <code>shuffle.c</code>! Мы
+можем контролировать выполнение шаг за шагом и видеть, что в действительности
+происходит. Если Вы наведете стрелку на локальную переменную, Вы увидите, что
+в ней хранится. Приятно. Это гораздо лучше, чем выражения с <code>printf</code>,
+не так ли? </p>
+<A NAME="229lfindex8">&nbsp;</A>
+<H2> Заключение </H2>
+
+<p> Эта статья представляет беглый тур по компиляции и отладке программ Си. Мы
+обсудили шаги, которые выполняет компилятор и опции, которые ему нужно
+передать для их выполнения. Мы коснулись компоновки разделяемых библиотек и
+закончили введением в отладчики. Требуется много труда, чтобы действительно
+понять, что Вы делаете, но я надеюсь, что это послужит, чтобы Вы начали с той
+ноги. Вы можете найти больше информации в страницах <code>man</code> и
+<code>info</code> для <code>gcc</code>, <code>as</code> и
+<code>ld</code>. </p>
+<p> Самостоятельное написание кода научит Вас лучше всего. Для практики, Вы
+можете взять сырое начало программы карточной игры из этой статьи и написать
+игру "в очко". Потратьте время, чтобы изучить, как пользоваться отладчиком.
+Гораздо легче начать с отладчика с графическим интерфейсом, как KDbg. Если Вы
+сразу добавите немного функциональности, Вам будет приятно, прежде чем Вы
+поймете это. Помните, программа должна оставаться работающей! <p> Здесь
+приведены некоторые вещи, которые могут Вам понадобиться для создания полной
+игры. <ul> <li>
+Определение карточного игрока (например, Вы можете определить deck_t как
+player_t).</li> <li> Функция, которая раздает нужное количество карт нужному
+игроку. Помните об увеличении количества 'сданных' в колоде, чтобы отследить,
+куда сдать следующую карту. Помните о контроле за тем, сколько карт на руках
+у игроков. </li>
+<li> Некоторое взаимодействие с пользователем, если игрок хочет взять еще
+карту.</li> <li> Функция вывода содержимого на руках у игрока. Карта <i>card</i>
+является значением value % 13 (дающим от 0 до 12), масть <i>suit</i> является
+значением value / 13 (дающим от 0 до 3). </li>
+<li> Функция определения значения на руках у игрока. Тузы имеют значение
+карты 0 и могут считаться за 1 или 11. Короли имеют значение 12 и весят по 10.
+</li> </ul> </p> </p> <A NAME="229lfindex9">&nbsp;</A>
+<H2> <a name="links">Ссылки</a> </H2>
+ <ul> <li><!--<a
+href="http://www.gnu.org/directory/gcc.html">-->gcc<!--</a>-->  Коллекция компиляторов GNU
+GCC</li> <li><!--<a
+href="http://www.gnu.org/directory/gdb.html">-->gdb<!--</a>-->  Отладчик GNU </li> <li><!--<a
+href="http://members.nextra.at/johsixt/kdbg.html">-->KDbg<!--</a>--> Отладчик с
+интерфейсом KDE</li> <li> <!--<a
+href="http://www.acm.org/classics/sep95">-->Award Winning Compiler Hack<!--</a>--> Ken
+Thompson's great compiler hack </li> </ul>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Traffic Accounting Billing Configuration HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<font face="courier" size="4"><pre>
+  <u>Данный документ это - <font color="#109200" size="5"><b>Traffic-Accounting-Billing-Configuration-HOWTO</b></font></u>
+
+
+  Оглавление
+
+  1. <a href="tab_Configuration.htm#p1" style="text-decoration:none;color:#000000;">Введение</a>
+
+    1.1 <a href="tab_Configuration.htm#p1_1" style="text-decoration:none;color:#000000;">Что?</a>
+    1.2 <a href="tab_Configuration.htm#p1_2" style="text-decoration:none;color:#000000;">Почему?</a>
+    1.3 <a href="tab_Configuration.htm#p1_3" style="text-decoration:none;color:#000000;">Где?</a>
+
+  2. <a href="tab_Configuration.htm#p2" style="text-decoration:none;color:#000000;">Инсталляция</a>
+
+    2.1 <a href="tab_Configuration.htm#p2_1" style="text-decoration:none;color:#000000;">Рекомендации</a>
+    2.2 <a href="tab_Configuration.htm#p2_2" style="text-decoration:none;color:#000000;">Методы инсталляции</a>
+      2.2.1 <a href="tab_Configuration.htm#p2_2_1" style="text-decoration:none;color:#000000;">Инсталляция Traffic Accounting</a>
+      2.2.2 <a href="tab_Configuration.htm#p2_2_2" style="text-decoration:none;color:#000000;">Инсталляция TA-WEB</a>
+
+  3. <a href="tab_Configuration.htm#p3" style="text-decoration:none;color:#000000;">Конфигурирование</a>
+
+    3.1 <a href="tab_Configuration.htm#p3_1" style="text-decoration:none;color:#000000;">Стандартизация</a>
+    3.2 <a href="tab_Configuration.htm#p3_2" style="text-decoration:none;color:#000000;">Способы конфигурирования</a>
+      3.2.1 <a href="tab_Configuration.htm#p3_2_1" style="text-decoration:none;color:#000000;">Конфигурирование Traffic Accounting</a>
+      3.2.2 <a href="tab_Configuration.htm#p3_2_2" style="text-decoration:none;color:#000000;">Конфигурирование TA-WEB</a>
+      3.2.3 <a href="tab_Configuration.htm#p3_2_3" style="text-decoration:none;color:#000000;">Принцип работы конфигураций</a>
+
+  4. <a href="tab_Configuration.htm#p4" style="text-decoration:none;color:#000000;">Примеры задач</a>
+
+  --------------------------------------------------------------------------------------
+
+  1. <a name="p1"></a><font color="#109200"><b>Введение</b></font>
+
+    Данный документ описывает способы конфигурирования TA Billing.
+    В документе представлена информация по способу инсталляции
+    и последующему созданию конфигураций. Документ в дополнение,
+    предоставляет несколько задач и способы их последующего решения
+    с помощью пакета TA Billing.
+
+  1.1 <a name="p1_1"></a><font color="#109200"><b>Что?</b></font>
+
+    Для корректной работы TA Billing, его необходимо правильно
+    сконфигурировать, а для того чтобы это сделать необходимо
+    получить информацию об этом из данного документа.
+
+  1.2 <a name="p1_2"></a><font color="#109200"><b>Почему?</b></font>
+
+    Пакет TA Billing имеет интуитивно понятный и несложный
+    интерфейс создаваемых конфигураций. Но как и в любой иной
+    программе, пакет TA Billing имеет свои нюансы и понятия
+    касающиеся синтаксического расположения указаний для
+    конфигураций. Поэтому чтобы получить полноценную информацию
+    по конфигурированию необходимо обратиться к данному документу.
+
+  1.3 <a name="p1_3"></a><font color="#109200"><b>Где?</b></font>
+
+    Официальная страница проекта Traffic Accounting:
+    	<!--<a href="http://traflinux.sourceforge.net" style="text-decoration:none;color:#000000;">-->http://traflinux.sourceforge.net<!--</a>-->
+
+    По указанному выше ресурсу можно получить всю последнюю
+    информацию о разработках проекта Traffic Accounting.
+    Также существует e-mail адрес <a href="../../cdn-cgi/l/email-protection.html#b6c2d7dadfd8c3cef6c6dfc5d3db98d8d3c2" style="text-decoration:none;color:#000000;"><span class="__cf_email__" data-cfemail="3d495c51545348457d4d544e585013535849">[email&#160;protected]</span></a>,
+    по которому возможно получить ответы на любые
+    вопросы касающиеся проекта Traffic Accounting.
+
+  2. <a name="p2"></a><font color="#109200"><b>Инсталляция</b></font>
+
+    Данный раздел информирует о способах инсталляции
+    пакета TA Billing. И так же содержит рекомендационную
+    информацию для инсталляции.
+
+  2.1 <a name="p2_1"></a><font color="#109200"><b>Рекомендации</b></font>
+
+    1. При инсталляции Traffic Accounting
+       рекомендуется использовать каталог
+       назначения /var/trafacct/ .
+
+    2. При инсталляции TA-WEB настоятельно
+       рекомендуется использовать домашний,
+       персонально созданный, каталог.
+       Например /home/ta/ .
+
+  2.2 <a name="p2_2"></a><font color="#109200"><b>Методы инсталляции</b></font>
+
+    Данный раздел предоставляет информацию
+    по инсталляции составных частей
+    продукта TA Billing.
+
+  2.2.1 <a name="p2_2_1"></a><font color="#109200"><b>Инсталляция Traffic Accounting</b></font>
+
+    Для начала необходимо разархивировать
+    полученный пакет Traffic Accounting.
+    Например:
+    bash# bunzip2 < ta-XXX.tar.bz2 |tar xvf -
+
+    Далее зайдя в полученный каталог,
+    отредактировать файл setup.conf.
+    Файл setup.conf, будет меть
+    содержание примерное следующему:
+    NOCONFIGURED=1
+    MAIN_TA_DIR=/var/trafacct/
+    PIDOF=/sbin/pidof
+    IPTABLES=/sbin/iptables
+
+    1. <font color="#a62828"><b>NOCONFIGURED</b></font>
+
+      После завершения редактирования
+      setup.conf необходимо перед данной
+      переменной поставить знак '#'.
+      Получится:
+      #NOCONFIGURED=1
+
+    2. <font color="#a62828"><b>MAIN_TA_DIR</b></font>
+
+      Каталог назначения, т.е. тот каталог
+      в который будет инсталлирован пакет
+      Traffic Accounting.
+
+    3. <font color="#a62828"><b>PIDOF</b></font>
+
+      Путь к программе pidof.
+      Данный параметр обязателен
+      так как он используется в скрипте
+      для запуска программы Traffic Accounting.
+
+    4. <font color="#a62828"><b>IPTABLES</b></font>
+
+      Путь к программе iptables.
+      Данный параметр обязателен
+      так как iptables используется
+      для отключения/подключения
+      пользователей в скрипте.
+      Конечно же последующий
+      сгенерированный скрипт
+      возможно изменить под
+      свои нужны, но для начала
+      необходимо указать путь
+      к iptables.
+
+    После изменения, как уже оговаривалось
+    для переменной NOCONFIGURED, необходимо
+    перед это переменной NOCONFIGURED поставить
+    знак '#' в файле setup.conf, для того чтобы
+    закомментировать переменную.
+    Далее запустить скрипт инсталляции.
+    Запуск скрипта:
+    bash# ./install
+
+    Вывод скрипта будет примерно следующим:
+    Installing binaries... OK
+    Installing documentation... OK
+    Installing scripts... OK
+    Installing skins... OK
+    Generating main configuration file... OK
+    Generating "rta" script... OK
+    Generating "kshell" script... OK
+    Generating "sta" script... OK
+    Updating "tuseradd" tool... OK
+
+    При возникновении какой-либо ошибки,
+    о ней будет сообщено подробно, и поэтому
+    всегда существует возможность исправления
+    возникшей ошибки.
+
+    На этом инсталляция пакета Traffic Accounting заканчивается.
+
+  2.2.2 <a name="p2_2_2"></a><font color="#109200"><b>Инсталляция TA-WEB</b></font>
+
+    Для начала необходимо разархивировать
+    полученный пакет TA-WEB.
+    Например:
+    bash# bunzip2 < ta-web-XXX.tar.bz2 |tar xvf -
+
+    Далее необходимо создать персонального
+    пользователя для WEB интерфейса:
+    bash# useradd ta
+
+    Далее отчистить его домашний каталог:
+    bash# rm -fR /home/ta/
+
+    Следующим шагом необходимо перекопировать
+    все что находится в разархивированном каталоге
+    в /home/ta/ .
+    Далее изменить название каталога /home/ta/public_html
+    на то название которое указано в настройках WWW сервера,
+    или оставить таким же, если изменение не требуется.
+    Права каталога /home/ta/ должны быть 755, целесообразнее
+    установить права самому чтобы не происходило расхождений:
+    bash# chmod 755 /home/ta
+
+    Будет удобнее если WWW сервер настроить на автоматическое
+    определение index.php, при заходе на страницу.
+    После выполненных операций при заходе на страницу
+    http://somehost.host/~ta/ WWW сервер не должен
+    выдавать какие-либо ошибки.
+    Версия PHP должна быть выше или равна 4.1.2 .
+
+    На этом инсталляция TA-WEB заканчивается.
+
+  3. <a name="p3"></a><font color="#109200"><b>Конфигурирование</b></font>
+
+    Данный раздел информирует о способах создания
+    конфигураций для TA Billing.
+
+
+  3.1 <a name="p3_1"></a><font color="#109200"><b>Стандартизация</b></font>
+
+    1. Для пакета Traffic Accounting
+       рекомендуемым каталогом
+       является /var/trafacct/ .
+
+    2. Для TA-WEB рекомендуемым каталогом
+       должна являться персонально созданная
+       домашняя директория.
+
+    3. Имена файлов пакета Traffic Accounting и
+       TA-WEB изменять не рекомендуется.
+
+    4. Используемый файл аунтефикации для модуля Server
+       располагается в каталоге инсталляции, в подкаталоге /etc/,
+       файл называется passwd.db . Этим файлом управляет и
+       утилита tuseradd.
+
+  3.2 <a name="p3_2"></a><font color="#109200"><b>Способы конфигурирования</b></font>
+
+    Данный раздел описывает способы конфигурирования
+    пакета Traffic Accounting и TA-WEB.
+
+
+  3.2.1 <a name="p3_2_1"></a><font color="#109200"><b>Конфигурирование Traffic Accounting</b></font>
+
+    Для создания конфигурации используются
+    два скрипта, mkdevconf и mkdevdir.
+    По умолчанию имя каждой конфигурации
+    начинается с символа "с" и далее
+    в зависимости от номера, например "c1",
+    после c1 ставится символ "/", и далее
+    ставится имя интерфейса, например "eth"
+    и в результате получается "c1/eth".
+    Имя "c1/eth" как раз надо будет вписывать
+    в переменную dev файла ta.conf, как имя конфигурации.
+    Такое именование сделано для отделения каждой конфигурации
+    при обращении к ней через WEB интерфейс.
+    Далее после того как имя конфигурации существует,
+    необходимо создать ее конфигурационный файл.
+    Файл будет соответственно располагаться в
+    каталоге инсталляции, в подкаталоге ./etc/c1/.
+    Имя файла, в данном примере, должно быть "eth-conf".
+    Для задания параметров конфигурации необходимо
+    отредактировать файл dev.conf, если такой файл
+    не найден то необходимо его создать командой:
+    bash# mkdevconf -gc
+
+    Далее в файле "dev.conf" будут присутствовать
+    следующие строки:
+
+      1. <font color="#a62828"><b>MAIN_TA_DIR</b></font>
+
+        Каталог инсталляции.
+	Например:
+	/var/trafacct/
+
+      2. <font color="#a62828"><b>TA_WEB_DIR</b></font>
+
+        Каталог данной конфигурации
+	для WEB интерфейса.
+	Например:
+	/home/ta/configuration1/
+
+      3. <font color="#a62828"><b>KILL_SHELL</b></font>
+
+        Имя программы для отключения пользователей.
+	Программа должна располагаться в каталоге
+	инсталляции в подкаталоге ./bin/ .
+	Например:
+	kshell
+
+      4. <font color="#a62828"><b>FREE_SHELL</b></font>
+
+        Имя программы для подключения пользователей.
+	Программа должна располагаться в каталоге
+	инсталляции в подкаталоге ./bin/ .
+	Например:
+	kshell
+
+      5. <font color="#a62828"><b>REAL_TIME</b></font>
+
+        Период обновления для online информации.
+	Указанный период не должен быть менее
+	5 секунд.
+	Например:
+	*/10|*|*|*|*|*|*
+
+        каждые 10 сек.
+
+      6. <font color="#a62828"><b>NETWORK</b></font>
+
+        Перечисление списков сетей для
+	создаваемой конфигурации.
+	Например:
+	a192.168.2.0/24,a192.168.5.0/24,a192.168.8.60-90
+
+      7. <font color="#a62828"><b>PROTOCOLS_LIST</b></font>
+
+        Перечисление протоколов по которым
+	будет вестись статистика трафика
+	в данной конфигурации.
+	Например:
+	1,6,17,90-110
+
+	перечислены ICMP,TCP,UDP,90-110
+
+      8. <font color="#a62828"><b>TCP_PORTS_LIST</b></font>
+
+        Перечисление TCP портов по которым
+	будет вестись статистика трафика
+	в данной конфигурации.
+	Например:
+	a20-21,a80,a3128
+
+      9. <font color="#a62828"><b>UDP_PORTS_LIST</b></font>
+
+        Перечисление UDP портов по которым
+	будет вестись статистика трафика
+	в данной конфигурации.
+	Например:
+	a5140,a53
+
+      10. <font color="#a62828"><b>DAILY_TIME</b></font>
+
+        Период ежедневных отчетов.
+	Например:
+	*|*|*|_|*|*|*
+
+	В данном примере каждый новый день,
+	т.е. ровно в 00:00:00 по времени.
+
+      11. <font color="#a62828"><b>ABONENT_PERIOD</b></font>
+
+        Период снятия абонентской платы.
+	Например:
+	*|*|*|*|_|*|*
+
+	В данном примере каждый новый месяц,
+	т.е. на каждое первое число.
+
+      12. <font color="#a62828"><b>SAVEDB_PERIOD</b></font>
+
+        Период сохранения базы данных.
+	Например:
+	*|*|_|*|*|*|*
+
+	В данном примере каждый час.
+
+      13. <font color="#a62828"><b>SAVEDB_DIR</b></font>
+
+        Имя каталога в котором будут
+	содержаться сохраненные базы.
+	Например:
+	%YR-%MO-%DD
+
+      14. <font color="#a62828"><b>SAVEDB_FILE</b></font>
+
+        Имя файла для сохранения базы.
+	Например:
+	%YR.%MO.%DD.%HH
+
+      15. <font color="#a62828"><b>ONLINE_LIFETIME</b></font>
+
+        Колличество времени, в минутах,
+	после прохождения которого
+	IP адрес считается offline
+	если от него небыло никакого
+	обращения.
+	Например:
+	5
+
+    Необходимо будет установить данные
+    строки в соответствии с требованиями
+    конфигурации. Далее запустить скрипт:
+    bash# mkdevconf c1/eth eth-conf
+
+    После отработки скрипта, появится файл
+    eth-conf, который будет настроен в соответствии
+    с общими требованиями конфигурации указанными
+    ранее в dev.conf. Этот файл должен находиться
+    в каталоге инсталляции в подкаталоге ./etc/c1/ .
+
+    Далее необходимо в каталоге инсталляции в подкаталогах
+    ./run/ и ./var создать каталоги с именем "c1".
+    Далее перейти в созданный каталог ./var/c1
+    и запустить в нем скрипт:
+    bash# mkdevdir eth
+
+    После отработки скрипта появится каталог "eth".
+
+    На этом создание одной конфигурации заканчивается,
+    естественно что необходимо еще править ta.conf
+    для того чтобы Traffic Accounting знал о существовании
+    созданной конфигурации, и если необходимо установить
+    настройки для приема пакетов от Netflow и/или от клиентов
+    к модулю Server.
+    Дополнительные примеры конфигураций в <a href="tab_Configuration.htm#p4" style="text-decoration:none;color:#000000;">п.4. "Примеры задач"</a>.
+
+  3.2.2 <a name="p3_2_2"></a><font color="#109200"><b>Конфигурирование TA-WEB</b></font>
+
+    Для того чтобы создать конфигурацию необходимо
+    присутствие скрипта mktawebconf .
+
+    Например необходимо создать конфигурацию в
+    TA-WEB которая должна находиться в каталоге
+    /home/ta/configuration1/ для этого переходим
+    в /home/ta, далее запускаем скрипт:
+    bash# mktawebconf configuration1
+
+    После отработки скрипта будет создан каталог
+    configuration1 с необходимыми подкаталогами.
+    После этого для доступа к созданной конфигурации
+    необходимо прописать ее присутствие в файле
+    /home/ta/setup/confs .
+    Одна запись для одной конфигурации состоит
+    из двух строк, например:
+    Главная:1:0
+    /var/trafacct/var/c1/:configuration1
+
+    Первая строка указывает имя, далее через
+    двоеточие идет ее номер(начинается с единицы
+    и далее, 2, 3, в зависимости от кол-ва конфигураций),
+    далее после двоеточия должно стоять 1 или 0, если 1 то
+    данная конфигурация будет выбрана при входе на WEB интерфейс
+    по умолчанию. Следующей строкой идут названия каталогов для
+    конфигурации, до двоеточия ("/var/trafacct/var/c1/") это каталог
+    с отчетами для этой конфигурации, после двоеточия("configuration1")
+    это название каталога конфигурации в WEB интерфейсе т.е. тот же
+    /home/ta/configuration1 .
+
+    На этом создание конфигурации для TA-WEB заканчивается.
+    Дополнительные примеры конфигураций в <a href="tab_Configuration.htm#p4" style="text-decoration:none;color:#000000;">п.4. "Примеры задач"</a>.
+
+  3.2.3 <a name="p3_2_3"></a><font color="#109200"><b>Принцип работы конфигураций</b></font>
+
+    Конфигурация созданная для Traffic Accounting
+    пользуется данными от конфигурации созданной
+    для TA-WEB. Так же конфигурация созданная
+    в TA-WEB пользуется отчетами, и иными данными,
+    конфигурации созданной для Traffic Accounting.
+    Поэтому конфигурация для TA-WEB должна знать
+    место нахождение конфигурации для Traffic Accounting.
+    И обратно, конфигурация для Traffic Accounting
+    должна знать где находится требуемая ей конфигурация
+    для TA-WEB.
+
+  4. <a name="p4"></a><font color="#109200"><b>Примеры задач</b></font>
+
+    В данном пункте приводится несколько задач
+    и способы их последующего решения с помощью
+    пакета TA Billing.
+
+    <font color="#a62828" size="+2"><b>1.</b></font> Существует локальная сеть с выходом
+       в интернет. Задача - организовать
+       подсчет глобального трафика
+       пользователей.
+       Параметры:
+       eth0 - локальная сеть
+       eth1 - интерфейс выхода в интернет
+       192.168.1.0/24 - локальная сеть
+       МАСКАРАДИНГ
+
+       Решение:
+
+       1. создание конфигурации c1/eth
+          настроенной на сеть 192.168.1.0/24
+
+       2. в файл настройки конфигурации
+          занести строку:
+	  alo_dev(eth1)
+
+       3. создание конфигурации для TA-WEB
+          настроенной на конфигурацию c1/eth
+
+
+    <font color="#a62828" size="+2"><b>2.</b></font> Существует локальная сеть с выходом
+       в интернет. Задача - организовать
+       подсчет глобального трафика
+       пользователей в одной конфигурации
+       и подсчет локального трафика в
+       другой конфигурации. И сделать
+       так чтобы пользователи могли
+       отдельно просматривать как свой
+       локальный трафик так и глобальный.
+       Параметры:
+       eth0 - локальная сеть
+       eth1 - интерфейс выхода в интернет
+       192.168.1.0/24 - локальная сеть
+       МАСКАРАДИНГ
+
+       Решение:
+
+       1. создание конфигурации c1/eth
+          настроенной на сеть 192.168.1.0/24
+
+       2. в файл конфигурации c1/eth
+          занести строку:
+	  alo_dev(eth1)
+
+       3. создание конфигурации c2/eth
+          настроенной на сеть 192.168.1.0/24
+
+       4. в файл конфигурации c2/eth
+          занести строку:
+	  alo_dev(eth0)
+
+       5. создать конфигурацию для TA-WEB
+          настроенной на конфигурацию c1/eth
+	  для просмотра глобального трафика.
+
+       6. создать конфигурацию для TA-WEB
+          настроенной на конфигурацию c2/eth
+	  для просмотра локального трафика.
+
+
+    <font color="#a62828" size="+2"><b>3.</b></font> Существует VPN сервер с выходом
+       в глобальный интернет. Задача -
+       организовать подсчет трафика
+       VPN пользователей.
+       Параметры:
+       eth1 - интерфейс выхода в интернет
+       192.168.4.0/24 - VPN сеть
+
+       Решение:
+
+       1. создание конфигурации c1/eth
+          настроенной на сеть 192.168.4.0/24
+
+       2. занести в файл конфигурации c1/eth
+          строку:
+	  alo_dev(eth1)
+
+       3. создать конфигурацию для TA-WEB
+          настроенной на конфигурацию c1/eth.
+
+
+    <font color="#a62828" size="+2"><b>4.</b></font> Существует два сервера на каждом из которых
+       присутствует локальная сеть, так же у этих
+       сетей общий шлюз в интернет, и есть CISCO
+       который предоставляет Netflow поток.
+       Задача - разделить две локальные сети по
+       разным конфигурациям, и обобщить трафик
+       от Netflow и на шлюзе в отдельную третью
+       конфигурацию. Таким образом должны получиться
+       три конфигурации в двух из них должен просматриваться
+       локальный трафик пользователей а в третьей их
+       глобальный трафик. Все операции выполняются
+       на машине с первой локальной сетью.
+       Параметры:
+       eth1 - интерфейс первой локальной сети
+       eth1 - интерфейс второй локальной сети
+       eth2 - интерфейс выхода в интернет, на шлюзе
+       192.168.1.0/24 - первая локальная сеть
+       192.168.2.0/24 - вторая локальная сеть
+       62.11.90.0/24 - сеть Netflow
+
+       Решение:
+
+       1. создание конфигурации c1/eth
+          настроенной на сеть 192.168.1.0/24 .
+
+       2. занести в файл конфигурации c1/eth
+          строку:
+	  alo_dev(eth1)
+
+       3. создание конфигурации c2/eth
+          настроенной на сеть 192.168.2.0/24
+	  при этом настроить модуль Server
+	  для приема пакетов на порту 3000 .
+
+       4. запустить во второй локальной сети
+          клиента tsclient направленного на
+	  модуль Server и порт 3000, первой
+	  локальной сети.
+
+       5. занести в файл конфигурации c2/eth
+          строку:
+	  alo_dev(eth1)
+
+       6. создание конфигурации c3/eth
+          настроенной на сеть 192.168.2.0/24 и
+	  сеть 62.11.90.0/24 при этом настроить
+	  модуль Server для приема пакетов на
+	  порту 3001 и модуль netflow для приема
+	  пакетов на порту 3002.
+
+       7. занести в файл конфигурации c3/eth
+          строку:
+	  alo_dev_prefix(eth2, netflow)
+
+       8. запустить на шлюзе клиента tsclient
+          направленного на модуль Server и
+	  порт 3001, первой локальной сети.
+
+       9. направить поток netflow в первую локальную
+          сеть на порт 3002.
+
+       10. создать конфигурацию для TA-WEB
+           настроенной на конфигурацию c1/eth
+
+       11. создать конфигурацию для TA-WEB
+           настроенной на конфигурацию c2/eth
+
+       12. создать конфигурацию для TA-WEB
+           настроенной на конфигурацию c3/eth
+
+
+    <font color="#a62828" size="+2"><b>5.</b></font> Существует локальная сеть у которой
+       есть выход в интернет, так же эта
+       локальная сеть общается с другой
+       локальной сетью. Т.е. имеются две
+       локальные сети которые общаются друг
+       с другом и один выход в интернет.
+       Задача - подсчитывать интернет трафик
+       и локальный трафик как общий. При этом
+       у  интернет трафика свой тариф, а
+       тариф первой локальной сети немногим
+       дешевле чем если общаться со второй
+       локальной сетью. Т.е. необходимы три тарифа:
+       первый для интернет трафика, второй
+       для первой локальной сети, а третий
+       тариф для второй локальной сети(т.е.
+       те пользователи которые общаются
+       со второй локальной сетью тоже отдельно
+       тарифицируются но по иному тарифу).
+       При этом должна существовать только
+       одна конфигурация, конфигурация для
+       пользователей первой локальной сети,
+       так как только их трафик интересуем
+       в данном примере.
+       Параметры:
+       eth0 - первая локальная сеть
+       eth1 - вторая локальная сеть
+       eth2 - глобальная сеть интернет
+       192.168.1.0/24 - адрес первой сети
+       62.100.100.0/24 - адрес второй сети
+
+       Решение:
+
+       1. Создание конфигурации c1/eth,
+          настроенной на сети 192.168.1.0/24,
+	  и 62.100.100.0/24.
+
+       2. Занести в файл конфигурации c1/eth
+          строку:
+	  alo_ip_in_dev=(eth0)+(b192.168.1.0/24)
+	  alo_ip_in_dev=(eth1)+(a62.100.100.0/24)
+
+       3. Создание конфигурации для TA-WEB
+          настроенной на конфигурацию c1/eth
+
+       4. Создать тарифные планы для глобального
+          трафика, для трафика первой сети и
+	  для трафика второй сети.
+
+       5. Создать первый список сетей, занести
+          в список сеть b192.168.1.0/24, обязательно
+	  с префиксом "b". Назначить тарифный план
+	  созданный для первой локальной сети, этому
+	  списку.
+
+       6. Создать второй список сетей, занести
+          в список сеть a62.100.100.0/24.
+	  Назначить тарифный план созданный для
+	  второй локальной сети, этому списку.
+
+
+       После приведенных операций, в данном примере,
+       в отчетах по трафику, и в информировании о трафике
+       будет представлен общий трафик, а цена на него
+       будет подсчитана из трех составляющих его тарифов.
+       При этом если пользователи первой сети будут
+       общаться с пользователями второй, то такой
+       локальный трафик будет им дороже, чем если они же
+       будут общаться только с пользователями своей, первой,
+       сети. И отдельно от локального будет считаться трафик
+       Интернет по созданному для него тарифу.
+
+
+    <font color="#a62828" size="+2"><b>6.</b></font> Существует локальная сеть с выходом в интернет.
+       Задача - считать локальный и глобальный трафик
+       по разным тарифам, при этом не разделяя глобальный
+       и локальный трафик, т.е. в отчете для пользователя
+       должна быть информация по всему трафику пользователя,
+       а не в отдельности локальный или глобальный. Необходимо
+       создать дополнительные конфигурации "Локальная",
+       "Интернет", соответственно в которых пользователь уже
+       имеет возможность просматривать трафик в отдельности,
+       т.е. информировать себя о количестве глобального трафика
+       в конфигурации "Интернет" и о количестве локального
+       трафика в конфигурации "Локальная" и о их отдельной стоимости.
+       Параметры:
+       eth0 - локальная сеть
+       eth1 - выход в интернет
+       192.168.1.0/24 - адрес локальной сети
+       МАСКАРАДИНГ
+
+       Решение:
+
+       1. Создание конфигурации c1/eth,
+          настроенной на сеть 192.168.1.0/24
+
+       2. Занести в файл конфигурации c1/eth
+	  строку:
+	  alo_ip_in_dev=(eth0)+(b192.168.1.0/24)
+
+       3. Создание конфигурации для TA-WEB настроенной
+	  на конфигурацию c1/eth, с именем "Главная".
+
+       4. Создать два тарифа в конфигурации "Главная".
+	  Первый тариф для глобальной сети, второй тариф
+	  для локальной сети.
+
+       5. Создать в конфигурации "Главная" список сетей,
+	  занести в список сеть с адресом b192.168.1.0/24.
+	  Настроить данный список на второй тариф конфигурации
+	  "Главная", существующий для локальной сети.
+
+       6. Создание конфигурации c2/eth,
+	  настроенной на сеть 192.168.1.0/24.
+
+       7. Занести в файл конфигурации c2/eth
+	  строки:
+	  alo_dev(eth0)
+	  alo_ip_global=(b192.168.1.0/24)
+
+       8. Создание конфигурации для TA-WEB,
+	  настроенной на конфигурацию c2/eth,
+	  с именем "Локальная".
+
+       9. Создание в конфигурации "Локальная"
+          тарифа используемого для локальной сети,
+	  это необходимо для того чтобы информировать
+	  об отдельной стоимости локального трафика.
+	  Так как в конфигурации "Главная" счет будет
+	  общим для глобального и локального трафика.
+
+       10. Отключить в конфигурации c2/eth
+	   использование абонентской платы,
+	   и автоматического отключения пользователей,
+	   так как конфигурация используется только
+	   для информирования.
+
+       11. Создание конфигурации c3/eth.
+
+       12. Занести в файл конфигурации c3/eth
+	   строку:
+	   alo_dev(eth1)
+
+       13. Создание конфигурации для TA-WEB,
+	   настроенной на конфигурацию c3/eth,
+	   с именем "Интернет".
+
+       14. Создание в конфигурации "Интернет",
+           тарифа используемого для интернет трафика,
+	   это необходимо для того чтобы информировать
+	   об отдельной стоимости интернет трафика.
+	   Так как в конфигурации "Главная" счет будет
+	   общим для глобального и локального трафика.
+
+       15. Отключить в конфигурации c3/eth
+	   использование абонентской платы,
+	   и автоматического отключения пользователей,
+	   так как конфигурация используется только
+	   для информирования.
+
+
+    Данные примеры это лишь малая часть задач которые
+    может решить пакет TA Billing.
+
+
+<center><b><small>Copyright (C) 2002, 2003 Yashin Sergey <a href="../../cdn-cgi/l/email-protection.html#8ffbeee3e6e1faf7cfffe6fceae2a1e1eafb" style="text-decoration:none;color:#000000;">&lt;<span class="__cf_email__" data-cfemail="7c081d10151209043c0c150f191152121908">[email&#160;protected]</span>&gt;</a></small></b></center>
+</pre>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

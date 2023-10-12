@@ -1,0 +1,490 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>OpenNET: статья - Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--htdig_noindex-->
+<LINK REL="stylesheet" href="https://www.linuxlib.ru/opennet.css" type="text/css">
+<FORM method="get" action="http://www.opennet.ru/search.shtml">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+
+<TD COLSPAN=5>
+
+
+</FORM>
+<BR>
+<!--/htdig_noindex-->
+
+<H3><FONT COLOR="#000090">
+Соединение 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)
+</FONT></H3></CENTER>
+<BR>
+
+<PRE>
+
+<FONT COLOR="#0000C0">Голованов Сергей;<A HREF="../cdn-cgi/l/email-protection.html#50312a3723103d31393c7e2225"><span class="__cf_email__" data-cfemail="4b2a312c380b262a222765393e">[email&#160;protected]</span></A>&gt;</FONT>
+<FONT COLOR="#0000C0">Date: Mon, 14 Jul 2004 13:01:37 +0000 (UTC)</FONT>
+
+Когда понадобилось соединить 2 локалки без пересборки ядра, я перечитал
+много документации. Статья на opennet.ru "Создание VPN GRE тунеля в
+Linux" подвигла меня на подобное творение, но про ppp over ssh, т. е.
+vpn , но с шифрованием.
+
+Просмотрев много статей по созданию тунелей я к своему удивлению не
+нашел ничего о том как быстро и без проблем создать шифрованный тунель
+между двумя машинами (сетями) через интернет. И вот решил написать.
+
+Буду предельно краток...
+И так, ДАНО:
+
+1. Сеть 192.168.1.0/24 (255.255.255.0) В которой есть машина подключенная
+к интернет. Со стороны локальной сети машина имеет IP: 192.168.1.1 (на eth1)
+а со стороны инета имеет IP: 100.200.300.400 (на eth0) Назовем эту машину ALPHA.
+
+2. Сеть 192.168.2.0/24 (255.255.255.0) В которой есть машина подключенная
+к интернет. Со стороны локальной сети машина имеет IP: 192.168.2.1 (на eth1)
+а со стороны инета имеет IP: 400.300.200.100 (на eth0) Назовем эту машину BETTA.
+
+Цель: Надо организовать шифрованный тунель между машинами ALPHA и BETTA,
+чтобы компьютеры  одной сети имели доступ к компьютерам в другой сети.
+Считаем, что ssh и pppd уже установлен в обоих системах.
+
+На машине ALPHA делаем:
+1. Заводим пользователя vpn-user: adduser vpn-user.
+Заходим ручками в etc/passwd и приводим строку про этого пользователя к виду:
+
+vpn-user:*:520:520::/home/vpn:/usr/sbin/pppd
+
+2. Настраиваем pppd: в /etc/ppp/options пишем:
+
+ipcp-accept-local
+ipcp-accept-remote
+proxyarp
+noauth
+
+3. Добавляем в etc/crontab строчку:
+ * * * * * root /sbin/route add -net 192.168.2.0 gw 192.168.2.19 netmask 255.255.255.0 2&gt;/dev/null
+
+4. Настраиваем ssh:
+
+В /etc/ssh/sshd_config кроме прочих опций надо чтоб было:
+PubkeyAuthentication yes
+Остальное - по вкусу.
+
+На машине BETTA делаем:
+
+1. Настраиваем /etc/ppp/options:
+
+lock
+noauth
+
+2. Делаем su -
+
+И: ssh 100.200.300.400 (для появления файла known_hosts)
+ssh-keygen -t rsa -f /etc/ssh/vpn-identity
+После этого берем /etc/ssh/vpn-identity.pub и копируем его на машину ALPHA
+в каталог /home/vpn/.ssh в файл с именем authorized_keys.
+
+3. Качаем программку pry-redir:
+
+<!--<a href="http://uncensored.citadel.org/pub/unix/pty-redir-0.1.tar.gz" target=_blank>-->http://uncensored.citadel.org/pub/unix/pty-redir-0.1.tar.gz<!--</a>-->
+Распаковываем, делаем make, складываем то, что получилось в /usr/sbin
+
+4. Пишем например такое:
+
+/etc/init.d/vpnd:
+#!/bin/sh
+#
+# vpnd:       Starts the ppp over ssh tunnel
+#
+# Version:      @(#) /etc/init.d/vpnd 1.0
+#
+#########
+
+# Source function library.
+. /etc/init.d/functions
+
+prog=VPND
+
+USERNAME=vpn-user
+IDENTITY=/etc/ssh/identify.vpn
+CRYPTO=blowfish
+
+LOCK_DIR=/var/run
+
+VPN_EXTERNAL=100.200.300.400
+VPN_INTERNAL=192.168.1.19
+
+#PPP_OPTIONS=" mtu 1200 mru 1200"
+
+PTY_REDIR=/usr/sbin/pty-redir
+PPPD=/usr/sbin/pppd
+ROUTE=/sbin/route
+SSH=/usr/bin/ssh
+
+start() &#123;
+  echo -n $"Starting $prog: "
+
+  $PTY_REDIR $SSH -t -e none -o 'Batchmode yes' -c $CRYPTO -i $IDENTITY -l $USERNAME $VPN_EXTERNAL &gt; /tmp/vpn-device
+  sleep 10
+
+  $PPPD `cat /tmp/vpn-device` 192.168.2.19:$VPN_INTERNAL # $PPP_OPTIONS
+  ret=$?
+
+  sleep 10
+  $ROUTE add -net 192.168.1.0 gw $VPN_INTERNAL netmask 255.255.255.0
+
+
+  &#091; $ret -eq 0 &#093; &amp;&amp; echo_success; touch $LOCK_DIR/vpnd.pid
+  echo
+  return $ret
+&#125;
+
+stop() &#123;
+
+   echo -n $"Shutting down $prog: "
+
+   killall pppd
+
+   ret=$?
+   &#091; $ret -eq 0 &#093; &amp;&amp; rm -f $LOCK_DIR/vpnd.pid
+   echo
+   return $ret
+&#125;
+
+restart() &#123;
+   echo $"Restarting $prog:"
+   stop
+   start
+&#125;
+
+rhstatus() &#123;
+   echo $"Status of $prog:"
+   status pppd
+&#125;
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+    restart
+    ;;
+  status)
+    rhstatus
+    ;;
+  *)
+    echo $"*** Usage: $prog &#123;start|stop|status|restart&#125;"
+    exit 1
+esac
+
+exit $?
+
+Вроде все. Для rh делаем service vpnd start.
+Должно работать.
+
+</PRE><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1 BGCOLOR="#B0B190" WIDTH="100%">
+<TR><TD>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 BGCOLOR="#E9EAD6" ALIGN=CENTER WIDTH="100%">
+<TR BGCOLOR="#000000"><TD COLSPAN=7><IMG SRC="https://www.linuxlib.ru/p.gif" HEIGHT=1 WIDTH=1 ALT=""></TD></TR>
+<TR ALIGN=CENTER>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=prev">&lt;&lt; Предыдущая</A></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=index">ИНДЕКС</A></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/search.shtml">Поиск в статьях</A></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=raw">src</A>,<a href="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=pdb">palm</a></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=setbookmark">Установить закладку</A></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=getbookmark">Перейти на закладку</A></TD>
+<TD><small><A HREF="https://www.linuxlib.ru/cgi-bin/opennet/jump.cgi?name=ppp_over_ssh.txt&amp;ref=next">Следующая &gt;&gt;</A></TD>
+</TR><TR BGCOLOR="#000000"><TD COLSPAN=7><IMG SRC="https://www.linuxlib.ru/p.gif" HEIGHT=1 WIDTH=1 ALT=""></TD></TR>
+</TR></TABLE></TD></TR></TABLE>
+<br><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1 BGCOLOR="#B0B190" WIDTH="100%">
+<TR><TD>
+<TABLE  BORDER=0 CELLSPACING=0 CELLPADDING=5 BGCOLOR="#E9EAD6" WIDTH="100%">
+<tr BGCOLOR="#C7CBB1"><td><font color="#000090"><b>Обсуждение</b></font></td></tr>
+<tr bgcolor="E9EAD6"><td>
+
+
+<table width="100%" BORDER=0 CELLSPACING=0 CELLPADDING=0><tr><td width="3%">&nbsp;</td><td width="97%">
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#1">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small>neshura</small><font color="#707070">, <font size="-2">21:24:10, 07/14/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=1">ответить</a>]
+<br><small>А если канал скажем на 10 мин упадет<BR>Коннект порвется<BR>Для поднятия канала нужно restart делать?<BR></small></td></tr></table><br>
+
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#2">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small><a href="../cdn-cgi/l/email-protection.html#2c4d564b5f6c414d4540025e59">Голованов Сергей</a></small><font color="#707070">, <font size="-2">06:20:54, 07/15/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=2">ответить</a>]
+<br><small>Да, нужно делать restart. Я как раз сейчас делаю скриптик, к-й будет следить за каналом и делать рестарт или поднимать обычный ppp-линк - резервный канал. Как сделаю - могу рассказать :0)<BR></small></td></tr></table><br>
+
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#3">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small><a href="../cdn-cgi/l/email-protection.html#e4819297818192a491879290ca9691">Илья Евсеев</a></small><font color="#707070">, <font size="-2">06:25:39, 07/15/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=3">ответить</a>]
+<br><small>Довольно странно замечание в тексте про отсутствие источников информации, так как на сайте Linux Domumentation Project есть два документа: &quot;VPN PPP-SSH Mini-HOWTO&quot; и &quot;VPN HOWTO&quot;. Оба найдены простым поиском &quot;ppp ssh&quot;.<BR></small></td></tr></table><br>
+
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#4">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small>nece</small><font color="#707070">, <font size="-2">14:26:02, 07/16/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=4">ответить</a>]
+<br><small>&gt; # Да, нужно делать restart. Я как раз сейчас делаю &gt;скриптик, к-й будет следить за каналом и делать &gt;рестарт или поднимать обычный ppp-линк - резервный &gt;канал. Как сделаю - могу рассказать :0)<BR><BR>Ага интересно, хорошо бы в подробностях :-)<BR></small></td></tr></table><br>
+
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#5">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small><a href="../cdn-cgi/l/email-protection.html#14676275645475777c76757a7f3a777b79">Mongos</a></small><font color="#707070">, <font size="-2">16:58:15, 07/16/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=5">ответить</a>]
+<br><small>vtun.sf.net&nbsp;&nbsp;самый простой способ.&nbsp;&nbsp;:)<BR></small></td></tr></table><br>
+
+
+<table bgcolor="#D9DAC6" width="100%" BORDER=0 CELLSPACING=2 CELLPADDING=2><tr><td><li><b><a href="https://www.linuxlib.ru/openforum/vsluhforumID3/2258.html#6">Соединения 2 локальных сетей с помощью ppp over ssh (ssh ppp network vpn)</b></a>, <small><a href="../cdn-cgi/l/email-protection.html#e0819a8793a08d81898cce9295">Голованов Сергей</a></small><font color="#707070">, <font size="-2">16:20:29, 07/17/2003</font></font> [<a href="https://www.linuxlib.ru/cgi-bin/openforum/vsluhboard.cgi?az=post&amp;om=2258&amp;forum=vsluhforumID3&amp;omm=6">ответить</a>]
+<br><small>Mongos - риспект и спасибо. ёмаё. :0)) Сколько гемора можно было избежать :0)<BR></small></td></tr></table><br>
+
+</td></tr></table>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

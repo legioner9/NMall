@@ -1,0 +1,515 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Windows-style File and Print Services with Samba — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://psychange.ru/" target="_blank">психолог Павлова Мария</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV CLASS="NAVHEADER">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TH COLSPAN="3" ALIGN="center">Linux Administration Made Easy</TH></TR>
+<TR><TD WIDTH="10%" ALIGN="left" VALIGN="bottom"><A HREF="x1082.htm">Назад</A>
+</TD>
+<TD WIDTH="80%" ALIGN="center" VALIGN="bottom">Глава 7. Тонкая настройка
+системы</TD>
+<TD WIDTH="10%" ALIGN="right" VALIGN="bottom"><A HREF="x1206.htm">Вперед</A>
+</TD></TR></TABLE><HR ALIGN="LEFT" WIDTH="100%"></DIV>
+
+<DIV CLASS="SECT1"><H1 CLASS="SECT1"><A NAME="SAMBA-FILE-AND-PRINT">
+Файловый сервис и печать через Samba</A></H1>
+
+<P>Linux может предоставлять сервисы SMB (то есть, сетевое разделение файлов
+и принтеров в WfW, Win95 и NT), используя пакет Samba. Здесь рассказывается
+как настроить разделение и обеспечить доступ с клиентских машин.</P>
+
+<P>Пакет Samba включен в Red Hat, Вы можете установлен ли он, и какую версию
+Вы имеете:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>rpm -q samba</B></TT>
+</PRE></TD></TR></TABLE>
+<P>Если не установлен, поставьте, используя утилиту RPM (см. подробности
+<A HREF="c1795.htm#USING-RPM">в разделе <I>Использование Red Hat Package
+Manager (RPM)</I> главы 10</A>).</P>
+
+<P>Наиболее важные файлы Samba:</P>
+<P></P><DL><DT>/etc/smb.conf</DT>
+<DD><P>Файл настроек Samba. Здесь заданы разделяемые ресурсы и прочие
+параметры (см. ниже)</P></DD>
+
+<DT>/var/log/samba/</DT>
+<DD><P>Расположение файла протокола для Samba</P></DD>
+
+<DT>/home/samba/</DT>
+<DD><P>Здесьрасположены совместно используемые файлы. Однако, Вы можете
+сменить расположение. Лично я монтирую раздел на /archive/ и располагаю файлы
+там.</P></DD></DL>
+
+<P>Файл ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/smb.conf</TT></TT>''
+хранит настройки разделяемых ресурсов. Первые строки содержат глобальные
+директивы настройки, общие для всех ресурсов (если они не отменены для
+конкретного ресурса), затем идет настройка каждого ресурса.</P>
+
+<P>В пакет Samba входит файл smb.conf со значениями по умолчанию, который
+часто вполне пригоден, и нуждается лишь в небольших поправках.</P>
+
+<P>В приводимом ниже примере я попробую показать Вам некоторые из наиболее
+важных и интересных параметров:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="PROGRAMLISTING">
+# Items common to all shares (unless over-ridden on a per-share basis)
+[global]
+   # Number of minutes of inactivity before client is disconnected
+   # to avoid consuming resources.  Most clients will automatically
+   # reconnect so this is a good idea to enable.
+   dead time = 10
+
+   # Don't let users connect as &#8220;root&#8221;, just-in-case.  :-)
+   invalid users = root
+
+   # Specify the account for guest shares (shares that don't require
+   # a password to connect to.  This username must be a valid user
+   # in the /etc/passwd file.
+   guest account = guest
+
+   # Specify where log files should be written to.  The &#8220;%m&#8221; suffix
+   # means that log files will be created in the format
+   # log.machine-name (eg. &#8220;log.twixel&#8221;)
+   log file = /usr/local/samba/logs/log.%m
+
+   # Maximum size of log file, in Kilobytes.
+   max log size = 1000
+
+   # Password level 3 means that case is not an issue when entering
+   # passwords.  A little less secure than level 1 or 2 would be,
+   # but seems to be a fair compromise for user convenience.
+   password level = 3
+
+   # Specify that all shares should appear in the browse list
+   # (override any you don't want on a per-share basis).
+   browseable = yes
+
+   # If this is enabled, you can see active connections using the
+   # &#8220;smbstatus&#8221; command.
+   status = yes
+
+   # The level of debugging information that is recorded in the log
+   # files.  Higher values generate more information (which is
+   # probably not very useful, most of the time).
+   debug level = 2
+
+   # This will send any Windows-style &#8220;POPUP&#8221; messages received on
+   # the server to the postmaster by e-mail.  Not very useful, but
+   # an interesting demonstration of what can be accomplished.
+   message command = /bin/mail -s 'Message from %f on %m' postmaster &#60; %s; rm %s &amp;
+
+   # This is a form of caching that, when enabled, may improve
+   # performance when reading files.
+   read prediction = true
+
+   # A list of services that should be added automatically to the
+   # browse-list.
+   auto services = cdrom
+
+   # The location of your &#8220;printcap&#8221; file, a text file containing
+   # definitions for your printers.
+   printcap name = /etc/printcap
+
+   # If enabled all printers in the /etc/printcap file will be
+   # loaded into the browse-list.
+   load printers = yes
+
+   # The print command by which data is spooled to a printer under Linux.
+   print command = lpr -r -P%p %s
+
+   # The print command by which job queue information (printer status)
+   # can be obtained.
+   lpq command = lpq -P%p
+
+   # The print command by which unwanted print jobs can be deleted
+   # from the queue.
+   lprm command = lprm -P%p %j
+
+   # The level at which Samba advertises itself for browse elections.
+   # Currently set to a high value to give it an even &#8220;foot-hold&#8221; with
+   # any swarmy NT servers on the network.  :-)
+   os level = 34
+
+# These are user's personal shares.  If the client's username matches on the
+# server, they can access their home directory (provided they enter the
+# correct password).
+[homes]
+   # The comments appear in the browse list.
+   comment = Home Directories
+
+   # This matches the username of the client to that of the share.
+   # If they do not match, no share will be displayed in the browse
+   # list, or available to connect to.
+   user = %S
+
+   # The path to the share.  For example, &#8220;smithj&#8221; would map to
+   # &#8220;/home/smithj&#8221;
+   path = /home/%S
+
+   # If enabled, allow read/write access to the shares.
+   writeable = yes
+
+   # Just an inverted synonym for &#8220;writeable&#8221;. We don't *really* need
+   # to use both. :-)
+   readonly = no
+
+   # Keep this disabled so that a password is required to access these
+   # shares.
+   public = no
+
+   # We don't want this share (after all, it is private) to appear in
+   # the browse-list of other users.
+   browseable = no
+
+# This is a publicly available print share, called &#8220;hp_laser&#8221;. It appears
+# on the browse lists and can be accessed without a password by any client.
+[hp_laser]
+   # The comment that appears in the browse-list.
+   comment = Main office printer (HP Laserjet 400)
+
+   # The username that this share is accessed as (guest means all users).
+   user = guest
+
+   # All generated print files will first be created in the /tmp
+   # directory.
+   path = /tmp
+
+   # Do not allow file creation except through print spooling.
+   writeable = no
+
+   # Set permissions accordingly -- root access to print jobs only.
+   create mode = 0700
+
+   # If this is enabled a password is not required to access the share.
+   public = yes
+
+   # This should be enabled to indicate that this is a printer share.
+   printable = yes
+
+# Here is a service providing access to the CD-ROM device.
+[cdrom]
+   comment = Shared CD-ROM drive on Linux
+   user = guest
+   path = /cdrom
+   writeable = no
+   read only = true
+   browseable = yes
+   public = yes
+   guest ok = yes
+</PRE></TD></TR></TABLE>
+
+<DIV CLASS="TIP"><P></P>
+<TABLE CLASS="TIP" WIDTH="100%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP">
+<IMG SRC="../images/tip.gif" HSPACE="5" ALT="Tip"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Совет: Недавние версии Samba, начиная с 2.0, имеют утилиту настройки через
+web ``<I CLASS="EMPHASIS">swat</I>'', которая делает процесс намного больше
+дружественным. Утилита слушает TCP порт <I CLASS="EMPHASIS">901</I> Вашего
+сервера, так что, чтобы все настроить укажите в браузере адрес сервера и
+порт 901:</P></TD></TR></TABLE></DIV>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN">
+mydomain.name:901
+</PRE></TD></TR></TABLE>
+
+<P>(Конечно, чтобы использовать SWAT нужен запущенный web-сервер, например
+Apache. См. детали
+<A HREF="c921.htm#WEB-SERVER-ADMINISTRATION">в разделе <I>Администрирование
+Web-сервера и HTTP Proxy</I></A>.)</P>
+
+<P>Последние версии Samba также приобрели много дополнительных возможностей
+по сравнению с версиями ниже 2.0. Стоит обновить пакет.</P>
+
+<P>Клиент должен иметь стек TCP/IP для соединения с разделяемыми ресурсами.
+Далее, для просмотра, TCP/IP должен быть привязан к NETBEUI. Под Windows 95
+это может быть конфигурировано из раздела &#8220;Network&#8221; в Control
+Panel.</P>
+
+<P>После настройки клиента, ресурсы сервера должны появиться в
+&#8220;Network Neighborhood&#8221; (или аналогичной системе просмотра, если
+используется не Windows 95/NT). Замечание переводчика: клиенты SMB доступны
+также под DOS, OS/2, Linux, Solaris и FreeBSD. Вы можете подсоединять
+сетевые диски из network neighborhood, или указывать полный путь к ресурсам
+(<I CLASS="EMPHASIS">то есть, &#8220;\\mail\cdrom&#8221;</I>). Если нужен
+пароль для доступа к ресурсу, он будет запрошен.</P>
+
+<P>Дополнительная информация о Samba есть на Samba Home Page по адресу:
+<!--<A HREF="http://samba.anu.edu.au/samba" TARGET="_top">-->
+http://samba.anu.edu.au/samba<!--</A>-->. Замечание переводчика: в рамках проекта
+Russian LDP планируется перевод документации на Samba.</P></DIV>
+
+<DIV CLASS="NAVFOOTER"><HR ALIGN="LEFT" WIDTH="100%">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top"><A HREF="x1082.htm">Назад</A>
+</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="book1.htm">Оглавление</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top"><A HREF="x1206.htm">Вперед</A></TD>
+</TR>
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top">Internet User Authentication
+with TACACS</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="c921.htm">Локальное оглавление</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top">Macintosh-style File and Print
+Services with Netatalk</TD></TR></TABLE></DIV>
+
+  </div>
+</div>
+</body>
+</html>

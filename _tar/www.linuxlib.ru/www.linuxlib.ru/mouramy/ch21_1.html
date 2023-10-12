@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 21 Серверное программное обеспечение (Файловый сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch20_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#21">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 21 Серверное программное обеспечение (Файловый сервис) -
+      Samba</H2><FONT size=+2>В этой главе</FONT><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#1">-->Linux Samba
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#3">-->Создание файла
+      с шифрованными паролями для пользователей<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#4">-->Организация
+      защиты Samba<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#5">-->Оптимизация
+      Samba<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#6">-->Административные
+      средства Samba<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_1.html#7">-->Утилиты
+      пользователя Samba<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#8">-->Linux FTP
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#9">-->Настройка
+      бюджета пользователя FTP без shell-а<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#10">-->Настройка
+      окружения пользователя под chroot<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#11">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#12">-->Настройка
+      ftpd для использования с TCP-Wrappers inetd супер сервером<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#13">-->Административные
+      средства FTP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html#14">-->Организация
+      защиты FTP<!--</A>--><BR><FONT size=+1></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=150
+      src="ch21_1.files/51.jpg" width=200></TD></TR></TBODY></TABLE>
+<H3><A name=1>Linux Samba сервер</A></H3><B>Краткий обзор</B>
+<P align=justify>Крупные организации часто используют много разных операционных
+систем, и им нужно объединять их в сеть для совместного использования файлов и
+принтеров. Работники могут работать на рабочих станциях Linux, Microsoft Windows
+95/98/NT, OS/2 или Novel и им необходим доступ к серверам для повседневной
+работы. Linux сервер с поддержкой Samba может быть использован для этих
+целей.</P>
+<P align=justify>Samba это надежный сетевой сервис для организации совместного
+использования файлов и принтеров, который работает на большинстве операционных
+систем доступных сегодня. Когда он хорошо настроен администратором, это более
+быстрый и безопасный файловый сервис, чем "родная" реализация на машинах
+Microsoft Windows.</P>
+<P align=justify>Как описано в файле README для Samba:</P>
+<P align=justify>Samba - это протокол, при помощи которого на большинстве
+PC-машинах совместно используются файлы, принтеры и другая информация, такая как
+списки доступных файлов и принтеров. Встроенную поддержку этого протокола имеют
+Windows 95/98/NT, OS/2 и Linux, а с помощью дополнительного пакета DOS, Windows,
+VMS, Unix всех других видов, MVS и многие другие. Apple Macs и некоторые Веб
+Броузеры также понимают его. Альтернативу SMB составляют Netware, NFS,
+AppleTalk, Banyan Vines, Decnet и др.; многие из них имеют большие возможности,
+но ни один не имеет общедоступной спецификации и широкой реализации на
+настольных машинах. Программное обеспечение Samba включает SMB сервер,
+предоставляющий файловый и принтерный сервис в стиле Windows NT и LAN Manager
+SMB клиентам (Windows 95, Warp Server, smbfs и др), NetBIOS (rfc1001/1002)
+сервер имен, который среди многих других вещей, дает возможность ftp-подобного
+просмотра ресурсов (дисков и принтеров) из Unix, Netware и других ОС, и
+расширение tar для клиентов для резервного копирования PC.</P><IMG alt=""
+border=0 height=275 src="ch21_1.files/52.jpg" width=407><BR>
+<P align=justify><B>Эти инструкции предполагают</B>.<BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам "/var/tmp" (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем "root".<BR>Samba версии
+2.0.7<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница Samba: <!--<A
+href="http://us1.samba.org/samba/samba.html"
+target=_blank>-->http://us1.samba.org/samba/samba.html<!--</A>--><BR>FTP сервер Samba: <!--<A
+href="ftp://63.238.153.11/" target=_blank>-->63.238.153.11<!--</A>--><BR>Вы должны
+скачать: samba-2.0.7.tar.gz<BR></P>
+<P align=justify><B>Тарболы.</B><BR>Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции Samba и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Samba1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Samba2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Samba1 Samba2 &gt; Samba-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp samba-version.tar.gz /var/tmp<BR>[root@deep /]# cd /var/tmp<BR>[root@deep
+tmp]# tar xzpf samba-version.tar.gz<BR></FONT>
+<H3>Конфигурирование</H3>
+<P align=justify>Перейдите в каталог Samba, а затем в подкаталог
+"source".</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл smbsh.in (vi +3 smbwrapper/smbsh.in) и
+измените строку:</P>
+<P align=justify><FONT color=#008080
+size=-1>SMBW_LIBDIR=${SMBW_LIBDIR-@builddir@/smbwrapper}</FONT><BR>на:<BR><FONT
+color=#008080 size=-1>SMBW_LIBDIR=${SMBW_LIBDIR-/usr/bin}</FONT><BR></P>
+<P align=justify>Это изменит месторасположение каталога "lib" Samba под каталог
+"/usr/bin".</P><B>Шаг 2</B>
+<P align=justify>Редактируйте файл Makefile.in (vi +28 Makefile.in) и измените
+строки:</P>
+<P align=justify><FONT color=#008080 size=-1>SBINDIR =
+@bindir@</FONT><BR>На:<BR><FONT color=#008080 size=-1>SBINDIR =
+@sbindir@</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>VARDIR =
+@localstadir@</FONT><BR>на:<BR><FONT color=#008080 size=-1>VARDIR =
+/var/log/samba</FONT><BR></P>
+<P align=justify>Эти изменения определяет каталог "/usr/sbin" для двоичных
+файлов Samba, и каталог "/var" для файлов регистраций Samba
+("/var/log/samba").</P><B>Шаг 3</B>
+<P align=justify>Редактируйте файл convert_smbpasswd (vi +10
+script/convert_smbpasswd) и измените строку:</P>
+<P align=justify><FONT color=#008080 size=-1>nawk 'BEGIN
+{FS=":"}</FONT><BR>на:<BR><FONT color=#008080 size=-1>gawk 'BEGIN
+{FS=":"}</FONT><BR></P>
+<P align=justify>Это изменение определит использование версии GNU Linux утилиты
+обработки текста awk, основанной на Bell Labs research версии программы awk для
+программы "smbpasswd".</P><B>Шаг 4</B>
+<P align=justify>Редактируйте файл smbmount.c file (vi +98 client/smbmount.c) и
+измените строку:</P><FONT color=#008080><PRE>static void close_our_files(int client_fd)
+{
+   int i;
+   for (i = 0; i &lt; 256; i++) {
+      if (i == client_fd) continue;
+         close(i);
+    }</PRE></FONT>на: <FONT color=#008080><PRE>static void close_our_files(int client_fd)
+{
+struct rlimit limits;
+int i;
+getrlimit(RLIMIT_NOFILE,&amp;limits);
+for (i = 0; i &lt; limits.rlim_max; i++) {
+  if (i == client_fd) continue;
+     close(i);
+}</PRE></FONT>
+<P align=justify>Этот шаг сделает файл smbmount.c совместимым с библиотекой Red
+Hat's glibc 2.1.</P>
+<H3>Компиляция и оптимизация</H3><B>Шаг 1</B>
+<P align=justify>Введите следующие команды на вашем терминале:</P><FONT
+color=#008080 size=-1>CC="egcs" \<BR>./configure \<BR>--prefix=/usr
+\<BR>--libdir=/etc \<BR>--with-lockdir=/var/lock/samba
+\<BR>--with-privatedir=/etc \<BR>--with-swatdir=/usr/share/swat \<BR>--with-pam
+\<BR>--with-mmap \<BR>--without-sambabook<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B> Опция "--with-mmap" может улучшить
+производительность на некоторых машинах, на других ничего не изменится, ну а на
+третьих она может упасть.</P>
+<P align=justify>Эти опции говорят Samba:</P>
+<UL>
+  <LI>Включить поддержку базы данных PAM паролей, поддерживаемых для лучшей
+  безопасности.
+  <LI>Включить экспериментальную поддержку MMAP для улучшения производительности
+  Samba.
+  <LI>Не инсталлируйте книги, поставляемые с дистрибутивом Samba. </LI></UL><B>Шаг
+2</B>
+<P align=justify>Сейчас мы должны инсталлировать Samba на нашем Linux
+сервере:</P><FONT color=#008080 size=-1>[root@deep source]# make
+all<BR>[root@deep source]# make install<BR>[root@deep source]# install -m 755
+script/mksmbpasswd.sh /usr/bin/<BR>[root@deep source]# rm -rf
+/usr/share/swat/</FONT> (если вы мне позволите совет, не позволяйте
+пользователям настраивать Samba через броузер).<BR><FONT color=#008080
+size=-1>[root@deep source]# rm -f /usr/sbin/swat<BR>[root@deep source]# rm -f
+/usr/man/man8/swat.8<BR>[root@deep source]# mkdir -p
+/var/lock/samba<BR>[root@deep source]# mkdir -p /var/spool/samba
+</FONT>(требуется только если вы планируете совместное использование
+принтера).<BR><FONT color=#008080 size=-1>[root@deep source]# chmod 1777
+/var/spool/samba/</FONT> (требуется только если вы планируете совместное
+использование принтера).<BR>
+<P align=justify>Команда "install" инсталлирует скрипт "mksmbpasswd.sh" в
+каталог "/usr/bin/". Этот скрипт нужен, чтобы пользователи Samba могли
+подключаться к серверу, используя файл "smbpasswd". О том как использовать
+пароли Samba читайте дальше в этой книге. </P>
+<P align=justify>Команда "rm" удалит каталог "/usr/share/swat" и все файлы в
+нем, также она удалит исполняемый файл "swat" из каталога "/usr/sbin/". SWAT -
+это конфигурационная утилита имеющая веб интерфейс, которая позволяет
+настраивать файл "smb.conf" из веб броузера. Она может открыть брешь в
+безопасности вашего сервера, поэтому я рекомендую удалить ее. Команда "mkdir"
+создаст каталог "/var/spool/samba/", который используется при печати на
+принтере. Конечно, он необходим, если вы планируете использовать Samba для
+предоставление принтера в совместное использование. Так как мы не настраиваем
+наш сервер Samba на предоставление сервиса печати, нам не нужен этот каталог
+("/var/spool/samba/"), и соответственно нет необходимости в команде "chmod",
+устанавливающей "sticky" бит в "/var/spool/samba", чтобы только владелец файла
+мог удалить его из каталога.</P><B>Очистка после работы.</B><BR><FONT
+color=#008080 size=-1>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# rm -rf
+samba-version/ samba-version.tar.gz<BR></FONT>
+<P align=justify>Команды "rm" будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции Samba. Также будет удален
+сжатый архив Samba из каталога "/var/tmp".</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Конфигурационный файл для разных сервисов очень специфичен и
+сильно зависит от того, что вам нужно. Некоторые хотят инсталлировать сервер
+Samba, рассчитывая на одно клиентское соединение, а некоторые на тысячу. Все
+программное обеспечение, описанное в книге, имеет определенный каталог и
+подкаталог в архиве "floppy.tgz", включающей все конфигурационные файлы для всех
+программ. Если вы скачаете этот файл, то вам не нужно будет вручную
+воспроизводить файлы из книги, чтобы создать свои файлы конфигурации. Скопируйте
+файлы связанные с Samba из архива, измените их под свои требования и поместите в
+нужное место так, как это описано ниже. Файл с конфигурациями вы можете скачать
+с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска веб сервера Apache следующие файлы должны быть
+созданы или скопированы на ваш сервер.</P>
+<P align=justify>Копируйте файлы smb.conf и lmhosts в каталог
+"/etc/".<BR>Копируйте smb в каталог "/etc/rc.d/init.d/".<BR>Копируйте samba в
+каталог "/etc/logrotate.d/".<BR>Копируйте samba в каталог "/etc/pam.d/".<BR></P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Конфигурационный файл "/etc/smb.conf"</H3>
+<P align=justify>Файл "/etc/smb.conf" - это основной конфигурационный файл
+сервера Samba, в котором вы можете определить каталоги к которым предоставляете
+доступ, с каких IP адресов разрешен доступ и пр. Первые несколько строк в секции
+[global] содержат глобальные конфигурационные директивы, которые являются общими
+для всех разделяемых ресурсов (пока они не переписаны в конкретных секциях для
+каждого ресурса), далее идут секции, отвечающие за конкретные ресурсы.
+Существует множество опций, и нужно обязательно прочитать документацию,
+поставляемую вместе с Samba, чтобы получить информацию о каждой из них.</P>
+<P align=justify>Следующий пример представляет из себя минимальную рабочую
+конфигурацию для Samba с поддержкой шифрованных паролей. Также, замечу, что мы
+прокомментируем только те параметры, которые связаны с безопасностью и
+оптимизацией, а остальные оставим для вашего собственного изучения.</P>
+<P align=justify>В нашем примере, мы создаем только один каталог, "[tmp]", и
+позволяем доступ только машинам с IP адресами диапазона класса C. Также мы не
+используем сервис печати.</P>
+<P align=justify>Редактируйте файл smb.conf (vi /etc/smb.conf) и
+добавьте/измените следующие параметры:</P><PRE>[global]
+   workgroup = OPENNA
+   server string = R&amp;D of Open Network Architecture Samba Server
+   encrypt passwords = True
+   security = user
+   smb passwd file = /etc/smbpasswd
+   log file = /var/log/samba/log.%m
+   socket options = IPTOS_LOWDELAY TCP_NODELAY
+   domain master = Yes
+   local master = Yes
+   preferred master = Yes
+   os level = 65
+   dns proxy = No
+   name resolve order = lmhosts host bcast
+   bind interfaces only = True
+   interfaces = eth0 192.168.1.1
+   hosts deny = ALL
+   hosts allow = 192.168.1.4 127.0.0.1
+   debug level = 1
+   create mask = 0644
+   directory mask = 0755
+   level2 oplocks = True
+   read raw = no
+   write cache size = 262144
+
+[homes]
+   comment = Home Directories
+   browseable = no
+   read only = no
+   invalid users = root bin daemon nobody named sys tty disk mem kmem users
+
+[tmp]
+   comment = Temporary File Space
+   path = /tmp
+   read only = No
+   valid users = admin
+   invalid users = root bin daemon nobody named sys tty disk mem kmem users
+</PRE>
+<P align=justify>Эта опции говорят Samba следующее:</P><BR><B>[global]</B><BR>
+<P align=justify><B>workgroup =  OPENNA</B><BR>Опция "workgroup" определяет
+рабочую группу в которую входит ваш сервер. Важно, чтобы клиенты и сервер
+входили в одну и туже группу.</P>
+<P align=justify><B>server string =   R&amp;D of Open Network Architecture Samba
+Server</B><BR>Опция "server string" определяет строку, которую получат
+пользователи в блоке комментария к принтеру в менеджере принтеров, или при IPC
+соединении по команде "net view" на Windows машинах.</P>
+<P align=justify><B>encrypt passwords =   True</B><BR>Опция "encrypt passwords"
+если установлена в "True" инструктирует Samba использовать шифрованные пароли
+вместо паролей с открытым текстом. Снифферы несмогут определить ваш пароль, если
+он зашифрован. Эту опцию из соображений безопасности нужно установить в
+"True".</P>
+<P align=justify><B>security =  user</B><BR>Опция "security", если установлена в
+"user", определяет, что клиент должен вначале пройти аутентификацию по
+правильному имени и паролю, или соединение будет разорвано. При этом способе имя
+пользователя и пароль должно существовать в файле "/etc/passwd" Linux сервера и
+в файле "/etc/smbpasswd" Samba сервера, или соединение с клиентом не состоится.
+Смотрите "Безопасность samba" в этой главе для получения большей информации о
+файле "smbpasswd".</P>
+<P align=justify><B>smb passwd file =    /etc/smbpasswd</B><BR>Опция "smb passwd
+file" определяет путь к файлу с шифрованными паролями "smbpasswd". Файл
+"smbpasswd" это копия файла "/etc/passwd" Linux системы содержащий разрешенные
+имена и пароли клиентов, которым разрешен доступ к серверу Samba. Samba читает
+этот файл, когда получает запрос на соединение.</P>
+<P align=justify><B>log file =   /var/log/samba/log.%m</B><BR>Опция "log file"
+определяет месторасположение и имена файлов регистрации Samba. С расширением
+"%m", у вас будут создаваться независимые файлы регистрации для каждого
+пользователя или машины, соединяющихся к вашему Samba серверу (например,
+log.machine1).</P>
+<P align=justify><B>socket options =   IPTOS_LOWDELAY TCP_NODELAY</B><BR>Опция
+"socket options" определяет параметры, которые вы можете включить в вашу
+конфигурацию Samba для настройки и улучшения сервера samba на оптимальную
+производительность. По умолчанию, мы выбрали настройку сервера на локальную сеть
+и улучшили производительность сервера Samba при пересылке файлов.</P>
+<P align=justify><B>domain master =   Yes</B><BR>Опция "domain master" определяет,
+что один из демонов Samba, "nmbd", будет установлен как домен мастер броузер для
+данной рабочей группы. Эта опция обычно устанавливается в "Yes" только на одном
+сервере Samba в некоторой сети и рабочей группе.</P>
+<P align=justify><B>local master =   Yes</B><BR>Опция "local master" позволяет
+"nmbd" становится локальным мастер броузером в подсети. Подобно предыдущей опции
+эта опция должна быть установлена в "Yes" только на одном Samba сервере в
+подсети.</P>
+<P align=justify><B>preferred master =   Yes</B><BR>Опция "preferred master"
+определяет и контролирует является ли "nmbd" привилегированным (preferred)
+мастер броузером рабочей группы. Опять же, эта опция обычно выставляется в "Yes"
+на одном сервере на вашей сети.</P>
+<P align=justify><B>os level = 65</B><BR>Опция "os level" определяет значение
+имеет ли "nmbd" шанс стать локальным мастер броузером для рабочей группы в
+локальной широковещательной области. Число 65 позволит победить любой NT сервер.
+Если в вашей сети есть NT сервер и вы хотите, чтобы Linux Samba сервер стал
+локальным мастер броузером, вы должны установить этот параметр равным 65. Эта
+опция должна быть определена только на одном Linux Samba сервере в сети, а на
+остальных ее надо отключить.</P>
+<P align=justify><B>dns proxy =   No</B><BR>Опция "dns proxy" если установлена в
+"Yes" определяет, что "nmbd" когда выступает как WINS сервер и определяет, что
+Net BIOS имя не было зарегистрировано, должен интерпретировать Net BIOS имя
+слово в слово как DNS имя и делает lookup на DNS сервер действуя от имени
+клиента, запрашивающего данное имя. Так как мы не настраиваем Samba сервер как
+WINS сервер, нам не нужно устанавливать эту опцию в "Yes". Устанавливая эту
+опцию в "Yes" мы ухудшим производительность Samba.</P>
+<P align=justify><B>name resolve order =    lmhosts host bcast</B><BR>Опция "name
+resolve order" определяет, в каком порядке используются сервисы имен для
+резолвинга имени хоста в IP адрес. Параметры, который мы выбрали говорят
+использовать в первую очередь локальный "lmhosts" файл.</P>
+<P align=justify><B>bind interfaces only = True </B><BR>Опция "bind interfaces
+only" если установлена в "True", позволяет вам ограничивать интерфейсы на
+которых будет принимать запросы "smb". Эта возможность улучшающая безопасность
+системы. Опция "interfaces = eth0 192.168.1.1" дополняет данную опцию.</P>
+<P align=justify><B>interfaces = eth0 192.168.1.1</B><BR>Опция "interfaces"
+позволяет вам переписать список интерфейсов по умолчанию, на которых Samba будет
+обрабатывать запросы. По умолчанию, Samba принимает список из всех активных
+интерфейсов и любые интерфейсы (исключая 127.0.0.1), на которых поддерживается
+возможность широковещательных запросов. С этой опцией, Samba будет слушать
+только интерфейс "eth0" с IP адресом 192.168.1.1. Это возможность улучшающая
+безопасность, и дополняет ранее приведенную опцию "bind interfaces only =
+True".</P>
+<P align=justify><B>hosts deny =   ALL</B><BR>Опция "hosts deny" определяет список
+хостов, которым запрещен доступ к сервису Samba, если определенные сервисы не
+имеют собственных списков доступа. Для простоты, мы запрещаем доступ всем хостам
+по умолчанию, и разрешаем доступ некоторым компьютерам в опции "hosts allow =",
+приведенной ниже.</P>
+<P align=justify><B>hosts allow =   192.168.1.4 127.0.0.1</B><BR>Опция "hosts
+allow" определяет, каким хостам разрешен доступ к Samba сервису. По умолчанию,
+мы пускаем компьютер с IP адресом класса C 192.168.1.4 и наш localhost
+127.0.0.1. Заметим, что доступ с localhost должен быть всегда разрешен, иначе вы
+будете получать сообщения об ошибках.</P>
+<P align=justify><B>debug level =   1</B><BR>Опция "debug level" позволяет вам
+определить уровень регистрации. Если вы установите уровень отладки больше чем 2,
+то это приведет к падению производительности. Это связано с тем, что сервер
+сбрасывает информацию в файл регистрации после каждой операции, которые могут
+быть очень интенсивными.</P>
+<P align=justify><B>create mask =   0644</B><BR>Опция "create mask" определяет и
+устанавливает нужные права доступа, связывая таким образом режимы DOS с правами
+UNIX. С этой опцией установленной в 0644, все файлы копируемые или создаваемые
+из Windows систем на Unix будут иметь права доступа 0644.</P>
+<P align=justify><B>directory mask =   0755</B><BR>Опция "directory mask"
+определяет и устанавливает режим, который используется для конвертирования DOS
+режимов в UNIX режимы, когда создается UNIX каталог. С этой опцией установленной
+в 0755, все каталоги копируемые или создаваемые из Windows систем на Unix будут
+иметь права доступа 0755.</P>
+<P align=justify><B>level2 oplocks =   True</B><BR>Опция "level2 oplocks", если
+установлена в "True", увеличит производительность множественного доступа к
+файлам, которые обычно не записываются (такие как файлы приложений .EXE).</P>
+<P align=justify><B>read raw = no</B><BR>Опция "read raw" контролирует будет или
+нет сервер осуществлять "необработанное" (raw) чтение SMB запросов, когда
+пересылает данные клиенту. Заметим, что распределение памяти не использует
+операцию "read raw". Таким образом, вы можете обнаружить, что распределение
+памяти более эффективно, если вы отключите "read raw", используя параметр "read
+raw = no".</P>
+<P align=justify><B>write cache size =    262144</B><BR>Опция "write cache size"
+позволяет Samba улучшить производительность систем у которых дисковая подсистема
+является узким местом. Значение этой опции определяется в байтах. Значение этой
+опции определяется в байтах, следовательно 262,144 представляет 256k кэш на
+файл.</P><B>[tmp]</B><BR>
+<P align=justify><B>comment = Temporary File Space</B><BR>Опция "comment"
+позволяет вам определить комментарии, которые появляются, когда клиент
+организует запросы на сервер.</P>
+<P align=justify><B>path = /tmp</B><BR>Опция "path" определяет каталог, в
+который пользователю разрешается доступ. В нашем примере, это каталог "tmp".</P>
+<P align=justify><B>read only =   No</B><BR>Опция "read only" определяет должен ли
+пользователь иметь доступ "только на чтение" или нет. В нашем примере, так как
+это конфигурация для каталога "tmp", пользователь может иметь больший доступ,
+чем "только на чтение".</P>
+<P align=justify><B>valid users =   admin</B><BR>Опция "valid users" определяет
+список пользователей, которые могут подключаться к этому сервису. В нашем
+примере, только пользователю "admin" разрешен доступ к каталогу "/tmp".</P>
+<P align=justify><B>invalid users = root bin daemon nobody named sys tty disk
+mem kmem users</B><BR>Опция "invalid users" определяет список пользователей
+которым не разрешается подключаться к этому сервису. Это абсолютно
+"параноидальная" проверка, которая гарантирует, что неправильные установки не
+нарушат безопасность системы. Рекомендуется, чтобы вы включили в эту строку всех
+пользователей, созданных в системе по умолчанию, от имени которых запускаются
+демоны на сервере.</P>
+<H3>Конфигурация файла "/etc/lmhosts"</H3>
+<P align=justify>Настроим файл "/etc/lmhosts". Он содержит соответствия между
+Samba Net BIOS именами и IP адресами. По формату, этот файл, подобен
+"/etc/hosts", за исключением того, что компоненты имени хоста соответствуют
+формату имен Net BIOS.</P>
+<P align=justify>Создадим файл lmhosts (touch /etc/lmhosts) и внесем в него
+клиентские компьютеры:</P><FONT color=#008080><PRE># Пример Samba файла lmhosts.
+#
+127.0.0.1        localhost
+192.168.1.1      deep
+192.168.1.4      win</PRE></FONT>
+<P align=justify>В нашем примере, lmhots содержит три соответствия между IP и
+Net BIOS именами. localhost (127.0.0.1), клиент с именем deep (192.168.1.1) и
+клиент с именем win (192.168.1.4).</P>
+<H3>Конфигурация файла "/etc/pam.d/samba"</H3>
+<P align=justify>Настроим файл "/etc/pam.d/samba" для использования pam
+аутентификации. Создайте файл samba (touch /etc/pam.d/samba) и добавьте в него
+следующие строки:</P><FONT color=#008080 size=-1>Auth required
+/lib/security/pam_pwdb.so nullok shadow<BR>Account required
+/lib/security/pam_pwdb.so<BR></FONT>
+<H3>Конфигурация файла "/etc/logrotate.d/samba"</H3>
+<P align=justify>Сконфигурируем файл "/etc/logrotate.d/samba" на автоматическую
+еженедельную ротацию ваших файлов регистрации.<BR>Создайте файл samba (touch
+/etc/logrotate.d/samba) и добавьте в него следующие строки:</P><PRE>/var/log/samba/log.nmb {
+  notifempty
+  missingok
+  postrotate
+    /usr/bin/killall -HUP nmbd
+  endrotate
+}
+/var/log/samba/log.smb {
+  notifempty
+  missingok
+  postrotate
+    /usr/bin/killall -HUP smbd
+  endrotate
+}</PRE>
+<H3><A name=3>Создание файла с шифрованными паролями Samba</A></H3>
+<P align=justify>В файле "/etc/smbpasswd" хранятся шифрованные пароли Samba. Он
+хранит имя пользователя; Unix UID, хешированный пароль SMB, информационный флаг
+учетной записи и время последнего изменения пароля. Важно создать этот файл с
+паролями и включить в него всех пользователей до того, как они будут
+подключаться к вашему серверу Samba. Без этого никто не сможет подключиться к
+нему.</P><B>Шаг 1</B>
+<P align=justify>Для создания учетной записи Samba, вы должны, для начала,
+завести пользователя Linux. Поэтому, вначале, создайте в файле "/etc/passwd"
+всех пользователей, которые должны подключаться к серверу Samba. Добавьте нового
+пользователя в файл "/etc/passwd" используя следующую команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# useradd smbclient</FONT>
+<P align=justify>Определите пароль для него используя команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# passwd smbclient<BR>Changing password for
+user smbclient<BR>New UNIX password:<BR>Retype new UNIX password:<BR>passwd: all
+authentication tokens updated successfully<BR></FONT><BR><B>Шаг 2</B>
+<P align=justify>После того, как вы внесли всех пользователей в файл
+"/etc/passwd", вы можете создать файл "smbpasswd", используя "/etc/passwd". Для
+этого введите следующую команду:</P><FONT color=#008080 size=-1>[root@deep /]#
+cat /etc/passwd | mksmbpasswd.sh &gt; /etc/smbpasswd</FONT> <BR><BR><B>Шаг 3</B>
+
+<P align=justify>В заключении, на последнем шаге, мы должны создать бюджет
+пользователя в нашем файле "/etc/smbpasswd".<BR>Для создания учетной записи
+пользователя Samba используйте команду:</P><FONT color=#008080
+size=-1>[root@deep /]# smbpasswd -a smbclient <FONT color=#000000>(помните, что
+"smbclient" должен быть реальным пользователем Linux).</FONT><BR>New SMB
+password:<BR>Retype new SMB password:<BR>Added user smbclient.<BR>Password
+changed for user smbclient.<BR></FONT><BR><B>Шаг 4</B>
+<P align=justify>Не забудьте изменить права доступа к вашему новому файлу
+"smbpasswd" на чтение-запись только для пользователя "root' (0600/-rw-------).
+Это делается из соображения безопасности.</P><FONT color=#008080
+size=-1>[root@deep /]# chmod 600 /etc/smbpasswd<BR>[root@deep /]# testparm
+</FONT>(эта команда проверит файл smb.conf на наличие ошибок).<BR>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Смотрите файл ENCRYPTION.txt, находящийся в
+дистрибутиве Samba в каталоге /doc/texts/ для большей информации.</P>
+<H3>Конфигурация скрипта "/etc/rc.d/init.d/smb"</H3>
+<P align=justify>Настроим скрипт "/etc/rc.d/init.d/smb", который отвечает за
+запуск и остановку демонов Samba smbd и nmbd.<BR>Создайте скрипт smb (touch
+/etc/rc.d/init.d/smb) и добавьте в него следующие строки:</P><PRE>#!/bin/sh
+#
+# chkconfig: - 91 35
+# описание: запуск и остановка демонов Samba smbd и nmbd \
+# используемых для предоставления сетевого сервиса SMB.
+# Библиотека исходных функций.
+. /etc/rc.d/init.d/functions
+# Исходная сетевая конфигурация.
+. /etc/sysconfig/network
+# Проверки наличия сети.
+[ ${NETWORKING} = "no" ] &amp;&amp; exit 0
+# Проверка наличия файла smb.conf.
+[ -f /etc/smb.conf ] || exit 0
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+    echo -n "Starting SMB services: "
+    daemon smbd -D
+    RETVAL=$?
+    echo
+    echo -n "Starting NMB services: "
+    daemon nmbd -D
+    RETVAL2=$?
+    echo
+    [ $RETVAL -eq 0 -a $RETVAL2 -eq 0 ] &amp;&amp; touch /var/lock/subsys/smb || \
+    RETVAL=1
+  ;;
+  stop)
+    echo -n "Shutting down SMB services: "
+    killproc smbd
+    RETVAL=$?
+    echo
+    echo -n "Shutting down NMB services: "
+    killproc nmbd
+    RETVAL2=$?
+    [ $RETVAL -eq 0 -a $RETVAL2 -eq 0 ] &amp;&amp; rm -f /var/lock/subsys/smb
+    echo ""
+  ;;
+  restart)
+    $0 stop
+    $0 start
+    RETVAL=$?
+  ;;
+  reload)
+    echo -n "Reloading smb.conf file: "
+    killproc -HUP smbd
+    RETVAL=$?
+    echo
+  ;;
+  status)
+    status smbd
+    status nmbd
+    RETVAL=$?
+  ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+exit $RETVAL</PRE>
+<P align=justify>Сейчас, мы должны сделать этот скрипт исполняемым и изменить
+права доступа к нему:</P><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/smb</FONT>
+<P align=justify>Создадим символическую rc.d ссылку для Samba:</P><FONT
+color=#008080 size=-1>[root@deep /]# chkconfig --add smb</FONT>
+<P align=justify>Скрипт Samba не будет автоматически стартовать демоны smbd и
+nmbd, когда система перезагружена. Чтобы изменить это, выполните следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# chkconfig --level 345 smb
+on</FONT>
+<P align=justify>Запустите сервер Samba вручную:</P><FONT color=#008080 size=-1><PRE>[root@deep /]# /etc/rc.d/init.d/smb start
+Starting SMB services:            [ OK ]
+Starting NMB services:            [ OK ]</PRE></FONT>
+<H3><A name=4>Организация защиты Samba</A></H3><B>Иммунизация важных
+конфигурационных файлов</B>
+<P align=justify>Бит "постоянства" используется для предотвращения случайного
+удаления или переписывания файлов, которые защищаются. Он также не дает
+создавать символические ссылки к этим файлам. Так как файлы "smb.conf" и
+"lmhosts" уже настроены, хорошей идеей будет иммунизировать их:</P><FONT
+color=#008080 size=-1>[root@deep /]# chattr +i /etc/smb.conf<BR>[root@deep /]#
+chattr +i /etc/lmhosts<BR></FONT>
+<H3><A name=5>Оптимизация Samba</A></H3><B>Установка параметра "wide links=" в
+конфигурационном файле Samba</B>
+<P align=justify>Большой ошибкой будет установить параметр "wide links" в "no" в
+конфигурационном файле Samba "/etc/smb.conf". Эта опция, если установлена в
+"no", говорит Samba не следовать по символическим ссылкам вне экспортируемой
+области. Чтобы определить находится ли ссылка вне области, Samba следует по
+символической ссылке, а затем выполняет "directory path lookup", чтобы
+определить, где на файловой системе символическая ссылка завершилась. Эта
+операция добавляет шесть дополнительных системных вызовов на каждый файловый
+lookup, а Samba просматривает имена файлов очень много раз. Тесты, которые были
+опубликованы, показали, что установка этого параметра снижает производительность
+Samba сервера на 25-30 процентов.</P><B>Настройка кэша буфера</B>
+<P align=justify>Модификация параметров, влияющих на настройку кэша файловой
+системы, может значительно улучшить производительность файлового сервера Linux.
+Linux будет пытаться использовать память, не используемую для других целей, для
+кэширования файловой системы. Специальный демон, называемый "bdflush", будет
+периодически сбрасывать на диск содержимое "грязных" буферов (буфер, который
+содержит модифицированные данные файловой системы или метаданные).</P>
+<P align=justify>Секрет хорошей производительности - это сохранение в памяти так
+много данных, как это возможно. Запись на диск является самой медленной
+операцией при работе с любой файловой системой. Как и с большинством
+настраиваемых параметров ядра, вы можете изменять эти опции на лету, при помощи
+специальных файлов "/proc".</P>
+<P align=justify>Параметры по умолчанию для "bdflush" под Red Hat
+Linux:</P><FONT color=#008080 size=-1>"40 500 64 256 500 3000 500 1884 2"</FONT>
+
+<P align=justify>Чтобы изменить значения bdflush введите следующие команды на
+вашем терминале:<BR>Под Red Hat Linux 6.1</P><FONT color=#008080
+size=-1>[root@deep /]# echo "80 500 64 64 15 6000 6000 1884 2"
+&gt;/proc/sys/vm/bdflush</FONT>
+<P align=justify>Вы должны добавить вышеприведенную команду в скрипт
+"/etc/rc.d/rc.local", чтобы она выполнялась при каждой загрузке компьютера
+автоматически.</P>
+<P align=justify>Под Red Hat Linux 6.2<BR>Редактируйте файл "/etc/sysctl.conf" и
+добавьте следующие строки:</P><FONT color=#008080 size=-1># Улучшение
+производительности файловой системы vm.bdflush = 80 500 64 64 15 6000 6000 1884
+2</FONT>
+<P align=justify>Вы должны перезагрузить сетевые настройки, чтобы изменения
+вступили в силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Setting network parameters           [ OK ]
+Bringing up interface lo             [ OK ]
+Bringing up interface eth0           [ OK ]
+Bringing up interface eth1           [ OK ]</PRE></FONT>
+<P align=justify>Эта строка говорит "bdflush" не беспокоиться о записи грязных
+блоков на диск пока кэш буферов файловой системы не заполниться на 80 процентов.
+Другое значение определяют максимальное количество грязных буферов, которое
+может быть записано за одну операцию (500), как долго разрешается грязному
+буферу существовать (60*HZ) и т.д. Полное описание всех параметров вы можете
+найти в документации, поставляемой вместе с ядром 2.2, в файле
+"linux/Documentation/sysctl/vm.txt", и также, вы можете прочитать главу 4,
+"Общая системная оптимизация" этой книги.</P><B>Настройка buffermem</B>
+<P align=justify>Другая полезная настройка должна сообщить Linux следующее:
+использовать минимум 60 процентов памяти для кэширования буферов; сокращать
+только когда процент используемой памяти для кэша буферов преодолеет 10
+процентов (этот параметр сейчас не используется); и позволять расти до 60
+процентов всей памяти (этот параметр сейчас не используется).</P>
+<P align=justify>По умолчанию значения установленные для "buffermem" в Red Hat
+Linux равны:</P><FONT color=#008080 size=-1>"2 10 60"</FONT>
+<P align=justify>Чтобы изменить значения buffermem введите следующую команду на
+вашем терминале:<BR>Под Red Hat Linux 6.1</P><FONT color=#008080
+size=-1>[root@deep /]# echo "60 10 60" &gt;/proc/sys/vm/buffermem</FONT>
+<P align=justify>Вы должны добавить вышеприведенную команду в скрипт
+"/etc/rc.d/rc.local", чтобы она выполнялась при каждой загрузке компьютера
+автоматически. Полное описание всех параметров вы можете найти в документации,
+поставляемой вместе с ядром 2.2, в файле "linux/Documentation/sysctl/vm.txt", и
+также, вы можете прочитать главу 4, "<!--<A
+href="http://linux.webclub.ru/books/linuxsos/ch4.html">-->Общая системная
+оптимизация<!--</A>-->" этой книги.</P>
+<P align=justify>Под Red Hat Linux 6.2<BR>Редактируйте файл "/etc/sysctl.conf" и
+добавьте следующую строку:</P><FONT color=#008080 size=-1># Улучшение
+производительности виртуальной памяти<BR>vm.buffermem = 60 10 60<BR></FONT>
+<P align=justify>Вы должны перезагрузить сетевые настройки, чтобы изменения
+вступили в силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Setting network parameters            [ OK ]
+Bringing up interface lo              [ OK ]
+Bringing up interface eth0            [ OK ]
+Bringing up interface eth1            [ OK ]</PRE></FONT>
+<P align=justify>Напоминаем, что последние два параметра (10 и 60) сейчас не
+используются, поэтому мы не будем их изменять. </P>
+<H3>Дополнительная документация</H3>
+<P align=justify>Для получения большей информации вы можете прочитать следующие
+страницы руководства:</P>
+<P align=justify>$ man Samba (7) - Файл сервер Windows SMB/CIFS для UNIX<BR>$
+man smb.conf (5) - Конфигурационный файл для Samba<BR>$ man smbclient (1) -
+ftp-подобный клиент для доступа к SMB/CIFS ресурсам<BR>$ man smbd (8) - сервер
+предоставляющий SMB/CIFS сервисы клиентам<BR>$ man smbmnt (8) - mount smb file
+system<BR>$ man smbmount (8) - монтирование файловой системе smb<BR>$ man
+smbpasswd (5) - файл с шифрованными паролями Samba<BR>$ man smbpasswd (8) -
+изменение SMB пароля пользователя <BR>$ man smbrun (1) - интерфейсная программа
+между smbd и внешними программами<BR>$ man smbsh (1) - Позволяет доступ к
+файловой системе Windows NT, используя UNIX команды<BR>$ man smbstatus (1) -
+отчет о текущих соединениях Samba<BR>$ man smbtar (1) - shell скрипт для
+резервного копирования совместных ресурсов SMB напрямую на накопители на
+магнитной ленте UNIX<BR>$ man smbumount (8) - размонтирование для нормальных
+пользователей<BR>$ man testparm (1) - проверка конфигурационного файла smb.conf
+на внутренние ошибки<BR>$ man testprns (1) - проверка имени принтера на
+соответствие правилам smbd<BR></P>
+<H3><A name=6>Административные утилиты Samba</A></H3>
+<P align=justify>Команды описанные ниже, мы будем часто использовать, но на
+самом деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P><B>smbstatus</B>
+<P align=justify>Утилита smbstatus это очень простая программа, показывающая
+текущие соединения Samba:</P><FONT color=#008080><PRE>[root@deep /]# smbstatus
+Samba version 2.0.7
+Service      uid          gid             pid      machine
+----------------------------------------------
+tmp    webmaster  webmaster    3995   gate    (192.168.1.3) Sat Sep 25 19:40:54 1999
+
+No locked files
+
+Share mode memory usage (bytes):
+       1048464(99%) free + 56(0%) used + 56(0%) overhead = 1048576(100%) total
+</PRE></FONT>
+<H3><A name=7>Утилиты пользователя Samba</A></H3>
+<P align=justify>Команды описанные ниже, мы будем часто использовать, но на
+самом деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P><B>smbclient</B>
+<P align=justify>Утилита "smbclient" работает подобно ftp программам, но для
+Samba. Эта небольшая программа позволяет вам забирать файлы с сервера на
+локальную машину, перекладывать файлы с локальной машины на сервер, передавать
+информацию о каталогах с сервера и пр.</P>
+<P align=justify>Для соединения с Windows машиной при помощи утилиты smbclient,
+используйте команду:</P><FONT color=#008080><PRE>[root@deep /]# smbclient //sbmserver/sharename -U smbclient
+[root@deep /]# smbclient //gate/tmp -U smbclient
+Password:
+Domain=[OPENNA] OS=[Windows NT 4.0] Server=[NT LAN Manager 4.0]
+smb: \&gt; ls
+.                               D     0         Tue Mar 14 15:31:50 2000
+..                              D     0         Tue Mar 14 15:31:50 2000
+PostgreSQL                      D     0         Tue Mar 14 15:32:22 2000
+Squid                           D     0         Tue Mar 14 15:32:28 2000
+Imap                            D     0         Tue Mar 14 15:32:38 2000
+E_comm                          D     0         Tue Mar 14 15:32:42 2000
+StackGuard.pdf                  A     61440     Tue Dec 21 20:41:34 1999
+installation-without-XFree86    A     448       Tue Dec 21 20:41:28 1999
+lcap-0_0_3-2_src.rpm            A     13481     Thu Jan 13 01:50:12 2000
+mirc561t.exe                    A     948224    Tue Dec 21 20:41:54 1999
+
+             65510 blocks of size 32768. 5295 blocks available
+
+smb: \&gt;</PRE></FONT>
+<P align=justify>где "//sbmserver" это имя сервера, к которому вы хотите
+подключиться. "/sharename" - каталог на этом сервере, а "smbclient" - это имя
+пользователя, под которым вы подключаетесь к серверу.</P>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/rc.d/init.d/smb
+&gt; /etc/rc.d/rc0.d/K35smb
+&gt; /etc/rc.d/rc1.d/K35smb
+&gt; /etc/rc.d/rc2.d/K35smb
+&gt; /etc/rc.d/rc3.d/S91smb
+&gt; /etc/rc.d/rc4.d/S91smb
+&gt; /etc/rc.d/rc5.d/S91smb
+&gt; /etc/rc.d/rc6.d/K35smb
+&gt; /etc/pam.d/samba
+&gt; /etc/logrotate.d/samba
+&gt; /etc/codepages
+&gt; /etc/codepages/codepage.437
+&gt; /etc/codepages/unicode_map.437
+&gt; /etc/codepages/codepage.737
+&gt; /etc/codepages/unicode_map.737
+&gt; /etc/codepages/codepage.775
+&gt; /etc/codepages/codepage.850
+&gt; /etc/codepages/unicode_map.850
+&gt; /etc/codepages/codepage.852
+&gt; /etc/codepages/unicode_map.852
+&gt; /etc/codepages/codepage.861
+&gt; /etc/codepages/unicode_map.861
+&gt; /etc/codepages/codepage.932
+&gt; /etc/gshadow-
+&gt; /usr/bin/smbclient
+&gt; /usr/bin/smbspool
+&gt; /usr/bin/testparm
+&gt; /usr/bin/testprns
+&gt; /usr/bin/smbstatus
+&gt; /usr/bin/rpcclient
+&gt; /usr/bin/smbpasswd
+&gt; /usr/bin/make_smbcodepage
+&gt; /usr/bin/make_unicodemap
+&gt; /usr/bin/nmblookup
+&gt; /usr/bin/make_printerdef
+&gt; /usr/bin/smbtar
+&gt; /usr/bin/addtosmbpass
+&gt; /usr/bin/convert_smbpasswd
+&gt; /usr/bin/mksmbpasswd.sh
+&gt; /usr/man/man1/make_smbcodepage.1
+&gt; /usr/man/man1/make_unicodemap.1
+&gt; /usr/man/man1/nmblookup.1
+&gt; /usr/man/man1/smbclient.1
+&gt; /usr/man/man1/smbrun.1
+&gt; /usr/man/man1/smbsh.1
+&gt; /usr/man/man1/smbstatus.1
+&gt; /etc/codepages/unicode_map.932
+&gt; /etc/codepages/codepage.866
+&gt; /etc/codepages/unicode_map.866
+&gt; /etc/codepages/codepage.949
+&gt; /etc/codepages/unicode_map.949
+&gt; /etc/codepages/codepage.950
+&gt; /etc/codepages/unicode_map.950
+&gt; /etc/codepages/codepage.936
+&gt; /etc/codepages/unicode_map.936
+&gt; /etc/codepages/codepage.1251
+&gt; /etc/codepages/unicode_map.ISO8859-1
+&gt; /etc/codepages/unicode_map.ISO8859-2
+&gt; /etc/codepages/unicode_map.ISO8859-5
+&gt; /etc/codepages/unicode_map.ISO8859-7
+&gt; /etc/codepages/unicode_map.KOI8-R
+&gt; /etc/lmhosts
+&gt; /etc/smb.conf
+&gt; /etc/smbpasswd
+&gt; /usr/man/man1/smbtar.1
+&gt; /usr/man/man1/testparm.1
+&gt; /usr/man/man1/testprns.1
+&gt; /usr/man/man5/lmhosts.5
+&gt; /usr/man/man5/smb.conf.5
+&gt; /usr/man/man5/smbpasswd.5
+&gt; /usr/man/man7/samba.7
+&gt; /usr/man/man8/nmbd.8
+&gt; /usr/man/man8/smbd.8
+&gt; /usr/man/man8/smbmnt.8
+&gt; /usr/man/man8/smbmount.8
+&gt; /usr/man/man8/smbpasswd.8
+&gt; /usr/man/man8/smbspool.8
+&gt; /usr/man/man8/smbumount.8
+&gt; /usr/sbin/smbd
+&gt; /usr/sbin/nmbd
+&gt; /var/log/samba
+&gt; /var/lock/samba</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch20_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#21">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch21_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

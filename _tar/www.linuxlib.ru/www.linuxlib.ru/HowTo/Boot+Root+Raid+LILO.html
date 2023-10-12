@@ -1,0 +1,1419 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини HOWTO:Boot + Root + Raid + Lilo : Программный Raid — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1>Мини HOWTO:Boot + Root + Raid + Lilo : Программный Raid</H1>
+
+<H2>Michael Robinton,
+<A HREF="../cdn-cgi/l/email-protection.html#076a6e646f66626b47656e7d747e7473626a742964686a"><span class="__cf_email__" data-cfemail="f0bd99939891959cb0b2998aa3898384959d83de939f9d">[email&#160;protected]</span></A></H2>
+<H3>Перевод:
+<A HREF="../cdn-cgi/l/email-protection.html#88fbe9e5c8e9fbf8a5e4e1e6fdf0a6ebe7e5">Станислав Рогин</A>,
+<!--<A HREF="http://www.asplinux.com">-->SWSoft Pte Ltd.<!--</A>-->,</H3>
+версия 1.03, 4 мая 2000
+<P><HR>
+<EM>Этот документ содержит указания, как настроить raid, используя утилиты raidtools версии 0.90 для загрузки с массива raid, подключенного в качестве корневой файловой системы, используя стандартный LILO.
+Также здесь приведена процедура преобразования обычного диска в зеркальный набор (mirror set) raid1 или raid5  без потерь данных на исходном диске.</EM>
+<HR>
+<H2><A NAME="s1">1. Введение</A></H2>
+
+<P>
+<H2>1.1 Благодарности</H2>
+
+<P>Информация, которую я собрал здесь была изначально подготовлена Harald
+Nordgеrd-Hansen <CODE>&lt;</CODE>
+<A HREF="../cdn-cgi/l/email-protection.html#3d5553557d5f4856555c4f5453135554525b135352"><span class="__cf_email__" data-cfemail="aac2c4c2eac8dfc1c2cbd8c3c484c2c3c5cc84c4c5">[email&#160;protected]</span></A><CODE>> и была послана в список рассылки raid в
+файле lilo.conf с комментариями Martin Bene <CODE>&lt;</CODE>
+<A HREF="../cdn-cgi/l/email-protection.html#04696644776d69612a676b69"><span class="__cf_email__" data-cfemail="39545b794a50545c175a5654">[email&#160;protected]</span></A></CODE>.
+Большое спасибо им за помощь. Я попытался собрать воедино эту информацию
+и вспомогательную работу, проделанную многими, кто участвует в списке
+рассылки raid и в проекте linux raid, в некоторое подобие <B>КНИГИ
+РЕЦЕПТОВ</B>, включив примеры из реально работающих систем, чтобы было
+проще понять и настроить загружаемый корневой raid (bootable root raid).
+Один раздел посвящен преобразованию стандартной однодисковой системы в
+RAID. Ключом к удачному преобразованию, по моему скромному мнению, является
+понимание, что же такое загружаемый корневой raid.
+<H2>1.2 Ошибки</H2>
+
+<P>Да, я уверен, что они есть. Если вы будете настолько добры, чтобы сообщить о них, то я исправлю документ. ;-)
+<P>
+<H2>1.3 Copyright Notice</H2>
+
+<P>This document is GNU copyleft by Michael Robinton
+<A HREF="../cdn-cgi/l/email-protection.html#92fffbf1faf3f7fed2f0fbe8e1ebe1e6f7ffe1bcf1fdff"><span class="__cf_email__" data-cfemail="6a270309020b0f062a2803103913191e0f071944090507">[email&#160;protected]</span></A>.
+<P>Permission to use, copy, distribute this document for any
+purpose is hereby granted, provided that the author's / editor's
+name and this notice appear in all copies and/or supporting
+documents; and that an unmodified version of this document is
+made freely available.  This document is distributed in the hope
+that it will be useful, but WITHOUT ANY WARRANTY, either
+expressed or implied.  While every effort has been taken to
+ensure the accuracy of the information documented herein, the
+author / editor / maintainer assumes NO RESPONSIBILITY for any
+errors, or for any damages, direct or consequential, as a result
+of the use of the information documented herein.
+<H2>1.4 Авторские права</H2>
+
+<P>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.
+<P>
+<P>Этот документ является частью проекта Linux HOWTO.
+<P>
+<P>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.
+<P>
+<P>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу, приведенному ниже.
+<P>
+<P>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ddb1b4b3a8a5f0b5b2aaa9b29db0b8a9bcb1bcbff3a8b3bef3b8b9a8">[email&#160;protected]</a></CODE>, или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c8a4a1a6bdb0e5a0a7bfbca788a9bbb8a4a1a6bdb0e6babd">[email&#160;protected]</a></CODE>
+<P>
+<H2><A NAME="s2">2. Что вам потребуется до НАЧАЛА РАБОТЫ</A></H2>
+
+<P>Ниже перечислены пакеты, которые вам понадобятся, а также приведен список документации, которая отвечает на все обычные вопросы о настройке и запуске raid. Пожалуйста, прочитайте это внимательно.
+<P>
+<H2>2.1 Необходимые пакеты</H2>
+
+<P>Вам понадобится получить наиболее новые версии этих пакетов.
+<UL>
+<LI>ядро linux, поддерживающее raid и initrd
+<BLOCKQUOTE>
+ Я взял
+<!--<A HREF="ftp://ftp.kernel.org/pub/linux/kernel/v2.2/">-->linux-2.2.14<!--</A>-->
+с kernel.org
+</BLOCKQUOTE>
+</LI>
+<LI>
+<!--<A HREF="ftp://ftp.kernel.org/pub/linux/daemons/raid/alpha/">-->ftp://ftp.kernel.org/pub/linux/daemons/raid/alpha/<!--</A>-->
+- самые новые утилиты и патч с поддержкой новых raid1/4/5
+<BLOCKQUOTE>
+ Я использовал
+<!--<A HREF="http://people.redhat.com/mingo/raid-patches/raid-2.2.14-B1">-->http://people.redhat.com/mingo/raid-patches/<!--</A>--></BLOCKQUOTE>
+</LI>
+</UL>
+<P>
+<H2>2.2 Где найти новые версии этого документа.</H2>
+
+<P>Можете просмотреть
+<!--<A HREF="ftp://ftp.bizsystems.com/pub/raid/Boot+Root+Raid+LILO.html">-->последнюю версию авторского оригинала<!--</A>--> этого документа. Исправления и предложения приветствуются!
+<P>Мини-HOWTO Boot+Root+Raid+Lilo
+<P>Формат LaTeX (для DVI и PostScript), чистый текст, и HTML.
+<BLOCKQUOTE>
+
+<!--<A HREF="http://www.linuxdoc.org/HOWTO/mini/Boot+Root+Raid+LILO.html">--> http://www.linuxdoc.org/HOWTO/mini/Boot+Root+Raid+LILO.html<!--</A>--></BLOCKQUOTE>
+
+SGML и HTML.
+<BLOCKQUOTE>
+
+<!--<A HREF="ftp://ftp.bizsystems.net/pub/raid/">-->ftp.bizsystems.net/pub/raid/<!--</A>--></BLOCKQUOTE>
+<P>
+<H2>2.3 Документация рекомендуемая для прочтения</H2>
+
+<P><B>Если вы планируете использовать raid1/5 поверх raid0, прочтите:</B>
+<BLOCKQUOTE>
+<B>/usr/src/linux/Documentation/initrd.txt</B>
+</BLOCKQUOTE>
+<P>
+<P>а также документацию и руководства, поставляемые с утилитами raidtools.
+<P>
+<P>и.....
+<!--<A HREF="http://metalab.unc.edu/mdw/HOWTO/Software-RAID-HOWTO.html">-->Software-RAID-HOWTO.html<!--</A>--><P>
+<H2>2.4 Информационные ресурсы по RAID</H2>
+
+<P>Подключиться к спискам рассылки можно по адресам:
+<UL>
+<LI>Этот достаточно спокоен:
+<A HREF="../cdn-cgi/l/email-protection.html#a1ccc0cbced3c5cecccee1cfd4c2cdc4c2d48fd4cfc0cc8fccd9"><span class="__cf_email__" data-cfemail="bfd2ded5d0cddbd0d2d0ffd1cadcd3dadcca91cad1ded291d2c7">[email&#160;protected]</span></A><I> пошлите письмо с темой</I>
+<B>subscribe raiddev</B><P>почту посылайте по адресу:
+<A HREF="../cdn-cgi/l/email-protection.html#deacbfb7bababba89eb0abbdb2bbbdabf0abb0bfb3f0b3a6"><span class="__cf_email__" data-cfemail="9ae8fbf3fefeffecdaf4eff9f6fff9efb4eff4fbf7b4f7e2">[email&#160;protected]</span></A><P>&nbsp;
+</LI>
+<LI>Разработка Raid:
+<A HREF="../cdn-cgi/l/email-protection.html#dcb1bdb6b3aeb8b3b1b39caabbb9aef2aea9a8bbb9aeaff2b9b8a9"><span class="__cf_email__" data-cfemail="a8c5c9c2c7daccc7c5c7e8decfcdda86dadddccfcddadb86cdccdd">[email&#160;protected]</span></A><I> пошлите письмо с темой</I>
+<B>subscribe linux-raid</B><P>почту посылайте по адресу:
+<A HREF="../cdn-cgi/l/email-protection.html#9cf0f5f2e9e4b1eefdf5f8dceafbf9eeb2eee9e8fbf9eeefb2f9f8e9"><span class="__cf_email__" data-cfemail="fe9297908b86d38c9f979abe88999b8cd08c8b8a999b8c8dd09b9a8b">[email&#160;protected]</span></A>
+<I>(это по-видимому наиболее активный список)</I>
+</LI>
+</UL>
+<P>
+<P>
+<H2><A NAME="s3">3. Загружаемый Raid</A></H2>
+
+<P>Я не собираюсь здесь описывать фундаментальные аспекты настройки raid0/1/5
+на Linux, т.к. все полностью описано в других документах. Проблема, которой
+займусь я - это настройка raid на корневой файловой системе, и возможность
+сделать его загружаемым при помощи  <B>стандартного</B> LILO. Документация,
+поставляемая с исходными текстами LILO (не руководствами) и с утилитами
+raidtools-0.90, описывает детали загрузки, загрузочные параметры и общую
+настройку raid соответственно.
+<P>
+<P>Здесь описаны два варианта действий. Настройка и установка загружаемого
+корневого raid, и преобразование уже существующей не-raid системы в
+загружаемый корневой raid без потери данных.
+<P>
+<H2>3.1 Загрузка RAID 1 при помощи стандартного LILO</H2>
+
+<P>Чтобы загрузочная информация была избыточной и легкой в сопровождении,
+создайте небольшой RAID1 и смонтируйте его в каталог <B>/boot</B> вашего
+системного диска. LILO не знает об устройствах 0x9?? и не может найти
+информацию во время загрузки, потому что подсистема raid еще не активна.
+Чтобы обойти это, вы можете передать LILO информацию о геометрии диска
+(дисков),  из  которой  LILO сможет определить положение информации,
+необходимой  для загрузки ядра, даже если он на RAID1-разделе. Это
+происходит потому, что раздел RAID1 аналогичен стандартному разделу,
+за исключением супер-блока raid, записанного в конце. Загружаемый
+raid-массив должен находиться в пределах первых 1024 Мбайт диска.
+Теоретически, он может начинаться, где угодно в 1024 Мегабайтном
+пространстве, но на практике мне так и не удалось его запустить, если
+загружаемый raid не находился в самом начале этого гигабайта. Возможно, это
+было из-за того, что я делал что-то глупое, но теперь это не имеет
+значения. С тех пор я всегда настраиваю все мои системы так, чтобы
+загружаемый raid-массив был первым разделом в системе. У меня есть
+следующие конфигурации корневых raid-систем, с загружаемым RAID1,
+подключенным к <B>/boot</B> с корневыми raid-массивами:  RAID1,  RAID5,
+RAID10 &amp; RAID1-10 ( 1 зеркало + 1 raid0-блок). У последнего имеется особая
+пара lilo-файлов, потому что у всех дисков разные геометрии, однако,
+принципы первоначального загрузочного процесса абсолютно одинаковы.
+Корневые системы RAID10 и RAID1-10 требуют использования <I>initrd</I>
+для подключения корневой файловой системы после того, как процесс загрузки
+ядра закончен. Смотрите приложения с примерами конфигурационных файлов для
+всех моих систем.
+<P>
+<P>Стандартный конфигурационный файл LILO выглядит примерно так:
+<P>
+<PRE>
+# lilo.conf - предполагаем, что диск менее 1024 Мб
+        boot = /dev/hda
+        delay = 40               # многовато, но красиво
+        vga = normal             # обычно не требуется
+        image = /bzImage
+        root = /dev/hda1
+        read-only
+        label = Linux
+</PRE>
+<P>
+<P>Пара конфигурационных файлов LILO для raid выглядят примерно так:
+<P>
+<PRE>
+# lilo.conf.hda - первичный ide, главный диск
+        disk=/dev/md0
+        bios=0x80
+        sectors=63
+        heads=16
+        cylinders=39770
+        partition=/dev/md1
+        start=63
+        boot=/dev/hda
+        map=/boot/map
+        install=/boot/boot.b
+        image=/boot/bzImage
+        root=/dev/md0
+        read-only
+        label=LinuxRaid
+
+# ---------------------
+
+# lilo.conf.hdc - вторичный ide, главный диск
+        disk=/dev/md0
+        bios=0x80                # см. замечание ниже
+        sectors=63
+        heads=16
+        cylinders=39770
+        partition=/dev/md1
+        start=63
+        boot=/dev/hdc            # вот это второй диск
+        map=/boot/map
+        install=/boot/boot.b
+        image=/boot/bzImage
+        root=/dev/md0
+        read-only
+        label=LinuxRaid
+</PRE>
+<P>Если ваш BIOS достаточно "умен" (многие нет), чтобы понять, что первый диск
+не работает или отсутствует, и затем начать загружаться со второго,
+то здесь должна находиться строка <B>bios=81</B>. Это ситуация больше
+подходит для SCSI-bios, чем для IDE-bios. Я просто планирую перенос диска,
+в случае проблем с главным загрузочным диском, чтобы заменить отказавший
+диск C.
+<P>
+<P>Информация о геометрии диска может быть получена при помощи fdisk:
+<P>
+<PRE>
+fdisk -ul (маленькая L)
+fdisk -ul /dev/hda
+
+Disk /dev/hda: 16 heads, 63 sectors, 39770 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1            63     33263     16600+  fd  Linux raid autodetect
+/dev/hda2         33264    443519    205128   82  Linux swap
+/dev/hda3        443520  40088159  19822320   fd  Linux raid autodetect
+
+* Заметьте, что здесь приведено начало каждого раздела
+</PRE>
+<P>
+<H2>3.2 Подробный разбор lilo.conf для загружаемого raid</H2>
+
+<P>Здесь приведен файл lilo.conf для raid, показанный выше, с комментариями к каждой строке.
+<P>
+<PRE>
+# lilo.conf.hda - первичный ide, главный диск
+#       местоположение каталога /boot, в котором буден находиться
+#       ядро, таблицы Lilo, и т.п.
+#       Заметьте, что это не НАСТОЯЩИЙ раздел, в котором находятся
+#       загрузочный образ и информация, а устройство,
+#       которое логически содержит этот каталог.
+#       В этом примере /dev/md1 подключен к точке /dev/md0/boot
+     disk=/dev/md0
+
+#       указать LILO, которое BIOS-устройство использовать для загрузки, т.е. диск C:
+     bios=0x80
+
+#       указать LILO физическую геометрию устройства,
+#       которая не всегда совпадает с "логической"
+#       геометрией. Смотрите файловую систему /proc или
+#       просмотрите сообщения ядра при загрузке, когда он опрашивает  диски
+#
+     sectors=63
+     heads=16
+     cylinders=39770
+
+#       Это подставная строка, чтобы LILO был удовлетворен тем, что
+#       узнал raid-набор (set) и потом нашел НАЧАЛО
+#       загрузочного сектора. Для того, чтобы узнать
+#       для чего эта строка на самом деле, читайте
+#       документацию, идущую с пакетом исходных текстов LILO.
+#       Этот параметр "должен" отличаться от строки
+#       disk= ,приведенной выше. Это может быть любое другое mdx
+#       устройство, используемое или нет, и не обязательно должно быть тем,
+#       которое содержит информацию каталога /boot
+#
+     partition=/dev/md1
+
+#       первый сектор раздела, содержащего каталог /boot
+     start=63
+
+#       настоящее устройство, куда LILO запишет загрузочную информацию
+     boot=/dev/hda
+
+#       логическое устройство, куда LILO поместит загрузочную информацию
+     map=/boot/map
+     install=/boot/boot.b
+
+#       логическое местоположение ядра
+     image=/boot/bzImage
+
+#       стандартные строки приведены ниже
+#       корневым (root) может быть raid1/4/5-устройство
+     root=/dev/md0
+     read-only
+     label=LinuxRaid
+</PRE>
+<P>
+<H2><A NAME="s4">4. Переход с не-raid на RAID1/4/5</A></H2>
+
+<P>Переход с не-raid системы к raid достаточно прост, и состоит из нескольких последовательных шагов, приведенных ниже. Описание приведено для системы с загрузочным, корневым и swap-разделами.
+<PRE>
+СТАРЫЙ диск в существующей системе:
+
+    /dev/hda1     загрузочный, возможно dos+loadlin или lilo
+    /dev/hda2     корневой
+    /dev/hda3     swap
+</PRE>
+
+Мы добавим дополнительный диск и преобразуем систему в RAID1. Вы можете легко добавить несколько дисков и сделать RAID5-массив, при помощи подобной процедуры.
+<P>
+<H2>4.1 Шаг 1 - готовим новое ядро</H2>
+
+<P>Скачайте новое чистое ядро, утилиты raidtools-0.90 (или более новую
+версию), и патч к ядру, для поддержки raid версии 0.90.
+<P>Соберите и установите raidtools и ПРОЧИТАЙТЕ документацию.
+<P>Соберите и установите ядро с поддержкой тех видов (0/1/4/5 ?) raid, которые вы будете использовать. Убедитесь в том, что разрешили автозапуск raid-устройств в конфигурации ядра. Удостоверьтесь в том, что ядро нормально загружается и изучите файл /proc/mdstat, чтобы еще раз убедиться в том, что необходимые вам виды raid поддерживаются ядром.
+<P>
+<H2>4.2 Шаг 2 - настраиваем raidtab для вашего нового raid-а.</H2>
+
+<P>Новый диск будет добавлен на второй IDE-контроллер как главное устройство, поэтому станет /dev/hdc
+<P>
+<PRE>
+    /dev/hdc1     16 Мб -- более чем достаточно для нескольких ядер
+    /dev/hdc2     большая часть диска
+    /dev/hdc3     еще немного swap-пространства, если необходимо. Если нет, увеличьте /dev/hdc2
+</PRE>
+<P>Измените виды разделов /dev/hdc1 и /dev/hdc2 на вид "fd" для автозапуска raid.
+<P>Используя параметр <B>failed-disk</B>, создайте raidtab для необходимой конфигурации RAID1. Этот параметр (failed disk) должен быть последним в таблице.
+<P>
+<PRE>
+# пример raidtab
+# md0 - это корневой массив
+raiddev                 /dev/md0
+raid-level              1
+nr-raid-disks           2
+chunk-size              32
+# Свободные диски для реконструкции данных "на-ходу"
+nr-spare-disks          0
+persistent-superblock   1
+device                  /dev/hdc2
+raid-disk               0
+# это наш старый диск, временно пометим его как отказавший
+device                  /dev/hda2
+failed-disk             1
+
+# md1 - это загрузочный /boot массив
+raiddev                 /dev/md1
+raid-level              1
+nr-raid-disks           2
+chunk-size              32
+# Свободные диски для реконструкции данных "на-ходу"
+nr-spare-disks          0
+persistent-superblock   1
+device                  /dev/hdc1
+raid-disk               0
+# boot также пометим сломанным
+device                  /dev/hda1
+failed-disk               1
+</PRE>
+<P>
+<H2>4.3 Создаем, форматируем и настраиваем RAID</H2>
+
+<P>Создайте md-устройства следующими командами:
+<PRE>
+    mkraid /dev/md0
+    mkraid /dev/md1
+</PRE>
+<P>Raid-устройства должны быть созданы, и запущены. Изучите /proc/mdstat, там должны быть указаны виды raid-устройств, поддерживаемые ядром, а также список работающих raid-устройств.
+<P>Отформатируйте загрузочное и корневое устройства  командами:
+<PRE>
+    mke2fs /dev/md0
+    mke2fs /dev/md1
+</PRE>
+
+Подключите новое корневое устройство туда, куда удобно, создайте в нем каталог /boot и подключите туда загрузочный раздел:
+<P>
+<PRE>
+    mount /dev/md0 /mnt
+    mkdir /mnt/boot
+    mount /dev/md1 /mnt/boot
+</PRE>
+<P>
+<H2>4.4 Копируем текущую ОС на новое raid-устройство</H2>
+
+<P>Это достаточно просто и понятно.
+<PRE>
+    cd /
+    # настройте скрипт для того чтобы это сделать
+    cp -a /bin /mnt
+    cp -a /dev /mnt
+    cp -a /etc /mnt
+    cp -a (все каталоги кроме /mnt, /proc, и сетевых дисков) /mnt
+</PRE>
+
+Процедура может усложниться, если вы подключили или сделали ссылки
+на другие диски к вашей корневой файловой системе. Пример, приведенный выше,
+предполагает простую систему, вам, возможно, придется немного изменить
+процедуру копирования.
+<P>
+<H2>4.5 Проверяем ваш новый RAID</H2>
+
+<P>Создайте загрузочный флоппи и запустите команду rdev для ядра.
+<P>
+<PRE>
+    dd if=kernal.image of=/dev/fd0 bs=2k
+    rdev /dev/fd0 /dev/md0
+    rdev -r /dev/fd0 0
+    rdev -R /dev/fd0 1
+</PRE>
+<P>Измените файл fstab на RAID-устройстве для отражения новых точек подключения, как указано ниже:
+<PRE>
+  /dev/md0        /       ext2    defaults        1 1
+  /dev/md1        /boot   ext2    defaults        1 1
+</PRE>
+<P>Отключите raid-устройства и перезагрузите систему, чтобы убедиться в том, что все работает правильно.
+<P>
+<PRE>
+    umount /mnt/boot
+    umount /mnt
+    raidstop /dev/md0
+    raidstop /dev/md1
+    shutdown -r now
+</PRE>
+<P>Ваша RAID-система должна загрузиться и  работать в сокращенном (degraded) режиме с загрузочным флоппи-диском. Аккуратно проверьте, что вы скопировали ВСЕ на вашу новую raid-систему. Если вы что-то на этом этапе напутаете без сохранения резервной копии, ВАМ БУДЕТ НЕСЛАДКО!
+<P>Если что-то не заработало, перезагрузите вашу старую систему, вернитесь и исправьте все, пока все не будет нормально.
+<P>
+<H2>4.6 Интегрируем старый диск в raid-массив</H2>
+
+<P>Удачное завершение процедур предыдущего пункта означает, что raid-массив работает, но пока без излишеств. Теперь надо переделать разделы старого диска (дисков) для того, чтобы добавить его в raid-массив. Запомните, если геометрии дисков разные, то размер раздела на старом диске должен быть равен или больше размеров raid-разделов, а иначе их нельзя будет добавить в raid-массив.
+<P>Переделайте нужным образом разделы на старом диске, например:
+<PRE>
+    /dev/hda1     равен или больше /dev/hdc1
+    /dev/hda2     равен или больше /dev/hdc2
+    /dev/hda3     нечто, оставшееся под swap или что-то еще...
+</PRE>
+<P>Смените параметр <B>failed-disk</B> в raidtab на <B>raid-disk</B> и добавьте новые (старые) разделы к raid-массиву, что называется "на ходу" (hot add).
+<PRE>
+    raidhotadd /dev/md1 /dev/hda1
+    raidhotadd /dev/md0 /dev/hda2
+</PRE>
+
+В файле /proc/mdstat должны теперь появиться одно или более raid-устройств, перестраивающих данные для новых разделов. Через минуту или две...или несколько, raid-массивы должны быть полностью синхронизированы (эта процедура может занять длительное время для больших разделов).
+<P>
+<P>Использование вышеописанной процедуры настроит загружаемый raid на новой
+raid-паре. Пользуйтесь загрузочным флоппи-диском, пока настраиваете
+и тестируете последний шаг.
+<P>
+<H2><A NAME="s5">5. Приложение 1. - Пример raidtab</A></H2>
+
+<P>Пример RAID1 описан в первых главах этого документа
+<P>
+<PRE>
+ df
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/md0              19510780   1763188  16756484  10% /
+/dev/md1                 15860       984     14051   7% /boot
+
+# --------------------------
+
+ fdisk -ul /dev/hda
+
+Disk /dev/hda: 16 heads, 63 sectors, 39770 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1            63     33263     16600+  fd  Linux raid autodetect
+/dev/hda2         33264    443519    205128   83  Linux native
+/dev/hda3        443520  40088159  19822320   fd  Linux raid autodetect
+
+# --------------------------
+
+ fdisk -ul /dev/hdc
+
+Disk /dev/hdc: 16 heads, 63 sectors, 39770 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdc1            63     33263     16600+  fd  Linux raid autodetect
+/dev/hdc2         33264    443519    205128   82  Linux swap
+/dev/hdc3        443520  40088159  19822320   fd  Linux raid autodetect
+
+# --------------------------
+
+# md0 - это корневой массив, примерно 20 Гб
+raiddev                 /dev/md0
+raid-level              1
+nr-raid-disks           2
+chunk-size              32
+# Свободные диски для реконструкции "на-ходу"
+nr-spare-disks          0
+persistent-superblock   1
+device                  /dev/hda3
+raid-disk               0
+device                  /dev/hdc3
+raid-disk               1
+
+# md1 - это загрузочный массив, примерно 16 Мб
+raiddev                 /dev/md1
+raid-level              1
+nr-raid-disks           2
+chunk-size              32
+# Свободные диски для реконструкции "на-ходу"
+nr-spare-disks          0
+persistent-superblock   1
+device                  /dev/hda1
+raid-disk               0
+device                  /dev/hdc1
+raid-disk               1
+
+# --------------------------
+
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство, содержащее каталог /boot
+disk=/dev/md0
+# геометрия
+  bios=0x80
+  sectors=63
+  heads=16
+  cylinders=39770
+# подставная строка
+  partition=/dev/md1
+# начало "диска" на устройстве
+  start=63
+
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+
+image=/boot/bzImage
+root=/dev/md0
+label=LinuxRaid
+read-only
+
+# -------------------------
+
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство, содержащее каталог /boot
+disk=/dev/md0
+# геометрия
+  bios=0x80
+  sectors=63
+  heads=16
+  cylinders=39770
+# подставная строка
+  partition=/dev/md1
+# начало "диска" на устройстве
+  start=63
+
+boot=/dev/hdc
+map=/boot/map
+install=/boot/boot.b
+
+image=/boot/bzImage
+root=/dev/md0
+label=LinuxRaid
+read-only
+</PRE>
+<P>
+<H2><A NAME="s6">6. Приложение 2. - Пример реализации RAID5 на SCSI</A></H2>
+
+<P>4-дисковый SCSI RAID5
+<PRE>
+ df
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/md0              11753770   2146076   9000678  19% /
+/dev/md1                 15739       885     14042   6% /boot
+
+# --------------------------
+
+ fdisk -ul /dev/sda
+
+Disk /dev/sda: 64 heads, 32 sectors, 4095 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sda1            32     32767     16368   fd  Linux raid autodetect
+/dev/sda2         32768    292863    130048    5  Extended
+/dev/sda3        292864   8386559   4046848   fd  Linux raid autodetect
+/dev/sda5         32800    260095    113648   82  Linux swap
+/dev/sda6        260128    292863     16368   83  Linux native - test
+
+# ------------------------
+
+ fdisk -ul /dev/sdb
+
+Disk /dev/sdb: 64 heads, 32 sectors, 4095 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sdb1            32     32767     16368   fd  Linux raid autodetect
+/dev/sdb2         32768    292863    130048    5  Extended
+/dev/sdb3        292864   8386559   4046848   fd  Linux raid autodetect
+/dev/sdb5         32800    260095    113648   82  Linux swap
+/dev/sdb6        260128    292863     16368   83  Linux native - test
+
+# ------------------------
+
+# fdisk -ul /dev/sdc
+
+Disk /dev/sdc: 64 heads, 32 sectors, 4095 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sdc2            32    292863    146416    5  Extended
+/dev/sdc3        292864   8386559   4046848   fd  Linux raid autodetect
+/dev/sdc5            64    260095    130016   83  Linux native - development
+/dev/sdc6        260128    292863     16368   83  Linux native - test
+
+# ------------------------
+
+ fdisk -ul /dev/sdd
+
+Disk /dev/sdd: 64 heads, 32 sectors, 4095 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sdd2            32    292863    146416    5  Extended
+/dev/sdd3        292864   8386559   4046848   fd  Linux raid autodetect
+/dev/sdd5            64    260095    130016   83  Linux native - development
+/dev/sdd6        260128    292863     16368   83  Linux native - test
+
+# --------------------------
+
+# raidtab
+#
+raiddev /dev/md0
+        raid-level      5
+        nr-raid-disks   4
+        persistent-superblock 1
+        chunk-size      32
+
+# Свободные диски для реконструкции "на-ходу"
+        nr-spare-disks  0
+        device          /dev/sda3
+        raid-disk       0
+        device          /dev/sdb3
+        raid-disk       1
+        device          /dev/sdc3
+        raid-disk       2
+        device          /dev/sdd3
+        raid-disk       3
+
+# загрузочный раздел
+#
+raiddev /dev/md1
+        raid-level      1
+        nr-raid-disks   2
+        persistent-superblock 1
+        chunk-size      32
+
+# Свободные диски для реконструкции "на-ходу"
+        nr-spare-disks  0
+        device          /dev/sda1
+        raid-disk       0
+        device          /dev/sdb1
+        raid-disk       1
+
+# --------------------------
+
+# cat lilo.conf.sda
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство, содержащее каталог /boot
+disk=/dev/md0
+# геометрия
+  bios=0x80
+  sectors=32
+  heads=64
+  cylinders=4095
+# подставная строка
+  partition=/dev/md1
+# начало "диска" на устройстве
+  start=32
+
+boot=/dev/sda
+map=/boot/map
+install=/boot/boot.b
+
+image=/boot/bzImage
+root=/dev/md0
+label=LinuxRaid
+read-only
+
+# ------------------------
+# cat lilo.conf.sdb
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство, содержащее каталог /boot
+disk=/dev/md0
+# геометрия
+  bios=0x80
+  sectors=32
+  heads=64
+  cylinders=4095
+# подставная строка
+  partition=/dev/md1
+# начало "диска" на устройстве
+  start=32
+
+boot=/dev/sdb
+map=/boot/map
+install=/boot/boot.b
+
+image=/boot/bzImage
+root=/dev/md0
+label=LinuxRaid
+read-only
+</PRE>
+<P>
+<H2><A NAME="s7">7. Приложение 3. - IDE RAID10 с initrd</A></H2>
+
+<P>RAID1 поверх полосатой пары RAID0.... диски на RAID0-массивах не совсем одинаковые, но близки по размерам.
+<P>
+<PRE>
+/dev/md0 - это раздел /boot, автоматически запускаемый ядром
+/dev/md1 и /dev/md3 - это два RAID0-массива автоматически запускаемые ядром
+/dev/md2 - это корневой раздел, запускаемый initrd
+
+df
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/md2                118531     76485     35925  68% /
+/dev/md0                  1917      1361       457  75% /boot
+
+# ----------------------------
+
+ fdisk -ul /dev/hda
+
+Disk /dev/hda: 4 heads, 46 sectors, 903 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1            46      4231      2093   fd  Linux raid autodetect
+/dev/hda2          4232    166151     80960   fd  Linux raid autodetect
+
+# ----------------------------
+
+ fdisk -ul /dev/hdb
+
+Disk /dev/hdb: 5 heads, 17 sectors, 981 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdb1            17     83384     41684   fd  Linux raid autodetect
+
+# ----------------------------
+
+ fdisk -ul /dev/hdc
+
+Disk /dev/hdc: 7 heads, 17 sectors, 1024 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdc1            17     84013     41998+  fd  Linux raid autodetect
+/dev/hdc2         84014    121855     18921   82  Linux swap
+
+# ----------------------------
+
+ fdisk -ul /dev/hdd
+
+Disk /dev/hdd: 4 heads, 46 sectors, 903 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdd1            46      4231      2093   fd  Linux raid autodetect
+/dev/hdd2          4232    166151     80960   fd  Linux raid autodetect
+
+# ----------------------------
+
+# raidtab
+#
+raiddev /dev/md0
+        raid-level      1
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/hda1
+        raid-disk       0
+        device          /dev/hdd1
+        raid-disk       1
+
+raiddev /dev/md1
+        raid-level      0
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/hdd2
+        raid-disk       0
+        device          /dev/hdb1
+        raid-disk       1
+
+raiddev /dev/md2
+        raid-level      1
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/md1
+        raid-disk       0
+        device          /dev/md3
+        raid-disk       1
+
+raiddev /dev/md3
+        raid-level      0
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/hda2
+        raid-disk       0
+        device          /dev/hdc1
+        raid-disk       1
+
+# ----------------------------
+
+Содержимое файла linuxrc
+
+ cat linuxrc
+#!/bin/sh
+# версия 1.02 2-22-00
+#
+############# настоящее НАЧАЛО 'linuxrc' ###############
+#
+# подключаем файловую систему /proc
+/bin/mount /proc
+
+# запускаем raid-1, сделанный из raid-0 массивов
+/bin/raidstart /dev/md2
+
+# выведем на консоль суть происходящего
+/bin/cat /proc/mdstat
+
+# Все нормально, позволяем ядру подключить /dev/md2
+# заставляем ядро воспринимать /dev/md2 как корневую файловую систему
+# Значение 0x900 - это номер устройства, рассчитанный, как
+# 256*главное_число_устройства + зависимое_число_устройства
+echo "/dev/md2 mounted on root"
+echo 0x902>/proc/sys/kernel/real-root-dev
+
+# отключаем /proc для освобождения памяти, выделенной устройству initrd
+/bin/umount /proc
+exit
+
+# ----------------------------
+
+Содержимое initrd
+
+./bin/ash
+./bin/echo
+./bin/raidstart
+./bin/mount
+./bin/umount
+./bin/cat
+./bin/sh
+./dev/tty1
+./dev/md0
+./dev/md1
+./dev/md2
+./dev/md3
+./dev/md4
+./dev/console
+./dev/hda
+./dev/hda1
+./dev/hda2
+./dev/hda3
+./dev/hdb
+./dev/hdb1
+./dev/hdb2
+./dev/hdb3
+./dev/hdc
+./dev/hdc1
+./dev/hdc2
+./dev/hdc3
+./dev/hdd
+./dev/hdd1
+./dev/hdd2
+./dev/hdd3
+./dev/initrd
+./dev/ram0
+./dev/ram1
+./dev/ram2
+./dev/ram3
+./dev/ram4
+./dev/ram5
+./dev/ram6
+./dev/ram7
+./etc/raidtab
+./etc/fstab
+./lib/ld-2.1.2.so
+./lib/ld-linux.so.1
+./lib/ld-linux.so.1.9.9
+./lib/ld-linux.so.2
+./lib/ld.so
+./lib/libc-2.1.2.so
+./lib/libc.so.6
+./linuxrc
+./proc
+</PRE>
+<H2><A NAME="s8">8. Приложение 4. - IDE RAID1-10 с initrd</A></H2>
+
+<P>Эта система создана из ассортимента старого и нового. Корневое устройство
+- это RAID1, созданный на основе одного RAID0-массива, из двух дисков
+разного размера и обычного дискового раздела большего размера. Подробное
+изучение файлов lilo.conf может вам в полной мере понять суть некоторых
+параметров.
+<P>
+<PRE>
+/dev/md0 - это раздел с каталогом /boot, автоматически запускаемый ядром
+/dev/md1 - это первая половина зеркального массива для md2, автоматически запускаемая ядром
+/dev/hda3 - это вторая половина зеркального массива для md2
+/dev/md2 - это RAID1 /dev/md1 + /dev/hda3, запускаемый initrd
+
+df
+Filesystem           1k-blocks      Used Available Use% Mounted on
+/dev/md2                138381     74421     56815  57% /
+/dev/md0                  2011      1360       549  71% /boot
+
+# ----------------------------
+
+ fdisk -ul /dev/hda
+
+Disk /dev/hda: 8 heads, 46 sectors, 903 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1            46      4415      2185   fd  Linux raid autodetect
+/dev/hda2          4416     43423     19504   82  Linux swap
+/dev/hda3         43424    332303    144440   83  Linux native
+
+# ----------------------------
+
+ fdisk -ul /dev/hdc
+
+Disk /dev/hdc: 8 heads, 39 sectors, 762 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdc1            39      4367      2164+  fd  Linux raid autodetect
+/dev/hdc2          4368     70199     32916   82  Linux swap
+/dev/hdc3         70200    237743     83772   fd  Linux raid autodetect
+
+# ----------------------------
+
+ fdisk -ul /dev/hdd
+
+Disk /dev/hdd: 4 heads, 39 sectors, 762 cylinders
+Units = sectors of 1 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdd1            39    118871     59416+  fd  Linux raid autodetect
+
+# ----------------------------
+
+# raidtab
+#
+raiddev /dev/md0
+        raid-level      1
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/hdc1
+        raid-disk       1
+        device          /dev/hda1
+        raid-disk       0
+
+raiddev /dev/md1
+        raid-level      0
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/hdc3
+        raid-disk       0
+        device          /dev/hdd1
+        raid-disk       1
+
+raiddev /dev/md2
+        raid-level      1
+        nr-raid-disks   2
+        persistent-superblock   1
+        chunk-size      8
+        device          /dev/md1
+        raid-disk       1
+        device          /dev/hda3
+        raid-disk       0
+
+# ----------------------------
+
+ cat linuxrc
+#!/bin/sh
+# версия 1.02 2-22-00
+#
+############# настоящее НАЧАЛО 'linuxrc' ###############
+#
+# подключаем файловую систему /proc
+/bin/mount /proc
+
+# автозапуск раздела с каталогом /boot и raid0
+/bin/raidstart /dev/md2
+
+# выведем на консоль суть происходящего
+/bin/cat /proc/mdstat
+
+# Все нормально, позволяем ядру подключить /dev/md2
+# заставляем ядро воспринимать /dev/md2 как корневую файловую систему
+# Значение 0x900 - это номер устройства, рассчитанный, как
+# 256*главное_число_устройства + зависимое_число_устройства
+echo "/dev/md2 mounted on root"
+echo 0x902>/proc/sys/kernel/real-root-dev
+
+# отключаем /proc для освобождения памяти, выделенной устройству initrd
+/bin/umount /proc
+exit
+
+# ----------------------------
+
+Содержимое initrd.gz
+
+./bin
+./bin/ash
+./bin/echo
+./bin/raidstart
+./bin/mount
+./bin/umount
+./bin/cat
+./bin/sh
+./dev/tty1
+./dev/md0
+./dev/md1
+./dev/md2
+./dev/md3
+./dev/console
+./dev/hda
+./dev/hda1
+./dev/hda2
+./dev/hda3
+./dev/hdc
+./dev/hdc1
+./dev/hdc2
+./dev/hdc3
+./dev/hdd
+./dev/hdd1
+./dev/hdd2
+./dev/hdd3
+./dev/initrd
+./dev/ram0
+./dev/ram1
+./dev/ram2
+./dev/ram3
+./dev/ram4
+./dev/ram5
+./dev/ram6
+./dev/ram7
+./etc/raidtab
+./etc/fstab
+./lib/ld-2.1.2.so
+./lib/ld-linux.so.1
+./lib/ld-linux.so.1.9.9
+./lib/ld-linux.so.2
+./lib/ld.so
+./lib/libc-2.1.2.so
+./lib/libc.so.6
+./linuxrc
+./proc
+
+# ----------------------------
+
+ cat lilo.conf.hda
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство содержащее каталог /boot
+disk=/dev/md2
+# геометрия
+  bios=0x80
+  cylinders=903
+  heads=8
+  sectors=46
+# геометрия 2-го диска
+# параметр BIOS будет аналогичный, потому что это все переместится на hda
+#  cylinders=762
+#  heads=8
+#  sectors=39
+
+# подставная строка
+  partition=/dev/md0
+# начало "диска" на устройстве
+  start=46
+# второе устройство
+#  start=39
+
+# У ядра 2.2.14, видимо есть кое-какие проблемы с распознаванием правильных IRQ
+  append = "ide1=0x170,0x376,12 ether=10,0x300,eth0 ether=5,0x320,eth1"
+
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+
+initrd=/boot/initrd.gz
+
+image=/boot/zImage
+root=/dev/md2
+label=LinuxRaid
+read-only
+
+# ----------------------------
+
+ cat lilo.conf.hdc
+# ГЛОБАЛЬНЫЙ РАЗДЕЛ
+# устройство, содержащее каталог /boot
+disk=/dev/md2
+# геометрия
+  bios=0x80
+#  cylinders=903
+#  heads=8
+#  sectors=46
+# геометрия 2-го диска
+# параметр BIOS будет аналогичный, потому что это все переместится на hda
+  cylinders=762
+  heads=8
+  sectors=39
+
+# подставная строка
+  partition=/dev/md0
+# начало "диска" на устройстве
+#  start=46
+# второе устройство
+  start=39
+
+# У ядра 2.2.14, видимо есть кое-какие проблемы с распознаванием правильных IRQ
+  append = "ide1=0x170,0x376,12 ether=10,0x300,eth0 ether=5,0x320,eth1"
+
+boot=/dev/hdc
+map=/boot/map
+install=/boot/boot.b
+
+initrd=/boot/initrd.gz
+
+image=/boot/zImage
+root=/dev/md2
+label=LinuxRaid
+read-only
+</PRE>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

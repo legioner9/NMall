@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>13.3 "ПРОЗРАЧНЫЕ" РАСПРЕДЕЛЕННЫЕ ФАЙЛОВЫЕ СИСТЕМЫ — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1><a name="_14_3">13.3 "ПРОЗРАЧНЫЕ" РАСПРЕДЕЛЕННЫЕ ФАЙЛОВЫЕ СИСТЕМЫ</a></h1>
+
+<p>Термин &quot;прозрачное распределение&quot; означает, что пользователи, работающие на одной машине, могут обращаться к файлам, находящимся на другой машине, не осознавая того, что тем самым они пересекают машинные границы, подобно тому, как на своей машине они при переходе от одной файловой системе к другой пересекают точки монтирования. Имена, по которым процессы обращаются к файлам, находящимся на удаленных машинах, похожи на имена локальных файлов: отличительные символы в них отсутствуют. В конфигурации, показанной на <a href="glava_113.htm#13_10">Рисунке 13.10</a>, каталог &quot;/usr/src&quot;, принадлежащий машине B, &quot;вмонтирован&quot; в каталог &quot;/usr/src&quot;, принадлежащий машине A. Такая конфигурация представляется удобной в том случае, если в разных системах предполагается использовать один и тот же исходный код системы, традиционно находящийся в каталоге &quot;/usr/src&quot;. Пользователи, работающие на машине A, могут обращаться к файлам, расположенным на машине B, используя привычный синтаксис написания имен файлов (например: &quot;/usr/src/cmd/login.c&quot;), и ядро уже само решает вопрос, является файл удаленным или же локальным. Пользователи, работающие на машине B, имеют доступ к своим локальным файлам (не подозревая о том, что к этим же файлам могут обращаться и пользователи машины A), но, в свою очередь, не имеют доступа к файлам, находящимся на машине A. Конечно, возможны и другие варианты, в частности, такие, в которых все удаленные системы монтируются в корне локальной системы, благодаря чему пользователи получают доступ ко всем файлам во всех системах.
+
+<a name=13_10></a><center><img src="_pic_/13_10.gif"></p>
+
+<p><center><i>Рисунок 13.10. Файловые системы после удаленного монтирования</i></center></p>
+
+<p>Наличие сходства между монтированием локальных файловых систем и открытием доступа к удаленным файловым системам послужило поводом для адаптации функции mount применительно к удаленным файловым системам. В данном случае ядро получает в свое распоряжение таблицу монтирования расширенного формата. Выполняя функцию mount, ядро организует сетевую связь с удаленной машиной и сохраняет в таблице монтирования информацию, характеризующую данную связь.</p>
+
+<p>Интересная проблема связана с именами путей, включающих &quot;..&quot;. Если процесс делает текущим каталог из удаленной файловой системы, последующее использование в имени символов &quot;..&quot; скорее вернет процесс в локальную файловую систему, чем позволит обращаться к файлам, расположенным выше текущего каталога. Возвращаясь вновь к <a href="glava_113.htm#13_10">Рисунку 13.10</a>, отметим, что когда процесс, принадлежащий машине A, выбрав предварительно в качестве текущего каталог &quot;/usr/src/cmd&quot;, расположенный в удаленной файловой системе, исполнит команду</p>
+
+<pre>   cd ../../..</pre>
+
+<p>текущим каталогом станет корневой каталог, принадлежащий машине A, а не машине B. Алгоритм namei, работающий в ядре удаленной системы, получив последовательность символов &quot;..&quot;, проверяет, является ли вызывающий процесс агентом процесса-клиента, и в случае положительного ответа устанавливает, трактует ли клиент текущий рабочий каталог в качестве корня удаленной файловой системы.</p>
+
+<p>Связь с удаленной машиной принимает одну из двух форм: вызов удаленной процедуры или вызов удаленной системной функции. В первой форме каждая процедура ядра, имеющая дело с индексами, проверяет, указывает ли индекс на удаленный файл, и если это так, посылает на удаленную машину запрос на выполнение указанной операции. Данная схема естественным образом вписывается в абстрактную структуру поддержки файловых систем различных типов, описанную в заключительной части <a href="glava_35.htm">главы 5</a>. Таким образом, обращение к удаленному файлу может инициировать пересылку по сети нескольких сообщений, количество которых определяется количеством подразумеваемых операций над файлом, с соответствующим увеличением времени ответа на запрос с учетом принятого в сети времени ожидания. Каждый набор удаленных операций включает в себя, по крайней мере, действия по блокированию индекса, подсчету ссылок и т.п. В целях усовершенствования модели предлагались различные оптимизационные решения, связанные с объединением нескольких операций в один запрос (сообщение) и с буферизацией наиболее важных данных (см. [Sandberg 85]).
+
+<a name=13_11></a><center><img src="_pic_/13_11.gif"></p>
+
+<p><center><i>Рисунок 13.11. Открытие удаленного файла</i></center></p>
+
+<p>Рассмотрим процесс, который открывает удаленный файл &quot;/usr/src/cmd/login.c&quot;, где &quot;src&quot; - точка монтирования. Выполняя синтаксический разбор имени файла (по схеме namei-iget), ядро обнаруживает, что файл удаленный, и посылает на машину, где он находится, запрос на получение заблокированного индекса. Получив желаемый ответ, локальное ядро создает в памяти копию индекса, корреспондирующую с удаленным файлом. Затем ядро производит проверку наличия необходимых прав доступа к файлу (на чтение, например), послав на удаленную машину еще одно сообщение. Выполнение алгоритма open продолжается в полном соответствии с планом, приведенным в <a href="glava_35.htm">главе 5</a>, с посылкой сообщений на удаленную машину по мере необходимости, до полного окончания алгоритма и освобождения индекса. Взаимосвязь между структурами данных ядра по завершении алгоритма open показана на <a href="glava_113.htm#13_11">Рисунке 13.11</a>.</p>
+
+<p>Если клиент вызывает системную функцию read, ядро клиента блокирует локальный индекс, посылает запрос на блокирование удаленного индекса, запрос на чтение данных, копирует данные в локальную память, посылает запрос на освобождение удаленного индекса и освобождает локальный индекс. Такая схема соответствует семантике существующего однопроцессорного ядра, но частота использования сети (несколько обращений на каждую системную функцию) снижает производительность всей системы. Однако, чтобы уменьшить поток сообщений в сети, в один запрос можно объединять несколько операций. В примере с функцией read клиент может послать серверу один общий запрос на &quot;чтение&quot;, а уж сервер при его выполнении сам принимает решение на захват и освобождение индекса. Сокращения сетевого трафика можно добиться и путем использования удаленных буферов (о чем мы уже говорили выше), но при этом нужно позаботиться о том, чтобы системные функции работы с файлами, использующие эти буферы, выполнялись надлежащим образом.</p>
+
+<p>При второй форме связи с удаленной машиной (вызов удаленной системной функции) локальное ядро обнаруживает, что системная функция имеет отношение к удаленному файлу, и посылает указанные в ее вызове параметры на удаленную систему, которая исполняет функцию и возвращает результаты клиенту. Машина клиента получает результаты выполнения функции и выходит из состояния вызова. Большинство системных функций может быть выполнено с использованием только одного сетевого запроса с получением ответа через достаточно приемлемое время, но в такую модель вписываются не все функции. Так, например, по получении некоторых сигналов ядро создает для процесса файл с именем &quot;core&quot; (<a href="glava_65.htm">глава 7</a>). Создание этого файла не связано с конкретной системной функцией, а завершает выполнение нескольких операций, таких как создание файла, проверка прав доступа и выполнение ряда операций записи.</p>
+
+<p>В случае с системной функцией open запрос на исполнение функции, посылаемый на удаленную машину, включает в себя часть имени файла, оставшуюся после исключения компонент имени пути поиска, отличающих удаленный файл, а также различные флаги. В рассмотренном ранее примере с открытием файла &quot;/usr/src/cmd/login.c&quot; ядро посылает на удаленную машину имя &quot;cmd/login.c&quot;. Сообщение также включает в себя опознавательные данные, такие как пользовательский и групповой коды идентификации, необходимые для проверки прав доступа к файлам на удаленной машине. Если с удаленной машины поступает ответ, свидетельствующий об успешном выполнении функции open, локальное ядро выбирает свободный индекс в памяти локальной машины и помечает его как индекс удаленного файла, сохраняет информацию об удаленной машине и удаленном индексе и по заведенному порядку выделяет новую запись в таблице файлов. В сравнении с реальным индексом на удаленной машине индекс, принадлежащий локальной машине, является формальным, не нарушающим конфигурацию модели, которая в целом совпадает с конфигурацией, используемой при вызове удаленной процедуры (<a href="glava_113.htm#13_11">Рисунок 13.11</a>). Если вызываемая процессом функция обращается к удаленному файлу по его дескриптору, локальное ядро узнает из индекса (локального) о том, что файл удаленный, формулирует запрос, включающий в себя вызываемую функцию, и посылает его на удаленную машину. В запросе содержится указатель на удаленный индекс, по которому процесс-спутник сможет идентифицировать сам удаленный файл.</p>
+
+<p>Получив результат выполнения любой системной функции, ядро может для его обработки прибегнуть к услугам специальной программы (по завершении которой ядро закончит работу с функцией), ибо не всегда локальная обработка результатов, применяемая в однопроцессорной системе, подходит для системы с несколькими процессорами. Вследствие этого возможны изменения в семантике системных алгоритмов, направленные на обеспечение поддержки выполнения удаленных системных функций. Однако, при этом в сети циркулирует минимальный поток сообщений, обеспечивающий минимальное время реакции системы на поступающие запросы.</p>
+
+<p><center><a href="glava_112.htm">Предыдущая глава</a> || <a href="contents.htm">Оглавление</a> || <a href="glava_114.htm">Следующая глава</a></p>
+
+  </div>
+</div>
+</body>
+</html>

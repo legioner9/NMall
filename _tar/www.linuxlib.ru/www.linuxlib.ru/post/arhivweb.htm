@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Создание веб-архива для списка рассылки — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Создание веб-архива для списка рассылки</h1>
+<p>Автор: (C) <!-- Author --><A href="../cdn-cgi/l/email-protection.html#c0e5f683e5f6f1e5f7f7e5f7f2e5f6f5e5f685e5f6f3e5f6f5e5f7f4e5f6f5e5f686e5f4f0e5f683e5f7f9e5f6f3e5f686e5f7f3e5f285e5f6f3e5f686e5f684">Лоренс
+Тео [Lawrence Teo] </A><!-- Author --><BR>Перевод: (C) <!-- Translator -->Сергей
+Скороходов <!-- Translator -->
+<HR noShade SIZE=2>
+<!-- Article Body -->
+<H2>1. Введение</H2>
+<P>В этой статье я опишу, как настроить веб-архив для списка рассылки. Эта
+статья "подхватывает эстафету" там, где я заканчиваю предыдущую (в этом выпуске
+Linux Gazette): <A href="https://www.linuxlib.ru/post/rus-teo.html"><B>Как легко и быстро настроить почтовый
+список рассылки</B></A>. Я очень рекомендую прочесть сначала ее (если Вы,
+конечно, еще этого не сделали:). Контекст и содержание данной статьи берут свое
+начало в методиках, описанных в предыдущей.</P>
+<H3>1.1 Настройка списка рассылки</H3>
+<P>Для начала я кратко опишу обустройство почтового списка рассылки, который
+используется в качестве примера. Если Вы читали предыдущую статью, то все
+покажется знакомым.</P>
+<P>Предположим, у нас есть список рассылки под названием
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7105191401031e1b141205311c08131e095f1409101c011d145f121e1c">[email&#160;protected]</a></I>, который работает на Linux-машине с именем
+<I>mybox.example.com</I>. На этот список подписались адресаты
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ddb1b4b3a8ae9db0a4bfb2a5f3b8a5bcb0adb1b8f3beb2b0">[email&#160;protected]</a></I>, <I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e6878a8788a6839e878b968a83c8888392">[email&#160;protected]</a></I> и
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ec899f9eac89948d819c8089c2839e8b">[email&#160;protected]</a></I>, т.е. мы внесли их в файл псевдонимов [aliases] почтового
+сервера (или Mail Transfer Agent'а). В зависимости от того, каким дистрибутивом
+мы пользуемся, этот файл обычно называется <I>/etc/mail/aliases</I> или
+<I>/etc/aliases</I>. Запись в файле псевдонимов выглядит так:</P>
+<P><PRE>theproject:
+  linus,
+  <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f899949996b89d80999588949dd6969d8c">[email&#160;protected]</a>,
+  <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f5908687b5908d9498859990db9a8792">[email&#160;protected]</a>
+</PRE>
+<P></P>
+<P>Таким образом, как только сообщение электронной почты поступает на адрес
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="87f3efe2f7f5e8ede2e4f3c7eafee5e8ffa9e2ffe6eaf7ebe2a9e4e8ea">[email&#160;protected]</a></I>, оно автоматически пересылается по адресам
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0d61646378754d60746f62752368756c607d6168236e6260">[email&#160;protected]</a></I>, <I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="94f5f8f5fad4f1ecf5f9e4f8f1bafaf1e0">[email&#160;protected]</a></I> и
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="583d2b2a183d20393528343d76372a3f">[email&#160;protected]</a></I>. </P>
+<H2>2. Создание веб-архива</H2>
+<P>Прежде чем начать излагать инструкции по созданию веб-архива, я объясню, что
+мы собственно собираемся архивировать. А именно, мы собираемся предоставить сайт
+для членов нашей рабочей группы, на котором будет расположен архив списка
+рассылки. Например, можно держать его на
+<I>http://mybox.example.com/theproject/</I> и разрешить доступ к нему для всех
+членов рабочей группы.</P>
+<P>Архив на веб-сайте облегчает и делает удобнее просмотр и поиск того, что
+обсуждалось ранее. Он может также выступать как централизованное хранилище
+документов и других почтовых вложений. И, наконец, он может оказаться резервной
+копией на тот несчастный случай, если Вы потеряете Вашу электронную почту
+(надеюсь, это никогда не случится)!</P>
+<P>Для того, чтобы создать веб-архив для списка рассылки, Вам потребуется: </P>
+<P>
+<UL>
+  <LI><B>Веб-сервер Apache.</B> Можно, конечно, использовать и другой
+  веб-сервер. Apache, однако, самый распространенный веб-сервер, который
+  (насколько мне известно) по умолчанию используется в большинстве
+  дистрибутивово Linux, кроме того, я знаком с ним лучше всего. В нашем примере
+  используется apache 1.3.20.
+  <LI><B>Hypermail.</B> Hypermail -- это изящная программа для генерации
+  почтовых веб-архивов из UNIX mailbox файла. Хватается на <!--<A
+  href="http://www.hypermail.org/">-->http://www.hypermail.org/<!--</A>-->. Для примера в
+  статье я буду пользоваться <I>hypermail 2.1.2</I>.
+  <LI><B>cron.</B> <I>cron</I> -- это программа, выполняет задания по
+  предварительно составленному расписанию. Во всех дистрибутивах Linux
+  <I>cron</I> должен быть установлен по умолчанию (если я найду дистрибутив без
+  <I>cron</I>, то буду шокирован!). С помощью <I>cron</I>'а мы будем
+  переодически обновлять наш архив. </LI></UL>
+<P></P>
+<P>Сперва проверим, запущен ли веб-сервер. И опять, для воспользуемся для этого
+командой <I>netstat</I>:</P>
+<P><PRE>lteo@mybox:~$ <B>netstat -a | grep www</B>
+tcp        0      0 *:www                   *:*                     LISTEN
+</PRE>
+<P></P>
+<P>Если система отвечает такой строкой, то очень вероятно:), что веб-сервер уже
+загружен. Если же нет, то его можно запустить командой <I>/etc/init.d/apache
+start </I>на Debian, на RedHat и ей подобных нужно выполнить такую же команду
+или <I>/etc/rc.d/init.d/httpd start</I> (зависит от конкретного дистрибутива).
+На Slackware "испустите" команду <I>/etc/rc.d/rc.httpd start. </I></P>
+<H3>2.1 Установка hypermail</H3>
+<P>После скачивания "тарболла" <I>hypermail</I>, продолжите установку в
+соответсвии с инструкциями в файле README. Установка проходит через достаточно
+стандартные этапы. Если Вы спешите, то следующие команды должны сработать (я
+имею в виду <I>hypermail 2.1.2</I>, Вам надо подставить номер версии, скачанной
+Вами):</P>
+<P><PRE>root@mybox:~# <B>tar zxf hypermail-2.1.2.tgz</B>
+root@mybox:~# <B>cd hypermail-2.1.2</B>
+root@mybox:~/hypermail-2.1.2# <B>./configure</B>
+root@mybox:~/hypermail-2.1.2# <B>make</B>
+root@mybox:~/hypermail-2.1.2# <B>make install</B>
+</PRE>
+<P></P>
+<H3>2.2 Создание специальной учетной записи пользователя</H3>
+<P>Теперь нужно создать в нашей системе учетную запись для "подставного"
+пользователя. Мы зарегистрируем этого "пользователя" в списке рассылки и будем
+использовать его исключительно для собирания всей посылаемой в список почты. Мы
+будем создавать архив списка рассылки из почтового ящика этой учетной
+записи.</P>
+<P>Назовем нашего "юзера" <I>projarc</I>. Создать его средствами Вашего
+дистрибутива Linux можно точно так же, как и "нормального" пользователя. Лично я
+в своем Debian GNU/Linux использую команду <I>adduser</I>: </P>
+<P><PRE>### В Вашей системе приглашение может выглядеть немного по-другому
+### (это зависит от дистрибутива и локализации, если таковая выполнена),
+### но смысл задаваемых вопросов не меняется:) <I>прим. пер.</I>
+
+root@mybox:~# <B>adduser</B>
+Имя учетной записи: <B>projarc</B>
+Добавляю пользователя projarc...
+Добавляю новую группу projarc (1004).
+Добаляю нового пользователя projarc (1004), включенного в группу projarc.
+Создание домашнего каталога /home/projarc.
+Копирование файлов из /etc/skel
+Введите новый пароль UNIX: <B>&lt;password&gt;</B>
+Повторите новый пароль UNIX: <B>&lt;password&gt;</B>
+passwd: пароль успешно обнавлен
+Информации о projarc
+Введите новое значение или нажмите return, чтобы принять умолчание
+        Полное имя []: <B>Подставной пользователь</B>
+        Номер комнаты []:
+        Рабочий телефон []:
+        Домашний телефон []:
+        [Прочее...]Other []:
+Информация верна? [да/нет] <B>д</B>
+</PRE>
+<P></P>
+<P>Нужно добавить этого пользователя в файл псевдонимов
+(<I>/etc/mail/aliases</I> или <I>/etc/aliases</I>) для того, чтобы он стал
+членом списка рассылки. Просто загрузите файл в редактор и добавьте имя
+пользователя в список. Вот как теперь должна выглядеть секция списка
+рассылки:</P>
+<P><PRE># Список рассылки проекта Проект
+theproject:
+  projarc,
+  linus,
+  <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0b6a676a654b6e736a667b676e25656e7f">[email&#160;protected]</a>,
+  <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="3550464775504d54584559501b5a4752">[email&#160;protected]</a>
+</PRE>
+<P></P>
+<P>Не забудьте выполнить команду, информирующую MTA о том, что Вы сделали. </P>
+<P>Для размещения веб-архива мы воспользуемся общедоступной домашней страницей
+[public webspace] пользователя projarc. Для этого, создайте в его домашнем
+каталоге директорию <I>public_html</I>:</P>
+<P><PRE>lteo@mybox:~$ <B>su - projarc</B>
+Password: <B>&lt;password&gt;</B>
+projarc@mybox:~$ <B>mkdir public_html</B>
+</PRE>
+<P></P>
+<P>Обратите внимание на то, что собственный общедоступный веб-каталог
+пользователя может называться не <I>public_html</I>. Это зависит от настроек
+веб-сервера. Кроме того, убедитесь в том, что веб-сервер позволяет пользователям
+подобным способом делать свои веб-страницы. Как это сделать -- я объясню в
+следующем разделе.</P>
+<H3>2.3 Настройка Apache</H3>
+<P>На этом шаге мы настроим <I>Apache</I> таким образом, чтобы пользователям на
+машине было позволено создавать собственные общедоступные веб-каталоги. Файл
+конфигурации <I>Apache</I>, который нам придется редактировать, называется
+<I>/etc/apache/httpd.conf</I>. Как всегда, в Вашем дистрибутиве все может быть
+иначе. Преодолеваем это препятсвие, запустив <I>locate httpd.conf</I> или
+<I>find / -name httpd.conf</I>. После того, как нужный файл обнаружен, откройте
+его в текстовом редакторе и убедитесь, что нижеприведенные строчки не
+закомментированы (в смысле, перед ними не стоят символы <I>#</I>):</P>
+<P><PRE>&lt;IfModule mod_userdir.c&gt;
+    UserDir public_html
+&lt;/IfModule&gt;
+</PRE>
+<P></P>
+<P>Вполне вероятно, что значение для <I>UserDir</I> не <I>publi_html</I>, а,
+скажем, <I>www</I>. Для обозначения пользовательского веб-каталога может
+использоваться любое имя.</P>
+<P>Теперь, если Вы хотите, чтобы члены Вашей рабочей группы имели доступ к
+архиву по адресу вроде <I>http://mybox.example.com/theproject</I>, то надо
+создать символическую ссылку из корневой веб-директории <I>Apache</I> на
+веб-каталог пользователя <I>projarc</I>. Выясним, где находится корневая
+директория <I>Apache</I>, найдя переменуую <I>DocumentRoot</I> в файле
+<I>/etc/apache/httpd.conf</I>:</P>
+<P><PRE>root@mybox:~# <B>grep ^DocumentRoot /etc/apache/httpd.conf</B>
+DocumentRoot /var/www
+</PRE>
+<P>В этом примере корневая директория<I> Apache</I> располагается в
+<I>/var/www</I>. Символическая ссылка на веб-страницу пользователся projarc
+создается так:</P><PRE>root@mybox:~# <B>cd /var/www</B>
+root@mybox:/var/www# <B>ln -s /home/projarc/public_html theproject</B>
+</PRE>
+<H3>2.4 Проверка работы hypermail</H3>
+<P>Когда пользователь получает сообщение электронной почты, оно сохраняется в
+файле <I>/var/mail/username</I>. В случае нашего пользователя <I>projarc</I>,
+файл будет называться <I>/var/mail/projarc</I> (обратите внимания, что в
+некоторых дистрибутивах этот файл будет называться
+<I>/var/spool/mail/projarc</I>).</P>
+<P>С помощью <I>hypermail</I> мы будем читать этот почтовый файл для того, чтобы
+"генерить" веб-архив. Однако, в момент создания учетной записи <I>projarc</I>
+этот файл еще не существует. Сначала нам надо послать сообщение в список
+<I><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="691d010c191b06030c0a1d2904100b0611470c11080419050c470a0604">[email&#160;protected]</a></I>, и этот файл будет создан.</P>
+<P>После того, как тестовое письмо будет разослано, надо от имени <I>projarc</I>
+выполнить следующую команду: </P>
+<P><PRE>projarc@mybox:~$ <B>hypermail -m /var/mail/projarc -l "The Project" -d /home/projarc/public_html</B>
+</PRE>
+<P></P>
+<P>Теперь зайдите по адресу <I>http://mybox.example.com/theproject/</I>, и в
+браузере Вы должны увидеть, что веб-архив списка рассылки уже на месте. Что-то
+вроде этого: </P>
+<CENTER>
+<TABLE border=1 cellSpacing=1 width="70%">
+  <TBODY>
+  <TR>
+    <TD>
+      <H1 align=center>The Project<BR>By Thread</H1><FONT
+      color=blue><STRONG><U>Most recent
+      messages</U></STRONG></FONT><BR><STRONG>1 messages sorted by:</STRONG>
+      <FONT color=blue><U>[ author ]</U> <U>[ date ]</U> <U>[ subject ]</U> <U>[
+      attachment ]</U> </FONT>
+      <HR noShade>
+
+      <P><STRONG>Starting:</STRONG> <EM>Sat Oct 20 2001 - 01:45:23
+      EDT</EM><BR><STRONG>Ending:</STRONG> <EM>Sat Oct 20 2001 - 01:45:23
+      EDT</EM><BR>
+      <UL>
+        <LI><FONT color=blue><U><STRONG>This is the first
+        message</STRONG></U></FONT> <EM>Lawrence Teo <SMALL>(Sat Oct 20 2001 -
+        01:45:23 EDT)</SMALL></EM> </LI></UL>
+      <P><STRONG>Last message date:</STRONG> <EM>Sat Oct 20 2001 - 01:45:23
+      EDT</EM><BR><STRONG>Archived on:</STRONG> <EM>Sun Oct 21 2001 - 01:50:56
+      EDT</EM>
+      <P>
+      <HR noShade>
+      <STRONG>1 messages sorted by:</STRONG> <FONT color=blue><U>[ author ]</U>
+      <U>[ date ]</U> <U>[ subject ]</U> <U>[ attachment ]</U>
+  </FONT></TD></TR></TBODY></TABLE></CENTER>
+<P>&nbsp;</P>
+<P><EM>Я не знаю, имеется ли русская локализация hypermail'а, поэтому сохраняю
+английскую версию "скриншота". Надеюсь, что все и так понятно. Впрочем,
+локализация hypermail может быть предоставлена в качестве самостоятельного
+упражнения для пытливого читателя :-) <B>прим. пер.</B></EM></P>
+<P>Для запуска <I>hypermail </I>удобнее воспользоваться его конфигурационным
+файлом, а не каждый раз набивать в командной строке все нужные параметры.
+Создайте файл <I>/home/projarc/projarc-hmrc</I> и внесите в него следующие
+строки:</P>
+<P><PRE>mbox = /var/mail/projarc
+label = The Project
+dir = /home/projarc/public_html
+</PRE>
+<P></P>
+<P>Теперь архив можно создавать следующей командой: </P>
+<P><PRE>projarc@mybox:~$ <B>hypermail -c /home/projarc/projarc-hmrc</B>
+</PRE>
+<P></P>
+<H3>2.5 Настройка cron'а</H3>
+<P>Нам определенно хочется, чтобы архив нашего списка рассылки автоматически
+обновлялся всякий раз, когда кто-либо присылает в него письмо. Для этого мы
+будем использовать <I>cron</I>. Архив не будет обновляться в реальном времени,
+но мы можем настроить <I>cron</I> так, чтобы <I>hypermail</I> выполнялся каждые
+5 минут, что достаточно часто для простого списка рассылки. Конечно, всегда
+можно использовать более краткие интервалы, например 2 минуты -- все в Ваших
+руках. Просто имейте в виду, что чем короче интервал, тем больше нагрузка на
+машину. Так что, если файлы почтовых ящиков <I>действительно большие</I> и с
+большим количеством вложений, а Вы предоставляете место для нескольких списков
+рассылки на не слишком шустрой машинке -- может получиться не очень хорошо.</P>
+<P>Итак, настроим <I>cron</I>. Для редактирования таблицы <I>cron</I>'а выполним
+команду: </P>
+<P><PRE>projarc@mybox:~$ <B>crontab -e</B>
+</PRE>
+<P></P>
+<P>Вы должны оказаться в редакторе, в котором открыт файл с <I>crontab</I>. Если
+<I>hypermail</I> должен выполняться каждые 5 минут, то нужно добавить
+следующее:</P><PRE>
+# Обновляем архив списка рассылки Проект каждые 5 минут
+*/5 * * * * /usr/bin/hypermail -c /home/projarc/projarc-hmrc
+
+</PRE>
+<P>Просто сохраните файл и выйдите из редактора, когда закончите. Для проверки,
+подождите пять минут и обновите <I>http://mybox.example.com/theproject/ </I>в
+браузере. Время в поле <I>Archived on</I> должно обновиться после очередного
+выполнения <I>hypermail</I>.</P>
+<H3>2.6 Резюме</H3>
+<P>Ниже приводится краткое изложение этапов создания архива для списка рассылки:
+</P>
+<P>
+<OL>
+  <LI>Убедитесь в том, что веб-сервер <I>Apache</I> запущен. Для этого
+  воспользуйтесь командой <I>netstat -a | grep www</I>.
+  <LI>Установите <I>hypermail</I>.
+  <LI>Создайте "подставную" учетную запись (например <I>projarc</I>) для
+  пользователя, от лица которого будет создаваться архив рассылки.
+  <LI>Добавьте этого подставного пользователя в файл псевдонимов
+  (<I>/etc/aliases</I> или <I>/etc/mail/aliases</I>). Выполните команду
+  <I>newaliases </I>(если у Вас установлен <I>sendmail</I>) или <I>postalias</I>
+  <I>/etc/aliases </I>(для <I>Postfix</I>), чтобы MTA узнал о сделаных
+  изменениях. Для <I>exim</I> никаких команд выполнять не надо.
+  <LI>Создайте для пользователя <I>projarc</I> общедоступную веб-директорию,
+  например так: <I>mkdir public_html </I>(<I>обычно, вновь созданный каталог в
+  домашней директории получает права доступа drwxr-x---. Apache же часто
+  выполняется от пользователя типа nobody и не может читать соответствующую
+  директорию. Результатом будет Error 403:( В этом случае нужно изменить права
+  на drwxr-xr-x или установите группу, к которой принадлежит Apache. </I>прим.
+  пер.).
+  <LI>В настройках <I>Apache</I> (в файле <I>/etc/apache/httpd.conf</I>)
+  разрешите создание общедоступных веб-ресурсов пользователей.
+  <LI>Создайте символическую ссылку, указывающую на веб-страницу пользователя
+  <I>projarc</I> (например так: <I>ln -s /home/projarc/public_html
+  theproject</I>).
+  <LI>Проверьте работу <I>hypermail</I>, выполнив команду <I>hypermail -m
+  /var/mail/projarc -l "The Project" -d /home/projarc/public_html</I>. Затем
+  проверьте на месте ли веб-архив <I>http://mybox.example.com/theproject/</I>.
+  <LI>Настройте <I>cron</I> таким образом, чтобы <I>hypermail</I> выполнялся
+  каждые 5 пять минут (или через любой другой интервал по Вашему усмотрению).
+  </LI></OL>
+<P></P>
+<P>Надеюсь, что Вы найдете веб-архив списка рассылки столь же полезным, каким
+нахожу его я. Если появятся комментарии или предолжения -- киньте в меня
+письмом:). </P><!-- Article Body -->
+<HR noShade SIZE=2>
+<!-- Bio -->
+<H4>Lawrence Teo</H4>
+<P><EM>Lawrence Teo -- аспирант в Ph.D. программе в Университете Шарлотты,
+Северная Каролина. Он занимается изысканиями в области обнаружения вторжения и
+защиты критической инфраструктуры в составе своего исследовательского
+подразделения: Лаборатории Информации, Интеграции, Безопасности и Privacy
+(LIISP).Раньше Лоренс работал программистом по контракту в Lycos, Singapute и
+"старшим лаборантом" [research assistant] в DSTC (Мельбурн, Австралия). Он
+получил степень бакалавра по компьютерным технологиям в Monash University
+(Мельбурн, Австралия). Вы можете послать ему письмо по адресу <A href="../cdn-cgi/l/email-protection.html#4366750066757266747466747166757666750666757066757666747766757666750566777366750066747a667570667505667470667106667570667505667507">lawrenceteo&lt;SPAM&gt;@lycos.com</A>.</EM></P><!-- Bio -->
+<HR noShade SIZE=2>
+<!-- Copyright Notice -->
+<H5 align=center>Copyright (C) 2001, Lawrence Teo.<BR>Copying license <A
+href="https://www.linuxlib.ru/post/copying.html">http://www.linuxgazette.com/copying.html</A><BR>Published
+in Issue 72 of <I>Linux Gazette</I>, November 2001</H5><!-- Copyright Notice -->
+<HR noShade SIZE=2>
+
+<P>Команда переводчиков:</P>
+<P><I>Владимир Меренков, Александр Михайлов, Иван Песин, Сергей Скороходов,
+Александр Саввин, Роман Шумихин</I></P>
+<!--<P><BR>Со всеми предложениями, идеями и комментариями обращайтесь<BR>к Сергею
+Скороходову (<A href="mailto:suralis-s@mtu-net.ru">suralis-s@mtu-net.ru</A>)</P>
+<P>Сайт рассылки: <A
+href="http://gazette.linux.ru.net">http://gazette.linux.ru.net</A></P>-->
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

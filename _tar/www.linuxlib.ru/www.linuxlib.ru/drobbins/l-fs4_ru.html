@@ -1,0 +1,437 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 4 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 4</h2><br>
+<h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs4.html">-->http://www-106.ibm.com/developerworks/library/l-fs4.html<!--</a>--></h3><br>
+<h2>Введение в devfs</h2>
+<p><a href="l-fs4_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#a9cddbc6cbcbc0c7dae9ceccc7ddc6c687c6dbce"><span class="__cf_email__" data-cfemail="7511071a17171c1b063512101b011a1a5b1a0712">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>September 2001</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS
+и других. Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно они могут делать, насколько они хороши и
+насколько оправдано их использование в промышленной Linux среде. В этой статье Daniel объясняет назначение и преимущества
+использования devfs, файловой системы управления устройствами и подготавливает к пониманию своей следующей статьи, где будет
+рассказано об оптимальной установке devfs на вашей системе.</blockquote>
+<h3>Презентация devfs</h3>
+<h3>Устройства, устройства повсюду.</h3>
+<p>Devfs, или Device Filesystem, разработана с единственной целью предоставления нового (более "нормального") способа
+управления всеми блочными и символьными устройствами, заполнившими каталог /dev. Вероятно, вам известно, что обычное /dev
+дерево содержит сотни блочных и символьных специальных файлов-устройств, которые располагаются на корневой файловой системе.
+Каждый такой специальный файл доступен для user-space процессов и обеспечивает легкость взаимодействия с kernel devices.
+Выполняя операции с такими специальными файлами, <i>X server</i> способен обращаться к video hardware, <i>fsck</i> способен
+выполнять filesystem checks, а <i>lpd</i> передает данные через параллельный порт на принтер и т.д.</p>
+<p>Фактически, одна из "приятных" черт Linux и Unix заключается в том, что devices не скрыты за некоторым непонятным и
+специфическим API, а сосуществуют на файловой системе рядом с "нормальными" файлами, каталогами и символическими ссылками.
+Поскольку символьные и блочные devices отображаются в привычное filesystem namespace, имеется дополнительная возможность более
+простого взаимодействия с hardware через стандартные Unix команды, например <code>cat</code> или <code>dd</code>. И это не
+просто фокус. "Стандартное" взаимодействие более выразительно и способствует быстрому освоению нового оборудования.</p>
+<h3>Проблемы управления.</h3>
+<p>В то время как сама идея отображения устройств как специальных файлов хороша, следует заметить, что обычные Linux системы
+управляют ими далеко не оптимальным и громоздким способом. В наши дни в Linux поддерживается много самого разного hardware.
+При "классическом" подходе это означает, что в каталоге /dev "обитают" сотни специальных файлов для "презентации"
+соответствующих hardware. Большинство таких специальных файлов "don't even map" на реально существующее на вашей машине
+устройство (но в каталоге /dev такой специальный файл все равно должен присутствовать на случай добавления нового
+hardware/drivers). Такой подход вносит много путаницы.</p>
+<p>Только одного такого аргумента достаточно, чтобы осознать необходимость "перестройки" каталога /dev, конечно, при
+соблюдении принципа "обратной совместимости". Чтобы хорошо понять, как именно devfs решает большинство проблем связанных с
+"классическим" каталогом /dev, посмотрим на devfs с позиции разработки нового драйвера для устройства.</p>
+<h3>Внутренняя организация device management</h3>
+<p>Чтобы получить ясное представление о devfs, давайте разберемся, как devfs меняет традиционный подход для случая добавления
+нового драйвера. Традиционный (без devfs) kernel-based device driver "прописывает" устройство в остальной части системы через
+системные вызовы <code>register_blkdev()</code> или <code>register_chrdev()</code> (зависит от того, регистрируется блочное или
+символьное устройство).</p>
+<p><i>Major</i> номер (unsigned 8-bit integer) передается как параметр либо <code>register_blkdev()</code>, либо
+<code>register_chrdev()</code>. После регистрации устройства ядро знает, что этот конкретный major номер соответствует
+конкретному драйверу для устройства, которое выполнило вызов <code>register_???dev()</code>.</p>
+<p>Вопрос, а какой major номер разработчик драйвера должен использовать для передачи с запросом <code>register_???dev()</code>?
+Проблемы нет, если developer драйвера не планирует его использования "внешним миром". В этом случае сгодится любой major номер,
+лишь бы он не конфликтовал с другими major номерами, используемыми в конкретном частном случае. Как альтернатива, разработчик
+может "динамически" ассигновать major номер перед <code>register_???dev()</code>. Однако, "по большому счету", такое решение
+приемлемо только в случае, если драйвер не предназначен для широкого использования.</p>
+<h3>Получение номера.</h3>
+<p>Если developer хочет предложить свой драйвер для широкого использования (а большинство Linux developers имеет тенденцию
+делать именно так), то использование major номера "от балды" или даже вариант с его динамическим ассигнованием "не пройдет".
+В таких случаях разработчик драйвера должен войти в контакт с Linux kernel developers и получить для своего специфического
+устройства "официальный" major номер. После этого, для всех Linux пользователей это устройство (и только оно) будет связано
+с таким major номером.</p>
+<p>Важно иметь "официальный" major номер, так как для взаимодействия с этим специфическим устройством, администратор должен в
+каталоге /dev создать специальный файл. Когда device node (специальный файл) создается, он должен получить тот же major, как
+зарегистрирован во внутренних структурах ядра. После этого, когда пользовательский процесс выполняет операцию над
+файлом-устройством, ядро знает, с каким драйвером нужно связаться. Иначе, mapping от специального файла на kernel driver
+сделано по major номером, а не по именам устройств. Такое "непонимание" device name - особенность non-devfs систем.</p>
+<p>Как только device driver получает официальный major, он может использоваться публично, а device node можно включать в
+дерево /dev разных дистрибутивов через официальный сценарий <code>/dev/MAKEDEV</code>. Такой сценарий помогает
+суперпользователю автоматизировать процесс создания device nodes с правильными major и minor номерами, правами и владельцами.</p>
+<h3>Традиционные проблемы.</h3>
+<p>К сожалению, при таком подходе имеется много проблем. У разработчика драйвера появляется "головная боль" от необходимости
+согласования действий с kernel developers для получения "официального" major. То же относится к самим kernel developers.
+Возникает потребность отслеживания процедуры ассигнования всех major номеров. Во многом это похоже на проблемы системного
+администратора при использовании статического ассигнования IP адресов в локальной сети, когда сеть начинает "разрастаться".
+Точно так же, как системный администратор может "разрубить узел", воспользовавшись DHCP, можно было бы использовать подобный
+подход для регистрации devices.</p>
+<p>Проблема не только в этом. Linux подошел к границе, когда все "официальные" major и minor номера будут исчерпаны. Конечно,
+можно просто увеличить разрядность номеров, но при этом станет еще сложнее отслеживать уникальность major для драйверов.
+Имеется и более радикальный способ решения проблемы. Это переход на devfs.</p>
+<h3>Подход devfs. <code>devfs_register()</code></h3>
+<p>Имеется быстрое описание того, как devfs функционирует и снимает многие проблемы. После правильного конфигурирования devfs,
+что подразумевает добавление поддержки devfs в ядро и выполнение множества достаточно хитрых изменений в сценариях запуска,
+суперпользователь перезагружает систему. Стартует ядро и device drivers начинают регистрировать свои устройства для остальной
+части системы. Если это non-devfs система, как и ранее, выполняются системные вызовы <code>register_blkdev()</code> и
+<code>register_chrdev()</code> (вместе с сопровождающими вызовы major номерами). Однако, если enabled devfs, то device drivers
+для регистрации своих устройств используют новый, улучшенный kernel call, называемый <code>devfs_register()</code>.</p>
+<p>Об этом <code>devfs_register()</code> вызове можно много рассказать. Хотя можно указать major и minor номера для обратной
+совместимости, жесткого требования, делать именно так, не существует. Вместо этого вызов <code>devfs_register()</code>
+передает path на устройство как параметр, и именно так оно впоследствии появиться под /dev. Например, драйвер устройства foo
+регистрирует свое устройство в devfs. При этом драйвер передает параметр <i>foo0</i> с вызовом <code>devfs_register()</code>,
+сообщая ядру, что в корне devfs namespace должен быть создан новый файл-устройство <i>foo0</i>. В ответ на вызов
+<code>devfs_register()</code> добавляется foo0 device node к корню devfs namespace и запись о том, что этот новый foo0 node
+должен отобразится на foo device driver в ядре.</p>
+<h3>Devfs в действии.</h3>
+<p>После того, как все device drivers стартовали и зарегистрировали соответствующие им устройства в ядре, ядро запускает
+<code>/sbin/init</code> и начинается отработка сценариев системной инициализации. На ранней фазе процесса начальной загрузки
+(еще до filesystem checks), из rc scripts монтируется devfs filesystem к точке /dev, которая содержит representation для devfs
+namespace. После такого монтирования ко всем зарегистрированным устройствам (например, <i>/dev/foo0</i>) можно обращаться как
+на обычной non-devfs системе. Отличие в том, что при обращении к устройствам, kernel maps на соответствующий <i>device driver
+devfs</i> отрабатываются по именам устройств, а не по <i>major</i> номерам.</p>
+<p>Красота такого подхода в том, что все требующиеся device nodes (и ничего лишнего) создаются автоматически ядром.
+Соответственно, отпадает необходимость в погоне за последним сценарием <code>MAKEDEV</code> (так как все зарегистрированные
+устройства сами "по волшебству" появляются в /dev). Еще сие означает, что каталог /dev не загроможден сотнями "фиктивных"
+device nodes. Фактически, используя devfs, можно зайти в /dev и узнать, какие устройства у вас "реально" присутствуют.
+Например, если у вас laptop с поддержкой "горячей" замены hardware, то устройства будут появляться и исчезать в /dev по мере
+того, как вы вставляете или удаляете PC Cards. Это делает devfs очень "чистым" и "функциональным" после всего того, что
+когда-то было.</p>
+<h3>Красота devfs</h3>
+<p>Devfs делает многие вещи проще. Рассмотрим старт Linux bootable CD-ROM, который состоит из boot loader, initrd, ядра и
+loopback filesystem на CD. Когда BIOS передает управление CD, boot loader грузит ядро и initrd, а затем стартует
+<code>/linuxrc</code> script из "развернувшегося" initrd. Первоочередная задача <code>/linuxrc</code> заключается в том, чтобы
+смонтировать CD таким образом, чтобы loopback filesystem могла самостоятельно mounted и accessed.</p>
+<p>Без devfs сценарий <code>/linuxrc</code> должен опробовать множество специальных файлов в /dev, которые либо "представляют",
+либо "не представляют" реальное hardware в системе. Например, <code>/linuxrc</code> должен просканировать <i>/dev/hdc,
+/dev/scd0, /dev/hdb</i> и прочие для обнаружения "живого" устройства CD-ROM. По мере сканирования будут впустую опробованы
+несколько "фиктивных" device nodes.</p>
+<p>В том случае, если используется devfs, сценарий <code>/linuxrc</code> просто заходит в <i>/dev/cdroms</i>, в котором
+находятся все специальные файлы, ассоциированные с "реальными" для данной машины CD-ROM, причем независимо, <i>IDE</i> или
+<i>SCSI</i>. Благодаря такому devfs соглашению, выбор очень конкретный; в подкаталоге перечислены только активные устройства,
+а "исследующему коду" даже не требуется знать о подробностях основного CDROM, например, сидит он на IDE channel или использует
+SCSI ID. Фактически, это уже другое достоинство devfs. Как будет видно из следующей статьи этого цикла, devfs имеет совершенно
+иные, заданные по умолчанию местоположения для устройств в /dev.</p>
+<p>Если необходимо обратится к конкретному блочному устройству (диск, partition, CD-ROM и т.д), доступ можно сделать через
+несколько специальных файлов. Например, на моем сервере имеется единственный SCSI CD-ROM. При devfs enabled, я могу работать
+с ним переместившись либо в <i>/dev/cdroms/cdrom0</i>, либо в <i>/dev/scsi/host0/bus0/target4/lun0/cd</i>. При этом доступ
+произойдет к одному и тому же устройству. Просто у меня есть выбор, через какой именно файл я это сделаю. Кроме этого, как
+альтернатива, к своему CD-ROM я могу получить доступ "в старом стиле" как <i>/dev/sr0</i>, если мне так хочется и
+инсталлирована удобная и небольшая программка <code>devfsd</code>. Версии <code>devfsd</code> меняются очень быстро, но, в
+общем, это программа, которая заботится об "обратной совместимости" специальных файлов и позволяет настраивать /dev разными
+способами. Программа <code>devfsd</code> будет рассмотрена в следующей статье при описании процесса перехода на devfs в вашей
+системе. А теперь некоторые ресурсы по devfs:</p>
+<h3>Resources</h3>
+<ul>
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul><br>
+<br></li>
+<li>O'Reilly's <!--<a href="http://www.oreilly.com/catalog/linuxdrive2/">-->Linux Device Drivers, 2nd Edition<!--</a>--> is a truly excellent
+book and a great resource for those who would like to learn more about device registration, and Linux device driver programming
+in general.</li>
+<li>Be sure to read Richard Gooch's (creator of Linux devfs)<!--<a href="http://www.atnf.csiro.au/%7Ergooch/linux/docs/devfs.html">-->
+Linux Devfs FAQ<!--</a>-->. It's complete, verbose, and up-to-date.  What more could you ask for?</li>
+<li>There's a devfs mailing list available. To subscribe, send an email to <a href="../cdn-cgi/l/email-protection.html#6a070b0005180e0507052a05191944190d0344090507">
+<span class="__cf_email__" data-cfemail="caa7aba0a5b8aea5a7a58aa5b9b9e4b9ada3e4a9a5a7">[email&#160;protected]</span></a> with the word <b>subscribe</b> in the body of the message. Devfs list archives are available at
+<!--<a href="http://oss.sgi.com/projects/devfs/archive/">-->http://oss.sgi.com/projects/devfs/archive/<!--</a>-->.</li>
+<li>You may also want to visit <!--<a href="http://www.atnf.csiro.au/%7Ergooch/linux/">-->Richard Gooch's main page<!--</a>-->; it contains
+ devfs as well as other neat things.</li>
+<li><!--<a href="http://www.lwn.net/">-->Linux Weekly News<!--</a>--> is a great resource for keeping up with the latest kernel developments.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on <i>developerWorks</i>.</li>
+</ul>
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs4_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel
+Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of </a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->,
+an advanced Linux for the
+ PC, and the <b>Portage</b> system, a next-generation ports system for
+ Linux. He has also served as a
+contributing author for the Macmillan books
+ <i>Caldera OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba
+Unleashed</i>. Daniel has been involved with computers in some
+ fashion since the second grade, when he was first exposed to the
+Logo
+ programming language as well as a potentially dangerous dose of Pac Man.
+ This probably explains why he has since served as
+a Lead Graphic Artist at
+ <b>SONY Electronic Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his
+new baby daughter,
+ Hadassah. You can contact Daniel at <a href="../cdn-cgi/l/email-protection.html#482c3a272a2a21263b082f2d263c272766273a2f"><span class="__cf_email__" data-cfemail="6f0b1d000d0d06011c2f080a011b000041001d08">[email&#160;protected]</span></a>.
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#44322f2c2b282904342d2a2b272c21306a272d303d282d2a216a3631">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

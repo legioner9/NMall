@@ -1,0 +1,869 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 15 Серверное программное обеспечение (Почтовый сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch14_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 15 Серверное программное обеспечение (Почтовый сервис) -
+      Sendmail (часть 1)</H2><FONT size=+2>В этой главе</FONT><BR><FONT
+      size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#1">-->Linux Sendmail
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#3">-->Организация
+      защиты Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#4">-->Утилиты
+      администратора Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#5">-->Утилиты
+      пользователя Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#6">-->Linux Imap и
+      Pop сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#7">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#8">-->Настройка Imap
+      и POP для использования с TCP-Wrappers inetd супер сервером<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#9">-->Организация
+      защиты IMAP/POP<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=200
+      src="ch15_1.files/22.jpg" width=139></TD></TR></TBODY></TABLE>
+<H2>Linux Sendmail сервер</H2><B>Краткий обзор.</B>
+<P align=justify>Sendmail - это один из наиболее широко используемых Почтовых
+Транспортных Агентов (MTA) в мире. Основное назначение MTA &#8211; это пересылка
+почтовых сообщений с одной машины на другую. Sendmail не клиентская программа,
+которую вы можете использовать для чтения вашей почты. Она перемещает вашу почту
+через сети или Интернет туда, куда вы хотите ее отправить. Sendmail в прошлом
+была легкой целью для хакеров, но с появлением Sendmail версии 8, использовать
+ее для взлома стало значительно труднее.</P>
+<P align=justify>Здесь мы представим вам две различные конфигурации Sendmail;
+одна для центрального почтового концентратора, другая для локального или
+граничного клиента и сервера.</P>
+<P align=justify>Конфигурация центрального почтового концентратора будет
+использована для серверов, в задачу которых входит отправка, получение и
+перенаправление всех почтовых сообщений со всех локальных и граничных клиентов и
+серверов вашей сети. Конфигурация для локальных или граничных клиентов и
+серверов относится ко всем другим локальным серверам и клиентам вашей сети на
+которых запущен Sendmail и которые отправляют исходящую почту на центральных
+почтовых концентратор для ее дальнейшей доставки. Этот тип внутренних клиентов
+никогда не посылают почту напрямую через Интернет; вместо этого вся почта из
+Интернета для этих компьютеров хранится на центральном почтовом концентраторе.
+Запуск одного центрального почтового концентратора для всех компьютеров вашей
+сети является хорошей идеей; эта архитектура будет ограничивать задачу
+управления на сервере и клиентских машинах и улучшит безопасность вашего
+сайта.</P>
+<P align=justify>Вы можете настроить граничный Sendmail так, чтобы он принимал
+почту созданную только локально, такая изоляция граничной машины нужна для
+удобства защиты. Шлюз (вне межсетевого защитного экрана или как часть его)
+выступает как прокси и принимает внешние почтовые сообщения (через файл правил
+защитного экрана), которые предназначены для внутренней доставки и
+перенаправляет их на центральный почтовый концентратор. Также заметим, что Шлюз
+настроен как граничный Sendmail сервер, чтобы никогда не принимать входящую
+почту снаружи (из Интернет).</P><IMG alt="" border=0 height=220
+src="ch15_1.files/23.jpg" width=454>
+<P align=justify>Это графическое представление конфигурации Sendmail, которую мы
+используем в этой книге. Мы попытаемся показать вам различные установки
+(Центральный почтовый концентратор и локальный или граничный клиенты и сервера)
+на различных серверах. Существует много возможных решений в зависимости от ваших
+нужд и сетевой архитектуры.</P>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>Sendmail версии
+8.10.1<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница Sendmail: <!--<A
+href="http://www.sendmail.org/"
+target=_blank>-->http://www.sendmail.org/<!--</A>--><BR>FTP сервер: <!--<A
+href="ftp://204.152.184.34/" target=_blank>-->204.152.184.34<!--</A>--><BR>Вы должны
+скачать: sendmail.8.10.1.tar.gz<BR></P>
+<P align=justify><B>Тарболы.</B><BR>Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции Sendmail и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Sendmail1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Sendmail2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Sendmail1 Sendmail2 &gt;
+Sendmail-Installed</FONT></P>
+<P align=justify>Раскроем тарбол (tar.gz).</P><FONT color=#008080
+size=-1>[root@deep /]# cp sendmail.version.tar.gz /var/tmp<BR>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# tar xzpf sendmail.version.tar.gz<BR></FONT>
+<P align=justify><B>Конфигурирование</B><BR>Переместитесь в новый каталог
+Sendmail и выполните следующее:<BR>Редактируйте файл smrsh.c (vi +77
+smrsh/smrsh.c) и измените строку:<BR><FONT color=#008080 size=-1># define CMDDIR
+"/usr/adm/sm.bin"</FONT><BR>Должна читаться:<BR><FONT color=#008080 size=-1>#
+define CMDDIR "/etc/smrsh"</FONT><BR>Эта модификация задает поисковый путь по
+умолчанию для команд, запускающих программу &#8220;smrsh&#8221;. Это позволяет нам
+ограничивать место, где эти программы расположены.</P>
+<P align=justify>К<B>омпиляция и оптимизация</B></P>
+<P align=justify>Скрипт Build из Sendmail использует конфигурационных файл сайта
+в котором определяются тип операционной системы и различные флаги компиляции.
+Этот файл находится в каталоге &#8220;devtools/OS&#8221; и если вы запускаетесь на Linux, то
+он имеет имя &#8220;Linux&#8221;. Мы пересоздадим этот конфигурационный файл сайта для
+соответствия его вашей системе и поместим в каталог &#8220;devtools/OS&#8221; дерева
+исходных кодов Sendmail, так как скрипт Build будет в процессе компиляции искать
+конфигурационный файл по умолчанию именно в этом месте.</P>
+<P align=justify>Переместитесь в новый каталог Sendmail и редактируйте файл
+Linux (vi devtools/OS/Linux), удалив в нем все предопределенные строки и добавив
+следующие новые:</P><FONT color=#008080 size=-1>define(`confENVDEF',
+`-DPICKY_QF_NAME_CHECK -DXDEBUG=0')<BR>define(`confCC',
+`egcs')<BR>define(`confOPTIMIZE', `-O9 -funroll-loops -mcpu=pentiumpro
+-march=pentiumpro -fomit-frame-pointer -fno-exceptions')<BR>define(`confLIBS',
+`-lnsl')<BR>define(`confLDOPTS', `-s')<BR>define(`confMANROOT',
+`/usr/man/man')<BR>define(`confMANOWN', `root')<BR>define(`confMANGRP',
+`root')<BR>define(`confMANMODE', `644')<BR>define(`confMAN1SRC',
+`1')<BR>define(`confMAN5SRC', `5')<BR>define(`confMAN8SRC',
+`8')<BR>define(`confDEPEND_TYPE',
+`CC-M')<BR>define(`confNO_HELPFILE_INSTALL&#8217;)<BR>define(`confSBINGRP',
+`root')<BR>define(`confSBINMODE', `6755')<BR>define(`confUBINOWN',
+`root')<BR>define(`confUBINGRP', `root')<BR>define(`confEBINDIR',
+`/usr/sbin')<BR></FONT>
+<P align=justify>где опции обозначают следующее:</P>
+<P align=justify><B>define(`confENVDEF', `-DPICKY_QF_NAME_CHECK
+-DXDEBUG=0')</B><BR>Это макро опция первично использовалась для определения
+кода, который должен быть включен или исключен. С &#8220;-DPICKY_QF_NAME_CHECK&#8220;,
+Sendmail будет фиксировать ошибку, если файл &#8220;qf&#8221; сформирован некорректно и
+будет переименовывать файл &#8220;qf&#8221; в &#8220;Qf&#8221;. Аргумент &#8220;-DXDEBUG=0 &#8220; отключает шаги
+дополнительных внутренних проверок в течении компиляции.</P>
+<P align=justify><B>define(`confCC', `egcs')</B><BR>Эта макро опция определяет
+компилятор C используемый при компиляции Sendmail. В нашем случае мы используем
+C компилятор &#8220;egcs&#8221; для лучшей оптимизации.</P>
+<P align=justify><B>define(`confOPTIMIZE', `-O9 -funroll-loops -mcpu=pentiumpro
+-march=pentiumpro -fomit-frame-pointer -fno-exceptions')</B><BR>Эта макро опция
+определяет флаги используемые для оптимизации под вашу CPU архитектуру.</P>
+<P align=justify><B>define(`confLIBS', `-lnsl')</B><BR>Эта макро опция
+определяет флаг -l передаваемый ld.</P>
+<P align=justify><B>define(`confLDOPTS', `-s')</B><BR>Эта макро опция определяет
+опции компоновщика передаваемые ld.</P>
+<P align=justify><B>define(`confMANROOT', `/usr/man/man')</B><BR>Эта макро опция
+определяет место, куда надо инсталлировать страницы руководства (man)
+Sendmail.</P>
+<P align=justify><B>define(`confMANOWN', `root')</B><BR>Эта макро опция
+определяет владельца всех проинсталлированных страниц руководства Sendmail.</P>
+<P align=justify><B>define(`confMANGRP', `root')</B><BR>Эта макро опция
+определяет группу для всех проинсталлированных страниц руководства Sendmail.</P>
+<P align=justify><B>define(`confMANMODE', `644')</B><BR>Эта макро опция
+определяет режим доступа для всех проинсталлированных страниц руководства
+Sendmail.</P>
+<P align=justify><B>define(`confMAN1SRC', `1')</B><BR>Эта макро опция определяет
+источник для страниц руководств устанавливаемых в confMAN1.</P>
+<P align=justify><B>define(`confMAN5SRC', `5')</B><BR>Эта макро опция определяет
+источник для страниц руководств устанавливаемых в confMAN5.</P>
+<P align=justify><B>define(`confMAN8SRC', `8')</B><BR>Эта макро опция определяет
+источник для страниц руководств устанавливаемых в confMAN8.</P>
+<P align=justify><B>define(`confDEPEND_TYPE', `CC-M')</B><BR>Эта макро опция
+определяет как создавать зависимости с Sendmail.</P>
+<P align=justify><B>define(`confNO_HELPFILE_INSTALL&#8217;)</B><BR>Эта макро опция
+говорит, что не надо инсталлировать файл помощи Sendmail по умолчанию. Некоторые
+опытные администраторы рекомендуют сделать это для большей безопасности.</P>
+<P align=justify><B>define(`confSBINGRP', `root')</B><BR>Эта макро опция
+определяет группу для всех исполняемых файлов со сменой идентификатора (setuid)
+Sendmail.</P>
+<P align=justify><B>define(`confSBINMODE', `6755')</B><BR>Эта макро опция
+определяет режим доступа для всех исполняемых файлов со сменой идентификатора
+(setuid) Sendmail.</P>
+<P align=justify><B>define(`confUBINOWN', `root')</B><BR>Эта макро опция
+определяет владельца всех исполняемых файлов Sendmail.</P>
+<P align=justify><B>define(`confUBINGRP', `root')</B><BR>Эта макро опция
+определяет группу всех исполняемых файлов Sendmail.</P>
+<P align=justify><B>define(`confEBINDIR', `/usr/sbin')</B><BR>Эта макро опция
+определяет куда должны быть установлены двоичные исполняемые файлы исполняемые
+из других двоичных файлов. В Red Hat Linux этот путь должен быть определен как
+&#8220;/usr/sbin&#8221;.</P>
+<P align=justify><B>Шаг 2</B><BR>Сейчас мы должны скомпилировать и
+проинсталлировать Sendmail на нашем сервере:</P><FONT color=#008080
+size=-1>[root@deep sendmail-8.10.1]# cd sendmail<BR>[root@deep sendmail]# sh
+Build<BR>[root@deep sendmail]# sh Build install<BR>[root@deep sendmail]# cd
+..<BR>[root@deep sendmail-8.10.1]# cd mailstats<BR>[root@deep mailstats]# sh
+Build install<BR>[root@deep mailstats]# cd ..<BR>[root@deep sendmail-8.10.1]# cd
+smrsh<BR>[root@deep smrsh]# sh Build install<BR>[root@deep smrsh]# cd
+..<BR>[root@deep sendmail-8.10.1]# cd makemap</FONT> (Требуется только для
+конфигурации Почтового концентратора)<BR><FONT color=#008080 size=-1>[root@deep
+makemap]# sh Build install</FONT> (Требуется только для конфигурации Почтового
+концентратора)<BR><FONT color=#008080 size=-1>[root@deep makemap]# cd
+..<BR>[root@deep sendmail-8.10.1]# cd praliases</FONT> (Требуется только для
+конфигурации Почтового концентратора)<BR><FONT color=#008080 size=-1>[root@deep
+makemap]# sh Build install</FONT> (Требуется только для конфигурации Почтового
+концентратора)<BR><FONT color=#008080 size=-1>[root@deep makemap]# cd
+..<BR>[root@deep sendmail-8.10.1]# ln -fs /usr/sbin/sendmail
+/usr/lib/sendmail<BR>[root@deep sendmail-8.10.1]# chmod 511
+/usr/sbin/smrsh<BR>[root@deep sendmail-8.10.1]# install -d -m 755
+/var/spool/mqueue<BR>[root@deep sendmail-8.10.1]# chown root.mail
+/var/spool/mqueue<BR>[root@deep sendmail-8.10.1]# mkdir /etc/smrsh</FONT><BR>
+<P align=justify>Команда &#8220;sh Build&#8221; собирает и создает необходимые зависимости
+для различных двоичных файлов требуемых Sendmail до инсталляции на вашу
+систему.</P>
+<P align=justify>Команда &#8220;sh Build install&#8221; инсталлирует исполняемые двоичные
+файлы sendmail, mailstats, makemap, praliases, smrsh и страницы руководства,
+ечли это было задано перед компиляцией.</P>
+<P align=justify>Команда &#8220;ln -fs&#8221; создает символическую ссылку исполняемого
+файла sendmail в каталоге &#8220;/usr/lib&#8221;. Это требуется, так как некоторые программы
+пытаются искать sendmail в этом каталоге (/usr/lib).</P>
+<P align=justify>Команда &#8220;install&#8221; создаст каталог &#8220;mqueue&#8221; с правами 755 в
+каталоге &#8220;/var/spool&#8221;. Почтовые сообщения по разным причинам могут быть сразу не
+доставлены. Чтобы гарантировать их доставку, Sendmail запоминает их в каталоге
+&#8220;mqueue&#8221; пока они не будут отправлены.</P>
+<P align=justify>Команда &#8220;chown&#8221; устанавливает UID &#8220;root&#8221; и GID &#8220;mail&#8221; для
+каталога &#8220;mqueue&#8221;.</P>
+<P align=justify>Команда &#8220;mkdir&#8221; будет создавать каталог &#8220;/etc/smrsh&#8221;. Здесь
+будут лежать все программы-почтальоны, которые мы разрешим запускать
+Sendmail.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Программы &#8220;makemap&#8221; и &#8220;praliases&#8221; должны быть
+установлены только на центральном почтовом концентраторе. &#8220;makemap&#8221; позволяет
+вам создавать базы данных соответствий наподобии файлам &#8220;/etc/mail/aliases.db&#8221;
+или &#8220;/etc/mail/access.db&#8221;. &#8220;praliases&#8221; выводит системные почтовые псевдонимы
+(содержимое файла /etc/mail/aliases). Так как лучше иметь только одно место
+(подобное центральному почтовому концентратору) для обработки и управления всеми
+db файлами в вашей сети, то нет необходимости использовать программы &#8220;makemap&#8221; и
+&#8220;praliases&#8221; и создавать db файлы на других компьютерах сети.</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации.</P>
+<P align=justify>Скопируйте файлы связанные с Sendmail из архива, измените их
+под свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска центрального почтового концентратора нужны
+следующие файлы. Создайте или скопируйте их в требуемые каталоги на вашем
+сервере.</P>
+<P align=justify>Копируйте файл sendmail в каталог
+&#8220;/etc/sysconfig&#8221;.<BR>Копируйте скрипт sendmail в каталог
+&#8220;/etc/rc.d/init.d/&#8221;.<BR>Копируйте файл local-host-names в каталог
+&#8220;/etc/mail&#8221;.<BR>Копируйте файл access в каталог &#8220;/etc/mail&#8221;.<BR>Копируйте файл
+aliases в каталог &#8220;/etc/mail&#8221;.<BR>Создайте файлы virtusertable, domaintable,
+mailertable и .db в каталоге &#8220;/etc/mail&#8221; directory.<BR></P>
+<P align=justify>Для запуска локального или граничного клиента или сервера
+требуются следующие файлы. Создайте или скопируйте их в требуемые каталоги на
+вашем сервере.</P>
+<P align=justify>Копируйте файл sendmail в каталог
+&#8220;/etc/sysconfig&#8221;.<BR>Копируйте скрипт sendmail в каталог
+&#8220;/etc/rc.d/init.d/&#8221;.<BR>Копируйте файл local-host-names в каталог
+&#8220;/etc/mail&#8221;.<BR></P>
+<H3>Файл &#8220;/etc/sendmail.mc&#8221; для центрального почтового концентратора</H3>
+<P align=justify>Вместо того, чтобы иметь индивидуальные сервера или рабочие
+станции обрабатывающие свою почту, намного выгоднее иметь в сети единый мощный
+центральный сервер, который обрабатывает всю почту. Такой сервер называется
+Почтовый концентратором. Преимущества Центрального Почтового Концентратора:</P>
+<UL>
+  <LI>Вся входящая почта отправляется на концентратор, никогда почта не
+  отправляется клиенту напрямую.
+  <LI>Вся исходящая почта от клиентов отправляется на концентратор, и уже он
+  отправляет ее по назначению.
+  <LI>Вся исходящая почта поступает от одного сервера, поэтому во внешнем мире
+  не требуется знать имена клиентских машин.
+  <LI>Клиенту не надо запускать демон sendmail для получения почты. </LI></UL>
+<P align=justify>Файл &#8220;sendmail.cf&#8221; первым считывается Sendmail при запуске и
+является одним из самых важных файлов для него. В нем определяются
+месторасположения остальных файлов, права доступа к файлам и каталогам нужных
+Sendmail. Макро препроцессор m4 из Linux используется Sendmail V8 для создания
+конфигурационного файла.</P>
+<P align=justify>Он будет создавать конфигурационный файл
+&#8220;/etc/mail/sendmail.cf&#8221;, обрабатывая файл имя которого заканчивается на &#8220;.mc&#8221;.
+</P>
+<P align=justify>Мы создадим файл (sendmail.mc) и внесем в него необходимые
+макро значения, которые препроцессор m4 прочитает, соберет определения макросов
+и затем, заменит эти макросы их значениями, создавая в результате своей работы
+файл &#8220;sendmail.cf&#8221;. Пожалуйста, обратитесь к документации Sendmail и файлу
+README из каталога &#8220;cf&#8221; дерева исходных фалов Sendmail V8 для получения большей
+информации.</P><B>Шаг 1</B>
+<P align=justify>Создайте файл sendmail.mc (touch
+/var/tmp/sendmail-version/cf/cf/sendmail.mc) и добавьте в него следующие
+строки:</P><FONT color=#008080
+size=-1>define(`confDEF_USER_ID',``8:12'')dnl<BR>OSTYPE(`linux')dnl<BR>DOMAIN(`generic&#8217;)dnl<BR>define(`confTRY_NULL_MX_LIST',true)dnl<BR>define(`confDONT_PROBE_INTERFACES',true)dnl<BR>define(`PROCMAIL_MAILER_PATH',`/usr/bin/procmail')dnl<BR>define(`LOCAL_MAILER_FLAGS',
+`ShPfn')dnl<BR>define(`LOCAL_MAILER_ARGS', `procmail -a $h -d
+$u')dnl<BR>FEATURE(`smrsh',`/usr/sbin/smrsh')dnl<BR>FEATURE(`mailertable&#8217;)dnl<BR>FEATURE(`virtusertable',`hash
+-o
+/etc/mail/virtusertable')dnl<BR>FEATURE(`redirect&#8217;)dnl<BR>FEATURE(`always_add_domain&#8217;)dnl<BR>FEATURE(`use_cw_file&#8217;)dnl<BR>FEATURE(`local_procmail&#8217;)dnl<BR>FEATURE(`access_db')dnl<BR>FEATURE(`blacklist_recipients')dnl<BR>FEATURE(`dnsbl')dnl<BR>MAILER(`local&#8217;)dnl<BR>MAILER(`smtp&#8217;)dnl<BR>MAILER(`procmail&#8217;)dnl<BR></FONT><BR>Где:<BR>
+<P align=justify><B>define(`confDEF_USER_ID',``8:12'')dnl</B><BR>Эта
+конфигурационная опция определяет id пользователя по умолчанию. В нашем случае
+пользователь &#8220;mail&#8221; и группа &#8220;mail&#8221;, которые отвечают следующим идентификатор
+&#8220;8:12&#8221; (смотрите /etc/passwd и /etc/group file).</P>
+<P align=justify><B>OSTYPE(`linux&#8217;)dnl</B><BR>Эта конфигурационная опция задает
+операционную систему под которой будет запускаться Sendmail; в нашем случае это
+&#8220;linux&#8221;. Этот элемент является минимально необходимым для &#8220;mc&#8221; файла.</P>
+<P align=justify><B>DOMAIN(`generic&#8217;)dnl</B><B></B> Эта конфигурационная опция
+будет определять и описывать домен соответствующий вашему окружению.</P>
+<P align=justify><B>define(`confTRY_NULL_MX_LIST',true)dnl</B><BR>Эта
+конфигурационная опция определяет, является ли принимающий сервер лучшим MX для
+хоста, и если это так, то соединяется с ним напрямую.</P>
+<P align=justify><B>define(`confDONT_PROBE_INTERFACES',true)dnl</B><BR>Эта
+конфигурационная опция, если она установлена в true, говорит Sendmail не
+вставлять имена и адреса любых локальных интерфейсов в класс $=w (список
+известных &#8220;эквивалентных&#8221; адресов).</P>
+<P
+align=justify><B>define(`PROCMAIL_MAILER_PATH',`/usr/bin/procmail')dnl</B><BR>Эта
+опция определяет путь к программе procmail, инсталлированной на вашей системе.
+Так как в Red Hat Linux он отличается от других Linux версий, мы должны
+определить новый путь в этом макросе. Важно заметить, что этот макрос также
+используется в FEATURE(`local_procmail&#8217;), как будет определено позже в этом
+файле.</P>
+<P align=justify><B>define(`LOCAL_MAILER_FLAGS', `ShPfn')dnl</B><BR>Эта
+конфигурационная опция определяет флаги, которые должны быть использованы
+локальным агентом доставки (procmail). Смотрите документацию Sendmail для
+получения большей информации о них.</P>
+<P align=justify><B>define(`LOCAL_MAILER_ARGS', `procmail -a $h -d
+$u')dnl</B><BR>Эти конфигурационные опции определяют аргументы которые должны
+быть переданы локальному агенту доставки (procmail). Смотрите документацию
+Sendmail для получения информации о них.</P>
+<P align=justify><B>FEATURE(`smrsh',`/usr/sbin/smrsh')dnl</B><BR>Этот m4
+макроопределение включает использование &#8220;smrsh&#8221; (ограниченная оболочка sendmail)
+вместо &#8220;/bin/sh&#8221;, используемого по умолчанию) для почтовых программ. При помощи
+этой опции вы можете контролировать какие программы могут запускаться через
+электронную почту через файлы &#8220;/etc/mail/aliases&#8221; и &#8220;~/.forward&#8221;. По умолчанию
+программа &#8220;smrsh&#8221; находится в &#8220;/usr/libexec/smrsh&#8221;; так как мы проинсталлировали
+&#8220;smrsh&#8221; в другое место, нам нужно добавить аргумент smrsh, указывающий новое
+месторасположение &#8220;/usr/sbin/smrsh&#8221;. Использование &#8220;smrsh&#8221; рекомендовано CERT,
+так что вы должны поддерживать использование этой возможности так часто, как
+возможно.</P>
+<P align=justify><B>FEATURE(`mailertable&#8217;)dnl</B><BR>Это макроопределение m4
+включает возможность использования &#8220;mailertable&#8221; (базы данных выбора нового
+агента доставки). mailertable &#8211; это база данных которая связывает имена
+&#8220;host.domain&#8221; со специальными агентами доставки. Благодаря этой возможности,
+почта может доставляться специфическими агентами доставки к новым доменным
+именам. Обычно, эта возможность используется только на Центральном Почтовом
+концентраторе.</P>
+<P align=justify><B>FEATURE(`virtusertable',`hash -o
+/etc/mail/virtusertable')dnl</B><BR>Это макроопределение m4 включает
+использование &#8220;virtusertable&#8221; (поддержка виртуальных доменов), которая позволяет
+на одной машине размещать много виртуальных доменов. virtusertable &#8211; это база
+данных, которая связывает виртуальные домены с новыми адресами. Благодаря
+использованию этой возможности, почта для виртуальных почтовых доменов может
+быть доставлена на локальные, удаленные или единичные адреса пользователей.
+Обычно, эта возможность используется только на Центральном Почтовом
+Концентраторе.</P>
+<P align=justify><B>FEATURE(`redirect&#8217;)dnl</B><BR>Это макроопределение m4
+включает использование &#8220;redirect&#8221; (поддержка для address.REDIRECT). С этой
+возможностью, почтовый адрес удаленного бюджета, например, &#8220;wahib&#8221;, будет
+отражаться с информацией о новом адресе. Удаленный бюджет должен быть определен
+в файле псевдонимов на почтовом сервере. Обычно, эта возможность используется
+только на Центральном Почтовом Концентраторе.</P>
+<P align=justify><B>FEATURE(`always_add_domain&#8217;)dnl</B><BR>Это макроопределение
+m4 включает использование &#8220;always_add_domain&#8221; (добавлять локальный домен в
+локальной почте). Благодаря этой возможности, все локально доставляемые адреса
+будут полностью квалифицированными.</P>
+<P align=justify><B>FEATURE(`use_cw_file&#8217;)dnl</B><BR>Это макроопределение m4
+включает использование &#8220;use_cw_file&#8221; (использование файла
+/etc/mail/local-host-names для локальных имен компьютеров). Используя эту
+возможность вы можете объявить список хостов в файле
+&#8220;/etc/mail/local-host-names&#8221; для которых локальных хост выступает MX
+получателем. Другими словами файл &#8220;/etc/mail/local-host-names&#8221; будет содержать
+альтернативные имена локального компьютера.</P>
+<P align=justify><B>FEATURE(`local_procmail&#8217;)dnl</B><BR>Это макроопределение m4
+включает использование &#8220;local_procmail&#8221; (использовать procmail, как локальный
+агент доставки). Благодаря этой функции вы можете использовать procmail, как
+агент доставки Sendmail.</P>
+<P align=justify><B>FEATURE(`access_db')dnl</B><BR>Это макроопределение m4
+включает использование базы данных доступа. Благодаря этой функции, вы можете в
+базе данных access разрешать или запрещать прием почты из определенных доменов.
+Обычно, эта возможность используется только на Центральном Почтовом
+Концентраторе.</P>
+<P align=justify><B>FEATURE(`blacklist_recipients')dnl</B><BR>Это
+макроопределение m4 включает возможность блокирования входящей почты от
+определенных отправителей, компьютеров и адресов. Используя эту функцию,
+например, вы можете блокировать входящую почту от пользователя nobody, хоста
+foo.mydomain.com или <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e68193839592a6848794c88b9f82898b878f88c885898b">[email&#160;protected]</a>.</P>
+<P align=justify><B>FEATURE(`dnsbl')dnl</B><BR>Это макроопределение m4 разрешает
+Sendmail отклонять почту от любых сайтов, входящих в базу данных Realtime
+Blackhole List "rbl.maps.vix.com". Базирующееся на DNS блокирование основывается
+на базе данных, содержащей DNS имена спаммеров. За подробной информацией
+обращайтесь на "<!--<A href="http://maps.vix.com/rbl/"
+target=_blank>-->http://maps.vix.com/rbl/<!--</A>-->".</P>
+<P align=justify><B>MAILER(`local&#8217;), MAILER(`smtp&#8217;) и
+MAILER(`procmail&#8217;)dnl</B><BR>Это макроопределение m4 включает использование
+агентов доставки &#8220;local&#8221;, &#8220;smtp&#8221; и &#8220;procmail&#8221; (по умолчанию Sendmail, агенты
+доставки автоматичнски не объявляются). Используя эту возможность, вы можете
+определить какие агенты использовать, а какие игнорировать. Опции
+MAILER(`local&#8217;), MAILER(`smtp&#8217;) и MAILER(`procmail&#8217;) поддерживают local, smtp,
+esmtp, smtp8, relay procmail агенты доставки. Важно отметить, что MAILER(`smtp&#8217;)
+должен всегда предшествовать MAILER(`procmail&#8217;).</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Иногда, домен с которым вы хотите продолжить
+общаться может входить в список RBL. В этом случае, Sendmail позволит вам
+переписать разрешение на прием их почты. Чтобы сделать это, просто
+отредактируйте файл "/etc/mail/access" и добавить соответствующую доменную
+информацию.<BR>Например:<BR>blacklisted.domain OK</P><B>Шаг 2</B>
+<P align=justify>Сейчас, когда файл с макроопределениями &#8220;sendmail.mc&#8221; создан,
+мы создадим конфигурационный файл sendmail (&#8220;sendmail.cf&#8221;). Для этого
+используйте следующие команды:</P><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp/sendmail-version/cf/cf/<BR>[root@deep cf]# m4 ../m4/cf.m4 sendmail.mc
+&gt; /etc/mail/sendmail.cf<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Здесь &#8220;../m4/cf.m4&#8221; говорит программе m4, где
+находится конфигурационный файл с информацией по умолчанию.</P>
+<P align=justify>Так как локальные клиентские машины никогда не получают почту
+напрямую из внешнего мира и пересылают (отправляют) почту через Центральный
+Почтовый Концентратор, мы создаем специальный фал, называемый &#8220;null.mc&#8221;, из
+которого позже мы получим конфигурационный файл &#8220;sendmail.cf&#8221;, отвечающий
+специальным установкам для граничных и локальных серверов. Этот файл с
+макроопределениями m4 легко создается и конфигурируется, потому, что ему не
+нужно столько возможностей как на Центральном Почтовом Концентраторе.</P><B>Шаг
+1</B> Создаем фал null.mc (touch /var/tmp/sendmail-version/cf/cf/null.mc) и
+добавляем в него следующие строки: <FONT color=#008080
+size=-1>OSTYPE(`linux')dnl<BR>DOMAIN(`generic&#8217;)dnl<BR>FEATURE(`nullclient',`mail.openna.com')dnl<BR>undefine(`ALIAS_FILE')dnl<BR></FONT>где,<BR>
+<P align=justify><B>OSTYPE(`linux&#8217;)</B><BR>Эта конфигурационная опция задает
+операционную систему под которой будет запускаться Sendmail; в нашем случае это
+&#8220;linux&#8221;. Этот элемент является минимально необходимым для &#8220;mc&#8221; файла.</P>
+<P align=justify><B>DOMAIN(`generic&#8217;)</B><BR>Эта конфигурационная опция будет
+определять и описывать домен соответствующий вашему окружению.</P>
+<P align=justify><B>FEATURE(`nullclient',`mail.openna.com')</B><BR>Это
+макроопределение m4 говорит вашей клиентской машине никогда не принимать почту
+напрямую, посылать ее через почтовый концентратор, и пересылать всю почту через
+этот же сервер, вместо того, чтобы отправлять напрямую. Эта возможность создает
+небольшой конфигурационный файл ни содержащий ничего, кроме информации о
+пересылки всей почты на почтовый концентратор через локальную сеть, базирующуюся
+на SMTP-based. Аргумент &#8220;mail.openna.com&#8217;, включенный в это определение,
+является каноническим именем Почтового концентратора. Вы должны, конечно,
+изменить это имя на ваш Почтовый концентратор, например: FEATURE(`nullclient',`
+my.mailhub.com').</P>
+<P align=justify><B>undefine(`ALIAS_FILE')</B><BR>Эта конфигурационная опция
+предотвращает доступ к файлам &#8220;/etc/mail/aliases&#8221; и &#8220;/etc/mail/aliases.db&#8221; со
+стороны nullclient-ской версии Sendmail. С этой строкой в &#8220;.mc&#8221; файле, вам не
+нужно создавать файл &#8220;aliases&#8221; на вашем внутреннем сервере. Эти файлы необходимы
+только для Центрального почтового севера.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Хочется отметить, что со всеми типами
+конфигураций, должны быть определены no mailers, no aliasing и
+forwarding.</P><B>Шаг 2</B>
+<P align=justify>Сейчас, когда у нас есть конфигурационный файл с
+макроопределениями &#8220;null.mc&#8221;, мы будем на его основе создавать конфигурационный
+файл Sendmail &#8220;sendmail.cf&#8221; для граничных серверов и клиентских машин, используя
+следующие команды:</P><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp/sendmail-version/cf/cf/<BR>[root@deep cf]# m4 ../m4/cf.m4 null.mc &gt;
+/etc/mail/sendmail.cf<BR></FONT><BR><B>Шаг 3</B>
+<P align=justify>Так как у нас не должно быть входящих почтовых соединений, то
+нам не нужен больше запущенный демон Sendmail на наших граничных или локальных
+серверах и клиентских машинах.</P>
+<P align=justify>Для остановки демона Sendmail, редактируйте или создайте файл
+&#8220;/etc/sysconfig/sendmail&#8221; и измените/добавьте следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>DAEMON=yes</FONT><BR>Должна
+читаться:<BR><FONT color=#008080 size=-1>DAEMON=no</FONT><BR></P>И: <FONT
+color=#008080 size=-1>QUEUE=1h</FONT><BR>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> &#8220;QUEUE=1h&#8221; в файле &#8220;/etc/sysconfig/sendmail&#8221;
+говорит Sendmail, что необходимо обрабатывать очередь каждый час. Мы оставим эту
+строку, так как Sendmail необходимо периодически выполнять эту операцию, если
+Почтовый концентратор не работает.</P><B>Шаг 4</B>
+<P align=justify>Локальные машины никогда не используют псевдонимы, файлы
+доступа и другие базы данных соответствий. Так как все эти файлы располагаются
+на Центральном почтовом концентраторе, мы можем спокойно удалить следующие файлы
+на всех локальных машинах.</P><FONT color=#008080
+size=-1>/usr/bin/newaliases<BR>/usr/man/man1/newaliases.1<BR>/usr/man/man5/aliases.5<BR></FONT>
+<P align=justify>Для удаления перечисленных файлов используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@client /]# rm -f
+/usr/bin/newaliases<BR>[root@client /]# rm -f
+/usr/man/man1/newaliases.1<BR>[root@client /]# rm -f
+/usr/man/man5/aliases.5<BR></FONT><BR>
+<P align=justify>Шаг 5</P>
+<P align=justify>Удалите неиспользуемую программу Procmail с ваших локальных
+серверов и клиентских машин. Так как локальные машины отправляют всю внутреннюю
+и исходящую почту на центральный почтовый концентратор для дальнейшей доставки,
+нам нет необходимости использовать локальный агент доставки подобный Procmail.
+Вместо него мы можем использовать программу &#8220;/bin/mail&#8221;. Для удаления Procmail с
+вашего сервера используйте следующую команду:</P><FONT color=#008080
+size=-1>[root@client]# rpm -e procmail</FONT>
+<H3>Файлы &#8220;/etc/mail/access&#8221; и &#8220;access.db&#8221; для центрального почтового
+концентратора.</H3>
+<P align=justify>Файл базы данных &#8220;access&#8221; может быть создан для приема и
+блокирования почты из выбранных доменов. Например, вы можете выбрать
+блокирование всей почты исходящей от известных спаммеров, или прием для
+пересылки всей почты из вашей локальной сети, так как по умолчанию пересылки
+любой почты в Sendmail запрещена (это антиспаммовая возможность). В файле
+&#8220;access&#8221; приведенном ниже, мы разрешаем пересылку почты от локального компьютера
+и всех локальных сетевых адресов начинающихся с IP адреса 192.168.1. Файлы
+&#8220;access&#8221; и &#8220;access.db&#8221; не требуются на Локальных и граничных клиентах. Они нужны
+только если вы решили установить центральный почтовый концентратор для
+управления всей вашей почты. Также заметим, что использование центрального
+почтового концентратора будет улучшать безопасность и управление другими
+серверами и клиентами с запущенным Sendmail.</P><B>Шаг 1</B>
+<P align=justify>Создайте файл access (touch /etc/mail/access) и добавьте в него
+следующие строки:</P><FONT color=#008080><PRE># Посмотреть описание формата записей используемого в этом файле
+# можно в файле "cf/README" из пакета с исходными кодами Sendmail.
+#
+# В записях используются почтовые адреса, доменные имена и
+# сетевые адреса как ключи. Например,
+#
+# <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="a2d1d2c3cfcfc7d0e2c3cdce8cc1cdcf">[email&#160;protected]</a> REJECT
+# cyberspammer.com REJECT
+# 192.168.212 REJECT
+#
+# будет отвергать почту от <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="a6d5d6c7cbcbc3d4e6c7c9ca88c5c9cb">[email&#160;protected]</a>, любых пользователей из
+# домена cyberspammer.com (или любых хостов из домена cyberspammer.com)
+# и любых хостов из сети 192.168.212.*.
+#
+# Ключам могут сопостовляться следующие значения:
+#
+# OK - принимать почту, даже если другие правила запущенного набора
+# правил будут ее отвергать, например, если доменное имя неразрешенное
+# (unresolvable).
+# RELAY &#8211; принимать почту из указанного домена или принимать ее от них
+# для дальнейшей пересылки через ваш SMTP сервер. Для некоторый проверок
+# RELAY действует также как и OK.
+# REJECT - отклонение отправителя или получателя с универсальным
+# сообщением.
+# DISCARD &#8211; полное сбрасывание сообщения с использованием
+# программы-почтальона $#discard. Это работает только для адресов
+# отправителей (т.е. эта опция указывает, что вы должны сбросить любые
+# сообщения из указанного домена).
+# ### любой текст ### - возвращаемое сообщение представляет из себя
+# совместимый с RFC 821 код ошибки и &#8220;любой текст&#8221;.
+#
+# Например:
+#
+# cyberspammer.com 		550 We don't accept mail from spammers
+# okay.cyberspammer.com 	OK
+# sendmail.org 		OK
+# 128.32 			RELAY
+#
+# будет приниматься почта из okay.cyberspammer.com, но будут сбрасываться
+# почта из любых других хостов домена cyberspammer.com с указанным
+# сообщением.
+# Будет приниматься почта из любых хостов домена sendmail.org,
+# и разрешена пересылка почты для сети 128.32.*.*.
+#
+# Вы можете также использовать базу данных access для блокирования по
+# адресу отправителя, базируясь на части адреса, содержащей имя
+# пользователя.. Например:
+#
+# FREE.STEALTH.MAILER@ 550 Spam not accepted
+#
+# Заметим, что вы должны указать @ после имени пользователя, чтобы указать,
+# что этот элемент базы данных проверяет только имя пользователя в адресе
+# отправителя.
+#
+# Если в вашем файле &#8220;sendmail.mc&#8221; вы используете макроопределение:
+#
+# FEATURE(`blacklist_recipients')
+#
+# тогда вы можете добавить элементы связанные с локальными пользователями,
+# хостами в вашем домене или адресов в нем для которых вы не должны
+# получать почту:
+#
+# badlocaluser				 550 Mailbox disabled for this username
+# host.mydomain.com			 550 That host does not accept mail
+# <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6e1b1d0b1c2e011a060b1c06011d1a4003170a01030f0700400d0103">[email&#160;protected]</a>		 550 Mailbox disabled for this recipient
+#
+# Вы хотите предотвратить получение почты для пользователя
+# <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c0a2a1a4acafa3a1acb5b3a5b280adb9a4afada1a9aeeea3afad">[email&#160;protected]</a>, любых пользователей из host.mydomain.com и
+# одного адреса <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="94e1e7f1e6d4fbe0fcf1e6fcfbe7e0baf9edf0fbf9f5fdfabaf7fbf9">[email&#160;protected]</a>.
+# Включение этой возможности также будет блокировать всю почту для
+# получателей для который указан флаг сообщения об ошибки или REJECT.
+#
+# <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="1b686b7a76767e695b7a747735787476">[email&#160;protected]</a>	 REJECT
+# cyberspammer.com	 REJECT
+#
+# Почта не может быть отправлена пользователю <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f18281909c9c9483b1909e9ddf929e9c">[email&#160;protected]</a> или
+# кому-либо из cyberspammer.com.
+#
+# Сейчас ваш конфигурационный файл access,
+# разрешает пересылку почты из localhost...
+localhost.localdomain	 RELAY
+localhost		 RELAY
+127.0.0.1		 RELAY
+192.168.1		 RELAY</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Не забудьте задать в этом файле диапазон
+ваших приватных IP адресов для которых вы хотите разрешить пересылку почты или
+вы не сможете отправлять почту из вашей внутренней сети.</P><B>Шаг 2</B>
+<P align=justify>Создание файла access.dbe:<BR>Помните, так как
+&#8220;/etc/mail/access&#8221; является базой данных, то после создания текстового файла
+описанного выше, вы должны использовать команду &#8220;makemap&#8221; для создания базы
+данных схем.<BR>Для создания базы данных схем используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# makemap hash
+/etc/mail/access.db &lt; /etc/mail/access</FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch14_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

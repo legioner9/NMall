@@ -1,0 +1,482 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Как правильно ограничивать трафик в squid? — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <th colspan="3" align="center">Вопросы и Ответы по
+          FreeBSD</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "page-not-cached.html">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">Chapter 7.
+          Администрирование.</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "fastboot-fails.html">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="SQUID-TRAFFIC-RESTRICTION">7.27.
+      Как правильно ограничивать трафик в squid?</a></h1>
+
+      <p>Такая возможность появилась в squid 2.0 и называется delay
+      pools. Прежде всего проверьте, была ли включена эта
+      возможность на этапе компиляции squid ключом утилиты
+      configure --enable-delay-pools.</p>
+
+      <p>В squid.conf нужно будет прописать нечто вроде:</p>
+<pre class="PROGRAMLISTING">
+          acl comp src 192.168.10.15/255.255.255.255
+          delay_class1_access allow comp
+          delay_class1_aggregate_max 8000
+          delay_class1_aggregate_restore 8000i
+
+</pre>
+
+      <p>Заметьте, что объекты из кэша не замедляются.</p>
+
+      <p>Поищите в архивах squid переписку по этому поводу, а
+      точнее, http://www.cineca.it/proxy/search/html/9812/139.html.
+      Это письмо автора с подробными разъяснениями. По слухам,
+      реализация delay pools для class1 работает плохо, поэтому
+      уменьшать скорость работы нужно по class2, а для class1
+      сделать следующее:</p>
+<pre class="PROGRAMLISTING">
+          delay_class1_access deny all
+
+</pre>
+      Delay pools are meant to provide a way of assigning tokens of
+      bandwidth allowance to Squid users. Pools are assigned on a
+      host basis (IP), which basically means that what you restrict
+      is the WAN bandwidth pumped by Squid for any individual host
+      accessing the Net through it. I am beginning from the most
+      general case, which is the allowance for a group of hosts (a
+      block of IP addresses). An individual host may be part of a
+      group or be a group in itself. In delay pools there are four
+      basic parameters to be defined: 1) aggregate_max 2)
+      aggregate_restore and 3) individual_max 4) individual_restore
+      In order to understand the meaning of each parameter I will
+      briefly explain the concept behind delay pools: For every
+      host in one group there is one delay pool size descriptor
+      (individual_max) and one increment level (individual_restore)
+      associated. We can think delay pools as a bucket of tokens
+      (bytes). The size of the bucket (for one host) is
+      individual_max bytes. At any given time, the bucket can have
+      at max that many tokens (bytes) accumulated. Before Squid
+      fetches a page for that host, it looks up the number of
+      tokens (bytes) available at the bucket. Let's call it the
+      current bucket watermark. If there are enough tokens in the
+      bucket, Squid gets the tokens it needs, lowers the bucket
+      watermark accordingly and proceeds to reading a number of
+      bytes from the connection. If there are no tokens available,
+      Squid is enforced to defer the read, until some tokens
+      (bytes) are available within the bucket. How is this done?
+      This is where the increment level value comes into play:
+      individual_restore defines the number of tokens (bytes) added
+      to the current bucket watermark level every second. To
+      further visualise it, think of a real bucket under a faucet:
+      the bucket can hold a certain amount of water (e.g. 1 litre).
+      The faucet drops a certain amount of water each second (for
+      example 10 cl). We start with the bucket filled of water, but
+      as we start taking water off the bucket with a glass, the
+      available water goes down. If we want to keep a steady
+      watermark level we must take water with the same rate it is
+      dropping from the faucet. If we have a higher rate, the
+      bucket will soon become empty, and then we will have to wait
+      until the faucet has dropped enough water in the bucket
+      again. If we do not use any water for some time the water
+      will overflow the bucket, therefore the bucket will continue
+      to have at most 1 litre of water for immediate use. At
+      telecomm parlance, this is a variation of the leaky bucket
+      algorithm (no wonder why I used the bucket as an example)! It
+      will (?)be used for bandwidth policing in modern data
+      networks (ATM for example). How to configure the delay pools
+      in Squid now: At first decide what kind of grouping you need.
+      If you want all your users to have only one bucket then you
+      go for delay_class1. If you want to have separate buckets for
+      each user then you must opt for delay_class2 or class3
+      (depends on your network). The Aggregate_* settings work
+      almost the same way as the individual with one distinction:
+      in class 2 (this is what I use) and class3 the aggregate
+      delay pool is used only if no individual pool is defined.
+      IMHO I think that it would be more efficient if the aggregate
+      delay pool could provide tokens if an individual pool ran out
+      of tokens at a certain time. (This could be an additional
+      measure to accommodate bursts for some users). If you decide
+      that you need class2 then remember to put the statement acl
+      all src 0.0.0.0/0.0.0.0 delay_class1_access deny all At
+      present it is needed in order to allow class2/class3. Assume
+      that you want class2 delay pools. Then you need something
+      like the following: acl hosts src
+      xxx.xxx.xxx.a-xxx.xxx.xxx.b/255.255.255.255
+      delay_class2_access allow hosts #delay_class2_aggregate_max
+      32000 #delay_class2_aggregate_restore 2000
+      delay_class2_individual_max 24000
+      delay_class2_individual_restore 1200 This defines a block of
+      hosts with IP addresses in the Class C net from a to b (but
+      you can add also other individual hosts to the acl) that will
+      share the following pool settings: Maximum pool size 24000
+      bytes Increment level 1200 bytes I don't use the aggregate
+      settings because they do not have any effect when individual
+      pools are set. The individual settings more or less let the
+      host fetch "immediately" pages that are slightly larger than
+      24000 bytes. If the host tries to fetch a large page then
+      Squid after the initial burst (~24KB) it will slow down to
+      the rate defined by the increment value defined by
+      "delay_class2_individual_restore" (i.e. 1200 bytes/sec). If
+      you do not want to allow for any burstiness in the delay pool
+      then simply define the max size of the pool equal to the
+      restore size. (but this is already documented). Right now,
+      you can have only one effective delay pool setting. This
+      means that you cannot set more than one group of users in the
+      same class. I hope that David will find the time to extend
+      delay pools in order to handle more than one type of host
+      groups in one class. In my view this is necessary. After
+      using delay pools for some time now, I strongly think that it
+      is a powerful add-on to Squid. I think that if it is extended
+      to handle multiple groups (with different pool settings in
+      each group) its value will be really leveraged. Cheers,
+      Evaghelos. И еще одна добавка от автора delay pools Subject:
+      Re: DELAY_POOLS: How to setup Resent-Date: Wed, 11 Nov 1998
+      18:27:05 -0800 (PST) Resent-From: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f28183879b96df8781978081b29b809193919a97dc9c9786">[email&#160;protected]</a>
+      Date: Thu, 12 Nov 1998 09:29:04 +0800 From: David Luyer
+      &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="afc3dad6caddefdaccdc81dad8ce81cacbda81ceda">[email&#160;protected]</a>&gt; To: Evaghelos Tsiotsios
+      &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="d0b5a4a3b9bfa490b1a2b3b8b5a4a9a0bfbefeb7a2">[email&#160;protected]</a>&gt; CC: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="dcafada9b5b8f1a9afb9aeaf9cb5aebfbdbfb4b9f2b2b9a8">[email&#160;protected]</a>,
+      <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="1f6b7e6d747776735f6c66717c776d707376717a316d6a">[email&#160;protected]</a> Thanks to Evaghelos Tsiotsios for his
+      description of delay pools. A few clarifying comments are
+      below; &gt; The Aggregate_* settings work almost the same way
+      as the individual with one &gt; distinction: in class 2 (this
+      is what I use) and class3 the aggregate delay &gt; pool is
+      used only if no individual pool is defined. This assumption
+      (and related comments later) is incorrect. (Or if it is
+      correct it is a coding error.) The aggregate and individual
+      totals both act to limit the traffic, if either is empty then
+      the request is delayed. For example, I run approx 64kbps peak
+      rate (with small 'bucket size') on one of the delay_class2
+      pools and then give each user in it approx 8kbps (with large
+      'bucket size'). The large bucket size on individual users
+      lets each user get a web page "instantly" but if they start
+      downloading a large file it is slow. The small bucket size on
+      the aggregate means that the 64kbps is the limit of bandwidth
+      use (modulo overheads) for these users. Also, I didn't notice
+      any mention of the 'no-delay' tag you can put on neighbors -
+      this will prevent traffic fetched from that peer from being
+      'taken out of the bucket'; for example if you have a fast,
+      "free traffic" ATM network to local universities but anything
+      further away costs money, and you peer caches with local
+      universities, you can put the 'no-delay' tag on these peers
+      cache_host lines. Regarding class2/3 delay pools: It could
+      take some time before I'm able to do any work on multiple
+      delay pools of a given class. How I think it should work is
+      this (sorry, sparse documentation on this, but I hope enough
+      to show anyone whose interested and understands the current
+      system what it means): delay_pools 3 # 3 delay pools
+      delay_class 1 1 # pool 1 is class 1 delay_class 2 1 # pool 2
+      is class 1 delay_class 3 3 # pool 3 is class 3 delay_access 1
+      allow staff delay_access 1 deny all delay_access 2 allow
+      students delay_access 2 deny all delay_access 3 allow college
+      delay_access 3 deny all delay_parameters 1 640000/640000
+      delay_parameters 2 64000/64000 delay_parameters 3 64000/64000
+      32000/64000 6400/32000 # ttl_rest/ttl_max net_rest/net_max
+      ind_rest/ind_max The acls and delay pool data could then be
+      dynamically allocated. Maybe once this was done delay pools
+      could be put into squid by default as the cost of disabled
+      delay pools would be very close to zero (simply a few checks
+      if delay_pools number was 0). David.<br>
+      <br>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "page-not-cached.html">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "fastboot-fails.html">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">При работе
+          squid не кэшируются html-страницы, хотя их содержимое не
+          менялось.</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "administration.html">Up</a></td>
+
+          <td width="33%" align="right" valign="top">Не выполняется
+          команда fastboot.</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

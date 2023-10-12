@@ -1,0 +1,3191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Software-RAID HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1>Software-RAID HOWTO</H1>
+
+<H2>Linas Vepstas, <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="422e2b2c2331022e2b2c23316c2d3025">[email&#160;protected]</a></CODE> Переводчик: Максим Дзюманенко <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="9af7fbe2dafbeae8f3f6b4f1f3ffecb4effb">[email&#160;protected]</a></CODE></H2>v0.54, 21 Ноября 1998г  Дата перевода: 24 октября 2000г
+<P><HR>
+<EM>RAID обозначает ''Redundant Array of Inexpensive Disks'', ''Массив недорогих дисков с избыточностью'' - это
+путь создания быстрых и надежных дисковых систем
+из отдельных дисков.  RAID может противодействовать отказам дисков, а также увеличивать производительность по сравнению с одиночным диском.
+Этот документ - tutorial/HOWTO/FAQ для пользователей расширения MD ядра
+Linux, соответствующих утилит, и их применения.
+Расширение MD программно реализует RAID-0 (striping), RAID-1 (mirroring),
+RAID-4 и RAID-5. Это значит - с MD не требуется специального оборудования
+или дисковых контроллеров для получения многих преимуществ RAID.</EM>
+<HR>
+<P>
+<DL>
+<DT><B>Предисловие</B><DD><P>Этот документ распространяется под GPL лицензией. Авторские права
+принадлежат Linas Vepstas
+(
+<A HREF="../cdn-cgi/l/email-protection.html#e38f8a8d8290a38f8a8d8290cd8c9184"><span class="__cf_email__" data-cfemail="472b2e292634072b2e29263469283520">[email&#160;protected]</span></A>).
+Разрешается свободно использовать, копировать, распространять этот документ для любых целей,
+при условии указания имени автора/редактора и
+этой заметки во всех копиях и/или поддерживаемых документах и
+немодифицированных версиях этого документа.
+Этот документ распространяется в надежде, что он будет полезен, но
+БЕЗ ВСЯКОЙ ГАРАНТИИ, явной или неявной.  Были предприняты все усилия
+для уверенности в правильности приведенной информации,
+автор /редактор / хранитель и переводчик НЕ НЕСУТ ОТВЕТСТВЕННОСТИ за
+любые ошибки, или повреждения, прямые или косвенные, причиненные в результате
+использования информации приведенной в этом документе.
+<P>
+<P><B>Не смотря на то, что RAID разработан для увеличения надежности системы
+путем введения
+избыточности, он может создавать ложное чувство безопасности и уверенности,
+если используется неправильно.  Эта ложная уверенность может привести к большой беде.
+В частности заметьте, что RAID разработан для защиты от
+*дисковых* отказов, а не отказов *питания* или ошибок *оператора*.
+Отказы питания, ошибки при разработке ядра, или ошибки оператора/администратора
+могут привести к невосстановимому повреждению данных!
+RAID  *не* заменяет подобающего резервирования Вашей системы.
+Знайте что Вы делаете, тестируйте, будьте осведомлены и сознательны!</B>
+</DL>
+<P>Домашняя страница перевода -
+<!--<A HREF="http://dmv.webjump.com/HOWTOs/">-->http://dmv.webjump.com/HOWTOs/<!--</A>-->. Обновленные версии, в первую очередь, появляются тут.
+<P>
+<H2><A NAME="s1">1. Введение </A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Что такое RAID?
+<BLOCKQUOTE>
+<B>О</B>:
+RAID означает "Redundant Array of Inexpensive Disks",
+- путь создания быстрых и надежных дисковых подсистем из
+отдельных дисков.  В мире PC, "I" понимают как
+"Независимые"("Independent"), где маркетинговыми усилиями продолжают
+различать
+IDE и SCSI.  В оригинальном понимании, "I" означает
+"Недорогие (Inexpensive) по сравнению
+мейнфреймом 3380 DASD, размером с холодильник".
+Хорошие дома выглядят дешевыми по сравнению с его монстрообразными
+устройствами, а бриллиантовые кольца - безделушками.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Что это за документ?
+<BLOCKQUOTE>
+<B>О</B>:
+Этот документ - tutorial/HOWTO/FAQ для пользователей MD расширения ядра Linux,
+соответствующих утилит, и их применения.
+Расширение MD программно реализует RAID-0 (striping), RAID-1 (mirroring),
+RAID-4 и RAID-5.  Это означает, что для MD не требуется специального оборудования
+или дисковых контроллеров для достижения многих преимуществ RAID.
+
+<P>Этот документ <B>НЕ</B> введение в RAID;
+вы должны искать его в другом месте.
+</BLOCKQUOTE>
+
+    </LI>
+<LI><B>В</B>:
+Какие уровни RAID реализует ядро Linux?
+<BLOCKQUOTE>
+<B>О</B>:
+Striping (RAID-0)  и линейное соединение являются частью
+2.x серии ядер. Его код - продукт производственного качества;
+он хорошо понятен
+и хорошо поддерживается. Он используется в некоторых очень больших
+USENET серверах новостей.
+
+<P>RAID-1, RAID-4 и RAID-5  - часть  ядра 2.1.63 и выше.  Для ранних 2.0.x и 2.1.x
+ядер, существуют патчи, которые реализуют эту функцию.  Не считайте обязательным
+обновиться до ядра 2.1.63; обновление ядра - процесс трудный;  *намного*
+проще пропатчить ранние ядра.  Большинство пользователей RAID
+работают с 2.0.x ядрами, и там сфокусирована большая часть исторической разработки
+RAID.   Текущие снимки - производственного качества;
+т.е. нет известных ошибок, но есть некоторые грубые места и
+не проверенные системные установки.  Большое количество людей
+используют программный RAID в производственном окружении.
+<P>
+<P>Горячее восстановление на RAID-1 было представлено недавно
+(Август 1997) и должно рассматриваться как альфа качества.
+Горячее восстановление RAID-5 должно быть альфа качества сейчас.
+<P>
+<P>Предостережение о 2.1.x нестабильных ядрах:
+они менее стабильны во многих отношениях. Некоторые из
+новейших дисковых контроллеров (таких как Promise Ultra)
+поддерживаются
+только в 2.1.x ядрах.  Однако, 2.1.x ядра
+часто меняются в части драйверов блочных устройств,
+в коде DMA и прерываний, в PCI, IDE и SCSI коде,
+и в драйверах дисковых контроллеров.  Комбинация этих факторов
+в совокупности с дешевыми жесткими дисками и/или низкого качества
+кабелями могут привести к значительным
+неприятностям.   Утилита <CODE>ckraid</CODE> как и
+<CODE>fsck</CODE> и <CODE>mount</CODE> создают значительную нагрузку на
+RAID подсистему.  Это может привести к блокировке дисков при
+загрузке,
+где даже магическая alt-SysReq клавишная комбинация
+не сохранит день.  Будьте осторожны с 2.1.x ядрами,
+и ожидайте проблем.  Или вернитесь к 2.0.34 ядру.
+</BLOCKQUOTE>
+
+    </LI>
+<LI><B>В</B>:
+Я использую старое ядро. Где я могу получить патчи?
+<BLOCKQUOTE>
+<B>О</B>:
+Программный RAID-0 и линейный режим - присутствуют во всех версиях текущих
+ядер Linux.  Патчи для программных RAID-1,4,5 имеются на
+<!--<A HREF="http://luthien.nuclecu.unam.mx/~miguel/raid">-->http://luthien.nuclecu.unam.mx/~miguel/raid<!--</A>-->.
+См. также квази-зеркало
+<!--<A HREF="ftp://linux.kernel.org/pub/linux/daemons/raid/">-->ftp://linux.kernel.org/pub/linux/daemons/raid/<!--</A>-->
+для патчей, инструментов и других интересных вещей.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Есть ли другие Linux RAID ссылки?
+<BLOCKQUOTE>
+<B>О</B>:
+<UL>
+<LI>Общий обзор RAID:
+<!--<A HREF="http://www.dpt.com/uraiddoc.html">-->http://www.dpt.com/uraiddoc.html<!--</A>-->.</LI>
+<LI>Общие опции Linux RAID:
+<!--<A HREF="http://linas.org/linux/raid.html">-->http://linas.org/linux/raid.html<!--</A>-->.</LI>
+<LI>Последняя версия этого документа:
+<!--<A HREF="http://linas.org/linux/Software-RAID/Software-RAID.html">-->http://linas.org/linux/Software-RAID/Software-RAID.html<!--</A>-->.</LI>
+<LI>Linux-RAID архив почтовой переписки:
+<!--<A HREF="http://www.linuxhq.com/lnxlists/">-->http://www.linuxhq.com/lnxlists/<!--</A>-->.</LI>
+<LI>Домашняя страница Linux Software RAID:
+<!--<A HREF="http://luthien.nuclecu.unam.mx/~miguel/raid">-->http://luthien.nuclecu.unam.mx/~miguel/raid<!--</A>-->.</LI>
+<LI>Инструменты Linux Software RAID:
+<!--<A HREF="ftp://linux.kernel.org/pub/linux/daemons/raid/">-->ftp://linux.kernel.org/pub/linux/daemons/raid/<!--</A>-->.</LI>
+<LI>Как установить linear/stripped Software RAID:
+<!--<A HREF="http://www.ssc.com/lg/issue17/raid.html">-->http://www.ssc.com/lg/issue17/raid.html<!--</A>-->.</LI>
+<LI>Bootable RAID mini-HOWTO:
+<!--<A HREF="ftp://ftp.bizsystems.com/pub/raid/bootable-raid">-->ftp://ftp.bizsystems.com/pub/raid/bootable-raid<!--</A>-->.</LI>
+<LI>Root RAID HOWTO:
+<!--<A HREF="ftp://ftp.bizsystems.com/pub/raid/Root-RAID-HOWTO">-->ftp://ftp.bizsystems.com/pub/raid/Root-RAID-HOWTO<!--</A>-->.</LI>
+<LI>Linux RAID-Geschichten:
+<!--<A HREF="http://www.infodrom.north.de/~joey/Linux/raid/">-->http://www.infodrom.north.de/~joey/Linux/raid/<!--</A>-->.</LI>
+</UL>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Кто ответственен за этот документ?
+<BLOCKQUOTE>
+<B>О</B>:
+Linas Vepstas собрал это все вместе.
+Однако, большая часть информации,
+и некоторые фразы были предоставлены
+<UL>
+<LI>Bradley Ward Allen
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#92e7fefffdd2c3bcdcf7e6"><span class="__cf_email__" data-cfemail="cbbea7a6a48b9ae585aebf">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Luca Berra
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#63010f16000223000c0e06070a024d0a17"><span class="__cf_email__" data-cfemail="c9aba5bcaaa889aaa6a4acada0a8e7a0bd">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Brian Candler
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#a1e38fe2c0cfc5cdc4d3e1d1cec3ced98fc2cecc"><span class="__cf_email__" data-cfemail="4c0e620f2d222820293e0c3c232e2334622f2321">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Bohumil Chalupa
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#f5979a969d9499b594859a99999adb9e9487999a83db989393db96809b9cdb968f"><span class="__cf_email__" data-cfemail="88eae7ebe0e9e4c8e9f8e7e4e4e7a6e3e9fae4e7fea6e5eeeea6ebfde6e1a6ebf2">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Rob Hagopian
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#9cf4fdfbf3ecf5fdeedceae9b2e9f2f5f3f2b2f9f8e9"><span class="__cf_email__" data-cfemail="2e464f49415e474f5c6e585b005b40474140004b4a5b">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Anton Hristozov
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#f0919e849f9eb0999e8482919e83939fde939f9d"><span class="__cf_email__" data-cfemail="25444b514a4b654c4b5157444b56464a0b464a48">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Miguel de Icaza
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#2d40444a5848416d415859454448430343584e41484e580358434c40034055"><span class="__cf_email__" data-cfemail="5a37333d2f3f361a362f2e32333f3474342f39363f392f742f343b37743722">[email&#160;protected]</span></A>&gt; </LI>
+<LI>Marco Meloni
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#d4a0bbbababb94a7a0a1b0faa1babda4b3fabda0"><span class="__cf_email__" data-cfemail="75011a1b1b1a35060100115b001b1c05125b1c01">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Ingo Molnar
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#bdd0d4d3dad2fdcdde8a888e8a93d5d4d193ced4d8d0d8d3ce93dcc9"><span class="__cf_email__" data-cfemail="a8c5c1c6cfc7e8d8cb9f9d9b9f86c0c1c486dbc1cdc5cdc6db86c9dc">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Alvin Oga
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#b3d2dfc5daddf3c3dfd2ddd6c79dd5d6d59dd0dcde"><span class="__cf_email__" data-cfemail="9afbf6ecf3f4daeaf6fbf4ffeeb4fcfffcb4f9f5f7">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Gadi Oxman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#ed8a8c898482ad8388999b849e848283c3838899c38481"><span class="__cf_email__" data-cfemail="8deaece9e4e2cde3e8f9fbe4fee4e2e3a3e3e8f9a3e4e1">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Vaughan Pratt
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#3a4a485b4e4e7a594914694e5b545c55485e147f7e6f"><span class="__cf_email__" data-cfemail="5525273421211536267b0621343b333a27317b101100">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Steven A. Reisman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#3d4e5c4f7d4d4f584e4e585349584f135e5250"><span class="__cf_email__" data-cfemail="5f2c3e2d1f2f2d3a2c2c3a312b3a2d713c3032">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Michael Robinton
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#adc0c4cec5ccc8c1edcfd7de83c2dfca"><span class="__cf_email__" data-cfemail="422f2b212a23272e022038316c2d3025">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Martin Schulze
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#741e1b110d34121d1a18151a101d155a1d1a121b10061b195a1a1b06001c5a1011"><span class="__cf_email__" data-cfemail="274d48425e67414e494b4649434e46094e4941484355484a09494855534f094342">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Geoff Thompson
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#096e6c666f6f7d496a7a277e686062687d6627686a276773"><span class="__cf_email__" data-cfemail="7e191b1118180a3e1d0d50091f17151f0a11501f1d501004">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Edward Welbon
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#15627079777a7b557772743b767a78"><span class="__cf_email__" data-cfemail="88ffede4eae7e6c8eaefe9a6ebe7e5">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Rod Wilkens
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#f280859b9e99979c81b2909d80969780dc9c9786"><span class="__cf_email__" data-cfemail="dcaeabb5b0b7b9b2af9cbeb3aeb8b9aef2b2b9a8">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Johan Wiltink
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#ef85c182c19886839b868184af9f86c1818a9b"><span class="__cf_email__" data-cfemail="72185c1f5c051b1e061b1c1932021b5c1c1706">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Leonard N. Zubkoff
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#d7bbb9ad97b3b6b9b3b2bbbeb8b9f9b4b8ba"><span class="__cf_email__" data-cfemail="7b1715013b1f1a151f1e1712141555181416">[email&#160;protected]</span></A>&gt;</LI>
+<LI>Marc ZYNGIER
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#e69c9f88818f8394a6938094cb8f888089cb96d1c88f8496c88094"><span class="__cf_email__" data-cfemail="6c1615020b05091e2c190a1e4105020a03411c5b42050e1c420a1e">[email&#160;protected]</span></A>&gt;</LI>
+</UL>
+
+<P><B>Copyrights</B>
+<UL>
+<LI>Copyright (C) 1994-96 Marc ZYNGIER</LI>
+<LI>Copyright (C) 1997 Gadi Oxman, Ingo Molnar, Miguel de Icaza</LI>
+<LI>Copyright (C) 1997, 1998 Linas Vepstas</LI>
+<LI>По закону об авторском праве, дополнительные авторские права принадлежат
+помощникам, указанным выше.</LI>
+</UL>
+<P>Спасибо всем за приведенное здесь!
+</BLOCKQUOTE>
+</LI>
+</OL>
+<H2><A NAME="s2">2. Понимание RAID</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Что такое RAID?  Почему я всегда его использую?
+<BLOCKQUOTE>
+<B>О</B>:
+RAID - путь комбинирования нескольких дисков в одно целое
+для увеличения скорости и/или надежности.  Существует
+несколько различных типов и реализаций RAID, каждый
+со своими преимуществами и недостатками.  Например,
+помещая копию одинаковых данных на два диска (называется
+<B>зеркализация дисков</B>, или RAID уровня 1), скорость чтения может быть
+повышена поочередным считыванием с каждого диска зеркала.
+В среднем, каждый диск менее занят, т.к. он обрабатывает только половину
+операций чтения (для двух дисков), или 1/3 (для трех дисков), и т.д.
+В дополнение, зеркало может повышать надежность: если один диск
+выходит из строя, другой диск содержит копию данных.  Различные пути
+комбинирования дисков в один, обозначаются <B>уровнями RAID</B>,
+могут обеспечить большую эффективность хранения,
+чем просто зеркализация, или могут  изменить производительность по задержкам (времени доступа),
+или производительность пропускной способности (скорости передачи), для
+чтения или записи, в то же время  поддерживается избыточность - это
+полезно для противодействия отказам.
+<P><B>Хотя RAID может защитить от отказа, он не защищает от
+ошибок оператора и администратора (человека), или потерь
+вызванных ошибками программ (возможно и ошибками собственно программной реализации
+RAID).  Сеть изобилует трагическими историями о системных администраторах, которые неправильно
+устанавливали RAID, и потеряли все свои данные.  RAID - не
+заменяет необходимость частого, регулярного планового резервного
+копирования.</B>
+<P>RAID может быть реализован аппаратно,
+в виде специальных дисковых контроллеров, или
+программно, как модуль ядра который связывает
+низкоуровневый драйвер диска, и файловую систему,
+которая находится на нем.
+Аппаратный RAID - всегда "дисковый контроллер",  - это устройство
+к которому могут подсоединяться диски. Обычно он представляет
+собой плату, которая вставляется в слот
+ISA/EISA/PCI/S-Bus/MicroChannel.  Однако, некоторые RAID
+контроллеры - в виде ящика, который соединяется кабелями
+с используемым дисковым контроллером, и
+дисками.  Меньшие из них помещаются в дисковой стойке; большие
+могут быть встроены в дисковый шкаф со своими собственными
+стойками и источником
+питания.  Последние аппаратные RAID используют с
+последними и быстрейшими процессорами, что обеспечивает обычно
+лучшую общую производительность,
+несмотря на значительную цену.  Это потому, что большинство
+RAID контроллеров поставляются с встроенными процессорами на борту
+и кеш-памятью,
+которые могут значительно разгрузить суммарную обработку
+главного процессора, насколько позволяет скорость поступления данных
+в большой кеш контроллера. Старые аппаратные RAID могут работать как
+"тормоз" когда используются с новейшими процессорами: вчерашние
+модные встроенные процессоры и кеш могут быть бутылочным
+горлышком, и их
+производительность часто превосходится чисто-программными RAID
+и новыми,
+но простыми в других отношениях, дисковыми контроллерами.
+Аппаратные RAID могут иметь преимущество над чисто-программными
+RAID, если используют синхронизацию шпинделей дисков
+и знают позицию дисковых пластин относительно
+головок диска и желаемого дискового блока.
+Однако, большинство современных (дешевых) дисков не предоставляют
+эту информацию, во всяком случае, средства управления этим и т.о.,
+большинство аппаратных RAID не имеет этих преимуществ.
+Аппаратные RAID различных производителей, версий и моделей обычно не
+совместимы:
+если RAID контроллер отказывает, он должен быть заменен на другой
+контроллер того-же самого типа.  На момент написания  (Июнь 1998),
+широкое разнообразие аппаратных контроллеров используется под Linux;
+однако, никакой из них, на текущий момент, не поставляется с
+утилитами конфигурации
+и управления, которые запускаются под Linux.
+<P>Software-RAID - набор модулей ядра, вместе с утилитами управления,
+которые реализуют чисто программный RAID,
+и не требуют необычной аппаратуры.  Подсистема Linux RAID
+реализована в ядре, как уровень над низкоуровневыми
+драйверами дисков (для IDE, SCSI и Paraport устройств),
+и интерфейсом блочных устройств.  Файловая система, будь то ext2fs,
+DOS-FAT, или другая, работает поверх блочного интерфейса.
+Программный RAID, по своей программной природе, склонен быть более
+гибким, чем аппаратная реализация. Обратная сторона этого -
+требуется больше процессорного времени, по сравнению с аппаратной
+реализацией.
+Конечно, цена не превзойденная.  Кроме того программный RAID имеет
+одну важную
+отличительную особенность: он оперирует базируясь на разделах,
+где несколько отдельных дисковых разделов собираются вместе для
+создания разделов RAID.  В этом отличие
+от большинства аппаратных решений RAID, которые объединяют вместе
+целые диски в массив.  В аппаратных RAID, факт, что
+массив RAID - прозрачен для операционной системы,
+упрощает управление.
+В программном, гораздо больше конфигурационных опций и вариантов,
+что запутывает дело.
+<P><B>На момент написания (Июнь 1998), администрирование RAID
+под Linux далеко от простоты, и это лучше пробовать
+опытным системным администраторам.  Теория функционирования
+сложна.  Системные инструменты требуют модификации загрузочных скриптов.
+И восстановление дискового отказа непростая задача,
+и способствует ошибкам человека.   RAID не для новичков,
+и полученный прирост в надежности и производительности,
+может запросто перевеситься излишней сложностью.  Действительно,
+современные диски - невероятно надежны и современные
+процессоры и контроллеры вполне мощные.  Вы можете более
+просто получить желаемую надежность и производительность
+купив диск высшего качества и/или быструю аппаратуру.</B>
+</BLOCKQUOTE>
+
+        </LI>
+<LI><B>В</B>:
+Что такое уровни RAID?  Почему так много? Чем различаются?
+<BLOCKQUOTE>
+<B>О</B>:
+Различные уровни RAID имеют различную производительность,
+избыточность, емкость, надежность и ценовые характеристики.
+Большинство, но не все, из уровней RAID
+предоставляют повышенную защиту от отказов диска.  Из тех, которые предоставляют
+избыточность, RAID-1 и RAID-5 более популярны.
+RAID-1 предлагает лучшую производительность, в то же время RAID-5 применяется
+для более продуктивного использования имеющихся емкостей накопителей.
+Однако, настройка производительности - совсем иное дело,
+так как производительность зависит от множества различных факторов,
+от типа приложения, до размеров
+stripe-ов, блоков, и файлов.  Более трудные аспекты настройки производительности
+откладываются до более поздних разделов этого HOWTO.
+<P>Далее описывается разница между уровнями RAID в контексте реализации программного RAID в Linux.
+<P>
+<UL>
+<LI><B>RAID-linear</B>
+простое объединение разделов для создания большого виртуального раздела.
+Это применяется если у Вас несколько маленьких дисков,
+и Вы хотите создать один большой раздел.
+Это объединение не предлагает избыточности, и фактически уменьшает общую
+надежность: если один из дисков выходит из строя, весь раздел выходит из строя.
+<P>
+<P>
+</LI>
+<LI><B>RAID-1</B> так же называемый "зеркализацией"("mirroring").
+Два (или более) раздела, все одинакового размера, каждый содержит
+точную копию всех данных, блок в блок.
+Зеркализация дает сильную защиту от отказов диска:
+если один диск отказывает, есть другой с точной копией данных.
+Зеркализация также может помочь увеличить производительность
+подсистемы ввода-вывода, так как запросы на чтение могут
+быть разделены между несколькими дисками.   К несчастью,
+зеркализация также менее эффективна в смысле емкости:
+два зеркальных раздела могут вместить не больше данных, чем один раздел.
+<P>
+<P>
+</LI>
+<LI><B>Striping</B> - базовая концепция всех других уровней RAID.
+stripe  - непрерывная последовательность дисковых блоков.
+stripe может быть размером с один дисковый блок,
+или может состоять из тысяч.  Устройства RAID разделяют содержащие их разделы дисков на stripe-ы;
+различные уровни RAID различаются в том, как они организуют stripe-ы, и как данные размещаются на них.
+Взаимодействие между размером stripe-ов, типичными размерами файлов
+в системе, и их положением на диске - определяет общую производительность подсистемы RAID.
+<P>
+<P>
+</LI>
+<LI><B>RAID-0</B> подобна RAID-linear, исключая то, что
+компоненты разделов делятся на strip-ы и затем
+чередуются.  Подобно RAID-linear, результат - один
+большой виртуальный раздел.  Так же как и в RAID-linear, это не
+предполагает избыточности, и тоже уменьшает общую надежность:
+отказ одного диска ударит по всему.
+RAID-0 часто претендует на  увеличение производительности по сравнению
+RAID-linear.  Однако, это может быть или не быть справедливо,
+в зависимости от характеристик файловой системы, типичного размера
+файла по сравнению с размером stripe, и типа рабочей нагрузки.
+Файловая система <CODE>ext2fs</CODE>
+уже рассеивает файлы по разделу,
+стараясь минимально фрагментировать. Итак, на простейшем уровне,
+любой доступ может быть выполнен к одному из нескольких дисков,
+и таким образом, чередование stripe-ов по многим
+дискам предоставляет реальные преимущество. Однако,
+существует разница в производительности, она зависит от данных,
+рабочей загрузки, и размера stripe.
+<P>
+<P>
+</LI>
+<LI><B>RAID-4</B> чередует stripe-ы подобно RAID-0, но
+требуется дополнительный раздел для размещения информации о четности.
+Четность используется для получения избыточности:
+если один из дисков отказывает, данные на оставшихся дисках
+могут быть использованы для воссоздания данных на отказавшем диске.
+Получаем N дисков с данными, и один диск с четностью,
+stripe четности вычисляется так - берется один stripe из каждого
+диска с данными, и XOR-ятся вместе.  Итак,
+емкость (N+1)-дисков массива RAID-4 равна N, что намного лучше чем зеркализация (N+1) дисков,
+и почти так же хорошо, как RAID-0 на N.
+Заметьте, что для N=1, где один диск с данными, и один паритетный,
+RAID-4 эквивалентен зеркализации, при этом каждый из двух дисков
+копирует друг друга.  Однако,
+RAID-4 <B>НЕ</B> дает производительности чтения зеркализации,
+и имеет пониженную производительность записи. По просту, это потому, что обновление
+паритета требует чтения старого паритета, перед тем, ка новый паритет
+может быть вычислен и записан.  При большом количестве операций записи,
+паритетный диск может стать "бутылочным горлышком", т.к. каждая операция записи
+должна обращаться к паритетному диску.
+<P>
+<P>
+</LI>
+<LI><B>RAID-5</B> освободжден от "бутылочного горлышка" при записи на RAID-4
+размещением паритетных stripe вперемешку на каждом диске.  Однако,
+производительность записи все еще не столь хороша, как при зеркализации,
+так как паритетный stripe все же должен быть считан и XOR-ен перед записью.
+Производительность чтения тоже не так хороша, как при зеркализации, так как, после этого,
+есть только одна копия данных, не две или более.
+Принципиальное преимущество RAID-5 над зеркализацией то, что он предоставляет
+избыточность и защиту от отказа одного диска, в то же время предоставляет
+намного больше емкости, когда используется с тремя или более дисками.
+<P>
+<P>
+</LI>
+<LI><B>RAID-2 и RAID-3</B> редко используются, и
+в некоторой степени стали устаревшими для современных дисковых технологий.
+RAID-2 подобен RAID-4, но размещает ECC информацию вместо паритетной.
+С тех пор как все современные диски реализуют ECC в себе, это предоставляет
+маленькую дополнительную защиту.  RAID-2 может дать большую
+целостность данных, если пропало питание в процессе записи; однако,
+резервные аккумуляторы и чистое завершение работы могут дать ту же выгоду.
+RAID-3 подобен RAID-4, исключая то,  что он использует
+наименьший возможный размер stripe. Как результат, любая операция чтения
+будет включать в себя все диски, делая  перекрытие
+запросов ввода-вывода трудным/невозможным. Для избежания
+задержек при ожидания вращения, RAID-3 требует синхронизации всех
+шпинделей дисков. Большинство современных дисков
+не имеют способности синхронизировать шпиндели, или,
+если и имеют, не имеют нужных соединителей, кабелей,
+и документации производителей.  Ни RAID-2 ни RAID-3
+не поддерживаются драйверами программного RAID в Linux.
+<P>
+<P>
+</LI>
+<LI><B>Прочие уровни RAID</B> определены различными
+исследователями и поставщиками.  Многие из них представляют
+наложение одного типа raid поверх другого.  Некоторые требуют
+специального оборудования, а другие защищены патентами.
+Нет единой схемы именования этих уровней. Иногда преимущества этих
+систем небольшие, или по крайне мере не проявляются
+пока система не слишком нагружена.  Исключая
+размещение RAID-1 поверх RAID-0/linear, Программный RAID Linux
+не поддерживает никакие друге варианты.
+<P>
+</LI>
+</UL>
+</BLOCKQUOTE>
+</LI>
+</OL>
+<H2><A NAME="s3">3. Установка и установочные соображения</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Как лучше сконфигурировать программный RAID?
+<BLOCKQUOTE>
+<B>О</B>:
+Я обнаружил, что планирование файловой системы одна из
+труднейших задач конфигурирования Unix.
+Для ответа на Ваш вопрос, я могу написать, что мы сделаем.
+
+Мы планируем следующую установку:
+<UL>
+<LI>два EIDE диска, 2.1Гб каждый.
+<BLOCKQUOTE><CODE>
+<PRE>
+диск раздел т.монтирования размер   устройство
+  1      1       /        300M   /dev/hda1
+  1      2       swap      64M   /dev/hda2
+  1      3       /home    800M   /dev/hda3
+  1      4       /var     900M   /dev/hda4
+
+  2      1       /root    300M   /dev/hdc1
+  2      2       swap      64M   /dev/hdc2
+  2      3       /home    800M   /dev/hdc3
+  2      4       /var     900M   /dev/hdc4
+
+</PRE>
+</CODE></BLOCKQUOTE>
+</LI>
+<LI>Каждый диск на отдельном контроллере (и отдельном кабеле).
+Теоретически отказ контроллера и/или
+отказ кабеля не запретит доступ к обоим дискам.
+Также, мы возможно сможем получить повышение производительности
+от параллельных операций на двух контроллерах/кабелях.
+</LI>
+<LI>Установим ядро Linux в корневой (<CODE>/</CODE>)
+раздел <CODE>/dev/hda1</CODE>.  Пометим этот раздел как загрузочный.
+                    </LI>
+<LI><CODE>/dev/hdc1</CODE> должен содержать ``холодную'' копию
+<CODE>/dev/hda1</CODE>. Это НЕ raid копия,
+просто один-в-один копия. Только для использования в качестве
+восстановительного диска в случая отказа основного диска;
+пометим <CODE>/dev/hdc1</CODE> как загрузочный, и используем его
+для хранения без переустановки системы.
+Вы можете также поместить копию <CODE>/dev/hdc1</CODE>
+ядра в LILO для упрощения загрузки в случае отказа.
+
+Теоретически, в случае отказа, так я все еще могу загрузить систему
+вне зависимости от повреждения суперблока
+raid или других видов отказов и случаев, которые мне не понятны.
+</LI>
+<LI><CODE>/dev/hda3</CODE> и <CODE>/dev/hdc3</CODE> будут зеркалами
+<CODE>/dev/md0</CODE>.</LI>
+<LI><CODE>/dev/hda4</CODE> и <CODE>/dev/hdc4</CODE> будут зеркалами
+<CODE>/dev/md1</CODE>.
+</LI>
+<LI> мы выбрали <CODE>/var</CODE> и <CODE>/home</CODE> для зеркализации,
+и в разных разделах, основываясь на следующей логике:
+<UL>
+<LI><CODE>/</CODE> (корневой раздел ) будет содержать
+относительно статическую, не изменяющуюся  информацию:
+для всех практических применений, он должен быть
+только для чтения, без фактической отметки и
+монтирования только для чтения.</LI>
+<LI><CODE>/home</CODE> должен содержать ''медленно изменяющиеся'' данные.</LI>
+<LI><CODE>/var</CODE> должен содержать быстро изменяющиеся данные,
+включая спул почты, содержимое баз данных и логи web сервера.</LI>
+</UL>
+
+Идея использования нескольких отдельных разделов такова
+<B>если</B>, по некоторой странной причине,
+при ошибках человека, пропадении питания, или ошибках операционной системы
+происходят повреждения - они ограничиваются одним разделом.
+Типичный случай - исчезновение питания при записи на диск.
+Это должно привести к повреждению файловой системы, что
+должно быть исправлено программой <CODE>fsck</CODE> при следующей загрузке.  Если даже
+<CODE>fsck</CODE> делает восстановление
+без создания дополнительных повреждений этим восстановлением,
+можно утешиться тем, что любые повреждения были ограничены
+одним разделом.  В другом типичном случае
+системный администратор делает ошибку в процессе операции восстановления,
+что приводит к стиранию и разрушению всех данных.  Разделы могут
+помочь ограничить влияние ошибок оператора.</LI>
+<LI>Разумно обдумать размещение разделов
+<CODE>/usr</CODE> или <CODE>/opt</CODE>.  В общем, <CODE>/opt</CODE>
+и <CODE>/home</CODE>  - лучший выбор для RAID-5
+разделов, если есть еще диски.  Предостережение:
+<B>НЕ</B> помещайте <CODE>/usr</CODE> в RAID-5
+раздел.  В случае серьезного отказа, вы можете обнаружить, что не
+можете примонтировать <CODE>/usr</CODE>, и необходимый
+набор утилит на нем (таких как сетевые утилиты или компилятор.)
+С RAID-1, если произошел отказ, и Вы не можете заставить RAID работать, Вы можете,
+по крайней мере, смонтировать одно из двух зеркал. Вы не можете сделать это с любым
+другим уровнем RAID (RAID-5, striping, или линейным соединением).
+</LI>
+</UL>
+
+
+<P>Итак, чтобы завершить ответ на вопрос:
+<UL>
+<LI>устанавливаем ОС на диск 1, раздел 1.
+Не монтируем любые другие разделы. </LI>
+<LI>устанавливаем по инструкции RAID.</LI>
+<LI>конфигурирует <CODE>md0</CODE> и <CODE>md1</CODE>.</LI>
+<LI>убеждаемся, что знаем что делать в случае отказа!
+Делаем ошибку администратора сейчас и
+не ждем реального кризиса.
+Эксперимент!
+(мы выключаем питание при дисковой активности &mdash;
+это нехорошо, но показательно).</LI>
+<LI>делаем несколько плохих mount/copy/unmount/rename/reboot для
+записи <CODE>/var</CODE> на <CODE>/dev/md1</CODE>.
+Делайте старательно, это не опасно.</LI>
+<LI>наслаждайтесь!</LI>
+</UL>
+</BLOCKQUOTE>
+
+    </LI>
+<LI><B>В</B>:
+Какое различие между <CODE>mdadd</CODE>, <CODE>mdrun</CODE>,
+<I>и т.д.</I> командами, и <CODE>raidadd</CODE>, <CODE>raidrun</CODE>
+командами?
+<BLOCKQUOTE>
+<B>О</B>:
+Имена утилит сменились начиная с релиза 0.5 пакета raidtools. <CODE>md</CODE>
+схема именования использовалась в 0.43 и более старых версиях,
+в то время как <CODE>raid</CODE> используется в 0.5 и более новых версиях.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я хочу запустить RAID-linear/RAID-0 на 2.0.34 ядре .
+Я не хочу применять raid патчи, так как они не нужны для
+RAID-0/linear.  Где я могу взять raid-утилиты для управления?
+<BLOCKQUOTE>
+<B>О</B>:
+Это трудный вопрос, в самом деле, новый пакет raid утилит
+при сборке требует установленных патчей RAID-1,4,5. Я не знаю ни одной предкомпилированной
+двоичной версии raid утилит, которые доступны на текущий момент.
+Однако, эксперименты показывают, что бинарники raid утилит, когда
+скомпилированы с ядром 2.1.100, кажется хорошо работающими
+при создании RAID-0/linear раздела под 2.0.34.  Смельчаки спрашивали об этом, и я <B>временно</B>
+поместил бинарники mdadd, mdcreate, и т.д.
+на http://linas.org/linux/Software-RAID/
+Вы должны взять man страницы, и т. д. с обычного пакета утилит.
+</BLOCKQUOTE>
+
+    </LI>
+<LI><B>В</B>:
+Могу ли я strip/зеркализировать корневой раздел (<CODE>/</CODE>)?
+Почему я не могу загружать Linux прямо с <CODE>md</CODE> диска?
+
+<BLOCKQUOTE>
+<B>О</B>:
+И LILO и Loadlin требуют не stripped/mirrored раздел
+для считывания образа ядра. Если Вы хотите strip/зеркализировать
+корневой раздел (<CODE>/</CODE>),
+вы должны создать не striped/mirrored раздел для хранения ядра(ядер).
+Обычно, этот раздел называют <CODE>/boot</CODE>.
+Тогда Вы должны либо использовать начальную поддержку виртуального диска(initrd),
+или патчи от Harald Hoyer
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#672f0615151e2f2735081e060b49290213"><span class="__cf_email__" data-cfemail="d098b1a2a2a9989082bfa9b1bcfe9eb5a4">[email&#160;protected]</span></A>&gt;
+которые позволяют использовать stripped раздел, как корневой раздел.
+(Эти патчи - стандартная часть последних ядер серии 2.1.x)
+
+<P>Существуют несколько подходов, которые могут быть использованы.
+Один подход детально документирован в Bootable RAID mini-HOWTO:
+<!--<A HREF="ftp://ftp.bizsystems.com/pub/raid/bootable-raid">-->ftp://ftp.bizsystems.com/pub/raid/bootable-raid<!--</A>-->.
+<P>
+<P>Как альтернативу, используйте <CODE>mkinitrd</CODE> для построения образа ramdisk,
+как показано ниже.
+<P>
+<P>Edward Welbon
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#9aedfff6f8f5f4daf8fdfbb4f9f5f7"><span class="__cf_email__" data-cfemail="8bfceee7e9e4e5cbe9eceaa5e8e4e6">[email&#160;protected]</span></A>&gt;
+написал:
+<UL>
+<LI>... все, что нужно - скрипт для управления установкой.
+Для монтирования <CODE>md</CODE> файловой системы как корневой,
+главное - построить начальный образ файловой системы,
+который содержит необходимые модули и md утилиты для запуска <CODE>md</CODE>.
+У меня есть простой скрипт, который это делает.</LI>
+</UL>
+
+<UL>
+<LI>Для загрузочной среды, у меня есть маленький <B>дешевый</B> SCSI диск
+(170MB я получил его за 20долларов ).
+Этот диск работает на AHA1452, им также может быть недорогой
+IDE диск на родном IDE интерфейсе.
+От этого диска не требуется скорости, так как он предназначен, в основном, для загрузки.</LI>
+</UL>
+
+<UL>
+<LI>На диске создана маленькая файловая система содержащая ядро и
+образ <CODE>initrd</CODE>.
+Начальной файловой системы должно хватать для загрузки модуля драйвера raid SCSI устройства
+и запуска raid раздела, который будет корневым.
+Тогда я делаю
+<BLOCKQUOTE><CODE>
+<PRE>
+echo 0x900 > /proc/sys/kernel/real-root-dev
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+(<CODE>0x900</CODE> для <CODE>/dev/md0</CODE>)
+и выхожу из <CODE>linuxrc</CODE>.
+Далее загрузка продолжается обычно. </LI>
+</UL>
+
+<UL>
+<LI>Я собрал большинство функций как модули кроме драйвера AHA1452,
+который будит файловую систему <CODE>initrd</CODE>.
+Таким образом у меня очень маленькое ядро. Этот метод простой и надежный,
+я делаю так с  2.1.26 и никогда не было проблем, которых не мог бы запросто решить.
+Файловая система даже выжила несколько 2.1.4[45] тяжелых
+разрушений без реальных проблем.</LI>
+</UL>
+
+<UL>
+<LI>В одно время у меня  были размечены raid диски так, что начальные цилиндры
+первого raid диска содержали ядро и начальные цилиндры
+второго raid диска содержали образ начальной файловой системы,
+вместо этого я использовал начальные цилиндры raid дисков
+для подкачкм, так как они более быстрые цилиндры  (зачем терять их на загрузку?).</LI>
+</UL>
+
+<UL>
+<LI>Хорошо иметь недорогой диск для загрузки, так как
+с него просто загрузиться и, при необходимости, можно использовать как
+восстановительный диск. Если Вы интересуетесь, Вы можете взглянуть
+на скрипт, который создает мой начальный образ ramdisk и потом запускает <CODE>LILO</CODE>.
+<BLOCKQUOTE><CODE>
+<!--<A HREF="http://www.realtime.net/~welbon/initrd.md.tar.gz">-->http://www.realtime.net/~welbon/initrd.md.tar.gz<!--</A>--></CODE></BLOCKQUOTE>
+
+Его достаточно для того, чтобы обрисовать картину.
+Он не очень хорош, и, конечно, можно создать более
+маленький образ файловой системы для начального ramdisk.
+Было бы проще создать его более действенным.
+Но он использует <CODE>LILO</CODE> как есть.
+Если вы сделаете любые усовершенствования, пожалуйста, отправьте копию мне. 8-) </LI>
+</UL>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я слышал, что я могу запустить зеркализацию поверх striping. Это правда?
+Могу ли я запускать зеркализацию поверх петлевого устройства?
+<BLOCKQUOTE>
+<B>О</B>:
+Да, но не наоборот.  Вы можете поместить stripe поверх
+нескольких дисков, и затем строить зеркализацию на базе этого.  Однако,
+striping не может быть помещен на зеркало.
+
+<P>Короткое техническое объяснение этого - особенностью linear и stripe
+является использования <CODE>ll_rw_blk</CODE> процедуры для доступа.
+<CODE>ll_rw_blk</CODE> процедура
+отображает дисковые устройства и сектора, но не блоки.  Блочные устройства могут
+быть размещены одно поверх другого; но устройства, которые делают прямой, низкоуровневый
+доступ к дискам, такие как <CODE>ll_rw_blk</CODE>, не могут.
+<P>
+<P>На текущий момент (Ноябрь 1997) RAID не может быть создан на
+петлевом (loopback) устройстве, однако возможно, это скоро будет исправлено.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+У меня есть два маленьких диска и три больших диска.  Могу ли я
+соединить два маленьких диска в RAID-0, и затем создать
+RAID-5 из этого и больших дисков?
+<BLOCKQUOTE>
+<B>О</B>:
+Сейчас (Ноябрь 1997), для массива RAID-5, нет.
+Сейчас, это можно сделать только для RAID-1 повер объединенных дисков.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Какая разница между RAID-1 и RAID-5 для двух дисковой конфигурации
+(имеется в виду разница между массивом RAID-1 построенном на двух дисках,
+и массивом RAID-5 построенном на двух дисках)?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Нет разницы в емкости. Также нельзя добавить диски
+ни в один из массивов для увеличения емкости (для деталей, смотрите вопрос ниже).
+
+<P>RAID-1 предоставляет преимущество в производительности чтения: драйвер RAID-1
+использует технологию распределенного чтения для одновременного чтения двух секторов,
+по одному с каждого устройства, это удваивает скорость считывания.
+<P>
+<P>Драйвер RAID-5, хотя и содержит много оптимизаций, сейчас (Сентябрь 1997) не реализует
+то, что паритетный диск - фактически зеркальная копия диска с данными.  Таким образом,
+выполняется последовательное чтение данных.
+</BLOCKQUOTE>
+
+
+</LI>
+<LI><B>В</B>:
+Как я могу защититься от отказа двух дисков?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Некоторые из алгоритмов RAID дают отказоустойчивость при отказе нескольких дисков,
+но на данный момент это не реализовано в Linux.
+Однако, программный RAID Linux может защитить от множественных отказов дисков
+размещая массив поверх массива.  Например, девять дисков могут быть использованы для создания
+трех массивов raid-5.
+Затем, эти три массива могут быть объединены в один массив RAID-5.  Фактически, этот тип
+конфигурации защищает от отказа трех дисков.  Заметьте, что много дискового пространства
+''тратится'' на избыточность информации.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+    Для NxN массива raid-5,
+    N=3, 5 из 9 дисков используется для паритета (=55%)
+    N=4, 7 из 16 дисков
+    N=5, 9 из 25 дисков
+    ...
+    N=9, 17 из 81 дисков (=~20&amp;процентов;)
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+В общем, массив MxN будет использовать M+N-1 дисков на паритет.
+Наименьшее количество пространства "теряется", когда M=N.
+
+<P>Другая альтернатива создать массив RAID-1 с
+тремя дисками.  Заметьте, что все три диска содержат идентичные данные, и 2/3 пространства ''теряется''.
+<P>
+</BLOCKQUOTE>
+
+        </LI>
+<LI><B>В</B>:
+Я  хочу понять, существует-ли что-то типа <CODE>fsck</CODE>:
+если раздел не был правильно демонтирован,
+<CODE>fsck</CODE> запускается и исправляет файловую систему более  90%
+времени. Так как машина способна исправлять это сама
+с помощью <CODE>ckraid --fix</CODE>, почему не автоматизировать это?
+
+
+<BLOCKQUOTE>
+<B>О</B>:
+Это возможно сделать добавлением следующие строки в
+<CODE>/etc/rc.d/rc.sysinit</CODE>:
+<PRE>
+    mdadd /dev/md0 /dev/hda1 /dev/hdc1 || {
+        ckraid --fix /etc/raid.usr.conf
+        mdadd /dev/md0 /dev/hda1 /dev/hdc1
+    }
+
+</PRE>
+
+или
+<PRE>
+    mdrun -p1 /dev/md0
+    if [ $? -gt 0 ] ; then
+            ckraid --fix /etc/raid1.conf
+            mdrun -p1 /dev/md0
+    fi
+
+</PRE>
+
+Перед предоставлением более полного и надежного скрипта,
+рассмотрим теорию операций.
+
+Gadi Oxman написал:
+При неправильном завершении, Linux может быть в одном их следующих состояний:
+<UL>
+<LI>При возникновении аварийного завершения дисковый кеш в
+памяти был синхронизирован с RAID набором; потерь данных нет.
+</LI>
+<LI>При возникновении аварийного завершения в памяти дискового
+кеша было более новое содержимое, чем в RAID наборе; в
+результате повреждена файловая система и возможно потеряны
+данные.
+Это состояние может быть далее разделено на два других
+состояния:
+
+<UL>
+<LI>При аварийном завершении Linux записывал данные.</LI>
+<LI>При аварийном завершении Linux не записывал данные.</LI>
+</UL>
+</LI>
+</UL>
+
+
+Допустим мы используем массив RAID-1. В (2a), может случиться, что перед аварией
+небольшое количество блоков данных было успешно записано
+только на несколько из зеркал, таким образом при следующей загрузке,
+зеркала уже не будут идентичными.
+
+Если мы проигнорировали разницу в зеркалах, the raidtools-0.36.3
+код балансировки чтения может выбрать для чтения
+блоки из любого зеркала,
+что приведет к противоречивому поведению (например, вывод
+<CODE>e2fsck -n /dev/md0</CODE> будет отличаться от запуска к запуску).
+
+<P>Так как RAID не защищает от неправильного завершения, обычно
+нет никакого ''целиком корректного'' пути для устранения разницы в зеркалах
+и повреждений файловой системы.
+<P>Например, по умолчанию <CODE>ckraid --fix</CODE> будет выбирать
+содержимое первого действующего зеркала и обновлять другие зеркала.
+Однако, в зависимости от точного времени аварии,
+данные на другом зеркале могут быть более свежие,
+и мы можем пожелать использовать их как источник для
+восстановления зеркал, или, возможно, использовать другой метод восстановления.
+<P>Следующий скрипт реализует одну из самых здравых последовательностей
+загрузки.  В частности, он принимает меры предосторожности
+длинными, повторяющимися <CODE>ckraid</CODE>-ов при не совместных дисках,
+контроллерах, или драйверах
+контроллеров дисков.  Модифицируйте его, для соответствия своей
+конфигурации,
+и скопируйте в <CODE>rc.raid.init</CODE>.  Затем вызовите
+<CODE>rc.raid.init</CODE> после проверки fsck-ом монтирования rw
+корневого раздела, но перед
+проверкой fsck-ом оставшихся разделов.  Убедитесь, что текущий
+каталог в путях поиска (переменная PATH).
+<PRE>
+    mdadd /dev/md0 /dev/hda1 /dev/hdc1 || {
+        rm -f /fastboot             # force an fsck to occur
+        ckraid --fix /etc/raid.usr.conf
+        mdadd /dev/md0 /dev/hda1 /dev/hdc1
+    }
+    # if a crash occurs later in the boot process,
+    # we at least want to leave this md in a clean state.
+    /sbin/mdstop /dev/md0
+
+    mdadd /dev/md1 /dev/hda2 /dev/hdc2 || {
+        rm -f /fastboot             # force an fsck to occur
+        ckraid --fix /etc/raid.home.conf
+        mdadd /dev/md1 /dev/hda2 /dev/hdc2
+    }
+    # if a crash occurs later in the boot process,
+    # we at least want to leave this md in a clean state.
+    /sbin/mdstop /dev/md1
+
+    mdadd /dev/md0 /dev/hda1 /dev/hdc1
+    mdrun -p1 /dev/md0
+    if [ $? -gt 0 ] ; then
+        rm -f /fastboot             # force an fsck to occur
+        ckraid --fix /etc/raid.usr.conf
+        mdrun -p1 /dev/md0
+    fi
+    # if a crash occurs later in the boot process,
+    # we at least want to leave this md in a clean state.
+    /sbin/mdstop /dev/md0
+
+    mdadd /dev/md1 /dev/hda2 /dev/hdc2
+    mdrun -p1 /dev/md1
+    if [ $? -gt 0 ] ; then
+        rm -f /fastboot             # force an fsck to occur
+        ckraid --fix /etc/raid.home.conf
+        mdrun -p1 /dev/md1
+    fi
+    # if a crash occurs later in the boot process,
+    # we at least want to leave this md in a clean state.
+    /sbin/mdstop /dev/md1
+
+    # OK, just blast through the md commands now.  If there were
+    # errors, the above checks should have fixed things up.
+    /sbin/mdadd /dev/md0 /dev/hda1 /dev/hdc1
+    /sbin/mdrun -p1 /dev/md0
+
+    /sbin/mdadd /dev/md12 /dev/hda2 /dev/hdc2
+    /sbin/mdrun -p1 /dev/md1
+
+
+</PRE>
+
+В дополнение к указанному, Вы должны создать
+<CODE>rc.raid.halt</CODE>, который должен выглядеть как показано ниже:
+<PRE>
+    /sbin/mdstop /dev/md0
+    /sbin/mdstop /dev/md1
+
+</PRE>
+
+Модифицируйте оба <CODE>rc.sysinit</CODE> и
+<CODE>init.d/halt</CODE> для включения этого в место, где файловая система уже демонтирована
+при halt/reboot.  (Заметьте
+что <CODE>rc.sysinit</CODE> демонтирует и перезагружает если  <CODE>fsck</CODE>
+завершился с ошибкой.)
+<P>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Могу я установить одну половину RAID-1 зеркала на один диск, который есть у меня сейчас и
+затем позже взять другой диск и просто его добавить?
+
+<BLOCKQUOTE>
+<B>О</B>:
+С текущими утилитами - нет, во всяком случае не простым способом.  В частности,
+вы не можете просто скопировать содержимое одного диска на другой и затем их спаровать.
+Это потому, что драйвера RAID используют часть пространства в конце раздела для размещения
+суперблока.  Это слегка уменьшает количество пространства, доступного для файловой системы;
+если Вы просто попробуете принудительно
+поставить  RAID-1 на раздел с существующей файловой системой,
+raid суперблок перезапишет часть файловой системы и обрубит данные.
+Так как ext2fs файловая система разбрасывает фалы по разделу случайным образом
+(для избежания фрагментации), есть хороший шанс, что файл будет
+лежать в самом конце раздела  перед окончанием диска.
+
+<P>Если Вы сообразительны, я предлагаю Вам вычислить сколько места нужно под суперблок
+RAID, и сделать вашу файловую систему немного короче,
+оставив место на перспективу.
+Но тогда, если вы такой умный, Вы должны также быть способны модифицировать
+утилиты для автоматизации этого процесса.
+(Утилиты не так уж сложны).
+<P>
+<P><B>Заметка:</B> Внимательный читатель заметит, что следующий трюк может
+сработать; я не пытался проверить это:
+Сделайте <CODE>mkraid</CODE>с <CODE>/dev/null</CODE>, как одним из устройств.
+Тогда <CODE>mdadd -r</CODE>с только одним, истинным диском
+(не делайте mdadd <CODE>/dev/null</CODE>).  <CODE>mkraid</CODE>
+должен быть успешно создать raid массив, когда
+mdadd шаг выполняется - файловая система запущена в "деградированном" режиме,
+как если бы один из дисков отказал.
+</BLOCKQUOTE>
+
+</LI>
+</OL>
+<H2><A NAME="s4">4. Восстановление ошибок</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+У меня установлен RAID-1 (зеркализация), и у меня пропало питание во время дисковой активности.
+Что мне теперь делать?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Избыточность уровней RAID предназначена для защиты от отказа
+<B>диска</B>, не от отказа <B>питания</B>.
+
+Есть несколько путей восстановления в этой ситуации.
+
+<UL>
+<LI>Метод (1): Использовать raid утилиты. Он может быть
+использован для синхронизации raid массивов. Он не устраняет
+повреждение файловой системы; после синхронизации raid
+массивов, файловая система все еще нуждается в исправлении с
+помощью fsck.  Raid массивы могут быть проверены
+<CODE>ckraid /etc/raid1.conf</CODE> (для RAID-1, или,
+<CODE>/etc/raid5.conf</CODE>, и т.д..)
+
+Запуск <CODE>ckraid /etc/raid1.conf --fix</CODE> выберет оин
+один диск из дисков массива (обычно первый), для
+использования его в качестве главной копии, и копирования его
+блоков на другие диски зеркала.
+Для обозначения диска, который должен быть использован как
+главный, вы можете использовать <CODE>--force-source</CODE> флаг:
+например,
+<CODE>ckraid /etc/raid1.conf --fix --force-source /dev/hdc3</CODE>.
+Комманда ckraid может быть безопасно запущена без опции
+<CODE>--fix</CODE>
+для проверки неактивного RAID массива без внесения изменений.
+Если Вы удовлетворены предполагаемыми изменениями, примените
+опцию
+<CODE>--fix</CODE> .
+           </LI>
+<LI>Метод (2): Параноидальный, длительный по времени, не
+намного лучше, чем первый путь.
+Представим двух-дисковый массив RAID-1, состоящий из разделов
+<CODE>/dev/hda3</CODE> и <CODE>/dev/hdc3</CODE>.  Вы можете
+попробовать следующее:
+<OL>
+<LI><CODE>fsck /dev/hda3</CODE></LI>
+<LI><CODE>fsck /dev/hdc3</CODE></LI>
+<LI>Решите, который из двух разделов содержит меньше
+ошибок, или где проще восстановление, или на котором
+находятся нужные Вам данные.  Выберите один,
+только один, для вашей новой ``главной'' копии.
+Предположим Вы выбрали <CODE>/dev/hdc3</CODE>.</LI>
+<LI><CODE>dd if=/dev/hdc3 of=/dev/hda3</CODE></LI>
+<LI><CODE>mkraid raid1.conf -f --only-superblock</CODE></LI>
+</OL>
+
+
+Вместо последних двух шагов, Вы можете запустить
+<CODE>ckraid /etc/raid1.conf --fix --force-source /dev/hdc3</CODE>,
+что будет быстрее.
+</LI>
+<LI>Метод (3): Версия для ленивых людей.  Если Вы не хотите ждать
+завершения долгой проверки fsck, просто пропустите
+первые три шага выше, и начинайте прямо с последних двух шагов.
+Только после завершения запустите <CODE>fsck /dev/md0</CODE>.
+Метод (3) на самом деле замаскированный метод (1).</LI>
+</UL>
+
+
+В любом случае, вышеуказанные шаги только синхронизируют массив raid.
+Для файловых систем возможно все еще необходимо устранение ошибок:
+для этого, нужно запустить fsck на активном, но не смонтированном
+устройстве.
+
+<P>С трех-дисковым массивом RAID-1, есть много вариантов,
+таких как использование двух дисков для выбора ответа.
+Утилиты автоматизации этого пока (Сентябрь 97) не существуют.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Если у меня установлен RAID-4 или RAID-5 (паритетный), и пропало питание во врем активности диска.
+Что мне делать?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Избыточность уровней RAID предназначена для защиты от отказов
+<B>дисков</B>, а не от отказов <B>питания</B>.
+
+Так как диски в массиве RAID-4 или RAID-5 не содержат файловой системы,
+которую fsck может читать, есть несколько опций восстановления.  Вы
+не можете использовать fsck для предварительной проверки и/или
+восстановления; Вы должны использовать сначала ckraid.
+<P>Комманда <CODE>ckraid</CODE> может быть безопасно запущена без опции <CODE>--fix</CODE>
+для проверки неактивного массива RAID без внесения любых изменений.
+Когда Вы удовлетворены предложенными изменениями, примените опцию
+<CODE>--fix</CODE>.
+<P>
+<P>Если Вы хотите, Вы можете попробовать обозначить один из дисков как ''отказавший диск''.
+Делайте это с флагом <CODE>--suggest-failed-disk-mask</CODE>.
+<P>Только один бит должен быть установлен в флаге: RAID-5 не может восстанавливать два
+отказавших диска.
+mask - битовая маска: итак:
+<PRE>
+    0x1 == первый диск
+    0x2 == второй диск
+    0x4 == третий диск
+    0x8 == четвертый диск, и т.д.
+
+</PRE>
+<P>Или Вы можете выбрать модификацию секторов с паритетом, используя
+флаг <CODE>--suggest-fix-parity</CODE> flag.  Это заново вычислит
+паритет из других секторов.
+<P>
+<P>Флаг <CODE>--suggest-failed-dsk-mask</CODE> и
+<CODE>--suggest-fix-parity</CODE>
+может быть безопасно использован для проверки. Никаких изменений не
+будет сделано, если не указан флаг <CODE>--fix</CODE>.  Итак, Вы можете
+экспериментировать с различными возможными вариантами восстановления.
+<P>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Мое RAID-1 устройство, <CODE>/dev/md0</CODE> состоит из двух разделов
+жестких дисков:
+<CODE>/dev/hda3</CODE> и <CODE>/dev/hdc3</CODE>.
+Недавно, диск с <CODE>/dev/hdc3</CODE> отказал,
+был заменен на новый диск.  Мой лучший друг,
+который не разбирается в RAID, сказал, что сейчас правильно сделать
+''<CODE>dd if=/dev/hda3 of=/dev/hdc3</CODE>''.
+Я попробовал это, но все по прежнему не работает.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Вы должны отстранить Вашего друга от компьютера.
+К счастью, не произошло никаких серьезных повреждений.
+Вы можете все восстановить запустив:
+<BLOCKQUOTE><CODE>
+<PRE>
+mkraid raid1.conf -f --only-superblock
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+При запуске <CODE>dd</CODE>, были созданы две идентичные копии раздела.
+Это почти правильно, исключая то, что расширение ядра RAID-1
+предполагает различие в  суперблоке.
+Итак, когда Вы пробуете активировать RAID, программа обратит
+внимание на проблему,
+и деактивирует один из двух разделов.
+Пересоздав суперблок, вы должны получить полностью рабочую систему.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+У моей версии <CODE>mkraid</CODE> нет флага
+<CODE>--only-superblock</CODE>.  Что мне делать?
+<BLOCKQUOTE>
+<B>О</B>:
+В новых утилитах убрали поддержку этого флага, заменив его флагом
+<CODE>--force-resync</CODE>.  Как мне сообщили с последней версией
+утилит и программ работает такая последовательность:
+<BLOCKQUOTE><CODE>
+<PRE>
+  umount /web (что было смонтировано на /dev/md0)
+  raidstop /dev/md0
+  mkraid /dev/md0 --force-resync --really-force
+  raidstart /dev/md0
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+После этого, <CODE>cat /proc/mdstat</CODE> должно доложить
+<CODE>resync in progress</CODE>, и далее можно
+<CODE>mount /dev/md0</CODE> с этого места.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Мое устройство RAID-1, <CODE>/dev/md0</CODE> состоит из двух
+разделов: <CODE>/dev/hda3</CODE> and <CODE>/dev/hdc3</CODE>.
+Мой лучший друг(подруга?), который не разбирается в RAID,
+запустил без меня <CODE>fsck</CODE> на <CODE>/dev/hda3</CODE>,
+и сейчас RAID не работает. Что я должен делать?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Вы должны пересмотреть свое понятие - ``лучший друг''.
+В общем, <CODE>fsck</CODE> не должна запускаться на отдельных разделах
+массива RAID.
+Предположим ни один из разделов тяжело не поврежден,
+потерь данных нет, и RAID-1 устройство может быть восстановлено так:
+<OL>
+<LI>делаем резервную копию файловой системы на <CODE>/dev/hda3</CODE></LI>
+<LI><CODE>dd if=/dev/hda3 of=/dev/hdc3</CODE></LI>
+<LI><CODE>mkraid raid1.conf -f --only-superblock</CODE></LI>
+</OL>
+
+Это должно вернуть ваше зеркало к работе.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Почему сказанное выше работает как восстанавливающая процедура?
+<BLOCKQUOTE>
+<B>О</B>:
+Потому что каждый компонент раздела в RAID-1 зеркале
+является просто точной копией файловой системы.  В крайнем
+случае, зеркализация может быть запрещена, и один из разделов
+может быть смонтирован и безопасно запущен как обычная, не-RAID
+файловая система. Если Вы готовы перезапуститься используя RAID-1,
+то демонтируйте раздел, и следуйте вышеприведенным инструкциям
+для восстановления зеркала. Заметьте, что вышеуказанное работает
+ТОЛЬКО для RAID-1, и ни для какого другого уровня.
+
+<P>Возможно, Вам удобнее изменить направление копирования:
+копировать  <B>с</B> диска, который был нетронут
+<B>на</B> тот, который был.  Просто будьте уверены, что
+после этого запускаете fsck на md.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я смущен предыдущим вопросом, но еще не убежден.
+Безопасно ли запускать <CODE>fsck /dev/md0</CODE> ?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Да, безопасно запускать <CODE>fsck</CODE> на устройствах <CODE>md</CODE>.
+Фактически, это <B>единственное</B> безопасное место
+запуска <CODE>fsck</CODE>.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Если диск медленно слабеет, будет очевидно который из них?
+Я беспокоюсь чтобы этого не случилось, и эта неразбериха не
+привела к каким-либо опасным решениям системного администратора.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Как только диск откажет, драйвер нижнего уровня вернет код
+ошибки драйверу RAID.
+RAID драйвер пометит этот диск в суперблоках RAID хороших дисков
+как ``плохой''(bad) (таким образом позже мы сможем узнать, которые из
+дисков хорошие, а которые нет), и продолжит работу RAID на
+оставшихся действующих зеркалах.
+
+<P>Это, конечно, предполагает, что диск и драйвер нижнего уровня в
+состоянии обнаружить ошибки чтения/записи и не будут, к примеру,
+молча искажать данные. Это справедливо для текущих дисков
+(схем обнаружения ошибок используемых в них), и основы работы RAID.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как насчет горячей замены?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Работа далека от завершения ``горячей замены''.
+С этим свойством, можно добавить несколько ``резервных'' дисков в
+RAID набор (уровня 1 или 4/5), и как только диск отказал,
+он будет воссоздан на ходу на одном из резервных дисков,
+без необходимости остановки массива.
+
+<P>Однако, для использования этого свойства, резервные диски должны
+быть определены на момент загрузки или должны добавляться на ходу,
+что требует использования специального шкафа и соединителей,
+которые позволяют добавлять диск при включенном питании.
+<P>
+<P>На Октябрь 97, доступна бета версия MD, которая позволяет:
+<UL>
+<LI>RAID 1 и 5 восстановление на резервных дисках</LI>
+<LI>RAID-5 восстановление паритета после неправильного
+завершения</LI>
+<LI>добавление резервных дисков в уже работающий массив
+RAID 1 или 4/5 </LI>
+</UL>
+
+По умолчанию, автоматическая реконструкция сейчас (Декабрь 97)
+запрещена по умолчанию, в основном по причине предварительного
+характера этой работы.  Она может быть включена изменением значения
+<CODE>SUPPORT_RECONSTRUCTION</CODE> в
+<CODE>include/linux/md.h</CODE>.
+<P>
+<P>Если при создании в массиве сконфигурированы резервные диски и
+реконструкция в ядре включена, резервный диск уже будет содержать
+суперблок (записанный утилитой <CODE>mkraid</CODE>), и ядро будет
+реконструировать его содержимое автоматически (без необходимости
+шагов: вызов <CODE>mdstop</CODE>, замены диска, <CODE>ckraid</CODE>,
+<CODE>mdrun</CODE>).
+<P>
+<P>Если Вы не запустили автоматическую реконструкцию, и не
+сконфигурировали диски с горячей заменой, рекомендуется  процедура
+описанная Gadi Oxman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#4f282e2b26200f212a3b39263c26202161212a3b612623"><span class="__cf_email__" data-cfemail="c6a1a7a2afa986a8a3b2b0afb5afa9a8e8a8a3b2e8afaa">[email&#160;protected]</span></A>&gt;
+:
+<UL>
+<LI>Сейчас, как только один диск удален, набор RAID будет запущен в
+деградированном режиме. Для восстановления полноценного
+функционирования, Вы должны:
+<UL>
+<LI>остановить массив (<CODE>mdstop /dev/md0</CODE>)</LI>
+<LI>заменить отказавший диск </LI>
+<LI>запустить <CODE>ckraid raid.conf</CODE> для реконструкции
+содержимого</LI>
+<LI>запустить массив снова (<CODE>mdadd</CODE>, <CODE>mdrun</CODE>).</LI>
+</UL>
+
+Теперь массив будет запущен со всеми дисками,
+и снова будет защищен от отказа одного диска.</LI>
+</UL>
+<P>На текущий момент, не возможно назначить один резервный диск
+нескольким массивам.  Каждый массив требует своего собственного
+резервного диска.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Хочу звуковую сигнализацию
+``один диск в зеркале неисправен'',
+так как администратору-новичку узнать это проблематично.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Ядро ведет протокол событий с
+``<CODE>KERN_ALERT</CODE>'' приоритетом в syslog.
+Существует несколько программных пакетов, которые наблюдают за
+файлами syslog, и автоматически подают сигнал на PC динамик,
+звонят на пейджер, посылают почту, и т.д.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как мне запустить RAID-5 в деградированном режиме
+(о одним отказавшим, и еще не замененным диском)?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Gadi Oxman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#30575154595f705e5544465943595f5e1e5e55441e595c"><span class="__cf_email__" data-cfemail="422523262b2d022c2736342b312b2d2c6c2c27366c2b2e">[email&#160;protected]</span></A>&gt;
+пишет:
+Обычно, для запуска RAID-5 набора из n дисков вы должны:
+<BLOCKQUOTE><CODE>
+<PRE>
+mdadd /dev/md0 /dev/disk1 ... /dev/disk(n)
+mdrun -p5 /dev/md0
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+В случае, если один из дисков отказал, Вы все также должны
+<CODE>mdadd</CODE> их, как и при обычном запуске.
+(?? попробуйте использовать /dev/null вместо отказавшего диска ???
+и посмотрите, что получится).
+После этого массив будет активен в деградированном режиме с (n - 1)
+диском. Если ``<CODE>mdrun</CODE>'' не удается, ядро фиксирует ошибку
+(например, несколько отказавших дисков, или неправильное завершение).
+Используйте ``<CODE>dmesg</CODE>'' для отображения сообщений об ошибках
+ядра от ``<CODE>mdrun</CODE>''. Если набор raid-5 поврежден исчезновением
+питания, в отличие от отказа диска, можно попробовать создать новый
+RAID суперблок:
+<BLOCKQUOTE><CODE>
+<PRE>
+mkraid -f --only-superblock raid5.conf
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+RAID массив не предоставляет защиту от отказа питания или
+краха ядра, и  нельзя гарантировать корректное восстановление.
+Воссоздание суперблока приведет к игнорированию
+положения пометкой всех устройств, как ``OK'',
+как будто ничего не случилось.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как работает RAID-5 при отказе диска?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Типичный рабочий сценарий следующий:
+<UL>
+<LI>RAID-5 массив активен.
+</LI>
+<LI>Одно устройство отказывает во время активности массива.
+</LI>
+<LI>Микропрограмма диска и низкоуровневые драйвера Linux
+диска/контроллера обнаруживают отказ и сообщают код ошибки
+MD драйверу.
+</LI>
+<LI>MD драйвер продолжает поддерживать безошибочную работу
+<CODE>/dev/md0</CODE> устройства для верхних уровней ядра (с
+потерей производительности) используя оставшиеся рабочие
+диски.
+</LI>
+<LI>Системный администратор может, как обычно,
+<CODE>umount /dev/md0</CODE> и <CODE>mdstop /dev/md0</CODE>.
+</LI>
+<LI>Если отказавшее устройство не заменено, системный
+администратор может запустить массив в деградированном
+режиме, запустив
+<CODE>mdadd</CODE> and <CODE>mdrun</CODE>.</LI>
+</UL>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+<BLOCKQUOTE>
+<B>О</B>:
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Почему нет вопроса номер 13?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Если Вы заботитесь о RAID, Высокой надежности, и UPS,
+то, возможно, также хорошая мысль - быть суеверным.
+Это не повредит, не так ли?
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я только что заменил отказавший диск в массиве RAID-5.  После пересоздания массива,
+<CODE>fsck</CODE> выдает очень много ошибок.  Это нормально?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Нет. И, если Вы запускали fsck не в "режиме только для чтения; без
+обновлений", вполне возможно, что у Вас повреждены даные.
+К несчастью, часто встречающийся сценарий  -
+случайное изменение порядка дисков в массиве RAID-5,
+после замены диска.  Хотя суперблок RAID содержит
+правильный порядок, не все утилиты используют эту информацию.
+В частности, текущая версия <CODE>ckraid</CODE>
+будет использовать информацию указанную в <CODE>-f</CODE>
+флаге (обычно, файл <CODE>/etc/raid5.conf</CODE>)
+вместо данных из суперблока.  Если указанный порядок неверный,
+то замененный диск будет реконструирован неправильно.
+Симптом этого - многочисленные ошибки выдаваемые <CODE>fsck</CODE>.
+
+<P>И, если вы удивлены, <B>да</B>, кое-кто потерял
+<B>все</B> свои данные из-за этой ошибки. <B>Настоятельно
+рекомендуется</B> сделать копию <B>всех</B> данных перед
+ре-конфигурированием RAID месива.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+В QuickStart сказано, что <CODE>mdstop</CODE> только для того, чтобы
+убедиться, что диски синхронизированы. Это ДЕЙСТВИТЕЛЬНО необходимо?
+Не достачно де-монтирования файловой системы?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Команда <CODE>mdstop /dev/md0</CODE> будет:
+<UL>
+<LI>помечать диски как ''чистые''. Это позволит нам обнаружить
+неправильное завершение, например из-за отказа питания или
+краха ядра.
+</LI>
+<LI>синхронизирует массив. Это менее важно после де-монтирования
+файловой системы, но важно если к <CODE>/dev/md0</CODE>
+был доступ не через файловую систему (например
+посредством <CODE>e2fsck</CODE>).</LI>
+</UL>
+</BLOCKQUOTE>
+
+
+</LI>
+</OL>
+
+<H2><A NAME="s5">5. Поиск неисправностей при установке</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Какой текущий стабильный патч для RAID в серии ядер 2.0.x?
+
+<BLOCKQUOTE>
+<B>О</B>:
+На 18 сентября 1997, это -
+"2.0.30 + pre-9 2.0.31 + Werner Fink's swapping patch
++ the alpha RAID patch".  На Ноябрь 1997, это -
+2.0.31 + ... !?
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+У меня не устанавливаются патчи RAID.  Что не так?
+<BLOCKQUOTE>
+<B>О</B>:
+Убедитесь, что <CODE>/usr/include/linux</CODE> символическая ссылка на
+<CODE>/usr/src/linux/include/linux</CODE>.
+
+Убедитесь, что новые файлы <CODE>raid5.c</CODE>, и т.д.
+скопированы в свое правильное расположение. Иногда
+комманда patch не создает новые файлы.  Попробуйте
+указать флаг <CODE>-f</CODE> для <CODE>patch</CODE>.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+При компиляции raidtools 0.42, компиляция останавливается на
+include &lt;pthread.h&gt;, но его нет в моей системе.
+Как мне это исправить?
+
+<BLOCKQUOTE>
+<B>О</B>:
+raidtools-0.42 требует linuxthreads-0.6 с:
+<!--<A HREF="ftp://ftp.inria.fr/INRIA/Projects/cristal/Xavier.Leroy">-->ftp://ftp.inria.fr/INRIA/Projects/cristal/Xavier.Leroy<!--</A>-->
+Как альтернатива - glibc v2.0.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я получаю сообщение: <CODE>mdrun -a /dev/md0: Invalid argument</CODE>
+
+<BLOCKQUOTE>
+<B>О</B>:
+Используйте <CODE>mkraid</CODE> для инициализации RAID перед первым
+использованием.
+
+<CODE>mkraid</CODE> стиранием разделов RAID гарантирует, что массив
+RAID изначально в согласованном состоянии.
+Дополнительно, <CODE>mkraid</CODE> создаст RAID суперблоки.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я получил сообщение: <CODE>mdrun -a /dev/md0: Invalid argument</CODE>.
+Установки такие:
+<UL>
+<LI>raid построен как модуль</LI>
+<LI>была сделана обычная установочная последовательность ...
+mdcreate, mdadd, etc.</LI>
+<LI><CODE>cat /proc/mdstat</CODE> показывает
+<PRE>
+    Personalities :
+    read_ahead not set
+    md0 : inactive sda1 sdb1 6313482 blocks
+    md1 : inactive
+    md2 : inactive
+    md3 : inactive
+
+</PRE>
+</LI>
+<LI><CODE>mdrun -a</CODE> выдает сообщение об ошибке
+<CODE>/dev/md0: Invalid argument</CODE></LI>
+</UL>
+
+
+<BLOCKQUOTE>
+<B>О</B>:
+Попробуйте <CODE>lsmod</CODE> (или, <CODE>cat /proc/modules</CODE>)
+чтобы увидеть, загружены ли raid модули.
+Если нет, Вы можете загрузить их явно командой
+<CODE>modprobe raid1</CODE> или <CODE>modprobe raid5</CODE>.
+Либо, если Вы используете автозагрузчик,
+и ожидаете, что их загрузит <CODE>kerneld</CODE>, а он этого не делает -
+это, возможно, из-за того что загрузчику не хватает информации
+для загрузки модулей.  Отредактируйте <CODE>/etc/conf.modules</CODE> и
+добавьте следующие строки:
+
+<PRE>
+    alias md-personality-3 raid1
+    alias md-personality-4 raid5
+
+</PRE>
+
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+При <CODE>mdadd -a</CODE> я получаю ошибку:
+<CODE>/dev/md0: No such file or directory</CODE>.  И действительно, вроде-бы
+нигде нет никакого <CODE>/dev/md0</CODE>.  И что мне теперь делать?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Пакет raid-tools должен создать устройства когда вы запускаете
+<CODE>make install</CODE> как root.  Или Вы можете сделать
+следующее:
+<PRE>
+    cd /dev
+    ./MAKEDEV md
+
+</PRE>
+</BLOCKQUOTE>
+
+
+</LI>
+<LI><B>В</B>:
+После создания raid массива на <CODE>/dev/md0</CODE>,
+Я пытаюсь монтировать и получаю следующую ошибку:
+<CODE> mount: wrong fs type, bad option, bad superblock on /dev/md0,
+or too many mounted file systems</CODE>. Что не так?
+<BLOCKQUOTE>
+<B>О</B>:
+Вы должны создать файловую систему на <CODE>/dev/md0</CODE>
+перед монтированием.  Используйте <CODE>mke2fs</CODE>.
+</BLOCKQUOTE>
+
+
+</LI>
+<LI><B>В</B>:
+Truxton Fulton написал:
+<BLOCKQUOTE>
+На моем Linux 2.0.30, при выполнении <CODE>mkraid</CODE> на
+RAID-1 устройстве, при очистке двух отдельных разделов, я
+получил на консоль сообщения об ошибках <CODE>"Cannot allocate free page"</CODE>, и <CODE>"Unable to handle kernel paging request at virtual address ..."</CODE> ошибки в системном log-е.  На этот момент,
+система стала совершенно не готова к использованию, но кажется
+восстановленной после этого.  Работоспособность
+кажется восстановленной без прочих ошибок, и я
+успешно использую мой RAID-1. Однако ошибки смущают. Какие идеи?
+</BLOCKQUOTE>
+
+
+<BLOCKQUOTE>
+<B>О</B>:
+Это хорошо известная ошибка в ядре 2.0.30.  Она устранена
+в 2.0.31 ядре; или откатитесь к 2.0.29.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я не могу <CODE>mdrun</CODE> устройство RAID-1, RAID-4 или RAID-5.
+Если я пробую <CODE>mdrun</CODE> на добавленном посредством <CODE>mdadd</CODE>
+устройстве, я получаю сообщение
+''<CODE>invalid raid superblock magic</CODE>''.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Проверьте, запускали ли Вы <CODE>mkraid</CODE> часть установочной
+процедуры.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Когда я обращаюсь к <CODE>/dev/md0</CODE>, ядро выплевывает кучу
+ошибок, таких как <CODE>md0: device not running, giving up !</CODE>
+и <CODE>I/O error...</CODE>. Я успешно добавил мои устройства в
+виртуальное устройство.
+
+<BLOCKQUOTE>
+<B>О</B>:
+для использования, устройство должно быть запущено. Используйте
+<CODE>mdrun -px /dev/md0</CODE> где x = l для линейного объединения,
+0 для RAID-0 или 1 для RAID-1 и т.д.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я создал линейное соединение из 2-х дисков.
+<CODE>cat /proc/mdstat</CODE> показывает
+общий размер устройства, но <CODE>df</CODE> показывает только размер первого
+физического устройства.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Вы должны сделать <CODE>mkfs</CODE> на новом md-устройстве перед
+первым использованием, чтобы файловая система заняла все устройство.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я установил <CODE>/etc/mdtab</CODE> используя mdcreate, я сделал
+<CODE>mdadd</CODE>, <CODE>mdrun</CODE> и <CODE>fsck</CODE>
+на двух моих разделах <CODE>/dev/mdX</CODE>.  Все выглядит
+нормально перед перезагрузкой.  Как только я перегрузился, я
+получаю ошибки <CODE>fsck</CODE> на обоих разделах: <CODE>fsck.ext2: Attempt to read block from filesystem resulted in short
+read while trying too open /dev/md0</CODE>.  Почему?! Как это исправить?!
+
+<BLOCKQUOTE>
+<B>О</B>:
+В процессе загрузки, разделы RAID должны быть запущены
+перед проверкой <CODE>fsck</CODE>.  Это должно быть
+сделано в одном из следующих скриптов. В одних дистрибутивах,
+<CODE>fsck</CODE> вызывается из <CODE>/etc/rc.d/rc.S</CODE>, в других -
+из <CODE>/etc/rc.d/rc.sysinit</CODE>. Добавьте в этот файл
+<CODE>mdadd -ar</CODE> *перед* запуском <CODE>fsck -A</CODE>. Еще лучше,
+чтобы запускался <CODE>ckraid</CODE>, если <CODE>mdadd</CODE> завершается
+с ошибкой. Как это сделать подробно обсуждается в вопросе 14
+секции ''Восстановление Ошибок''.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я получаю сообщение <CODE>invalid raid superblock magic</CODE> когда
+пытаюсь запустить массив, который состоит из разделов более 4Гб.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Эта ошибка сейчас исправлена. (Сентябрь 97)  Убедитесь, что у Вас
+свежий драйвер raid.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я получаю сообщение <CODE>Warning: could not write 8 blocks in inode
+table starting at 2097175</CODE> когда пытаюсь запустить mke2fs на
+разделе более 2Гб.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Кажется это проблема <CODE>mke2fs</CODE> (Ноябрь 97). Временный выход -
+взять код mke2fs и добавить <CODE>#undef HAVE_LLSEEK</CODE> в
+<CODE>e2fsprogs-1.10/lib/ext2fs/llseek.c</CODE> прямо перед
+первым <CODE>#ifdef HAVE_LLSEEK</CODE>, затем пересобрать ядро.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+<CODE>ckraid</CODE> сейчас не способен читать <CODE>/etc/mdtab</CODE>
+
+<BLOCKQUOTE>
+<B>О</B>:
+Формат конфигурационного файла RAID0/linear используемый в
+<CODE>/etc/mdtab</CODE> устарел, однако он будет поддерживаться
+некоторое время.  Сейчас обновленные конфигурационные фалы
+называются <CODE>/etc/raid1.conf</CODE> и т.д.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Модули (<CODE>raid1.o</CODE>) не загружаются автоматически;
+но они загружаться через modprobe перед mdrun. Как я могу это устранить?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Для автозагрузки модулей, мы можем добавить следующее в
+<CODE>/etc/conf.modules</CODE>:
+<PRE>
+    alias md-personality-3 raid1
+    alias md-personality-4 raid5
+
+</PRE>
+
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я добавил посредством <CODE>mdadd</CODE> 13 устройств, и теперь я пробую
+<CODE>mdrun -p5 /dev/md0</CODE> и получаю сообщение:
+<CODE>/dev/md0: Invalid argument</CODE>
+
+<BLOCKQUOTE>
+<B>О</B>:
+Конфигурация по умолчанию для программного RAID - 8
+физических устройств. Отредактируйте <CODE>linux/md.h</CODE> изменив
+<CODE>#define MAX_REAL 8</CODE> на большее число, и пересоберите
+ядро.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я не могу заставить работать <CODE>md</CODE> с разделами на
+последнем SPARCstation 5.  Я думаю, что это связано с
+disk-labels.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Sun disk-labels сидят в первом килобайте раздела.
+Для RAID-1, Sun disk-label не играют роли, так как
+<CODE>ext2fs</CODE> будет проскакивать метку на каждом зеркале.
+Для других raid уровней (0, линейного соединения и 4/5) это -
+проблема; (на Декабрь 97) они все еще не адресуются.
+</BLOCKQUOTE>
+
+</LI>
+</OL>
+<H2><A NAME="s6">6. Поддерживаемая аппаратура и программы</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+У меня есть SCSI адаптер производителя XYZ (с несколькими каналами или
+без них), и диск(и) производителя(ей) PQR и LMN, будут ли они работать
+с md для создания linear/stripped/mirrored?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Да!  Программный RAID будет работать с любым дисковым контроллером
+(IDE или SCSI) и любыми дисками. Не должны быть идентичны ни диски,
+ни контроллеры.  Например, зеркало RAID может быть создано с одной
+половиной зеркала на SCSI диске, и другой половиной на IDE диске.
+Диски могут не быть одного размера.  Нет ограничений на смешивание и
+соответствие дисков и контроллеров.
+
+<P>Это потому, что программный RAID работает с дисковыми разделами, не
+непосредственно с дисками.  Одна рекомендация -
+для RAID уровней 1 и 5, разделы, используемые для одного набора,
+должны быть одного размера. Если для создания RAID 1 или 5 массивов
+используются неодинаковые разделы, то излишек пространства на
+более длинных разделах теряется (не используется).
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+У меня есть двухканальный BT-952, и на коробке написано, что он
+поддерживает аппаратно RAID 0, 1 и 0+1. У меня сделан RAID том из двух
+дисков, карта очевидно распознает их при запуске своей загрузочной
+процедуры BIOS. Я просмотрел исходный код драйвера, и не обнаружил
+ссылок на поддержку аппаратного RAID. Есть кто-либо, у кого это
+работает?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Mylex/BusLogic FlashPoint платы с RAIDPlus являются фактически
+программными RAID, а не аппаратными RAID.  RAIDPlus поддерживается
+только Windows 95 и Windows NT, но не Netware или любой Unix платформой.
+Помимо загрузки и конфигурирования, в драйвере ОС, на самом деле,
+реализована поддержка RAID.
+
+<P>Даже если теоретически возможна поддержка Linux-ом RAIDPlus,
+реализация RAID-0/1/4/5 в ядре Linux намного более гибкая
+и должна быть большую производительность, так что
+мало причин поддерживать RAIDPlus непосредственно.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я хочу запускать RAID с несколькими процессорами (SMP).  RAID безопасен при SMP?
+<BLOCKQUOTE>
+<B>О</B>:
+"Я думаю, да"  - лучший имеющийся ответ на время написания этого
+(Апрель 98). Много пользователей сообщают, что они без проблем
+используют RAID с SMP приблизительно год.
+Однако, на Апрель 98 (circa kernel 2.1.9x), были замечены следующие
+проблемы:
+<UL>
+<LI>Драйвер Adaptec AIC7xxx SCSI не безопасен при SMP
+(Общая заметка: Adaptec адаптеры имеют длинную,
+продолжительную и вобще ветвистую историю проблем.
+Даже если они выглядят более доступными, широко
+распространенными и дешевыми SCSI адаптерами, необходимо их
+избегать. Учитывая факторы потери времени, разочарования, и
+поврежденных данных, Adaptec окажется самой дорогостоящей
+ошибкой, которую Вы когда-либо делали. Вобщем,
+если у Вас проблемы с SMP на 2.1.88, попробуйте патч
+ftp://ftp.bero-online.ml.org/pub/linux/aic7xxx-5.0.7-linux21.tar.gz
+Я не уверен будет ли этот патч вставлен в более поздние
+ядра 2.1.x. Для дальнейшей информации, взгляните на почтовые
+архивы для Марта 1998 на
+http://www.linuxhq.com/lnxlists/linux-raid/lr_9803_01/
+Как обычно, из-за быстро-меняющейся природы последних ядер
+2.1.x серии, проблемы описанные в этом почтовом списке
+могут быть или могут не быть устранены в то время, как Вы
+читаете этот документ.)
+
+                </LI>
+<LI>насколько известно IO-APIC с RAID-0 на SMP падает в 2.1.90</LI>
+</UL>
+
+
+</BLOCKQUOTE>
+
+</LI>
+</OL>
+<H2><A NAME="s7">7. Модификация существующей инсталяции</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Линейный MD расширяем? Могу я добавить новый раздел/диск,
+и увеличить размер существующей файловой системы?
+<BLOCKQUOTE>
+<B>О</B>:
+Miguel de Icaza
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#83eeeae4f6e6efc3eff6f7ebeae6edadedf6e0efe6e0f6adf6ede2eeadeefb"><span class="__cf_email__" data-cfemail="deb3b7b9abbbb29eb2abaab6b7bbb0f0b0abbdb2bbbdabf0abb0bfb3f0b3a6">[email&#160;protected]</span></A>&gt;
+написал:
+<BLOCKQUOTE>
+Я изменил код ext2fs для способности поддерживать много устройств
+вместо обычного предположения - одно устройство на файловую
+систему.
+<P>Итак, когда вы хотите расширить файловую систему,
+вы запускаете служебную программу, которая делает необходимые
+изменения на новом устройстве (вашем дополнительном разделе) и
+затем, Вы только говорите системе
+расширить файловую систему используя указанное устройство.
+<P>
+<P>Вы можете расширить файловую систему новым устройством во время
+работы системы, без остановки (и когда есть свободное время,
+вы можете удалить удалить устройства из ext2 набора, снова без
+необходимости переходить в однопользовательский режим или
+любого подобного хака).
+<P>
+<P>Вы можете получить патч для ядра 2.1.x с моей web страницы:
+<BLOCKQUOTE><CODE>
+<!--<A HREF="http://www.nuclecu.unam.mx/~miguel/ext2-volume">-->http://www.nuclecu.unam.mx/~miguel/ext2-volume<!--</A>--></CODE></BLOCKQUOTE>
+</BLOCKQUOTE>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Могу я добавить диски в массив RAID-5?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Сейчас (сентябрь 1997) - нет, нельзя без стирания всех данных.
+Утилита преобразования, позволяющая это делать еще не существует.
+Проблема в том, что структура и размещение массива RAID-5 зависит от
+количества дисков в массиве.
+
+Конечно, вы можете добавить диски заархивировав массив на ленте,
+удалив все данные, создав новый массив, и восстановив данные с ленты.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Что случится с моим RAID1/RAID0 набором, если я сдвину одно устройство
+с <CODE>/dev/hdb</CODE> на <CODE>/dev/hdc</CODE>?
+
+Из-за глупых кабельно/корпусно/размерных дурацких решений, я создал
+мой RAID набор на одном IDE контроллере (<CODE>/dev/hda</CODE>
+и <CODE>/dev/hdb</CODE>). Сейчас я усвоил несколько вещей, я хочу
+перейти от <CODE>/dev/hdb</CODE> к <CODE>/dev/hdc</CODE>.
+
+Что должно случиться, если я просто сменю <CODE>/etc/mdtab</CODE> и
+<CODE>/etc/raid1.conf</CODE> файлы для отображения нового положенияe?
+<BLOCKQUOTE>
+<B>О</B>:
+Для RAID-0/linear, нужно только осторожно указать диски в том-же
+порядке. Тикам образом, в выше приведенном примере, если
+оригинальная конфигурация
+<BLOCKQUOTE><CODE>
+<PRE>
+mdadd /dev/md0 /dev/hda /dev/hdb
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+то новая конфигурация *должна* быть
+<BLOCKQUOTE><CODE>
+<PRE>
+mdadd /dev/md0 /dev/hda /dev/hdc
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Для RAID-1/4/5, ''RAID число'' диска хранится в суперблоке
+RAID, и следовательно порядок в котором диски
+указаны не важен.
+
+RAID-0/linear не содержит суперблока из-за своего старого дизайна,
+и желания сохранить обратную совместимость со старым дизайном.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Могу я преобразовать двух-дисковое зеркало RAID-1 в трех-дисковый массив RAID-5?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Да.  Michael из BizSystems нашел хитрый способ сделать это.
+Однако фактически, подобно всем манипуляциям с RAID массивами
+содержащими данные, это опасно и склонно к человеческим ошибкам.
+<B>Перед началом сделайте резервную копию данных</B>.
+<PRE>
+
+Я сделаю следующие допущения:
+---------------------------------------------
+диски
+изначально: hda - hdc
+raid1 разделы hda3 - hdc3
+имя массива /dev/md0
+
+новые hda - hdc - hdd
+raid5 разделы hda3 - hdc3 - hdd3
+имя массива: /dev/md1
+
+Вы должны заменить соответствующие номера дисков и разделов для Вашей
+конфигурации системы. Это справедливо для всех примеров конфигурационных файлов.
+--------------------------------------------
+СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ ПЕРЕД ТЕМ, КАК ЧТО-ЛИБО ДЕЛАТЬ
+1) перекомпилируйте ядро для включения и raid1 и raid5
+2) инсталируте новое ядро и проверьте наличие личных свойств raid
+3) отключите избыточный раздел на массиве raid 1. Если это раздел смонтирован
+как root (как у меня), Вы должны быть осторожны.
+
+ Перегрузите компьютер без запуска raid устройств или загрузитесь с
+восстановительной системы ( там должны иметься raid утилиты )
+
+ запустите не избыточный raid1
+mdadd -r -p1 /dev/md0 /dev/hda3
+
+4) сконфигурируйте raid5 но с таким конфигурационным файлом, заметьте,
+что здест нет записи hda3, а hdc3 повторяется. Это необходимо, так как
+raid утилиты не хотят, чтобы Вы это делали.
+-------------------------------
+# конфигурация raid-5
+raiddev                 /dev/md1
+raid-level              5
+nr-raid-disks           3
+chunk-size              32
+
+# Алгоритм размещения паритета
+parity-algorithm        left-symmetric
+
+# Резервные диски для горячей реконструкции
+nr-spare-disks          0
+
+device                  /dev/hdc3
+raid-disk               0
+
+device                  /dev/hdc3
+raid-disk               1
+
+device                  /dev/hdd3
+raid-disk               2
+---------------------------------------
+ mkraid /etc/raid5.conf
+5) активируйте массив raid5 в не избыточном режиме
+
+mdadd -r -p5 -c32k /dev/md1 /dev/hdc3 /dev/hdd3
+
+6) создайте файловую систему на массиве
+
+mke2fs -b {blocksize} /dev/md1
+
+рекомендуемый размер блока 4096, в отличие от стандартных 1024.
+Это увеличит использование памяти для процедур kernel raid и
+сделает размер блока равным размеру страницы. Так как у меня много небольших
+файлов в моей системе, я использую компромиссное значение 2048.
+
+7) смонтируйте где-то два устройства raid
+
+mount -t ext2 /dev/md0 mnt0
+mount -t ext2 /dev/md1 mnt1
+
+8) переместите данные
+
+cp -a mnt0 mnt1
+
+9) проверьте идентичность данных
+10) остановите оба массива
+11) откорректируйте информацию в файле raid5.conf
+  замените /dev/md1 на /dev/md0
+  замените первый диск для чтения /dev/hda3
+
+12) обновите новый массив до полного избыточного состояния
+ (ЭТО РАЗРУШИТ ОСТАВШУЮСЯ НА raid1 ИНФОРМАЦИЮ)
+
+ckraid --fix /etc/raid5.conf
+
+
+</PRE>
+
+
+</BLOCKQUOTE>
+
+</LI>
+</OL>
+<H2><A NAME="s8">8. Производительность, утилиты и общие ключевые вопросы</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Я создал RAID-0 устройство на <CODE>/dev/sda2</CODE> и
+<CODE>/dev/sda3</CODE>. Устройство намного медленнее, чем отдельный раздел.
+md - это куча мусора?
+<BLOCKQUOTE>
+<B>О</B>:
+Для запуска устройства RAID-0 на полную скорость, у Вас должны
+разделы на разных дисках.  Кроме того, помещая две половины зеркала
+на один диск Вы не получаете защиты от отказа диска.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Зачем использовать линейный RAID, если RAID-0 делает то же самое,
+но с лучшей производительностью?
+<BLOCKQUOTE>
+<B>О</B>:
+Не очевидно, что RAID-0 даст большую производительность;
+фактически, в некоторых случаях, он может сделать хуже.
+Файловая система ext2fs распределяет фалы по всему разделу,
+и пытается хранить все блоки файла вместе, в основном в целях
+избежания фрагментации.
+Таким образом, ext2fs ведет себя "как если бы" stripe-ы были
+(переменного размера) размером с файл. Если есть несколько
+дисков соединяются в один линейный RAID, это приведет к
+статистическому распределению файлов на оба диска.  Таким образом,
+по крайней мере для ext2fs, линейный RAID работает во многом
+подобно RAID-0 с большим размером stripe.  Наоборот, RAID-0
+с маленьким размером stripe при одновременном доступе к нескольким
+большим файлам может вызвать излишнюю дисковую активность,
+приводящую к снижению производительности.
+<P>Во многих случаях, RAID-0 может явно выигрывать. Например,
+представьте большой файл базы данных.  Так как ext2fs пытается
+объединить вместе все блоки файла, велики шансы, что она заполнит
+только одно устройство при использовании линейного RAID, но
+будет разделять на много кусочков, при использовании RAID-0.
+Теперь представим несколько нитей (ядра) пытающихся получить
+произвольный доступ к базе данных.  При линейном RAID, весь
+доступ пойдет на один диск, что не так эффективно, как
+параллельный доступ, создаваемый RAID-0.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как RAID-0 обрабатывает ситуацию, где stripe-ы на различных
+разделах разного размера?  stripe-ы распределяются однообразно?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Для понимания этого, давайте рассмотрим пример с тремя разделами;
+50Мб, 90Мб и 125Мб.
+
+Назовем D0 50Мб диск, D1 90Мб диск и D2 125Мб диск.  Когда Вы
+запускаете устройство, драйвер вычисляет 'strip zones'.  В этом
+случае, он найдет 3 зоны, определенные подобно этому:
+
+<PRE>
+            Z0 : (D0/D1/D2) 3 x 50 = 150MB  всего в этой зоне
+            Z1 : (D1/D2)  2 x 40 = 80MB всего в этой зоне
+            Z2 : (D2) 125-50-40 = 35MB всего в этой зоне.
+
+</PRE>
+
+
+Вы можете видеть, что общий размер зон - размер виртуального
+устройства, но, в зависимости от зоны, striping различается.
+Z2 особенно неэффективна,так как там только один диск.
+
+Так как <CODE>ext2fs</CODE> и большинство других файловых систем Unix
+распределяют файлы по всему диску, У Вас 35/265 = 13% шансов, что
+заполнение закончится на Z2, и не получится никаких преимуществ
+RAID-0.
+
+(DOS пытается заполнить диск от начала до конца, и таким образом,
+старые файлы должны храниться на Z0.  Однако, эта стратегия
+приводит к резкой фрагментации файловой системы,
+это причина того, что никто кроме DOS так не делает.)
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+У меня есть жесткий диск производителя X и контроллер производителя Y
+и я предполагаю использовать <CODE>md</CODE>.
+Это даст значительное увеличение производительности?
+Производительность в самом деле заметна?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Ответ зависит от используемой Вами конфигурации.
+<P>
+<DL>
+<DT><B>Производительность Linux MD RAID-0 и линейного RAID:</B><DD><P>Если система слишком загружена вводом-выводом,
+статистически, часть пойдет на один диск, а часть на другой.
+Таким образом, производительность увеличится по сравнению с
+одиночным диском.  Фактическое увеличение сильно зависит
+от текущих данных, размера stripe, и других факторов.
+В системе с низким вводом-выводом, производительность
+эквивалентна производительности одного диска.
+<P>
+<P>
+<DT><B>Производительность чтения Linux MD RAID-1 (зеркализация):</B><DD><P>MD реализует балансировку чтения. То есть, код RAID-1
+будет поочередно выбирать каждый из дисков (двух или более)
+зеркала, производя поочередное чтение с каждого диска.
+В случае небольшого ввода-вывода, это вовсе не изменит
+производительность: Вы будете ждать завершения чтения одного
+диска.
+Но, с двумя дисками и при высокой загрузке вводом-выводом,
+возможно получить практически удвоенную производительность,
+так как опреации чтения будут выполняться с каждого диска
+одновременно.
+Для N дисков в зеркале, это может увеличить
+производительность в N раз.
+<P>
+<DT><B>Производительность записи Linux MD RAID-1 (зеркализация):</B><DD><P>Нужно ждать, пока запишутся данные на все диски зеркала.
+Это из-за того, что копия данных должна быть записана
+на каждый из дисков зеркала.
+Таким образом, производительность будет приблизительно
+эквивалентна производительности записи на один диск.
+<P>
+<DT><B>Производительность чтения Linux MD RAID-4/5:</B><DD><P>Статистически, данный блок может быть на любом из дисков,
+и, таким образом, производительность чтения RAID-4/5
+во многом подобна RAID-0.  Она зависит от данных,
+размера stripe, и приложения.  Она не будет так хороша, как
+производительность чтения в зеркальном массиве.
+<P>
+<DT><B>Производительность записи Linux MD RAID-4/5:</B><DD><P>Она, в общем, должна быть предположительно меньше, чем у
+одного диска.  Это из-за того, что на один диск
+должна быть записана информация о паритете, в то время
+как на другой - данные.  Однако,
+в случае вычисления нового паритета, старый паритет и
+старые данные должны быть сначала считаны. Старые данные,
+новые данные и старый паритет должны быть объединены
+операцией XOR для определения новой информации о паритете:
+это требует циклов процессора и дополнительного
+доступа к дискам.
+</DL>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Какую конфигурацию RAID я должен использовать для оптимальной производительности?
+<BLOCKQUOTE>
+<B>О</B>:
+Ваша цель максимальная пропускная способность, или минимальные
+время доступа?
+Нет простого ответа, так как на производительность влияет много факторов:
+
+<UL>
+<LI>операционная система - будет один процесс/нить,
+выполнять доступ к диску или несколько?</LI>
+<LI>приложение - выполняется доступ к данным последовательно
+или с произвольно?</LI>
+<LI>файловая система - группируются файлы или
+рассредотачиваются ( ext2fs группирует блоки файлов,
+и рассредотачивает сами файлы)</LI>
+<LI>драйвер диска - количество блоков упреждающего чтения
+(это настраиваемый параметр)</LI>
+<LI>CEC аппаратура - один дисковый контроллер или несколько?</LI>
+<LI>контроллер жесткого диска - может ли выполнять множество
+запросов или нет? Имеет ли кеш?</LI>
+<LI>Жесткий дик  - размер памяти кеш-буфера -- Достаточен ли
+будет для обработки размеров записей и желаемой частоты
+обращений?</LI>
+<LI>физическая организация - количество блоков в цилиндре --
+доступ к блокам на различных цилиндрах приведет к
+пере-позиционированию головки.</LI>
+</UL>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Какая оптимальная конфигурация RAID-5 для производительности?
+<BLOCKQUOTE>
+<B>О</B>:
+Так как RAID-5 создает загрузку ввода-вывода, которая
+одинаково распределена на несколько устройств, лучшая
+производительность будет получена, когда
+RAID набор сбалансирован использованием
+идентичных дисков, идентичных контроллеров,  и
+одинаковым (небольшим) числом дисков на каждом контроллере.
+
+Однако заметьте, что использование идентичных компонент
+увеличивает возможность множества одновременных отказов,
+например из-за внезапного толчка или урона, перегрева,
+или скачка электричества во время грозы. Смешивание марок и моделей
+помогает минимизировать этот риск.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Какой оптимальный размер блока для массива RAID-4/5?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Если используется текущая (Ноябрь 1997) RAID-4/5
+реализация, строго рекомендуется создавать файловую систему с
+<CODE>mke2fs -b 4096</CODE> вместо 1024 байтов, по умолчанию.
+
+<P>Это потому, что текущая реализация RAID-5
+резервирует одну 4Кб страницу памяти на дисковый блок;
+если размер блока диска будет 1Кб, тогда
+75% памяти, которую резервирует RAID-5 для осуществления
+ввода-вывода, не используется.
+Если размер блока диска совпадает с размером страницы памяти, тогда
+драйвер (потенциально) может использовать всю страницу.
+Итак, для файловой системы с размером блока 4096
+в отличие от системы с размером блока 1024, драйвер RAID будет
+потенциально ставить в очередь 4 раза
+производя ввод-вывод с драйверам нижнего уровня без
+расходования дополнительной памяти.
+<P>
+<P><B>Заметка:</B> пометки выше НЕ применимы драйверу программного
+RAID-0/1/линейного.
+<P>
+<P><B>Заметка:</B> высказывание о 4Кб странице памяти применимо к
+архитектуре Intel x86.  Размер страницы на Alpha, Sparc, и других
+процессорах различается; я думаю на Alpha/Sparc он 8Кб (????).
+Скорректируйте соответственно указанное значение.
+<P>
+<P><B>Заметьте:</B> если на Вашей файловой системе много небольших
+файлов (файлов размером менее 10Кб), значительная чaсть
+дискового пространства может быть потеряна.  Это из-за того,
+что файловая система распределяет дисковое пространство
+частями размером в блок.  Выделение больших блоков маленьким файлам
+приводит к потерям дискового пространства: таким образом, Вы можете
+поставить небольшой размер блока, получить большую эффективность
+использования емкости, и не беспокоиться о "потерянной" памяти
+из-за несоответствия размера блока размеру страницы памяти.
+<P>
+<P><B>Заметка:</B> большинство ''типичных'' систем не содержат много
+маленьких файлов.  То есть, хотя могут быть тысячи небольших файлов,
+это будет приводить к потере только от 10 до 100Мб, что, возможно,
+приемлимо, учитывая производительность, на много-гигабайтном диске.
+<P>Однако, для серверов новостей, может быть десятки и сотни
+тысяч небольших файлов.  В этом случае, меньший размер блока,
+и таким образом сохраненная емкость, может быть более важной,
+чем более эффективный ввод-вывод.
+<P>
+<P><B>Заметка:</B> существует экспериментальная файловая система
+для Linux, которая пакует маленькие фалы и группы файлов в один
+блок. Она имеет большую производительность, если средний
+размер файла намного меньше размера блока.
+<P>
+<P><B>Заметка:</B> Будущие версии могут реализовать схемы, которые
+лишат смысла вышеприведенную дискуссию. Однако, это сложно
+реализовать, так как динамическое распределение на ходу может
+привести к мертвым-блокировкам (dead-locks); текущая реализация
+выполняет статическое предварительное выделение.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как размер куска (размер stripe) влияют на производительность
+моего RAID-0, RAID-4 или RAID-5 устройства?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Размер куска - количество смежных данных на виртуальном
+устройстве, которы смежные и на физическом устройстве.
+В этом HOWTO, "кусок" и "stripe" подразумевают одно и то же:
+что часто называется "stripe" в другой документации по
+RAID, в MD man страницах называется "кусок" ("chunk").
+Stripe-ы или куски применимы только к
+RAID 0, 4 и 5, так как stripe-ы не используются в
+зеркализации (RAID-1) и простом соединении (линейный RAID).
+Размеры stripe влияют на задержку, пропускную способность,
+и конкуренцию между отдельными операциями
+(возможность одновременного обслуживания перекрывающихся запросов
+ввода-вывода).
+<P>Предполагая использование файловой системы ext2fs, и текущих
+правил ядра для упреждающего чтения, большие размеры stripe почти
+всегда лучше, чем маленькие размеры, и размеры stripe
+от почти четырех до полного цилиндра диска наилучшие.
+Чтобы понять это требование, рассмотрим
+эффективность больших stripe на маленьких файлах, и маленьких
+stripe на больших файлах.  Размер stripe не влияет на
+производительность чтения на маленьких файлах:  для
+массива из N дисков, файл имеет 1/N вероятность
+попасть целиком в один stripe на любой диск.
+Таким образом, и задержка и производительность чтения сравнима
+с чтением одного диска.  Предположим, что маленькие файлы
+статистически хорошо распределяются по файловой системе,
+(и, на файловой системе ext2fs, они дожны), грубо в N раз более
+упорядочены, конкурентные чтения должны быть возможны
+без значительных коллизий между ними.  Наоборот, если
+используются очень маленького размера stripe-ы, и последовательно
+читается большой файл, то чтение будет выдаваться всем дискам
+массива. Для чтения одного большого файла, задержка будет
+почти двойная, так как увеличивается вероятность нахождения блока в
+трех четвертях оборота диска или далее.
+Однако заметьте аргумент: пропускная способность может увеличиться
+почти
+в N раз для чтения одного большого файла, так как N дисков могут
+читать одновременно (то есть, если используется упреждающее чтение,
+то все диски остаются активными).  Но есть другй
+контр-аргумент:  если все диски уже заняты
+чтением файла, то попытки одновременного чтения второго или третьего
+файла приведут к значительной борьбе,
+разрушив производительность, так как алгоритмы управления диском
+будут двигать головками вдоль пластины. Таким образом, большие
+stripe-ы будут почти всегда приводить к большей производительности.
+Единственное исключение  - случай, при использовании хорошего
+алгоритма упреждающего чтения, где один поток в одно время
+читает один большой файл, и он требует наивысшей возможной
+производительности. В этом случае желательны небольшие stripe-ы.
+<P>
+<P>Заметьте, что этот HOWTO ранее рекомендовал небольшие размеры
+stripe-ов для спула новостей или других систем с множеством мелких
+файлов. Это плохой совет, и вот почему:  спулы новостей
+содержат не только много маленьких файлов, но также и большие
+суммарные файлы, также как и большие каталоги.  Если суммарный файл
+более одного stripe, его чтение задействует много дисков,
+замедляя все, так как каждый диск выполняют позиционирование.
+Подобным образом, текущая файловая система ext2fs
+просматривает каталоги в линейной, последовательной
+манере.  Таким образом, чтобы найти данный файл или inode,
+в средней части будет прочитана половина каталога.
+Если этот каталог простирается на несколько
+stripe-ов (несколько дисков), чтение
+каталога (такое как при команде ls) будет очень медленным.
+Спасибо Steven A. Reisman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#0a796b784a7a786f79796f647e6f7824696567"><span class="__cf_email__" data-cfemail="384b594a78484a5d4b4b5d564c5d4a165b5755">[email&#160;protected]</span></A>&gt; за эту поправку.
+Steve также добавил следующее:
+<BLOCKQUOTE>
+Я обнаружил, что использование 256k stripe дает намного лучшую
+производительность.
+Я подозреваю, что оптимальный размер должен быть размером с
+цилиндр диска (или, может быть размером с кеш диска).
+Однако, современные диски содержат зоны с различным
+количеством секторов (и размер кеша варьируется в зависимости от
+модели диска).  Невозможно гарантировать, что stripe-ы не будут
+пересекать границу цилиндра.
+</BLOCKQUOTE>
+<P>
+<P>
+<P>Утилиты позволяют задавать размер в Кбайтах.
+Вы можете указать его величиной с размер страницы Вашего
+CPU (4Кб на x86).
+<P>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Каков правильный stride при создании файловой системы
+ext2fs на разделе RAID?  Под stride я подразумеваю
+-R флаг в команде <CODE>mke2fs</CODE>:
+<PRE>
+mke2fs -b 4096 -R stride=nnn  ...
+
+</PRE>
+
+Кокое должно быть значение nnn?
+<BLOCKQUOTE>
+<B>О</B>:
+Флаг <CODE>-R stride</CODE> используется, чтобы указать файловой
+системе размер RAID stripe-ов.  Так как только RAID-0,4 и 5
+использует stripe-ы, а RAID-1 (зеркализация) и линейный RAID не
+используют, этот флаг применим только к RAID-0,4,5.
+
+Знание размера stripe-а позволяет <CODE>mke2fs</CODE>
+выделять блок и битовый поля inode так, что они не все хранятся
+на одном физическом устройстве.  Неизвестный помощник написал:
+<BLOCKQUOTE>
+Прошлой весной я заметил, что один диск из пары всегда больше
+занят вводом-выводом, и отследил - это из-за этих блоков
+мета-данных. Ted добавил опцию <CODE>-R stride=</CODE>, в мой вариант
+ответа и предложение обходного варианта.
+</BLOCKQUOTE>
+
+Для файловой системы с блоком 4Кб, с размером stripe в 256Кб,
+нужно использовать <CODE>-R stride=64</CODE>.
+<P>Если Вы не доверяете флагу <CODE>-R</CODE>, Вы можете получить подобный
+эффект другим путем.   Steven A. Reisman
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#d4a7b5a694a4a6b1a7a7b1baa0b1a6fab7bbb9"><span class="__cf_email__" data-cfemail="92e1f3e0d2e2e0f7e1e1f7fce6f7e0bcf1fdff">[email&#160;protected]</span></A>&gt; написал:
+<BLOCKQUOTE>
+Другое соображение - файловая система используемая на устройстве
+RAID-0.
+Файловая система выделяет ext2 8192 блоков в группу. У каждой
+группы есть свой набор inode-ов. Если есть 2, 4 или 8 дисков,
+эти inode скапливаются на первом диске.  Я распределили inode-ы
+по всем дискам, указав mke2fs выделять только 7932 блоков на
+группу.
+</BLOCKQUOTE>
+
+Некоторые страницы mke2fs не описывают флаг
+<CODE>[-g blocks-per-group]</CODE>
+используемый при этой операции.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Где в загрузочных скриптах я могу вставить команду <CODE>md</CODE>,
+так, чтобы все автоматически стартовало в процессе загрузки?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Rod Wilkens
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#1361647a7f78767d6053717c617776613d7d7667"><span class="__cf_email__" data-cfemail="d9abaeb0b5b2bcb7aa99bbb6abbdbcabf7b7bcad">[email&#160;protected]</span></A>&gt;
+написал:
+<BLOCKQUOTE>
+Вот что я сделал: вставил ``<CODE>mdadd -ar</CODE>'' в
+``<CODE>/etc/rc.d/rc.sysinit</CODE>'' прямо после загрузки модулей,
+и перед  проверкой дисков ``<CODE>fsck</CODE>''.
+Таким образом, Вы можете вставить устройство
+``<CODE>/dev/md?</CODE>'' в ``<CODE>/etc/fstab</CODE>''. Затем вставить
+``<CODE>mdstop -a</CODE>'' прямо после де-монтирования всех
+дисков ``<CODE>umount -a</CODE>'', в файле
+``<CODE>/etc/rc.d/init.d/halt</CODE>''.
+</BLOCKQUOTE>
+
+Для raid-5, Вы должны посмотреть на код возврата <CODE>mdadd</CODE>,
+и если он ошибочен, сделать
+<BLOCKQUOTE><CODE>
+<PRE>
+ckraid --fix /etc/raid5.conf
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+для восстановления любых повреждений.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Меня интересует возможно ли установить striping для более, чем
+2 устройств в <CODE>md0</CODE>? Это для сервера новостей,
+и у меня есть 9 дисков... Нужно ли говорить, что мне нужно больше, чем
+два. Это возможно?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Да. (описать как это сделать)
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Когда программный RAID превосходит аппаратный RAID?
+<BLOCKQUOTE>
+<B>О</B>:
+Обычно, аппаратный RAID считается производительнее программного
+RAID, так как аппаратные контроллеры, часто содержат большой кеш,
+и могут лучше выполнять планирование параллельных операций записи.
+Однако, интегрированный программный RAID может (и дает) определенное
+преимущество при реализации в операционной системе.
+
+<P>Например, ... мммм. Мы обходим молчанием темное описание
+кеширования реконструированных блоков в буферный кеш ...
+<P>
+<P>На дуальных PPro SMP системах, мне рассказывали, что
+производительность программного RAID превышала производительность
+плат аппаратного RAID известных производителей с кратностью
+от 2 до 5 раз.
+<P>
+<P>Программный RAID также очень интересная опция для
+избыточных серверных систем высокой готовности. В такой
+конфигурации, два CPU подсоединены к одному набору
+SCSI дисков.  Если один север рушится или отказывается отвечать,
+то другой сервер может <CODE>mdadd</CODE>,
+<CODE>mdrun</CODE> и <CODE>mount</CODE> массив программного RAID, и
+продолжить работу.  Этот режим работы не всегда возможен с
+многими аппаратными RAID контроллерами, из-за состояний конфигурации
+которое аппаратные контроллеры могут поддерживать.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Если я обновляю версию моих raidtools, приведет ли это к проблемам
+манипулирования старых raid массивами?  Коротко, должен ли я
+пересоздать мои массивы RAID при обновлении raid утилит?
+
+<BLOCKQUOTE>
+<B>О</B>:
+Нет, по крайней мере до смены старшего номера версии.
+MD версия x.y.z состоит из трех подверсий:
+<PRE>
+     x:      старший номер версии.
+     y:      младший номер версии.
+     z:      номер уровня патча.
+
+</PRE>
+
+
+Версия x1.y1.z1 драйвера RAID поддерживает RAID массив с
+версией x2.y2.z2 в случае (x1 == x2) и (y1 >= y2).
+
+Различные номера патчей (z) для тех же (x.y) версий
+разработаны по большей мере совместимыми.
+
+<P>Младший номер версии увеличивается всякий раз, когда
+код RAID массива
+изменяется таким образом, что он несовместим с старыми версиями
+драйвера. Новые версии драйвера должны поддерживать совместимость
+с старыми RAID массивами.
+<P>Старший номер версии увеличивается, если более не имеет смысла
+поддерживать старые RAID массивы в новом коде ядра.
+<P>
+<P>Для RAID-1, не правдоподобно, чтобы ни дисковый уровень  ни
+структура суперблока изменились в ближайшее время.  Скорее всего
+любые оптимизации и новые свойства (реконструкция, многопоточные
+утилиты, горячая замена, и т.п.) не отразятся на физическом
+размещении.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Комманда <CODE>mdstop /dev/md0</CODE> говорит, что устройство занято.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Есть процесс, который держит открытым файл на <CODE>/dev/md0</CODE>, или
+<CODE>/dev/md0</CODE> все еще смонтирован.  Завершите процесс или
+<CODE>umount /dev/md0</CODE>.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Существуют утилиты измерения производительности?
+<BLOCKQUOTE>
+<B>О</B>:
+Существует новая утилита, называемая <CODE>iotrace</CODE> в каталоге
+<CODE>linux/iotrace</CODE>. Она читает <CODE>/proc/io-trace</CODE> и
+анализирует/строит графики из его вывода.  Если Вы чувствуете, что
+блочная производительность Вашей системы слишком низкая,
+просто посмотрите на вывод iotrace.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я читал исходники RAID, и видел, что там определено значение
+<CODE>SPEED_LIMIT</CODE> равное 1024Кб/сек.  Что это значит?
+Это ограничивает производительность?
+
+<BLOCKQUOTE>
+<B>О</B>:
+<CODE>SPEED_LIMIT</CODE> используется для ограничения скорости
+реконструкции RAID при автоматической реконструкции.
+По существу, автоматическая реконструкция
+позволяет Вам <CODE>e2fsck</CODE> и <CODE>mount</CODE> сразу после
+неправильного завершения,
+без предварительного запуска <CODE>ckraid</CODE>.  Автоматическая
+реконструкция также используется после замены отказавшего диска.
+
+<P>Для избежания подавления системы при реконструкции,
+нить реконструкции контролирует скорость реконструкции
+и уменьшает ее, если она слишком высока.  Предел 1Мб/сек
+был выбран как разумная норма, которая позволяет реконструкции
+завершаться умеренно быстро, при создании только небольшой
+нагрузки на систему, не мешая другим процессам.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как насчет ''синхронизации шпинделей''или ''дисковой синхронизации''?
+<BLOCKQUOTE>
+<B>О</B>:
+Синхронизация шпинделей используется для поддержания вращения
+нескольких дисков с одинаковой скоростью, так что пластины дисков
+всегда точно выровнены. Это используется некоторыми аппаратными
+контроллерами для лучшей организации записи на диски.
+Однако, в программном RAID, эта информация не используется,
+и синхронизация шпинделей может даже снизить производительность.
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Как я могу установить пространства для подкачки используя raid 0?
+Должна ли быть striped подкачка  на 4+ дисках быть быстрой?
+<BLOCKQUOTE>
+<B>О</B>:
+Leonard N. Zubkoff отвечает:
+Да она действительно быстра, но Вам не нужно использовать MD для
+получения striped подкачки.  Ядро автоматически разделяет
+подкачку по нескольким пространствам подкачки с одинаковым
+приоритетом.  Например, следующие записи из
+<CODE>/etc/fstab</CODE> разделяют подкачку по пяти дискам
+в три группы:
+
+<PRE>
+/dev/sdg1       swap    swap    pri=3
+/dev/sdk1       swap    swap    pri=3
+/dev/sdd1       swap    swap    pri=3
+/dev/sdh1       swap    swap    pri=3
+/dev/sdl1       swap    swap    pri=3
+/dev/sdg2       swap    swap    pri=2
+/dev/sdk2       swap    swap    pri=2
+/dev/sdd2       swap    swap    pri=2
+/dev/sdh2       swap    swap    pri=2
+/dev/sdl2       swap    swap    pri=2
+/dev/sdg3       swap    swap    pri=1
+/dev/sdk3       swap    swap    pri=1
+/dev/sdd3       swap    swap    pri=1
+/dev/sdh3       swap    swap    pri=1
+/dev/sdl3       swap    swap    pri=1
+</PRE>
+</BLOCKQUOTE>
+
+</LI>
+<LI><B>В</B>:
+Я хочу получить максимальную производительность.  Я должен использовать несколько контроллеров?
+<BLOCKQUOTE>
+<B>О</B>:
+Во многих случаях, ответ - да.  Используя несколько
+контроллеров для параллельного доступа к дискам увеличивает
+производительность. Однако, действительное приращение
+фактически зависит от вашей конфигурации.  Например,
+как сообщили (Vaughan Pratt, Январь 98) что
+один 4.3Гб Cheetah подключенный к Adaptec 2940UW
+может дать до 14Мб/сек (без использования RAID).
+Установив два диска на один контроллер, и используя
+конфигурацию RAID-0 привело к увеличению производительности
+до 27 Мб/сек.
+
+<P>Заметьте,что 2940UW контроллер  - "Ultra-Wide"
+SCSI контроллер, теоретически способный к пакетным передачам
+40Мб/сек, так что указанные измерения не неожиданность.
+Однако, более медленный контроллер подключенный к двум
+быстрым дискам будет бутылочным горлышком. Также заметьте,
+что большинство внешних SCSI подключений (таких как секции
+с лотками горячей замены) не могут работать на 40Мб/сек,
+из-за проблем с кабелями и электрических шумов.
+<P>
+<P>Если Вы разрабатываете систему с несколькими контроллерами,
+помните, что большинство дисков и контроллеров в среднем работает
+на 70-85% их максимальной скорости.
+<P>
+<P>Также заметьте, что использование одного контроллера на диск
+может, по всей вероятности, уменьшить простой системы
+из-за отказа контроллера или кабеля (теоретически --
+только в случае правильной обработки драйвером отказа контроллера.
+Не все драйвера SCSI представляются способными обрабатывать
+эту ситуацию без паники или иных блокировок).
+</BLOCKQUOTE>
+</LI>
+</OL>
+<H2><A NAME="s9">9. Высокая готовность RAID</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+RAID может помочь мне противостоять потерям данных.  Но как я могу
+быть уверенным, что система работает, настолько долго, насколько
+возможно, и не склонна к поломкам?  В идеале, я хочу, чтобы система
+работала 24 часа в день, 7 дней в неделю, 365 дней в году.
+
+<BLOCKQUOTE>
+<B>О</B>:
+Высокая готовность дело трудное и дорогостоящее. Тяжело
+Вам пробовать сделать систему отказоустойчивой, тяжело и
+еще более дорого ее получить.   Следующие подсказки, советы,
+идеи и не проверенные слухи могут помочь Вам в этом.
+<UL>
+<LI>IDE диски могут отказать так, что отказавший диск на
+на IDE шлейфе будет препятствовать работе хорошего диска
+на том же кабеле, таким образом это выглядит как отказ двух
+дисков.  Так как RAID не защищает от отказа двух дисков,
+нужно либо подключать по одному диску на IDE шлейф,
+или, если два диска, то они должны относиться к различным
+RAID томам.</LI>
+<LI>SCSI диски могут отказать так, что отказавший диск
+на SCSI цепочке может мешать работе любого устройства в
+цепочке.  Режим отказа приводит к замыканию
+общего (разделяемого) контакта готовности устройства;
+так как этот контакт общий, не может быть выполнен никакой
+арбитраж, пока замыкание не устранено. Таким образом,
+два диска в одной цепочке SCSI не должны относиться к
+одному RAID массиву.</LI>
+<LI>Подобные замечания применимы к контроллерам дисков.
+Не подгружайте каналы к одному контроллеру; используйте
+несколько контроллеров.</LI>
+<LI>Не используйте все диски одного производителя или модели.
+Не так уж редко сильная гроза отключала два или более диска.
+(Да, мы все используем подавители бросков напряжения,
+но они вовсе не совершенны). Другими убийцами являются жара
+и плохое охлаждение диска.  Дешевые диски часто работают
+перегретыми. Использование различных марок дисков и
+контроллеров уменьшает вероятность того, что что бы то ни было
+отключит один диск (перегрев, физический удар, вибрация, бросок
+электричества) и одновременно повредит другие диски.</LI>
+<LI>Для защиты от отказа контроллера или процессора,
+можно построить окружение SCSI диска с "двумя хвостами",
+т.е. подсоединенным к двум компьютерам.
+Один компьютер монтирует файловую систему в
+режиме чтение-запись, а другой монтирует ее в как
+только-чтение, и действует как горячий резерв.  Когда горячий
+резерв, определяет, что главный компьютер отказал (с
+помощью watchdog), он выключает питание главного
+(для гарантии, что он в самом деле не работает), и затем
+выполняет fsck и перемонтируется в режиме чтение-запись.
+Если кто-либо запустит это, дайте мне знать.</LI>
+<LI>Всегда используйте UPS, и  выполняйте правильное завершение.
+Хотя неправильное завершение может не повредить диски,
+запуск ckraid даже на маленьких массивах мучительно
+медленный.  Вы должны избегать запуска ckraid насколько это
+возможно.  Или Вы можете покопаться в ядре и запустить
+отлаживаемый код горячей реконструкции ...</LI>
+<LI>SCSI кабеля, как известно, очень темпераментные создания,
+и склонны создавать всяческие проблемы.
+Используйте кабеля наивысшего качества, из тех которые можно
+купить. Используйте так называемый bubble-wrap, чтобы
+убедиться, что ленточные кабеля не слишком близко расположены
+и не влияют друг на друга. Тщательно соблюдайте ограничения на
+длину.</LI>
+<LI>Взгляните на SSI (Serial Storage Architecture).
+Хотя она несколько дорога, по слухам менее
+склонна к ошибочным режимам, чем SCSI.</LI>
+</UL>
+</BLOCKQUOTE>
+</LI>
+</OL>
+<H2><A NAME="s10">10. Вопросы ожидающие ответов</A></H2>
+
+<P>
+<OL>
+<LI><B>В</B>:
+Если, по соображениям стоимости, я пробую зеркало состоящее из
+медленного диска и быстрого диска,
+достаточно ли S/W силен для балансировки чтения или это замедлит
+скорость до скорости медленного?
+<P>
+</LI>
+<LI><B>В</B>:
+Для тестирования "чистой" производительности диска...
+Существует ли символьное устройство для прямого(raw) чтения/записи
+вместо <CODE>/dev/sdaxx</CODE>, которое мы можем использовать для оценки
+производительности на raid устройствах??
+Существует ли GUI утилита для наблюдения дисковой производительности??
+<P>
+</LI>
+</OL>
+<H2><A NAME="s11">11. Список пожеланий для MD и сопутствующего ПО</A></H2>
+
+<P>Bradley Ward Allen
+&lt;
+<A HREF="../cdn-cgi/l/email-protection.html#6e1b0203012e3f40200b1a"><span class="__cf_email__" data-cfemail="552039383a15047b1b3021">[email&#160;protected]</span></A>&gt;
+написал:
+<BLOCKQUOTE>
+Идеи включают:
+<UL>
+<LI>Параметры загрузки для указания ядру какие устройства -
+MD устройства (без ``<CODE>mdadd</CODE>'')</LI>
+<LI>Сделать MD прозрачным для ``<CODE>mount</CODE>''/``<CODE>umount</CODE>''
+без использования ``<CODE>mdrun</CODE>'' и ``<CODE>mdstop</CODE>''</LI>
+<LI>Интегрировать ``<CODE>ckraid</CODE>'' в ядро,
+и запускать его при необходимости</LI>
+</UL>
+
+(Итак в общем, все, что я могу предложить - избавиться от утилит и поместить
+их в ядро; так я это вижу, это - файловая система, а не игрушка.)
+<UL>
+<LI>Работа с массивами, которые могут свободно пережить одновременный,
+или в разное время, отказ N дисков,
+где N - целое &gt; 0 устанавливаемое администратором</LI>
+<LI>Лучшая обработка застывания ядра, отключения питания,
+и других внезапных завершений </LI>
+<LI>Не отключать целый диск, если только часть его отказала,
+если ошибки секторов занимают менее 50%
+доступа при 20 попытках различных обращений,
+то просто продолжаем игнорируя эти сектора этого отдельного диска.</LI>
+<LI>Плохие сектора:
+<UL>
+<LI>Механизм для сохранения плохих секторов в другом месте диска.</LI>
+<LI>Если существует обобщенный механизм для маркировки
+деградировавших плохих блоков, которые вышестоящие уровни
+файловой системы могут распознать, использовать его.
+Программный он или нет.</LI>
+<LI>Возможен альтернативный механизм извещения вышестоящего
+уровня, что размер диска более маленький,
+прямо выравнивая для вышестоящего уровня сдвигать части
+исключенных областей диска.
+Это может помочь с деградированными блоками.</LI>
+<LI>Недостаток вышеуказанных идей, сохранять маленькое
+(устанавливаемое администратором) количество пространства для
+резервирования плохих блоков (равномерно распределенное по
+диску?), и использовать его (как можно более близко) вместо
+плохих блоков, при их появлении.
+Конечно, это не эффективно.
+Более того, ядро должно вести log каждый раз при нахождении
+RAID массивом плохого сектора и делать это с
+``<CODE>crit</CODE>'' уровнем предупреждения, просто дать понять
+администратору, что его диск содержит пылинку
+в себе (или соприкосновение головки с пластиной).</LI>
+</UL>
+</LI>
+<LI>Программно-переключаемые диски:
+<DL>
+<DT><B>``запретить этот диск''</B><DD><P>должно блокировать, пока ядро не завершит проверки наличия
+данных для сбрасывания на диск при завершении (таких как
+завершение XOR/ECC/других коррекций ошибок), затем освободить
+диск от использования
+(чтобы его можно было вынуть и т.п.);
+<DT><B>``разрешить этот диск''</B><DD><P>должно, при соответствии, <CODE>mkraid</CODE> новый диск
+и затем запустить его для использования для ECC или любых
+операций, расширяя RAID5 массив;
+<DT><B>``изменить размер массива''</B><DD><P>должно переопределять общее чило дисков и чило избыточных
+дисков, и результатом должно быть изменение размера массива;
+без потери данных, хорошо было бы сделать это должным образом,
+но я потратил много времени пытаясь описать, как это должно
+делаться; в любом случае, необходим режим, где массив будет
+блокироваться ( возможно, на несколько часов (ядро должно
+заносить что-то в log каждые десять секунд));
+<DT><B>``разрешение диска при сохранении данных''</B><DD><P>это должно сохранить данные на диске как есть и перемещать их,
+как положено, на систему RAID5, так что ужасающее сохранение
+и восстановление не должно происходить каждый раз когда
+кто-то ``поднимает''систему RAID5 (вместо этого, может быть
+проще сохранять только один раздел вместо двух,
+он может поместится на первый как сжатый gzip-ом файл);
+<DT><B>``пере-разрешение диска''</B><DD><P>должно быть операторской подсказкой операционной системе
+попробовать ранее отказавший диск
+(это должен быть, как я думаю, просто вызов запрещения, а
+потом разрешения).
+</DL>
+</LI>
+</UL>
+</BLOCKQUOTE>
+<P>Прочие идеи не из сети:
+<BLOCKQUOTE>
+<UL>
+<LI>finalrd аналог для initrd, для упрощения raid на корневой файловой системе.</LI>
+<LI>режим только-чтение для raid, чтобы упростить вышесказанное  </LI>
+<LI>Помечать RAID том как чистый всякий раз когда не сделано
+"частичной записи". -- То есть, всякий раз нет транзакций записи,
+котрые были зафиксированы на одном диске, но все еще не завершены
+на другом диске.
+
+Добавить период "неактивности записи" (для избежания частого
+позиционирования головок на суперблок RAID при относительной
+занятости RAID тома).
+</LI>
+</UL>
+</BLOCKQUOTE>
+<P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

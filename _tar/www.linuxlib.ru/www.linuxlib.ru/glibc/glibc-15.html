@@ -1,0 +1,501 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Библиотека языка C GNU glibc: Поиск и Сортировка — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<A HREF="glibc-16.html">Вперед</A>
+<A HREF="glibc-14.html">Назад</A>
+<A HREF="glibc.html#toc15">Содержание</A>
+<HR>
+<H2><A NAME="s15">15. Поиск и Сортировка</A></H2>
+
+<P>
+<P>Эта глава описывает функции для поиска и сортировки массивов
+произвольных объектов. Вы определяете соответствующую функцию
+сравнения, которую нужно применить как аргумент, наряду с размером
+объектов в массиве и общим числом элементов.
+<P>
+<H2><A NAME="ss15.1">15.1 Определение Функции Сравнения</A>
+</H2>
+
+<P>
+<P>Чтобы использовать библиотечные функции сортировки массива, Вы
+должны описать, как сравнить элементы массива.
+<P>Чтобы сделать это, Вы обеспечиваете функцию сравнения, для
+сравнения двух элементов массива. Библиотека вызовет эту функцию,
+передавая как указатели на аргументы два элемента массива, которые
+нужно сравнить. Ваша функция сравнения должна возвратить значение
+как strcmp (см. Раздел 5.5 [Сравнение СТРОКИ/МАССИВА]):
+отрицательное, если первый аргумент - "меньше" чем второй, нуль,
+если они "равны", и положительное если первый аргумент "больше".
+<P>Вот пример функции сравнения, которая работает с массивом чисел
+типа double:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+                int
+                compare_doubles (const double *a, const double *b)
+                {
+                        return (int) (*a - *b);
+                }
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Заглавный файл " stdlib.h " определяет имя для типа данных
+функций сравнения. Этот тип - расширение GNU.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+    int comparison_fn_t (const void *, const void *);
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<P>
+<P>
+<H2><A NAME="ss15.2">15.2 Функция Поиска в Массиве</A>
+</H2>
+
+<P>
+<P>Чтобы искать в сортируемом массиве элемент, соответствующий
+ключу, используйте bsearch функцию. Прототип для этой функции
+находится в заглавном файле " stdlib.h ".
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+    void * bsearch (const void *key, const void *array, size_t  count, size_t size, comparison_fn_t compare)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Bsearch функция ищет в сортируемом массиве объект, который
+является эквивалентным key. Массив содержит count элементов, каждый
+из которых имеет байты размера sise.
+<P>Возвращаемое значение - указатель на соответствующий элемент
+массива, или пустой указатель, если никакое соответствие не
+найдено. Если массив содержит больше чем один подходящий элемент,
+неопределено который же возвращается.
+<P>Эта функция получила имя из предположения, что она выполнена,
+используя двоичный алгоритм поиска.
+<P>
+<H2><A NAME="ss15.3">15.3 Функция Сортировки Массива</A>
+</H2>
+
+<P>
+<P>Для сортировки массива, используюя произвольную функцию
+сравнения, используйте qsort функцию. Прототип для этой функции
+находится в " stdlib.h ".
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+    void qsort (void *array, size_t count, size_t size, comparison_fn_t compare)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Qsort функция сортирует заланный массив. Массив содержит count
+элементов, каждый из которых имеет размер size.
+<P>Функция compare используется, чтобы выполнить сравнение на
+элементах массива. Эта функция вызывается с двумя аргументами
+указателями и должна возвратить целое число меньше , равное, или
+больше нуля, если первый аргумент меньше , равен, или больше чем
+второй аргумент.
+<P>Предупреждение: если, два объекта сравниваются как равные, их
+порядок после сортировки, непредсказуем. То есть сортировка не
+устойчива. Она может делать различие, когда сравнение рассматривает
+только часть элементов. А также, два элемента с тем же самым ключом
+сортировки могут отличиться в других отношениях.
+<P>Вот простой пример сортировки массива double значений в числовом
+порядке используя функцию сравнения, определенную выше (см. Раздел
+15.1 [Функции Сравнения]):
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+        {
+                double *array;
+                int size;
+                . . .
+                qsort(array,size,sizeof(double),compare_doubles);
+        }
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Qsort функция получила имя из предположения, что она была
+первоначально выполнена, используя алгоритм "быстрой сортировки".
+<P>
+<H2><A NAME="ss15.4">15.4 Пример Поиска и Сортировки</A>
+</H2>
+
+<P>
+<P>Вот пример, показывающий использование qsort и bsearch с
+массивом структур. Объекты в массиве сортируются, сравнивнением их
+name полей функцией strcmp.
+<BLOCKQUOTE><CODE>
+<PRE>
+                #include &lt;stdlib.h&gt;
+                #include &lt;stdio.h&gt;
+                #include &lt;string.h&gt;
+                struct critter
+                {
+                        const char *name;
+                        const char *species;
+                };
+                struct critter muppets[] =
+                {
+                        {"Kermit", "frog"},
+                        {"Piggy", "pig"},
+                        {"Gonzo", "whatever"},
+                        {"Fozzie", "bear"},
+                        {"Sam", "eagle"},
+                        {"Robin", "frog"},
+                        {"Animal", "animal"},
+                        {"Camilla", "chicken"},
+                        {"Sweetums", "monster"},
+                        {"Dr. Strangepork", "pig"},
+                        {"Link Hogthrob", "pig"},
+                        {"Zoot", "human"},
+                        {"Dr. Bunsen Honeydew", "human"},
+                        {"Beaker", "human"},
+                        {"Swedish Chef", "human"}
+                };
+                int count=sizeof(muppets)/sizeof(struct critter);
+                int
+                critter_cmp (const struct critter *c1,
+                const struct critter *c2)
+                {
+                        return strcmp (c1-&gt;name, c2-&gt;name);
+                }
+                void
+                print_critter (const struct critter *c)
+                {
+                        printf ("%s, the %s\n", c-&gt;name,
+                c-&gt;species);
+                }
+                void
+                find_critter (const char *name)
+                {
+                        struct critter target, *result;
+                        target.name = name;
+                        result = bsearch (&amp;target, muppets, count,
+                        sizeof (struct critter), critter_cmp);
+                        if (result)
+                                print_critter (result);
+                        else
+                                printf ("Couldn't find %s.\n", name);
+                }
+                int
+                main (void)
+                {
+                        int i;
+                        for (i = 0; i &lt; count; i++)
+                                print_critter (&amp;muppets[i]);
+                        printf ("\n");
+                        qsort (muppets, count, sizeof (struct
+                        critter), critter_cmp);
+                        for (i = 0; i &lt; count; i++)
+                                print_critter (&amp;muppets[i]);
+                        printf ("\n");
+                        find_critter ("Kermit");
+                        find_critter ("Gonzo");
+                        find_critter ("Janice");
+                        return 0;
+                }
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Вывод этой программы:
+<BLOCKQUOTE><CODE>
+<PRE>
+                Kermit, the frog
+                Piggy, the pig
+                Gonzo, the whatever
+                Fozzie, the bear
+                Sam, the eagle
+                Robin, the frog
+                Animal, the animal
+                Camilla, the chicken
+                Sweetums, the monster
+                Dr. Strangepork, the pig
+                Link Hogthrob, the pig
+                Zoot, the human
+                Dr. Bunsen Honeydew, the human
+                Beaker, the human
+                Swedish Chef, the human
+                Animal, the animal
+                Beaker, the human
+                Camilla, the chicken
+                Dr. Bunsen Honeydew, the human
+                Dr. Strangepork, the pig
+                Fozzie, the bear
+                Gonzo, the whatever
+                Kermit, the frog
+                Link Hogthrob, the pig
+                Piggy, the pig
+                Robin, the frog
+                Sam, the eagle
+                Swedish Chef, the human
+                Sweetums, the monster
+                Zoot, the human
+                Kermit, the frog
+                Gonzo, the whatever
+                Couldn't find Janice.
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<HR>
+<A HREF="glibc-16.html">Вперед</A>
+<A HREF="glibc-14.html">Назад</A>
+<A HREF="glibc.html#toc15">Содержание</A>
+
+  </div>
+</div>
+</body>
+</html>

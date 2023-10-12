@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 2.4.1  Проблемы при запуске mysql_install_db — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/mysql_install_db.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/mysql_install_db.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Installing.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />2 Установка MySQL
+</a><ul><li class="p"><a href="Post-installation.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />2.4 Послеустановочные настройка и тестирование
+</a><ul class="immediate"><li class="self">2.4.1 Проблемы при запуске <code>mysql_install_db</code>
+</li><li><a href="Starting_server.html">2.4.2 Проблемы при запуске сервера MySQL
+</a></li><li><a href="Automatic_start.html">2.4.3 Автоматический запуск и остановка MySQL
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Previous</a> / <a rel="next" href="Starting_server.html" title="2.4.2  Проблемы при запуске сервера MySQL">Next</a> / <a rel="up" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>2.4.1  Проблемы при запуске <code>mysql_install_db</code></H3>
+
+<P>
+<A NAME="IDX282"></A>
+
+</P>
+<P>
+Скрипт <code>mysql_install_db</code> предназначен только для создания новых таблиц
+привилегий MySQL. Он не влияет ни на какие другие данные! А если таблицы
+привилегий MySQL уже установлены, этот скрипт ничего не будет делать!
+
+</P>
+<P>
+Для того чтобы создать таблицы привилегий заново, необходимо остановить
+сервер <code>mysqld</code>, если он работает, и затем выполнить что-нибудь вроде:
+
+</P>
+
+<pre>
+mv mysql-data-directory/mysql mysql-data-directory/mysql-old
+mysql_install_db
+</pre>
+
+<P>
+В этом разделе перечислены проблемы, с которыми можно столкнуться при
+запуске <code>mysql_install_db</code>:
+
+</P>
+<DL COMPACT>
+
+<DT><strong><code>mysql_install_db</code> не устанавливает таблицы привилегий</strong>
+<DD>
+Может оказаться, что <code>mysql_install_db</code> не в состоянии установить таблицы
+привилегий и заканчивает свою работу после вывода следующих сообщений:
+
+
+<pre>
+starting mysqld daemon with databases from XXXXXX
+mysql daemon ended
+</pre>
+
+В таком случае необходимо очень тщательно изучить системный журнал! Этот
+журнал должен находиться в каталоге <tt>`XXXXXX'</tt>, указанном в данном сообщении
+об ошибке. В нем содержится информация о том, почему не запустился <code>mysqld</code>.
+Если вам не удалось разобраться в том, что произошло, при посылке отчета
+об ошибке включите в него данный журнал, используя <code>mysqlbug</code>! См.раздел
+See section <A HREF="Bug_reports.html">1.8.1.3  Как отправлять отчеты об ошибках или проблемах</A>.
+
+<DT><strong>Уже существует работающий демон <code>mysqld</code></strong>
+<DD>
+В таком случае вам вообще не следует запускать <code>mysql_install_db</code>. Скрипт
+<code>mysql_install_db</code> должен запускаться только однажды при установке MySQL
+первый раз.
+
+<DT><strong>При работающем демоне <code>mysqld</code> установка второго демона не работает</strong>
+<DD>
+Это может случиться, когда уже существует установленный сервер MySQL, но
+вы хотите произвести новую инсталляцию в другом месте (например, для
+тестирования или, возможно, вам просто требуется запустить две инсталляции
+в одно и то же время). Вообще говоря, такая проблема, которая возникает
+при попытке запустить второй сервер, заключается в том, что второй сервер
+пытается использовать тот же сокет и порт, что и старый. В этом случае
+вы можете получить следующее сообщение об ошибке: <code>Can't start
+server: Bind on TCP/IP port: Address already in use</code> или <code>Can't start server:
+Bind on unix socket...</code>. See section <A HREF="Installing_many_servers.html">4.1.3  Установка нескольких серверов на один компьютер</A>.
+
+<DT><strong>Нет доступа для записи в <tt>`/tmp'</tt></strong>
+<DD>
+<A NAME="IDX283"></A>
+<A NAME="IDX284"></A>
+<A NAME="IDX285"></A>
+
+Если у вас нет доступа для создания файла сокета в принятом по умолчанию
+месте (в <tt>`/tmp'</tt>) или разрешения создавать временные файлы в каталоге
+<tt>`/tmp'</tt>, то вы получите ошибку при запуске <code>mysql_install_db</code> или при
+запуске или использовании <code>mysqld</code>. Необходимо указать другой каталог для
+сокета и временных файлов следующим образом:
+
+<A NAME="IDX286"></A>
+<A NAME="IDX287"></A>
+<A NAME="IDX288"></A>
+<A NAME="IDX289"></A>
+
+
+<pre>
+shell&#62; TMPDIR=/some_tmp_dir/
+shell&#62; MYSQL_UNIX_PORT=/some_tmp_dir/mysqld.sock
+shell&#62; export TMPDIR MYSQL_UNIX_PORT
+</pre>
+
+See section <A HREF="Problems_with_mysql.sock.html">A.4.5  Как защитить или изменить сокет-файл MySQL <tt>`/tmp/mysql.sock'</tt></A>. Путь <tt>`some_tmp_dir'</tt> должен указывать на некоторый
+каталог, для которого у вас есть доступ для записи.
+See section <A HREF="Environment_variables.html">F  Переменные окружения</A>. После этого у вас должна появиться возможность
+запустить <code>mysql_install_db</code> и начать работу сервера с помощью следующих
+команд:
+
+<A NAME="IDX290"></A>
+<A NAME="IDX291"></A>
+<A NAME="IDX292"></A>
+<A NAME="IDX293"></A>
+
+
+<pre>
+shell&#62; scripts/mysql_install_db
+shell&#62; BINDIR/safe_mysqld &#38;
+</pre>
+
+<DT><strong>Немедленный аварийный отказ <code>mysqld</code></strong>
+<DD>
+Если вы работаете на версии RedHat 5.0 с версией <code>glibc</code> более старой, чем
+2.0.7-5, следует позаботиться о том, чтобы установить все патчи для <code>glibc</code>!
+В архивах рассылки MySQL имеется большое количество писем об этом. Ссылки
+на архивы писем доступны в онлайновом режиме на <!--<a HREF="http://lists.mysql.com/">-->http://lists.mysql.com/<!--</a>-->.
+Обращайтесь также к разделу See section <A HREF="https://www.linuxlib.ru/mysqloff/Linux.html">2.6.1  Примечания к Linux (Все версии Linux)</A>. Можно
+также запустить <code>mysqld</code> вручную, используя опцию <code>--skip-grant-tables</code>, и
+самостоятельно добавить информацию о привилегиях, при помощи <code>mysql</code>:
+
+
+<pre>
+shell&#62; BINDIR/safe_mysqld --skip-grant-tables &#38;
+shell&#62; BINDIR/mysql -u root mysql
+</pre>
+
+Из <code>mysql</code> в ручном режиме выполните команды SQL в <code>mysql_install_db</code>.
+Удостоверьтесь, что после этого вы запустили <code>mysqladmin flush-privileges</code>
+или <code>mysqladmin reload</code>, чтобы сервер перегрузил таблицы привилегий.
+</DL>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1393" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by sean barkow on Saturday November 16 2002, @9:35pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1393&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1393">Edit</a>]</td></tr></table><p class="commenttext">i don't even have a file in any of the mysql folders <br />
+that is called mysql_install_db. Where is it? the Why <br />
+was it not included in the download? The server will <br />
+start as a service on my xp system, but i cannot do <br />
+anything else until i run this script. But, it's nowhere <br />
+to be found. Please advise.</p><table id="c1458" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Mike Henry on Friday November 29 2002, @3:45pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1458&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1458">Edit</a>]</td></tr></table><p class="commenttext">I don't have mysql_install_db either.  I'm just trying <br />
+to get it up and running to see if I like mySQL and <br />
+the file I am supposed to run is not even there.  I am <br />
+going to assume for a while it is my fault somehow <br />
+since I am new to this product.  But, if anybody is <br />
+aware that this is a real problem please let me know.<br />
+<br />
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="4d202426280d2528233f34232839632e2220">[email&#160;protected]</a><br />
+<br />
+Thanks.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=mysql_install_db">Add your own comment.</a></p><div id="docnav"><a href="mysql_install_db.html#">Top</a> / <a rel="prev" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Previous</a> / <a rel="next" href="Starting_server.html" title="2.4.2  Проблемы при запуске сервера MySQL">Next</a> / <a rel="up" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

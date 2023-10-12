@@ -1,0 +1,517 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Библиотека языка C GNU glibc: Каналы и FIFO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<A HREF="glibc-11.html">Вперед</A>
+<A HREF="glibc-9.html">Назад</A>
+<A HREF="glibc.html#toc10">Содержание</A>
+<HR>
+<H2><A NAME="s10">10. Каналы и FIFO</A></H2>
+
+<P>
+<P>Канал - механизм для связи между процессами; данные,
+записывающиеся в канал одним процессом могут читаться другим
+процессом. Данные обрабатываются в порядке  'первым пришел' - 'первым
+ушел' (FIFO). Канал не имеет никакого имени; он
+создан для одного использования, и оба конца должны быть
+унаследованы от одиночного процесса, который создал канал.
+<P>FIFO специальный файл является подобным каналу, но вместо
+анонимного, временного соединения, FIFO имеет имя или имена подобно
+любому другому файлу. Процесс открывает FIFO по имени, чтобы
+связаться через него.
+<P>Канал или FIFO должен быть открыт с обоих концов
+одновременно. Если Вы читаете из канала или файла FIFO, в
+который никто ничего не пишет (возможно потому что, они все закрыли
+файл, или вышли), то чтение возвращает конец файла. Запись в
+канал или FIFO, который не имеет процесс считывания,
+обрабатывается как условие ошибки; это генерирует сигнал SIGPIPE, и
+сбои с кодом ошибки EPIPE, если сигнал обработан или блокируется.
+<P>Ни каналы ни FIFO специальные файлы не позволяют
+позиционирование файла. И чтение и запись происходит
+последовательно; чтение из начала файла и запись в конец.
+<P>
+<H2><A NAME="ss10.1">10.1 Создание Канала</A>
+</H2>
+
+<P>
+<P>Примитив для создания канала - функция pipe. Она создает
+оба, и чтения и записи концы канала. Это не очень полезно
+для одиночного процесса, использовать канал, чтобы
+разговаривать с собой. В типичном использовании, процесс создает
+канал только прежде, чем он ветвится на один или более
+дочерних процессов (см. Раздел 23.4 [Создание Процесса]).
+Канал используется для связи или между родителем или
+дочерними процессами, или между двумя процессами братьями.
+<P>Функция pipe объявлена в заглавном файле 'unistd.h'.
+<BLOCKQUOTE><CODE>
+<PRE>
+       int pipe (int filedes[2])  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Функция pipe создает канал и помещает дескрипторы файла для
+чтения и записи (соответственно) в filedes [0] и filedes [1].
+<P>При успехе pipe возвращает значение 0. При отказе, -1. Следующие
+errno условия ошибки определены для этой функции:
+<DL>
+<DT><B>EMFILE </B><DD><P>процесс имеет слишком много файлов открытыми.
+<DT><B>ENFILE </B><DD><P>имеются слишком много открытых файлов во всей системе.
+См. Раздел 2.2 [Коды Ошибки], для получения более подробной
+информации о ENFILE.
+</DL>
+
+Вот пример простой программы, которая создает канал. Эта
+программа использует функцию ветвления (см. Раздел 23.4 [Создание
+Процесса]) чтобы создать дочерний процесс. Родительский процесс
+напишет данные, которые читается дочерним процессом.
+<BLOCKQUOTE><CODE>
+<PRE>
+                #include &lt;sys/types.h&gt;
+                #include &lt;unistd.h&gt;
+                #include &lt;stdio.h&gt;
+                #include &lt;stdlib.h&gt;
+                void
+                read_from_pipe (int file)
+                {
+                        FILE *stream;
+                        int c;
+                        stream = fdopen (file, 'r');
+                        while ((c = fgetc (stream)) != EOF)
+                                putchar (c);
+                        fclose (stream);
+                }
+        /* Пишем некоторый произвольный текст в канал. */
+                void
+                write_to_pipe (int file)
+                {
+                        FILE *stream;
+                        stream = fdopen (file, 'w');
+                        fprintf (stream, 'hello, world!\n');
+                        fprintf (stream, 'goodbye, world!\n');
+                        fclose (stream);
+                }
+                int
+                main (void)
+                {
+                        pid_t pid;
+                        int mypipe[2];
+                        /* Create the pipe. */
+                        if (pipe (mypipe))
+                                {
+                                        fprintf(stderr,'Pipe failed.\n');
+                                        return EXIT_FAILURE;
+                                }
+                        /* Создаем дочерний процесс. */
+                        pid = fork ();
+                        if (pid == (pid_t) 0)
+                                {
+                                        /* Это - дочерний процесс. */
+                                        read_from_pipe (mypipe[0]);
+                                        return EXIT_SUCCESS;
+                                }
+                        else if (pid &lt; (pid_t) 0)
+                                {
+                                        /* The fork failed. */
+                                        fprintf(stderr,'Fork failed.\n');
+                                        return EXIT_FAILURE;
+                                }
+                        else
+                                {
+                                        /* Это - родительский процесс. */
+                                        write_to_pipe (mypipe[1]);
+                                        return EXIT_SUCCESS;
+                                }
+                }
+</PRE>
+</CODE></BLOCKQUOTE>
+<H2><A NAME="ss10.2">10.2 Канал к Подпроцессу</A>
+</H2>
+
+<P>
+<P>Общее использование каналов должно послать данные к или
+получать данные из программы,  выполняемой как подпроцесс.
+<P>Один из способов выполнения этого - использовать комбинацию pipe
+(чтобы создать  канал), fork (чтобы создать подпроцесс), dup2
+(чтобы вынудить подпроцесс использовать pipe как стандартный ввод
+или канал вывода), и exec (чтобы выполнить новую программу). Или,
+Вы можете использовать popen и pclose.
+<P>Преимущество использования popen и pclose - в том, что интерфейс
+является намного более простым и более удобным для использования.
+Но они не предлагают так много гибкости, как использование функций
+низкого уровня непосредственно.
+<BLOCKQUOTE><CODE>
+<PRE>
+       FILE * popen (const char *command, const char *mode)  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+       Popen функция близко связана с функцией системы; см. Раздел 23.1
+[Выполнение Команд]. Она выполняет команду оболочки как подпроцесс.
+<P>Однако, вместо того, чтобы ждать завершения команды, она создает
+канал к подпроцессу и возвращает поток, который соответствует
+этому каналу.
+<P>Если Вы определяете аргумент режима 'r', Вы можете читать из
+потока, чтобы отыскать данные из канала стандартного вывода
+подпроцесса. Подпроцесс наследует канал стандартного ввода из
+родительского процесса.
+<P>Аналогично, если Вы определяете аргумент режима 'w', Вы можете
+писать в поток, чтобы посылать данные на канал стандартного ввода
+подпроцесса. Подпроцесс наследует канал стандартного вывода из
+родительского процесса.
+<P>В случае ошибки, popen возвращает пустой указатель. Это может
+случаться, если канал или поток не может быть создан, если
+подпроцесс не может быть раздвоен, или если программа не может быть
+выполнена.
+<BLOCKQUOTE><CODE>
+<PRE>
+       int pclose (FILE *stream)  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+       Pclose функция используется, чтобы закрыть поток, созданный
+popen. Она ждет завершения дочернего процесса, и возвращает
+значение состояния, что касается функции системы.
+<P>Вот пример, показывающий, как использовать popen и pclose, чтобы
+фильтровать вывод через другую программу.
+<BLOCKQUOTE><CODE>
+<PRE>
+                #include &lt;stdio.h&gt;
+                #include &lt;stdlib.h&gt;
+                void
+                write_data (FILE * stream)
+                {
+                        int i;
+                        for (i = 0; i &lt; 100; i++)
+                                fprintf (stream, '%d\n', i);
+                        if (ferror (stream))
+                                {
+                                        fprintf (stderr, 'Output to
+                                        stream failed.\n');
+                                        exit (EXIT_FAILURE);
+                                }
+                }
+                int
+                main (void)
+                {
+                        FILE *output;
+                        output = popen ('more', 'w');
+                        if (!output)
+                                {
+                                        fprintf(stderr,'Could not run
+                                                        more.\n');
+                                        return EXIT_FAILURE;
+                                }
+                        write_data (output);
+                        pclose (output);
+                        return EXIT_SUCCESS;
+                }
+</PRE>
+</CODE></BLOCKQUOTE>
+<H2><A NAME="ss10.3">10.3 FIFO Специальные Файлы</A>
+</H2>
+
+<P>FIFO специальный файл подобен  каналу, за исключением
+того, что он создан различным способом. Вместо анонимного канала
+связи, FIFO специальный файл введен в файловую систему,  вызовом
+mkfifo.
+<P>Если Вы создали FIFO специальный файл таким образом,, любой
+процесс может открывать его для чтения или записи, таким же
+образом как обычный файл. Однако, он должен быть открыт в оба конца
+одновременно прежде, чем Вы можете делать любой ввод или вывод на
+нем. Открытие FIFO для чтения обычно блокируется, пока некоторый
+другой процесс не открывает тот же самый FIFO для записи, и
+наоборот.
+<P>Mkfifo функция объявлена в заглавном файле 'sys/stat.h'.
+<BLOCKQUOTE><CODE>
+<PRE>
+       int mkfifo (const char *filename, mode_t mode)  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+       Mkfifo функция делает FIFO специальный файл с именем filename.
+Аргумент mode используется, чтобы установить права файла; см.
+Раздел 9.8.7 [Установка Прав].
+<P>Нормальное, успешное возвращаемое значение из mkfifo - 0. В
+случае ошибки возвращается -1. В дополнение к обычным
+синтаксическим ошибкам имени файла следующие errno условия ошибки
+определены для этой функции:
+<DL>
+<DT><B>EEXIST </B><DD><P>именованный файл уже существует.
+<DT><B>ENOSPC </B><DD><P>каталог или файловая система не может быть расширен.
+<DT><B>EROFS </B><DD><P>каталог, который содержал бы файл постоянно находится в
+файловой системе только для чтения.
+</DL>
+<H2><A NAME="ss10.4">10.4 Быстрота ввода-вывода Канала</A>
+</H2>
+
+<P>
+<P>Чтение или запись данных в  канал мгновенны, если размер
+данных меньше чем PIPE_BUF. Это означает что передача данных
+кажется мгновенной, в этом случае ничто в системе не может
+наблюдать состояние, в котором он является частично полным. Быстрый
+ввод - вывод не может начинаться сразу же (может требоваться ждать
+пространство буфера или для данных), но если только он начинается,
+то он заканчивается немедленно.
+<P>Чтение или запись большего количества данных может не быть
+быстрым; например, выходные данные из других процессов, совместно
+использующих дескриптор могут быть разбиты на части.
+<P>См. Раздел 27.6 [Ограничения для Файлов], для уточнения
+информации относительно параметра PIPE_BUF.
+<P>
+<HR>
+<A HREF="glibc-11.html">Вперед</A>
+<A HREF="glibc-9.html">Назад</A>
+<A HREF="glibc.html#toc10">Содержание</A>
+
+  </div>
+</div>
+</body>
+</html>

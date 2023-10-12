@@ -1,0 +1,525 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 3.3.4.9  Использование нескольких таблиц — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Multiple_tables.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Multiple_tables.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Tutorial.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3 Учебное пособие по MySQL
+</a><ul><li class="gp"><a href="Database_use.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.3 Создание и использование базы данных
+</a><ul><li class="p"><a href="Retrieving_data.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.3.4 Выборка информации из таблицы
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/Selecting_all.html">3.3.4.1 Выборка всех данных
+</a></li><li><a href="Selecting_rows.html">3.3.4.2 Выборка определенных строк
+</a></li><li><a href="Selecting_columns.html">3.3.4.3 Выборка определенных столбцов
+</a></li><li><a href="Sorting_rows.html">3.3.4.4 Сортировка строк
+</a></li><li><a href="Date_calculations.html">3.3.4.5 Вычисление  дат
+</a></li><li><a href="Working_with_NULL.html">3.3.4.6 Работа с значениями NULL
+</a></li><li><a href="Pattern_matching.html">3.3.4.7 Сравнение по шаблонам
+</a></li><li><a href="Counting_rows.html">3.3.4.8 Подсчет строк
+</a></li><li class="self">3.3.4.9 Использование нескольких таблиц
+</li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Counting_rows.html" title="3.3.4.8  Подсчет строк">Previous</a> / <a rel="next" href="Getting_information.html" title="3.4  Получение информации о базах данных и таблицах">Next</a> / <a rel="up" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>3.3.4.9  Использование нескольких таблиц</H4>
+
+<P>
+<A NAME="IDX393"></A>
+
+</P>
+<P>
+В таблице <code>pet</code> хранятся только основные данные о животных. Если же нужно
+держать в базе какую-либо дополнительную информацию о них (скажем, записи
+о событиях наподобие посещения ветеринара или рождения потомства),
+понадобится еще одна таблица. Давайте определимся с ее структурой. Эта
+таблица должна содержать:
+
+</P>
+
+<ul>
+<LI>
+
+имена животных, чтобы не путаться с тем, к какому животному относится
+какое событие
+
+<LI>
+
+дата события
+
+<LI>
+
+поле для описания события
+
+<LI>
+
+поле, отражающее тип события, для того, чтобы можно было распределить
+их по категориям
+</ul>
+
+<P>
+С учетом всех приведенных выше требований можно составить примерно такую
+команду <code>CREATE TABLE</code>:
+
+</P>
+
+<pre>
+mysql&#62; CREATE TABLE event (name VARCHAR(20), date DATE,
+    -&#62; type VARCHAR(15), remark VARCHAR(255));
+</pre>
+
+<P>
+Как и в случае с таблицей <code>pet</code>, начальные данные в таблицу проще всего
+загрузить, создав текстовый файл с информацией, разделенной символами
+табуляции:
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>name</strong> </TD><TD> <strong>date</strong> </TD><TD> <strong>type</strong> </TD><TD> <strong>remark</strong>
+</TD></TR>
+<TR><TD>Fluffy </TD><TD> 1995-05-15 </TD><TD> litter </TD><TD> 4 kittens, 3 female, 1 male
+</TD></TR>
+<TR><TD>Buffy </TD><TD> 1993-06-23 </TD><TD> litter </TD><TD> 5 puppies, 2 female, 3 male
+</TD></TR>
+<TR><TD>Buffy </TD><TD> 1994-06-19 </TD><TD> litter </TD><TD> 3 puppies, 3 female
+</TD></TR>
+<TR><TD>Chirpy </TD><TD> 1999-03-21 </TD><TD> vet </TD><TD> needed beak straightened
+</TD></TR>
+<TR><TD>Slim </TD><TD> 1997-08-03 </TD><TD> vet </TD><TD> broken rib
+</TD></TR>
+<TR><TD>Bowser </TD><TD> 1991-10-12 </TD><TD> kennel </TD><TD>
+</TD></TR>
+<TR><TD>Fang </TD><TD> 1991-10-12 </TD><TD> kennel </TD><TD>
+</TD></TR>
+<TR><TD>Fang </TD><TD> 1998-08-28 </TD><TD> birthday </TD><TD> Gave him a new chew toy
+</TD></TR>
+<TR><TD>Claws </TD><TD> 1998-03-17 </TD><TD> birthday </TD><TD> Gave him a new flea collar
+</TD></TR>
+<TR><TD>Whistler </TD><TD> 1998-12-09 </TD><TD> birthday </TD><TD> First birthday
+</TD></TR>
+</TABLE>
+
+<P>
+Загрузите записи с помощью следующей команды:
+
+</P>
+
+<pre>
+mysql&#62; LOAD DATA LOCAL INFILE "event.txt" INTO TABLE event;
+</pre>
+
+<P>
+Используя знания, усвоенные при работе с таблицей <code>pet</code>, вы сможете
+загружать данные из таблицы <code>event</code>; принципы здесь те же. Но что если самой
+по себе таблицы <code>event</code> перестанет хватать для получения нужных вам ответов?
+
+</P>
+<P>
+Предположим, нужно узнать, в каком возрасте животные давали приплод. В
+таблице <code>event</code> указаны даты родов, но для того, чтобы рассчитать возраст
+матери, нужно знать и дату ее рождения. Так как даты рождения хранятся в
+таблице <code>pet</code>, в этом запросе нужно использовать обе таблицы:
+
+</P>
+
+<pre>
+mysql&#62; SELECT pet.name,
+    -&#62; (TO_DAYS(date) - TO_DAYS(birth))/365 AS age,
+    -&#62; remark
+    -&#62; FROM pet, event
+    -&#62; WHERE pet.name = event.name AND type = "litter";
++--------+------+-----------------------------+
+| name   | age  | remark                      |
++--------+------+-----------------------------+
+| Fluffy | 2.27 | 4 kittens, 3 female, 1 male |
+| Buffy  | 4.12 | 5 puppies, 2 female, 3 male |
+| Buffy  | 5.10 | 3 puppies, 3 female         |
++--------+------+-----------------------------+
+</pre>
+
+<P>
+На некоторые аспекты этого запроса следует обратить особое внимание:
+
+</P>
+
+<ul>
+<LI>
+
+В выражении <code>FROM</code> указаны две таблицы, так как запрос будет получать
+информацию из обеих.
+
+<LI>
+
+При комбинировании (объединении) информации из нескольких таблиц
+необходимо указать, как строки одной таблицы связываются с записями
+другой. Это просто, так как в обеих таблицах есть столбец с именами. В
+этом запросе выражение <code>WHERE</code> используется для сопоставления записей из
+двух таблиц по значениям имен.
+
+<LI>
+
+Так как столбец name присутствует в обеих таблицах, нужно явно
+указать, какую именно таблицу вы имеете в виду, ссылаясь на данный
+столбец. Это можно сделать, связав имя таблицы с именем столбца.
+</ul>
+
+<P>
+Для объединения не  обязательно иметь две отдельные таблицы; иногда можно
+объединить таблицу с самой собой - если нужно сравнить одни записи таблицы
+с другими записями той же таблицы. Например, для того, чтобы обнаружить
+среди животных ``семейные пары'', можно объединить таблицу <code>pet</code> с ней
+самой, составив пары животных разного пола, но одного вида:
+
+</P>
+
+<pre>
+mysql&#62; SELECT p1.name, p1.sex, p2.name, p2.sex, p1.species
+    -&#62; FROM pet AS p1, pet AS p2
+    -&#62; WHERE p1.species = p2.species AND p1.sex = "f" AND p2.sex = "m";
++--------+------+--------+------+---------+
+| name   | sex  | name   | sex  | species |
++--------+------+--------+------+---------+
+| Fluffy | f    | Claws  | m    | cat     |
+| Buffy  | f    | Fang   | m    | dog     |
+| Buffy  | f    | Bowser | m    | dog     |
++--------+------+--------+------+---------+
+</pre>
+
+<P>
+В этом запросе мы указываем псевдонимы имен таблицы, для обращения к
+столбцам и определения, к какой из таблиц относится каждая ссылка на
+столбец.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1174" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#9eeaecffedf6def3f1eaf6fbeceafbfdf6b0f7ea">Gabriele Vinci</a> on Wednesday October 2 2002, @8:35am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1174&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1174">Edit</a>]</td></tr></table><p class="commenttext">Many PHP scripts slows down the server because of <br />
+multi-database searches. I solved the problem in my <br />
+company &lt;a href='<!--<a href="http://www.wide.it'">-->http://www.wide.it'<!--</a>-->&gt;wide <br />
+hosting&lt;/a&gt; using one database per time or <br />
+creating a symlink to the other database tables (a <br />
+little bit hazard!).</p><table id="c1225" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#056b6a7768646b6277646d64684562776463636c716c2b6b6071">Norman Graham</a> on Tuesday October 15 2002, @4:35am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1225&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1225">Edit</a>]</td></tr></table><p class="commenttext">For all newbies like me - the helpful code <br />
+explanations sort of fade away at this point in the <br />
+tutorial. I don't know why - this is the point at which <br />
+the queries start to get a lot more challenging. <br />
+TO_DAYS(MM-DD-YYYY) counts the number of days <br />
+from year 0 to the date given in brackets. Don't use <br />
+it for dates prior to 1582 because the function <br />
+doesn't take into account the number of days lost <br />
+due to the change to the Gregorian calendar.</p><table id="c1655" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#20524943484152446047414c4252414954480e4d450e554b">Richard Galbraith</a> on Saturday January 25 2003, @6:44am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1655&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1655">Edit</a>]</td></tr></table><p class="commenttext">Re date functions and the Gregorian Calendar.<br />
+<br />
+You have to think about using the date function for much more recent dates than 1582. The change from the Julian to Gregorian calendar was not made in most Protestant countries until much later.<br />
+<br />
+For example, Britain and its &quot;dominions&quot; (including what is now the US) kept to Julian calendar until 1751/2 when it was subject to the British Calendar Act of 1751. Until then, each year started on March 25. The Calendar Act made the following changes: 1751 ran from 25 March 1751 until 31 December (a short year) when the change to January 1 as &quot;the new year&quot; was made. Then 1752 had 11 days chopped out (there was no Sept 3 - Sept 13) to bring things into line with Rome.<br />
+<br />
+Some countries didn't adopt the Gregorian Calendar until the 20 Century (Alaska changed in around 1865).<br />
+</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Multiple_tables">Add your own comment.</a></p><div id="docnav"><a href="Multiple_tables.html#">Top</a> / <a rel="prev" href="Counting_rows.html" title="3.3.4.8  Подсчет строк">Previous</a> / <a rel="next" href="Getting_information.html" title="3.4  Получение информации о базах данных и таблицах">Next</a> / <a rel="up" href="Retrieving_data.html" title="3.3.4  Выборка информации из таблицы">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

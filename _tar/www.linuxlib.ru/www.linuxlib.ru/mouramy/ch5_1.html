@@ -1,0 +1,759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 5 Конфигурирование и создание оптимизированных, безопасных ядер — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch4.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#5">Оглавление</A></TD>
+    <TD align=right><A href="ch5_2.html">Вперед</A></TD></TR></TBODY></TABLE>
+<H2>Глава 5 Конфигурирование и создание оптимизированных, безопасных ядер (Часть
+1)</H2>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top><FONT size=+2>В это главе</FONT><BR><FONT size=-1>Ядро
+      Linux <BR><A href="ch5_1.html#1">Создание аварийных загрузочных
+      дискет</A><BR><A href="ch5_1.html#2">Безопасность ядра</A><BR><A
+      href="ch5_1.html#3">Компиляция ядра</A><BR><A
+      href="ch5_2.html#4">Инсталляция нового ядра</A><BR><A
+      href="ch5_2.html#5">Удаление программ, файлов и строк связанных с
+      модулями</A><BR><A href="ch5_2.html#6">Создание новой аварийной
+      дискеты</A><BR><A href="ch5_2.html#7">Создание аварийного загрузочного
+      флоппи-диска</A><BR><A href="ch5_2.html#8">Обновление "/dev"
+      входов</A><BR></FONT></TD>
+    <TD vAlign=bottom></TD></TR></TBODY></TABLE>
+<H3>Общий обзор.</H3>
+<P align=justify>Ну хорошо, вы видите, что ваш сервер приобрел общую форму. Но
+подождите, что является основной частью вашего сервера? Да, это ядро. Оно
+является основой операционной системы. Без него Linux не Linux. Так что мы
+должны очень внимательно отнестись к ядру и настроить его так, чтобы оно
+соответствовало нашим потребностям. Первое о чем вы думаете, создавая новое
+ядро, это его более отличная настроенность под вашу систему. Это сделать очень
+просто, но в любом случае прочитайте вначале файл README в каталоге
+"/usr/src/linux". При конфигурировании ядра вы должны компилировать коды,
+которые вам нужны. Это даст следующие преимущества: ядро будет быстрее (меньше
+размер кода, входящего в него), у вас освободиться место в RAM (меньше кода,
+меньше размер ядра, а части ядра никогда не помещаются в виртуальную память),
+ядро будет более стабильным (не надо искать не существующих устройств),
+неиспользуемые части могут использоваться нападающим для получения доступа к
+вашей или другим системам. Модули работают медленнее, чем тот же код в
+компилированный в ядро. При конфигурировании и компиляции мы будем создавать
+монолитное ядро. Такое ядро получатся при ответе на вопросы Yes или No (никогда
+не создавайте модули) и пропуске следующих шагов: make modules и make
+modules_install. Также мы будем патчить наше новое ядро кодом защиты от
+переполнения буфера. Подобный патч для ядра существует и работает он подобно
+Solar Designer's, отвергая выполнение кода находящегося в стеке, делая
+осуществление атак типа "переполнение буфера" более сложным, и полностью защищая
+систему от всех текущих эксплойтов взятых из "script kiddies" всемирной
+сети.</P>
+<P align=justify>Помните, что на все вопросы надо отвечать Yes или No, если вы
+хотите создать монолитное ядро. Ели вы собираетесь использовать маскарадинг или
+дозвон через ppp соединение, то создать монолитное ядро невозможно, эти функции
+требуют использования ряда модулей. Поэтому вам придется создавать модульное
+ядро.</P>
+<P align=justify>Созданное ядро будет сильно привязано к определенному
+аппаратному обеспечению, при конфигурировании я использовал следующее
+оборудование:</P>
+<UL>
+  <LI>1 Pentium II 400 MHz (i686) processor
+  <LI>1 Motherboard SCSI
+  <LI>1 Hard Disk SCSI
+  <LI>1 SCSI Controler Adaptec AIC 7xxx
+  <LI>1 CD-ROM ATAPI IDE
+  <LI>1 Floppy Disk
+  <LI>2 Ethernet Cards Intel EtherExpressPro 10/100
+  <LI>1 Mouse PS/2 </LI></UL>
+<H3>Все шаги описанные ниже подразумевают</H3>
+<P align=justify>UNIX-совместимые команды<BR>Исходные коды находятся в
+/usr/src<BR>Тестирование проводилось под Rad Hat 6.1 и 6.2<BR>Все шаги
+инсталляции выполнялись от пользователя root<BR>Последняя версия ядра
+2.2.14<BR>Последняя версия Secure Linux Kernel Patches 2_2_14-ow2<BR></P>
+<H3>Пакеты.</H3>
+<P align=justify>Домашняя страница ядер Linux: <!--<A
+href="http://www.kernelnotes.org/">-->http://www.kernelnotes.org/<!--</A>--><BR>Вы должны
+скачать: linux-2_2_14_tar.gz<BR>Домашняя страница Secure Linux Kernel Patches:
+<!--<A href="http://www.openwall.com/linux">-->http://www.openwall.com/linux<!--</A>-->/<BR>Вы
+должны скачать: linux-2_2_14-ow2_tar.gz<BR>FTP сервер, где лежит Secure Linux
+Kernel Patches: <!--<A href="ftp://195.42.162.180/">-->195.42.162.180<!--</A>--><BR></P>
+<H3><A name=1>Создание аварийной загрузочной дискеты.</A></H3>
+<P align=justify>Первый прединсталляционный шаг - создание "аварийной
+загрузочной дискеты" (если ее у вас еще нет). Самый простой путь - это
+воспользоваться командой mkbootdisk.</P>
+<P align=justify>Первое, надо выяснить какое ядро вы сейчас используете. Для
+этого просмотрите файл "/etc/lilo.conf" и посмотрите какой образ загружается. У
+меня этот файл выглядит так:</P><PRE><FONT color=teal>[root@deep]# cat /etc/lilo.conf
+boot=/dev/sda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+image=/boot/vmlinuz-2.2.12-20
+  label=linux
+  root=/dev/sda6
+  initrd=/boot/initrd-2.2.12-20.img
+  read-only</FONT></PRE>
+<P align=justify>Найдите в нем образ ядра, который вы используете. Обычно, он
+имеет метку linux. В нашем примере это "/boot/vmlinuz-2.2.12-20". Теперь просто
+вставьте дискетку 1,44'' и подключитесь к системе как пользователь
+root.</P><FONT color=teal size=-1>[root@deep]# mkbootdisk --device /dev/fd0
+2.2.12-20<BR>Insert a disk in /dev/fd0. Any information on the disk will be
+lost.<BR>Press &lt;Enter&gt; to continue or ^C to abort:<BR></FONT>
+<P align=justify>После выполнения этих рекомендаций, вы будете иметь загрузочную
+дискету с известным работающим ядром, на случай, если обновление пройдет
+неудачно. Я рекомендую перезагрузить систему с этой дискеты, чтобы убедиться,
+что все в порядке.</P>
+<H3>Деинсталляция и оптимизация.</H3><B>Шаг 1.</B>
+<P align=justify>Скопируйте архив ядра в /usr/src и перейдите туда:</P><FONT
+color=teal size=-1>[root@deep]# cp linux-version_tar.gz
+/usr/src/<BR>[root@deep]# cd /usr/src/<BR></FONT><B>Если вы уже инсталлировали
+ядро из tar архива.</B>
+<P align=justify>Эти шаги нужно выполнять, если у вас уже были установлены ранее
+исходные кодя ядра из tar.gz. Если это первое обновление ядра, то надо
+деинсталлировать два rpm пакета: kernel-headers-version.i386.rpm и
+kernel-version.i386.rpm.</P>
+<P align=justify>Удаление символической ссылки.</P><FONT color=teal
+size=-1>[root@deep]# rm -rf linux </FONT>
+<P align=justify>Удаление текущий каталог с заголовочными файлами ядра</P><FONT
+color=teal size=-1>[root@deep]# rm -rf linux-2.2.xx</FONT>
+<P align=justify>Удаление каталога с модулями ядра:</P><FONT color=teal
+size=-1>[root@deep src]# rm -rf /lib/modules/2.2.xx</FONT>
+<P align=justify><B>Замечание.</B> Удаление старых модулей ядра необходимо, если
+вы до этого устанавливали модульное ядро. Если в "/lib" вы не находите каталога
+с модулями, значит ядро у вас было монолитных.</P><B>Если у вас были установлены
+стандартные RPM пакеты с ядром.</B>
+<P align=justify>Если у вас были установлены стандартные RPM пакеты с ядром
+вместо .tar.gz архива, потому что вы только, что завершили установку нового
+сервера или использовали RPM пакеты для обновления вашей системы, тогда
+используйте следующие команды для деинсталляции ядра.</P>
+<P align=justify>Для проверки, что они у вас установлены дайте команду.</P><FONT
+color=teal size=-1>[root@deep]# rpm -qa | grep
+kernel<BR>kernel-headers-2.2.12-20.i386.rpm<BR>kernel-2.2.12-20.i386.rpm<BR></FONT>
+<P align=justify>Для деинсталляции RPM пакетов:</P><FONT color=teal
+size=-1>[root@deep src]# rpm -e --nodeps kernel-headers kernel<BR>cannot remove
+/usr/src/linux-2.2.xx - directory not empty<BR>cannot remove /lib/modules/2.2.xx
+- directory not empty<BR>[root@deep src]# rm -rf
+/usr/src/linux-2.2.xx/<BR>[root@deep src]# rm -rf /lib/modules/2.2.xx/
+<BR></FONT>
+<P align=justify>Мы вручную удалили каталоги "/usr/src/linux-2.2.12" и
+"/lib/modules/2.2.12", которые останутся после деинсталляции rpm пакетов.
+</P><B>Шаг 2.</B><BR><B>Разворачивание архива с ядром Linux</B>
+<P align=justify>Сейчас мы будем разворачивать исходные коды нового ядра из
+tar.gz затем удалим Linux tar-архив.</P><FONT color=teal size=-1>[root@deep]#
+tar xzpf linux-version_tar.gz<BR>[root@deep]# rm -f
+linux-version_tar.gz<BR></FONT><BR><B>Шаг 3.</B><BR><B>Увеличение числа задач
+(оптимизация).</B>
+<P align=justify>Для увеличения числа разрешенных задач (максимальное число
+процессов для пользователя) вам нужно редактировать файл
+"/usr/src/linux/include/linux/tasks.h" и изменить следующий параметр:</P>
+<P align=justify>Редактируйте tasks.h file (vi +14
+/usr/src/linux/include/linux/tasks.h) и измените:</P><FONT color=teal
+size=-1>NR_TASKS из 512 в 3072<BR>MIN_TASKS_LEFT_FOR_ROOT из 4 в 24<BR></FONT>
+<P align=justify><B>Замечание.</B> 1. Значение NR_TASKS определяет максимальное
+число идентификаторов задач (процессов), которое ядро будет назначать каждому
+пользователю. Увеличение этого числа приведет к увеличению количества соединений
+от клиента к серверу (например, веб-сервер сможет обслуживать большее количество
+запросов).<BR>2. Linux защищен от того, чтобы распределить все свободные области
+памяти процессов обычным пользователям. С помощью опции MIN_TASKS_LEFT_FOR_ROOT
+резервируются подобные области для root. (24 хорошее значение).</P><B>Шаг
+4.</B><BR><B>Оптимизация ядра.</B>
+<P align=justify>Для оптимизации ядра Linux под вашу конкретную архитектуру CPU
+и включения оптимизационных флагов вам надо редактировать файл
+"/usr/src/linux/Makefile" и изменить следующие параметры:</P>
+<P align=justify>Редактируйте Makefile (vi +18 /usr/src/linux/Makefile) и
+измените следующую строку:</P><FONT color=teal size=-1>HOSTCC =gcc</FONT>
+<P align=justify>Должна быть:</P><FONT color=teal size=-1>HOSTCC =egcs</FONT>
+<P align=justify>Редактируйте Makefile (vi +25 /usr/src/linux/Makefile) и
+измените следующую строку:</P><FONT color=teal size=-1>CC =$(CROSS_COMPILE)gcc
+-D__KERNEL__ -I$(HPATH)</FONT>
+<P align=justify>Должна быть:</P><FONT color=teal>CC =$(CROSS_COMPILE)egcs
+-D__KERNEL__ -I$(HPATH)</FONT>
+<P align=justify>Редактируйте Makefile (vi +90 /usr/src/linux/Makefile) и
+измените следующую строку:</P><FONT color=teal size=-1>CFLAGS = -Wall
+-Wstrict-prototypes -O2 -fomit-frame-pointer</FONT>
+<P align=justify>Должна быть:</P><FONT color=teal size=-1>CFLAGS = -Wall
+-Wstrict-prototypes -O9 -funroll-loops -ffast-math -malign-double
+-mcpu=pentiumpro -march=pentiumpro -fomit-frame-pointer -fno-exceptions</FONT>
+<P align=justify>Редактируйте файл Makefile (vi +19 /usr/src/linux/Makefile) и
+измените следующую строку:</P><FONT color=teal size=-1>HOSTCFLAGS =-Wall
+-Wstrict-prototypes -O2 -fomit-frame-pointer</FONT>
+<P align=justify>Должна быть:</P><FONT color=teal size=-1>HOSTCFLAGS =-Wall
+-Wstrict-prototypes -O9 -funroll-loops -ffast-math -malign-double
+-mcpu=pentiumpro -march=pentiumpro -fomit-frame-pointer -fno-exceptions</FONT>
+<P align=justify>Они включают агрессивные оптимизационные трюки, которые могут и
+не работать со всеми ядрами. Пожалуйста, если оптимизационные флаги приведенные
+выше не работают у вас, не пытайтесь во чтобы то ни стало заставить их работать.
+Я не хочу сделать вашу систему нестабильной, подобно Microsoft Windows.</P>
+<H3><A name=2>Безопасность ядра.</A></H3>
+<P align=justify>Secure Linux kernel patches от Openwall Project прекрасный путь
+предупредить атаки Stack Buffer Overflows и подобные ей. Этот патч включает
+набор дополнительных возможностей связанных с обеспечением безопасности ядра
+Linux, которые настраиваются через новую конфигурационную секцию '"Security
+options".</P>
+<P align=justify>Новые возможности патча linux-2_2_14-ow2_tar.gz:
+<UL>
+  <LI>Неисполняемая область стека пользователя;
+  <LI>Ограничение использования ссылок в /tmp;
+  <LI>Ограничение использования FIFO в /tmp;
+  <LI>Ограничения в /proc;
+  <LI>Специальные дескрипторы для fd 0,1 и 2
+  <LI>Усиление RLIMIT_NPROC на execve(2)
+  <LI>Уничтожение неиспользуемых разделенных сегментов памяти; </LI></UL>
+<P></P>
+<P align=justify><B>Замечание.</B> Когда вы наложите патч linux-2_2_14-ow2 в
+конце конфигурации ядра будет добавлена секция "Security options". Для получения
+большей информации о новых возможностях читайте в файле README, поставляемого
+вместе с исходными кодами патча.</P>
+<P align=justify>Применение патча.</P><FONT color=teal size=-1>[root@deep]# cp
+linux-2_2_14-ow2_tar.gz /usr/src/<BR>[root@deep]# cd /usr/src/<BR>[root@deep]#
+tar xzpf linux.2_2_14-ow2_tar.gz<BR>[root@deep]# cd
+linux-2.2.14-ow2/<BR>[root@deep]# mv linux-2.2.14-ow2.diff
+/usr/src/<BR>[root@deep]# cd ..<BR>[root@deep]# patch -p0 &lt;
+linux-2.2.14-ow2.diff<BR>[root@deep]# rm -rf linux-2.2.14-ow2<BR>[root@deep]# rm
+-f linux-2.2.14-ow2.diff<BR>[root@deep]# rm -f
+linux-2_2_14-ow2_tar.gz<BR></FONT>
+<P align=justify>Первое, мы копируем программный архив в каталог /usr/src, затем
+мы перемещаемся в этот каталог и раскрываем там архив linux-2_2_14ow2_tar.gz,
+переходим в раскрытый патч и перемещаем оттуда файл linux-2.2.14-ow2.diff в
+/usr/src, возвращаемся в /usr/src и патчим ядро файлом linux-2.2.14-ow2.diff.
+После этого мы удаляем все файлы, связанные с этим патчем. Замечание. Все
+сообщения обеспечения безопасности связанные с патчем linux- 2.2.14-ow2 должны
+фиксироваться в файле /var/log/massage. Стадия наложения патча на ваше ядро
+завершена. Теперь пора вернуться к созданию ядра и перезагрузке.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ ОТ ПЕРЕВОДЧИКА</B>. При определение опции "Destroy
+shared memory segments not in use" в секции "Security options" у меня начала
+"ругаться" программа, предназначенная для работы с UPS, apcupsd. Пришлось эту
+опцию отключить. </P>
+<H3><A name=3>Компиляция.</A></H3>
+<P align=justify>Очень важно, чтобы ваши "/usr/include/asm",
+"/usr/include/linux" и "/usr/include/scsi" представляли из себя символические
+ссылки к исходным кодам ядра. </P><B>Шаг 1.</B>
+<P align=justify>Каталоги "asm", "linux" и "scsi" являются символическими
+ссылками к реальным include директориям необходимым для конкретной архитектуры,
+например, "/usr/src/linux/include/asm-i386" для "asm".</P><FONT color=teal
+size=-1>[root@deep]# cd /usr/include/<BR>[root@deep]# rm -rf asm linux
+scsi<BR>[root@deep]# ln -s /usr/src/linux/include/asm-i386 asm<BR>[root@deep]#
+ln -s /usr/src/linux/include/linux linux<BR>[root@deep]# ln -s
+/usr/src/linux/include/scsi scsi<BR></FONT>
+<P align=justify>Это очень важная часть конфигурирования, мы удаляем каталоги
+"asm", "linux", и "scsi" под "/usr/include", затем создаем ссылки на каталоги с
+такими же именами в дереве исходных кодов нового ядра. Каталог "include"
+содержит важнейшие заголовочные файлы необходимые для вашего ядра и для
+программ, которые вы будете компилировать.</P><B>Шаг 2.</B>
+<P align=justify>Сделайте так, чтобы у вас не было старых .o файлов и
+неправильных зависимостей:</P><FONT color=teal size=-1>[root@deep]# cd
+/usr/src/linux/<BR>[root@deep]# make mrproper<BR></FONT>
+<P align=justify><B>Замечание.</B> Эти первые два шага просто очищают любые
+лишние элементы, которые могли быть случайно оставлены группой разработки
+ядра.</P>
+<P align=justify>Сейчас мы имеет корректно установленные исходные коды ядра.
+Существует три пути для конфигурирования ядра.</P>
+<OL>
+  <LI>Команда make config. Она предоставляет вам текстовый интерфейс для ответов
+  на вопросы относительно всех параметров настройки ядра. Вы будете запрошены
+  обо всех нужных вам опциях.
+  <LI>Команда make menuconfig. Она предоставляет все опции настройки в легком в
+  использовании меню.
+  <LI>Команда make xconfig. Она предоставляет полный графический интерфейс ко
+  всем опциям ядра.</LI></OL><B>Шаг 3.</B>
+<P align=justify>В этой главе, для конфигурирования ядра мы используем команду
+make config, потому что у нас на сервере не установлен Xfree86.</P><FONT
+color=teal size=-1>[root@deep /]# cd /usr/src/linux/ (если вы еще не в этом
+каталоге).<BR>[root@deep linux]# make config<BR>rm -f include/asm<BR>( cd
+include ; ln -sf asm-i386 asm)<BR>/bin/sh scripts/Configure
+arch/i386/config.in<BR>#<BR># Using defaults found in
+arch/i386/defconfig<BR>#<BR></FONT>
+<P align=justify>Конфигурация ядра.</P><FONT color=teal size=-1><B>Code maturity
+level options</B><BR>Prompt for development and/or incomplete code/drivers
+<BR>(CONFIG_EXPERIMENTAL) [N/y/?]<BR>Processor type and features<BR>Processor
+family (386, 486/Cx486, 586/K5/5x86/6x86, Pentium/K6/TSC, <BR>PPro/6x86MX)
+[PPro/6x86MX]<BR>Maximum Physical Memory (1GB, 2GB) [1GB]<BR>Math emulation
+(CONFIG_MATH_EMULATION) [N/y/?]<BR>MTRR (Memory Type Range Register) support
+(CONFIG_MTRR) [N/y/?]<BR>Symmetric multi-processing support (CONFIG_SMP) [Y/n/?]
+N<BR>Loadable module support<BR>Enable loadable module support (CONFIG_MODULES)
+[Y/n/?] N<BR><B>General setup</B><BR>Networking support (CONFIG_NET)
+[Y/n/?]<BR>PCI support (CONFIG_PCI) [Y/n/?]<BR>PCI access mode (BIOS, Direct,
+Any) [Any]<BR>PCI quirks (CONFIG_PCI_QUIRKS) [Y/n/?] N<BR>Backward-compatible
+/proc/pci (CONFIG_PCI_OLD_PROC) [Y/n/?] N<BR>MCA support (CONFIG_MCA)
+[N/y/?]<BR>SGI Visual Workstation support (CONFIG_VISWS) [N/y/?]<BR>System V IPC
+(CONFIG_SYSVIPC) [Y/n/?]<BR>BSD Process Accounting (CONFIG_BSD_PROCESS_ACCT)
+[N/y/?]<BR>Sysctl support (CONFIG_SYSCTL) [Y/n/?]<BR>Kernel support for a.out
+binaries (CONFIG_BINFMT_AOUT) [Y/n/?]<BR>Kernel support for ELF binaries
+(CONFIG_BINFMT_ELF) [Y/n/?]<BR>Kernel support for MISC binaries
+(CONFIG_BINFMT_MISC) [Y/n/?]<BR>Parallel port support (CONFIG_PARPORT)
+[N/y/?]<BR>Advanced Power Management BIOS support (CONFIG_APM)
+[N/y/?]<BR><B>Plug and Play support</B><BR>Plug and Play support (CONFIG_PNP)
+[N/y/?]<BR><B>Block devices</B><BR>Normal PC floppy disk support
+(CONFIG_BLK_DEV_FD) [Y/n/?]<BR>Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy
+support <BR>(CONFIG_BLK_DEV_IDE) [Y/n/?]<BR>Use old disk-only driver on primary
+interface (CONFIG_BLK_DEV_HD_IDE) <BR>[N/y/?]<BR>Include IDE/ATA-2 DISK support
+(CONFIG_BLK_DEV_IDEDISK) [Y/n/?]<BR>Include IDE/ATAPI CDROM support
+(CONFIG_BLK_DEV_IDECD) [Y/n/?]<BR>Include IDE/ATAPI TAPE support
+(CONFIG_BLK_DEV_IDETAPE) [N/y/?]<BR>Include IDE/ATAPI FLOPPY support
+(CONFIG_BLK_DEV_IDEFLOPPY) [N/y/?]<BR>SCSI emulation support
+(CONFIG_BLK_DEV_IDESCSI) [N/y/?]<BR>CMD640 chipset bugfix/support
+(CONFIG_BLK_DEV_CMD640) [Y/n/?] N<BR>RZ1000 chipset bugfix/support
+(CONFIG_BLK_DEV_RZ1000) [Y/n/?] N<BR>Generic PCI IDE chipset support
+(CONFIG_BLK_DEV_IDEPCI) [Y/n/?]<BR>Generic PCI bus-master DMA support
+(CONFIG_BLK_DEV_IDEDMA) [Y/n/?]<BR>Boot off-board chipsets first support
+(CONFIG_BLK_DEV_OFFBOARD) [N/y/?]<BR>Use DMA by default when available
+(CONFIG_IDEDMA_AUTO) [Y/n/?]<BR>Other IDE chipset support (CONFIG_IDE_CHIPSETS)
+[N/y/?]<BR>Loopback device support (CONFIG_BLK_DEV_LOOP) [N/y/?]<BR>Network
+block device support (CONFIG_BLK_DEV_NBD) [N/y/?]<BR>Multiple devices driver
+support (CONFIG_BLK_DEV_MD) [N/y/?]<BR>RAM disk support (CONFIG_BLK_DEV_RAM)
+[N/y/?]<BR>XT hard disk support (CONFIG_BLK_DEV_XD) [N/y/?]<BR>Mylex
+DAC960/DAC1100 PCI RAID Controller support <BR>(CONFIG_BLK_DEV_DAC960) [N/y/?]
+(NEW)<BR>Parallel port IDE device support (CONFIG_PARIDE) [N/y/?]<BR>Compaq
+SMART2 support (CONFIG_BLK_CPQ_DA) [N/y/?] (NEW)<BR><B>Networking
+options</B><BR>Packet socket (CONFIG_PACKET) [Y/n/?]<BR>Kernel/User netlink
+socket (CONFIG_NETLINK) [N/y/?]<BR>Network firewalls (CONFIG_FIREWALL) [N/y/?]
+Y<BR>Socket Filtering (CONFIG_FILTER) [N/y/?]<BR>Unix domain sockets
+(CONFIG_UNIX) [Y/n/?]<BR>TCP/IP networking (CONFIG_INET) [Y/n/?]<BR>IP:
+multicasting (CONFIG_IP_MULTICAST) [N/y/?]<BR>IP: advanced router
+(CONFIG_IP_ADVANCED_ROUTER) [N/y/?]<BR>IP: kernel level autoconfiguration
+(CONFIG_IP_PNP) [N/y/?]<BR>IP: firewalling (CONFIG_IP_FIREWALL) [N/y/?] (NEW)
+Y<BR>IP: transparent proxy support (CONFIG_IP_TRANSPARENT_PROXY) [N/y/?]
+<BR>(NEW)<BR>IP: masquerading (CONFIG_IP_MASQUERADE) [N/y/?] (NEW)<BR>IP:
+optimize as router not host (CONFIG_IP_ROUTER) [N/y/?]<BR>IP: tunneling
+(CONFIG_NET_IPIP) [N/y/?]<BR>IP: GRE tunnels over IP (CONFIG_NET_IPGRE)
+[N/y/?]<BR>IP: aliasing support (CONFIG_IP_ALIAS) [N/y/?]<BR>IP: TCP syncookie
+support (not enabled per default) (CONFIG_SYN_COOKIES) <BR>[N/y/?] Y<BR>IP:
+Reverse ARP (CONFIG_INET_RARP) [N/y/?]<BR>IP: Allow large windows (not
+recommended if &lt;16Mb of memory) <BR>(CONFIG_SKB_LARGE) [Y/n/?]<BR>The IPX
+protocol (CONFIG_IPX) [N/y/?]<BR>Appletalk DDP (CONFIG_ATALK)
+[N/y/?]<BR><B>Telephony support</B><BR>Linux telephony support (CONFIG_PHONE)
+[N/y/?] (NEW)<BR><B>SCSI support</B><BR>SCSI support (CONFIG_SCSI)
+[Y/n/?]<BR>SCSI disk support (CONFIG_BLK_DEV_SD) [Y/n/?]<BR>SCSI tape support
+(CONFIG_CHR_DEV_ST) [N/y/?]<BR>SCSI CD-ROM support (CONFIG_BLK_DEV_SR)
+[N/y/?]<BR>SCSI generic support (CONFIG_CHR_DEV_SG) [N/y/?]<BR>Probe all LUNs on
+each SCSI device (CONFIG_SCSI_MULTI_LUN) [Y/n/?] N<BR>Verbose SCSI error
+reporting (kernel size +=12K) (CONFIG_SCSI_CONSTANTS) <BR>[Y/n/?] N<BR>SCSI
+logging facility (CONFIG_SCSI_LOGGING) [N/y/?]<BR><B>SCSI low-level
+drivers</B><BR>7000FASST SCSI support (CONFIG_SCSI_7000FASST) [N/y/?]<BR>ACARD
+SCSI support (CONFIG_SCSI_ACARD) [N/y/?]<BR>Adaptec AHA152X/2825 support
+(CONFIG_SCSI_AHA152X) [N/y/?]<BR>Adaptec AHA1542 support (CONFIG_SCSI_AHA1542)
+[N/y/?]<BR>Adaptec AHA1740 support (CONFIG_SCSI_AHA1740) [N/y/?]<BR>Adaptec
+AIC7xxx support (CONFIG_SCSI_AIC7XXX) [N/y/?] Y<BR>Enable Tagged Command
+Queueing (TCQ) by default [N/y/?] (NEW) Y<BR>Maximum number of TCQ commands per
+device <BR>(CONFIG_AIC7XXX_CMDS_PER_DEVICE) [8] (NEW)<BR>Collect statistics to
+report in /proc (CONFIG_AIC7XXX_PROC_STATS) [N/y/?] <BR>(NEW)<BR>Delay in
+seconds after SCSI bus reset (CONFIG_AIC7XXX_RESET_DELAY) [5] <BR>(NEW)<BR>IBM
+ServeRAID support (CONFIG_SCSI_IPS) [N/y/?] (NEW)<BR>AdvanSys SCSI support
+(CONFIG_SCSI_ADVANSYS) [N/y/?]<BR>Always IN2000 SCSI support
+(CONFIG_SCSI_IN2000) [N/y/?]<BR>AM53/79C974 PCI SCSI support
+(CONFIG_SCSI_AM53C974) [N/y/?]<BR>AMI MegaRAID support (CONFIG_SCSI_MEGARAID)
+[N/y/?]<BR>BusLogic SCSI support (CONFIG_SCSI_BUSLOGIC) [N/y/?]<BR>DTC3180/3280
+SCSI support (CONFIG_SCSI_DTC3280) [N/y/?]<BR>EATA ISA/EISA/PCI (DPT and generic
+EATA/DMA) support <BR>(CONFIG_SCSI_EATA) [N/y/?]<BR>EATA-DMA [Obsolete] (DPT,
+NEC, AT&amp;T, SNI, AST, Olivetti, Alphatronix)
+<BR>support<BR>(CONFIG_SCSI_EATA_DMA) [N/y/?]<BR>EATA-PIO (old DPT PM2001,
+PM2012A) support (CONFIG_SCSI_EATA_PIO) <BR>[N/y/?]<BR>Future Domain 16xx
+SCSI/AHA-2920A support <BR>(CONFIG_SCSI_FUTURE_DOMAIN) [N/y/?]<BR>GDT SCSI Disk
+Array Controller support (CONFIG_SCSI_GDTH) [N/y/?]<BR>Generic NCR5380/53c400
+SCSI support (CONFIG_SCSI_GENERIC_NCR5380) <BR>[N/y/?]<BR>Initio 9100U(W)
+support (CONFIG_SCSI_INITIO) [N/y/?]<BR>Initio INI-A100U2W support
+(CONFIG_SCSI_INIA100) [N/y/?]<BR>NCR53c406a SCSI support
+(CONFIG_SCSI_NCR53C406A) [N/y/?]<BR>symbios 53c416 SCSI support
+(CONFIG_SCSI_SYM53C416) [N/y/?]<BR>Simple 53c710 SCSI support (Compaq, NCR
+machines) (CONFIG_SCSI_SIM710) <BR>[N/y/?] (NEW)<BR>NCR53c7,8xx SCSI support
+(CONFIG_SCSI_NCR53C7xx) [N/y/?]<BR>NCR53C8XX SCSI support
+(CONFIG_SCSI_NCR53C8XX) [N/y/?]<BR>SYM53C8XX SCSI support
+(CONFIG_SCSI_SYM53C8XX) [Y/n/?] N<BR>PAS16 SCSI support (CONFIG_SCSI_PAS16)
+[N/y/?]<BR>PCI2000 support (CONFIG_SCSI_PCI2000) [N/y/?]<BR>PCI2220i support
+(CONFIG_SCSI_PCI2220I) [N/y/?]<BR>PSI240i support (CONFIG_SCSI_PSI240I)
+[N/y/?]<BR>Qlogic FAS SCSI support (CONFIG_SCSI_QLOGIC_FAS) [N/y/?]<BR>Qlogic
+ISP SCSI support (CONFIG_SCSI_QLOGIC_ISP) [N/y/?]<BR>Qlogic ISP FC SCSI support
+(CONFIG_SCSI_QLOGIC_FC) [N/y/?]<BR>Seagate ST-02 and Future Domain TMC-8xx SCSI
+support <BR>(CONFIG_SCSI_SEAGATE) [N/y/?]<BR>Tekram DC390(T) and Am53/79C974
+SCSI support (CONFIG_SCSI_DC390T) <BR>[N/y/?]<BR>Trantor T128/T128F/T228 SCSI
+support (CONFIG_SCSI_T128) [N/y/?]<BR>UltraStor 14F/34F support
+(CONFIG_SCSI_U14_34F) [N/y/?]<BR>UltraStor SCSI support (CONFIG_SCSI_ULTRASTOR)
+[N/y/?]<BR><B>Network device support</B><BR>Network device support
+(CONFIG_NETDEVICES) [Y/n/?]<BR><B>ARCnet devices</B><BR>ARCnet support
+(CONFIG_ARCNET) [N/y/?]<BR>Dummy net driver support (CONFIG_DUMMY)
+[Y/n/?]<BR>EQL (serial line load balancing) support (CONFIG_EQUALIZER)
+[N/y/?]<BR>General Instruments Surfboard 1000 (CONFIG_NET_SB1000) [N/y/?]
+(NEW)<BR>Ethernet (10 or 100Mbit)<BR>Ethernet (10 or 100Mbit)
+(CONFIG_NET_ETHERNET) [Y/n/?]<BR>3COM cards (CONFIG_NET_VENDOR_3COM)
+[N/y/?]<BR>AMD LANCE and PCnet (AT1500 and NE2100) support (CONFIG_LANCE)
+<BR>[N/y/?]<BR>Western Digital/SMC cards (CONFIG_NET_VENDOR_SMC)
+[N/y/?]<BR>Racal-Interlan (Micom) NI cards (CONFIG_NET_VENDOR_RACAL)
+[N/y/?]<BR>Other ISA cards (CONFIG_NET_ISA) [N/y/?]<BR>EISA, VLB, PCI and on
+board controllers (CONFIG_NET_EISA) [Y/n/?]<BR>AMD PCnet32 (VLB and PCI) support
+(CONFIG_PCNET32) [N/y/?]<BR>Apricot Xen-II on board Ethernet (CONFIG_APRICOT)
+[N/y/?]<BR>CS89x0 support (CONFIG_CS89x0) [N/y/?]<BR>DM9102 PCI Fast Ethernet
+Adapter support (EXPERIMENTAL) <BR>(CONFIG_DM9102) [N/y/?] (NEW)<BR>Generic
+DECchip &amp; DIGITAL EtherWORKS PCI/EISA (CONFIG_DE4X5) [N/y/?]<BR>DECchip
+Tulip (dc21x4x) PCI support (CONFIG_DEC_ELCP) [N/y/?]<BR>Old DECchip Tulip
+(dc21x4x) PCI support (CONFIG_DEC_ELCP_OLD) [N/y/?] <BR>(NEW)<BR>Digi Intl.
+RightSwitch SE-X support (CONFIG_DGRS) [N/y/?]<BR>EtherExpressPro/100 support
+(CONFIG_EEXPRESS_PRO100) [Y/n/?]<BR>PCI NE2000 support (CONFIG_NE2K_PCI)
+[N/y/?]<BR>TI ThunderLAN support (CONFIG_TLAN) [N/y/?]<BR>VIA Rhine support
+(CONFIG_VIA_RHINE) [N/y/?]<BR>SiS 900/7016 PCI Fast Ethernet Adapter support
+(CONFIG_SIS900) [N/y/?] (NEW)<BR>Pocket and portable adaptors
+(CONFIG_NET_POCKET) [N/y/?]<BR><B>Ethernet (1000 Mbit)</B><BR>SysKonnect SK-98xx
+support (CONFIG_SK98LIN) [N/y/?] (NEW)<BR>FDDI driver support (CONFIG_FDDI)
+[N/y/?]<BR>PPP (point-to-point) support (CONFIG_PPP) [N/y/?]<BR>SLIP (serial
+line) support (CONFIG_SLIP) [N/y/?]<BR>Wireless LAN (non-hamradio)
+(CONFIG_NET_RADIO) [N/y/?]<BR><B>Token ring devices</B><BR>Token Ring driver
+support (CONFIG_TR) [N/y/?]<BR>Fibre Channel driver support (CONFIG_NET_FC)
+[N/y/?] (NEW)<BR><B>Wan interfaces</B><BR>MultiGate (COMX) synchronous serial
+boards support (CONFIG_COMX) [N/y/?] <BR>(NEW)<BR>Frame relay DLCI support
+(CONFIG_DLCI) [N/y/?]<BR>WAN drivers (CONFIG_WAN_DRIVERS) [N/y/?]<BR>SBNI12-xx
+support (CONFIG_SBNI) [N/y/?] (NEW)<BR><B>Amateur Radio support</B><BR>Amateur
+Radio support (CONFIG_HAMRADIO) [N/y/?]<BR><B>IrDA subsystem support</B><BR>IrDA
+subsystem support (CONFIG_IRDA) [N/y/?]<BR><B>ISDN subsystem</B><BR>ISDN support
+(CONFIG_ISDN) [N/y/?]<BR><B>Old CD-ROM drivers (not SCSI, not
+IDE)</B><BR>Support non-SCSI/IDE/ATAPI CDROM drives (CONFIG_CD_NO_IDESCSI)
+<BR>[N/y/?]<BR><B>Character devices</B><BR>Virtual terminal (CONFIG_VT)
+[Y/n/?]<BR>Support for console on virtual terminal (CONFIG_VT_CONSOLE)
+[Y/n/?]<BR>Standard/generic (dumb) serial support (CONFIG_SERIAL)
+[Y/n/?]<BR>Support for console on serial port (CONFIG_SERIAL_CONSOLE)
+[N/y/?]<BR>Extended dumb serial driver options (CONFIG_SERIAL_EXTENDED)
+[N/y/?]<BR>Non-standard serial port support (CONFIG_SERIAL_NONSTANDARD)
+[N/y/?]<BR>Unix98 PTY support (CONFIG_UNIX98_PTYS) [Y/n/?]<BR>Maximum number of
+Unix98 PTYs in use (0-2048) <BR>(CONFIG_UNIX98_PTY_COUNT) [256] 128<BR>Mouse
+Support (not serial mice) (CONFIG_MOUSE) [Y/n/?]<BR>Mice<BR>ATIXL busmouse
+support (CONFIG_ATIXL_BUSMOUSE) [N/y/?]<BR>Logitech busmouse support
+(CONFIG_BUSMOUSE) [N/y/?]<BR>Microsoft busmouse support (CONFIG_MS_BUSMOUSE)
+[N/y/?]<BR>PS/2 mouse (aka "auxiliary device") support (CONFIG_PSMOUSE)
+[Y/n/?]<BR>C&amp;T 82C710 mouse port support (as on TI Travelmate)
+<BR>(CONFIG_82C710_MOUSE) [Y/n/?] N<BR>PC110 digitizer pad support
+(CONFIG_PC110_PAD) [N/y/?]<BR><B>Joystick support</B><BR>Joystick support
+(CONFIG_JOYSTICK) [N/y/?]<BR>QIC-02 tape support (CONFIG_QIC02_TAPE)
+[N/y/?]<BR>Watchdog Timer Support (CONFIG_WATCHDOG) [N/y/?]<BR>/dev/nvram
+support (CONFIG_NVRAM) [N/y/?]<BR>Enhanced Real Time Clock Support (CONFIG_RTC)
+[N/y/?]<BR><B>Video for Linux</B><BR>Video For Linux (CONFIG_VIDEO_DEV)
+[N/y/?]<BR>Double Talk PC internal speech card support (CONFIG_DTLK)
+[N/y/?]<BR>Ftape, the floppy tape device driver<BR>Ftape (QIC-80/Travan) support
+(CONFIG_FTAPE) [N/y/?]<BR><B>Filesystems</B><BR>Quota support (CONFIG_QUOTA)
+[N/y/?] Y<BR>Kernel automounter support (CONFIG_AUTOFS_FS) [Y/n/?] N<BR>Amiga
+FFS filesystem support (CONFIG_AFFS_FS) [N/y/?]<BR>Apple Macintosh filesystem
+support (experimental) (CONFIG_HFS_FS) [N/y/?]<BR>DOS FAT fs support
+(CONFIG_FAT_FS) [N/y/?]<BR>ISO 9660 CDROM filesystem support (CONFIG_ISO9660_FS)
+[Y/n/?]<BR>Microsoft Joliet CDROM extensions (CONFIG_JOLIET) [N/y/?]<BR>Minix fs
+support (CONFIG_MINIX_FS) [N/y/?]<BR>NTFS filesystem support (read only)
+(CONFIG_NTFS_FS) [N/y/?]<BR>OS/2 HPFS filesystem support (read only)
+(CONFIG_HPFS_FS) [N/y/?]<BR>/proc filesystem support (CONFIG_PROC_FS)
+[Y/n/?]<BR>/dev/pts filesystem for Unix98 PTYs (CONFIG_DEVPTS_FS) [Y/n/?]<BR>ROM
+filesystem support (CONFIG_ROMFS_FS) [N/y/?]<BR>Second extended fs support
+(CONFIG_EXT2_FS) [Y/n/?]<BR>System V and Coherent filesystem support
+(CONFIG_SYSV_FS) [N/y/?]<BR>UFS filesystem support (CONFIG_UFS_FS)
+[N/y/?]<BR><B>Network File Systems</B><BR>Coda filesystem support (advanced
+network fs) (CONFIG_CODA_FS) [N/y/?]<BR>NFS filesystem support (CONFIG_NFS_FS)
+[Y/n/?] N<BR>SMB filesystem support (to mount WfW shares etc.) (CONFIG_SMB_FS)
+[N/y/?]<BR>NCP filesystem support (to mount NetWare volumes) (CONFIG_NCP_FS)
+[N/y/?]<BR><B>Partition Types</B><BR>BSD disklabel (BSD partition tables)
+support (CONFIG_BSD_DISKLABEL) [N/y/?]<BR>Macintosh partition map support
+(CONFIG_MAC_PARTITION) [N/y/?]<BR>SMD disklabel (Sun partition tables) support
+(CONFIG_SMD_DISKLABEL) [N/y/?]<BR>Solaris (x86) partition table support
+(CONFIG_SOLARIS_X86_PARTITION) <BR>[N/y/?]<BR><B>Console drivers</B><BR>VGA text
+console (CONFIG_VGA_CONSOLE) [Y/n/?]<BR>Video mode selection support
+(CONFIG_VIDEO_SELECT) [N/y/?]<BR><B>Sound</B><BR>Sound card support
+(CONFIG_SOUND) [N/y/?]<BR>(Security options will appear only if you are patched
+your kernel with the Openwall <BR>Project patch).<BR>Security
+options<BR>Non-executable user stack area (CONFIG_SECURE_STACK)
+[Y]<BR>Autodetect and emulate GCC trampolines (CONFIG_SECURE_STACK_SMART)
+<BR>[Y]<BR>Restricted links in /tmp (CONFIG_SECURE_LINK) [Y]<BR>Restricted FIFOs
+in /tmp (CONFIG_SECURE_FIFO) [Y]<BR>Restricted /proc (CONFIG_SECURE_PROC) [N]
+Y<BR>Special handling of fd 0, 1, and 2 (CONFIG_SECURE_FD_0_1_2) [Y]<BR>Enforce
+RLIMIT_NPROC on execve(2) (CONFIG_SECURE_RLIMIT_NPROC) [Y]<BR>Destroy shared
+memory segments not in use (CONFIG_SECURE_SHM) [N] Y<BR>Kernel hacking<BR>Magic
+SysRq key (CONFIG_MAGIC_SYSRQ) [N/y/?]<BR></FONT>
+<P align=justify>Сейчас вернитесь в каталог "/usr/src/linux" (если вы там не
+находитесь). Вам нужно компилировать новое ядро. Для этого используйте следующие
+команды:</P><FONT color=teal size=-1>[root@deep]# make dep; make clean; make
+bzImage</FONT>
+<P align=justify>Эта строка содержит три команды. Первая, make dep, берет вашу
+конфигурацию и создает надлежащее дерево зависимостей. Этот процесс определяет,
+что надо компилировать, а что нет.</P>
+<P align=justify>make clean - стирает все следы предыдущих компиляций, чтобы
+ошибки предыдущей версии не попали в новое ядро.</P>
+<P align=justify>make bzImage - осуществляет полную компиляцию ядра.</P>
+<P align=justify>После того как процесс компиляции завершается, ядро сжимается и
+готово к инсталляции. Перед тем как инсталлировать ядро вы должны скомпилировать
+необходимые модули. Это необходимо, если вы ответите Yes на вопрос "Enable
+loadable module support (CONFIG_MODULES)" и отметили некоторые опции в ядре как
+модули. В этом случае введите следующие команды:</P><FONT color=teal
+size=-1>[root@deep linux]# make modules<BR>[root@deep linux]# make
+modules_install<BR></FONT>
+<P align=justify><B>Замечание.</B> Команды make modules и make modules_install
+нужны, если вы ответили Yes на вопрос "Enable loadable module support
+(CONFIG_MODULES)". </P>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch4.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#5">Оглавление</A></TD>
+    <TD align=right><A
+href="ch5_2.html">Вперед</A></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

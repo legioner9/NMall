@@ -1,0 +1,4146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Vorbis I specification — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV class=article lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H1 class=title><A name=id5329117></A>Vorbis I specification</H1></DIV>
+<DIV>
+<H3 class=corpauthor>Xiph.org Foundation</H3></DIV></DIV>
+<DIV></DIV>
+<HR>
+</DIV>
+<DIV class=toc>
+<P><B>Table of Contents</B></P>
+<DL>
+  <DT>1. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-intro">-->Introduction
+  and Description<!--</A>-->
+  <DD>
+  <DL>
+    <DT>1.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5426448">-->Overview<!--</A>-->
+    <DT>1.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5376632">-->Decoder
+    Configuration<!--</A>-->
+    <DT>1.3. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5372250">-->High-level
+    Decode Process<!--</A>--></DT></DL>
+  <DT>2. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-bitpacking">-->Bitpacking
+  Convention<!--</A>-->
+  <DD>
+  <DL>
+    <DT>2.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5460949">-->Overview<!--</A>--></DT></DL>
+  <DT>3. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-codebook">-->Probability
+  Model and Codebooks<!--</A>-->
+  <DD>
+  <DL>
+    <DT>3.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5462989">-->Overview<!--</A>-->
+    <DT>3.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5463029">-->Packed
+    codebook format<!--</A>-->
+    <DT>3.3. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5459522">-->Use
+    of the codebook abstraction<!--</A>--></DT></DL>
+  <DT>4. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-codec">-->Codec
+  Setup and Packet Decode<!--</A>-->
+  <DD>
+  <DL>
+    <DT>4.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5442379">-->Overview<!--</A>-->
+    <DT>4.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5442405">-->Header
+    decode and decode setup<!--</A>-->
+    <DT>4.3. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5463476">-->Audio
+    packet decode and synthesis<!--</A>--></DT></DL>
+  <DT>5. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-comment">-->comment
+  field and header specification<!--</A>-->
+  <DD>
+  <DL>
+    <DT>5.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506020">-->Overview<!--</A>-->
+    <DT>5.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506061">-->Comment
+    encoding<!--</A>--></DT></DL>
+  <DT>6. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor0">-->Floor
+  type 0 setup and decode<!--</A>-->
+  <DD>
+  <DL>
+    <DT>6.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506139">-->Overview<!--</A>-->
+    <DT>6.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5445522">-->Floor
+    0 format<!--</A>--></DT></DL>
+  <DT>7. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor1">-->Floor
+  type 1 setup and decode<!--</A>-->
+  <DD>
+  <DL>
+    <DT>7.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5491631">-->Overview<!--</A>-->
+    <DT>7.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5491649">-->Floor
+    1 format<!--</A>--></DT></DL>
+  <DT>8. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-residue">-->Residue
+  setup and decode<!--</A>-->
+  <DD>
+  <DL>
+    <DT>8.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5494391">-->Overview<!--</A>-->
+    <DT>8.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5494420">-->Residue
+    format<!--</A>-->
+    <DT>8.3. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5494548">-->residue
+    0<!--</A>-->
+    <DT>8.4. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506416">-->residue
+    1<!--</A>-->
+    <DT>8.5. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506450">-->residue
+    2<!--</A>-->
+    <DT>8.6. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5506510">-->Residue
+    decode<!--</A>--></DT></DL>
+  <DT>9. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-helper">-->Helper
+  equations<!--</A>-->
+  <DD>
+  <DL>
+    <DT>9.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5511135">-->Overview<!--</A>-->
+    <DT>9.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5511152">-->Functions<!--</A>--></DT></DL>
+  <DT>10. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-tables">-->Tables<!--</A>-->
+  <DD>
+  <DL>
+    <DT>10.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor1_inverse_dB_table">-->floor1_inverse_dB_table<!--</A>--></DT></DL>
+  <DT>A. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-over-ogg">-->Embedding
+  Vorbis into an Ogg stream<!--</A>-->
+  <DD>
+  <DL>
+    <DT>A.1. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5499999">-->Overview<!--</A>-->
+    <DD>
+    <DL>
+      <DT>A.1.1. <!--<A
+      href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5500042">-->Restrictions<!--</A>-->
+      <DT>A.1.2. <!--<A
+      href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5500095">-->MIME
+      type<!--</A>--></DT></DL>
+    <DT>A.2. <!--<A
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#id5500122">-->Encapsulation<!--</A>--></DT></DL>
+  <DT>B. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-over-rtp">-->Vorbis
+  encapsulation in RTP<!--</A>-->
+  <DT>C. <!--<A
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#footer">-->Colophon<!--</A>--></DT></DL></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-intro></A>1.&nbsp;Introduction and Description</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 01-introduction.xml,v 1.8 2002/12/19 06:10:12 xiphmont
+Exp $ <SPAN class=emphasis><EM>Last update to this document: July 18,
+2002</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5426448></A>1.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>This document provides a high level description of the Vorbis codec's
+construction. A bit-by-bit specification appears beginning in <!--<A
+title="4.&nbsp;Codec Setup and Packet Decode"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-codec">-->Section&nbsp;4,
+“Codec Setup and Packet Decode”<!--</A>-->. The later sections assume a high-level
+understanding of the Vorbis decode process, which is provided here.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376291></A>1.1.1.&nbsp;Application</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis is a general purpose perceptual audio CODEC intended to allow maximum
+encoder flexibility, thus allowing it to scale competitively over an
+exceptionally wide range of bitrates. At the high quality/bitrate end of the
+scale (CD or DAT rate stereo, 16/24 bits) it is in the same league as MPEG-2 and
+MPC. Similarly, the 1.0 encoder can encode high-quality CD and DAT rate stereo
+at below 48kbps without resampling to a lower rate. Vorbis is also intended for
+lower and higher sample rates (from 8kHz telephony to 192kHz digital masters)
+and a range of channel representations (monaural, polyphonic, stereo,
+quadraphonic, 5.1, ambisonic, or up to 255 discrete channels). </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A
+name=id5376317></A>1.1.2.&nbsp;Classification</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis I is a forward-adaptive monolithic transform CODEC based on the
+Modified Discrete Cosine Transform. The codec is structured to allow addition of
+a hybrid wavelet filterbank in Vorbis II to offer better transient response and
+reproduction using a transform better suited to localized time events.
+</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376335></A>1.1.3.&nbsp;Assumptions</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Vorbis CODEC design assumes a complex, psychoacoustically-aware encoder
+and simple, low-complexity decoder. Vorbis decode is computationally simpler
+than mp3, although it does require more working memory as Vorbis has no static
+probability model; the vector codebooks used in the first stage of decoding from
+the bitstream are packed in their entirety into the Vorbis bitstream headers. In
+packed form, these codebooks occupy only a few kilobytes; the extent to which
+they are pre-decoded into a cache is the dominant factor in decoder memory
+usage. </P>
+<P>Vorbis provides none of its own framing, synchronization or protection
+against errors; it is solely a method of accepting input audio, dividing it into
+individual frames and compressing these frames into raw, unformatted 'packets'.
+The decoder then accepts these raw packets in sequence, decodes them,
+synthesizes audio frames from them, and reassembles the frames into a facsimile
+of the original audio stream. Vorbis is a free-form variable bit rate (VBR)
+codec and packets have no minimum size, maximum size, or fixed/expected size.
+Packets are designed that they may be truncated (or padded) and remain
+decodable; this is not to be considered an error condition and is used
+extensively in bitrate management in peeling. Both the transport mechanism and
+decoder must allow that a packet may be any size, or end before or after packet
+decode expects.</P>
+<P>Vorbis packets are thus intended to be used with a transport mechanism that
+provides free-form framing, sync, positioning and error correction in accordance
+with these design assumptions, such as Ogg (for file transport) or RTP (for
+network multicast). For purposes of a few examples in this document, we will
+assume that Vorbis is to be embedded in an Ogg stream specifically, although
+this is by no means a requirement or fundamental assumption in the Vorbis
+design.</P>
+<P>The specification for embedding Vorbis into an Ogg transport stream is in <!--<A
+title="A.&nbsp;Embedding Vorbis into an Ogg stream"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-over-ogg">-->Appendix&nbsp;A,
+<I>Embedding Vorbis into an Ogg stream</I><!--</A>-->. </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376529></A>1.1.4.&nbsp;Codec Setup and Probability
+Model</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis' heritage is as a research CODEC and its current design reflects a
+desire to allow multiple decades of continuous encoder improvement before
+running out of room within the codec specification. For these reasons,
+configurable aspects of codec setup intentionally lean toward the extreme of
+forward adaptive.</P>
+<P>The single most controversial design decision in Vorbis (and the most unusual
+for a Vorbis developer to keep in mind) is that the entire probability model of
+the codec, the Huffman and VQ codebooks, is packed into the bitstream header
+along with extensive CODEC setup parameters (often several hundred fields). This
+makes it impossible, as it would be with MPEG audio layers, to embed a simple
+frame type flag in each audio packet, or begin decode at any frame in the stream
+without having previously fetched the codec setup header. </P>
+<DIV class=note style="MARGIN-LEFT: 0.5in; MARGIN-RIGHT: 0.5in">
+<H3 class=title>Note</H3>
+<P>Vorbis <SPAN class=emphasis><EM>can</EM></SPAN> initiate decode at any
+arbitrary packet within a bitstream so long as the codec has been
+initialized/setup with the setup headers.</P></DIV>
+<P>Thus, Vorbis headers are both required for decode to begin and relatively
+large as bitstream headers go. The header size is unbounded, although for
+streaming a rule-of-thumb of 4kB or less is recommended (and Xiph.Org's Vorbis
+encoder follows this suggestion).</P>
+<P>Our own design work indicates the the primary liability of the required
+header is in mindshare; it is an unusual design and thus causes some amount of
+complaint among engineers as this runs against current design trends (and also
+points out limitations in some existing software/interface designs, such as
+Windows' ACM codec framework). However, we find that it does not fundamentally
+limit Vorbis' suitable application space.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376596></A>1.1.5.&nbsp;Format
+Specification</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Vorbis format is well-defined by its decode specification; any encoder
+that produces packets that are correctly decoded by the reference Vorbis decoder
+described below may be considered a proper Vorbis encoder. A decoder must
+faithfully and completely implement the specification defined below (except
+where noted) to be considered a proper Vorbis decoder.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376613></A>1.1.6.&nbsp;Hardware
+Profile</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Although Vorbis decode is computationally simple, it may still run into
+specific limitations of an embedded design. For this reason, embedded designs
+are allowed to deviate in limited ways from the 'full' decode specification yet
+still be certified compliant. These optional omissions are labelled in the spec
+where relevant.</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5376632></A>1.2.&nbsp;Decoder
+Configuration</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Decoder setup consists of configuration of multiple, self-contained component
+abstractions that perform specific functions in the decode pipeline. Each
+different component instance of a specific type is semantically interchangeable;
+decoder configuration consists both of internal component configuration, as well
+as arrangement of specific instances into a decode pipeline. Componentry
+arrangement is roughly as follows:</P>
+<DIV class=mediaobject><IMG alt="decoder pipeline configuration"
+src="vorbis.files/components.png"></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376677></A>1.2.1.&nbsp;Global Config</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Global codec configuration consists of a few audio related fields (sample
+rate, channels), Vorbis version (always '0' in Vorbis I), bitrate hints, and the
+lists of component instances. All other configuration is in the context of
+specific components.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376693></A>1.2.2.&nbsp;Mode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Each Vorbis frame is coded according to a master 'mode'. A bitstream may use
+one or many modes.</P>
+<P>The mode mechanism is used to encode a frame according to one of multiple
+possible methods with the intention of choosing a method best suited to that
+frame. Different modes are, e.g. how frame size is changed from frame to frame.
+The mode number of a frame serves as a top level configuration switch for all
+other specific aspects of frame decode.</P>
+<P>A 'mode' configuration consists of a frame size setting, window type (always
+0, the Vorbis window, in Vorbis I), transform type (always type 0, the MDCT, in
+Vorbis I) and a mapping number. The mapping number specifies which mapping
+configuration instance to use for low-level packet decode and
+synthesis.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376726></A>1.2.3.&nbsp;Mapping</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A mapping contains a channel coupling description and a list of 'submaps'
+that bundle sets of channel vectors together for grouped encoding and decoding.
+These submaps are not references to external components; the submap list is
+internal and specific to a mapping.</P>
+<P>A 'submap' is a configuration/grouping that applies to a subset of floor and
+residue vectors within a mapping. The submap functions as a last layer of
+indirection such that specific special floor or residue settings can be applied
+not only to all the vectors in a given mode, but also specific vectors in a
+specific mode. Each submap specifies the proper floor and residue instance
+number to use for decoding that submap's spectral floor and spectral residue
+vectors.</P>
+<P>As an example:</P>
+<P>Assume a Vorbis stream that contains six channels in the standard 5.1 format.
+The sixth channel, as is normal in 5.1, is bass only. Therefore it would be
+wasteful to encode a full-spectrum version of it as with the other channels. The
+submapping mechanism can be used to apply a full range floor and residue
+encoding to channels 0 through 4, and a bass-only representation to the bass
+channel, thus saving space. In this example, channels 0-4 belong to submap 0
+(which indicates use of a full-range floor) and channel 5 belongs to submap 1,
+which uses a bass-only representation.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376775></A>1.2.4.&nbsp;Floor</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis encodes a spectral 'floor' vector for each PCM channel. This vector is
+a low-resolution representation of the audio spectrum for the given channel in
+the current frame, generally used akin to a whitening filter. It is named a
+'floor' because the Xiph.Org reference encoder has historically used it as a
+unit-baseline for spectral resolution.</P>
+<P>A floor encoding may be of two types. Floor 0 uses a packed LSP
+representation on a dB amplitude scale and Bark frequency scale. Floor 1
+represents the curve as a piecewise linear interpolated representation on a dB
+amplitude scale and linear frequency scale. The two floors are semantically
+interchangeable in encoding/decoding. However, floor type 1 provides more stable
+inter-frame behavior, and so is the preferred choice in all coupled-stereo and
+high bitrate modes. Floor 1 is also considerably less expensive to decode than
+floor 0.</P>
+<P>Floor 0 is not to be considered deprecated, but it is of limited modern use.
+No known Vorbis encoder past Xiph.org's own beta 4 makes use of floor 0.</P>
+<P>The values coded/decoded by a floor are both compactly formatted and make use
+of entropy coding to save space. For this reason, a floor configuration
+generally refers to multiple codebooks in the codebook component list. Entropy
+coding is thus provided as an abstraction, and each floor instance may choose
+from any and all available codebooks when coding/decoding.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5372195></A>1.2.5.&nbsp;Residue</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The spectral residue is the fine structure of the audio spectrum once the
+floor curve has been subtracted out. In simplest terms, it is coded in the
+bitstream using cascaded (multi-pass) vector quantization according to one of
+three specific packing/coding algorithms numbered 0 through 2. The packing
+algorithm details are configured by residue instance. As with the floor
+components, the final VQ/entropy encoding is provided by external codebook
+instances and each residue instance may choose from any and all available
+codebooks.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5372216></A>1.2.6.&nbsp;Codebooks</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Codebooks are a self-contained abstraction that perform entropy decoding and,
+optionally, use the entropy-decoded integer value as an offset into an index of
+output value vectors, returning the indicated vector of values.</P>
+<P>The entropy coding in a Vorbis I codebook is provided by a standard Huffman
+binary tree representation. This tree is tightly packed using one of several
+methods, depending on whether codeword lengths are ordered or unordered, or the
+tree is sparse.</P>
+<P>The codebook vector index is similarly packed according to index
+characteristic. Most commonly, the vector index is encoded as a single list of
+values of possible values that are then permuted into a list of n-dimensional
+rows (lattice VQ).</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5372250></A>1.3.&nbsp;High-level Decode
+Process</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5372258></A>1.3.1.&nbsp;Decode Setup</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Before decoding can begin, a decoder must initialize using the bitstream
+headers matching the stream to be decoded. Vorbis uses three header packets; all
+are required, in-order, by this specification. Once set up, decode may begin at
+any audio packet belonging to the Vorbis stream. In Vorbis I, all packets after
+the three initial headers are audio packets. </P>
+<P>The header packets are, in order, the identification header, the comments
+header, and the setup header.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372281></A>1.3.1.1.&nbsp;Identification
+Header</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The identification header identifies the bitstream as Vorbis, Vorbis version,
+and the simple audio characteristics of the stream such as sample rate and
+number of channels.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372296></A>1.3.1.2.&nbsp;Comment
+Header</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The comment header includes user text comments ("tags") and a vendor string
+for the application/library that produced the bitstream. The encoding and proper
+use of the comment header is described in <!--<A
+title="5.&nbsp;comment field and header specification"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-comment">-->Section&nbsp;5,
+“comment field and header specification”<!--</A>-->.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372316></A>1.3.1.3.&nbsp;Setup
+Header</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The setup header includes extensive CODEC setup information as well as the
+complete VQ and Huffman codebooks needed for decode.</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5372331></A>1.3.2.&nbsp;Decode
+Procedure</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=highlights>
+<P>The decoding and synthesis procedure for all audio packets is fundamentally
+the same. </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>decode packet type flag
+  <LI>decode mode number
+  <LI>decode window shape (long windows only)
+  <LI>decode floor
+  <LI>decode residue into residue vectors
+  <LI>inverse channel coupling of residue vectors
+  <LI>generate floor curve from decoded floor data
+  <LI>compute dot product of floor and residue, producing audio spectrum vector
+  <LI>inverse monolithic transform of audio spectrum vector, always an MDCT in
+  Vorbis I
+  <LI>overlap/add left-hand output of transform with right-hand output of
+  previous frame
+  <LI>store right hand-data from transform of current frame for future lapping
+  <LI>if not first frame, return results of overlap/add as audio result of
+  current frame</LI></OL></DIV>
+<P></P></DIV>
+<P>Note that clever rearrangement of the synthesis arithmetic is possible; as an
+example, one can take advantage of symmetries in the MDCT to store the
+right-hand transform data of a partial MDCT for a 50% inter-frame buffer space
+savings, and then complete the transform later before overlap/add with the next
+frame. This optimization produces entirely equivalent output and is naturally
+perfectly legal. The decoder must be <SPAN class=emphasis><EM>entirely
+mathematically equivalent</EM></SPAN> to the specification, it need not be a
+literal semantic implementation.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372450></A>1.3.2.1.&nbsp;Packet type
+decode</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis I uses four packet types. The first three packet types mark each of
+the three Vorbis headers described above. The fourth packet type marks an audio
+packet. All other packet types are reserved; packets marked with a reserved type
+should be ignored.</P>
+<P>Following the three header packets, all packets in a Vorbis I stream are
+audio. The first step of audio packet decode is to read and verify the packet
+type; <SPAN class=emphasis><EM>a non-audio packet when audio is expected
+indicates stream corruption or a non-compliant stream. The decoder must ignore
+the packet and not attempt decoding it to audio</EM></SPAN>.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372481></A>1.3.2.2.&nbsp;Mode decode</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis allows an encoder to set up multiple, numbered packet 'modes', as
+described earlier, all of which may be used in a given Vorbis stream. The mode
+is encoded as an integer used as a direct offset into the mode instance index.
+</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=vorbis-spec-window></A>1.3.2.3.&nbsp;Window shape decode
+(long windows only)</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis frames may be one of two PCM sample sizes specified during codec
+setup. In Vorbis I, legal frame sizes are powers of two from 64 to 8192 samples.
+Aside from coupling, Vorbis handles channels as independent vectors and these
+frame sizes are in samples per channel.</P>
+<P>Vorbis uses an overlapping transform, namely the MDCT, to blend one frame
+into the next, avoiding most inter-frame block boundary artifacts. The MDCT
+output of one frame is windowed according to MDCT requirements, overlapped 50%
+with the output of the previous frame and added. The window shape assures
+seamless reconstruction. </P>
+<P>This is easy to visualize in the case of equal sized-windows:</P>
+<DIV class=mediaobject><IMG alt="overlap of two equal-sized windows"
+src="vorbis.files/window1.png"></DIV>
+<P>And slightly more complex in the case of overlapping unequal sized
+windows:</P>
+<DIV class=mediaobject><IMG alt="overlap of a long and a short window"
+src="vorbis.files/window2.png"></DIV>
+<P>In the unequal-sized window case, the window shape of the long window must be
+modified for seamless lapping as above. It is possible to correctly infer window
+shape to be applied to the current window from knowing the sizes of the current,
+previous and next window. It is legal for a decoder to use this method. However,
+in the case of a long window (short windows require no modification), Vorbis
+also codes two flag bits to specify pre- and post- window shape. Although not
+strictly necessary for function, this minor redundancy allows a packet to be
+fully decoded to the point of lapping entirely independently of any other
+packet, allowing easier abstraction of decode layers as well as allowing a
+greater level of easy parallelism in encode and decode.</P>
+<P>A description of valid window functions for use with an inverse MDCT can be
+found in the paper “<SPAN class=citetitle> <!--<A
+href="http://www.iocon.com/resource/docs/ps/eusipco_corrected.ps"
+target=_top>-->The use of multirate filter banks for coding of high quality digital
+audio<!--</A>--></SPAN>”, by T. Sporer, K. Brandenburg and B. Edler. Vorbis windows all
+use the slope function <SPAN class=inlinemediaobject></SPAN>. </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372893></A>1.3.2.4.&nbsp;floor
+decode</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Each floor is encoded/decoded in channel order, however each floor belongs to
+a 'submap' that specifies which floor configuration to use. All floors are
+decoded before residue decode begins.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372907></A>1.3.2.5.&nbsp;residue
+decode</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Although the number of residue vectors equals the number of channels, channel
+coupling may mean that the raw residue vectors extracted during decode do not
+map directly to specific channels. When channel coupling is in use, some vectors
+will correspond to coupled magnitude or angle. The coupling relationships are
+described in the codec setup and may differ from frame to frame, due to
+different mode numbers.</P>
+<P>Vorbis codes residue vectors in groups by submap; the coding is done in
+submap order from submap 0 through n-1. This differs from floors which are coded
+using a configuration provided by submap number, but are coded individually in
+channel order.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372935></A>1.3.2.6.&nbsp;inverse channel
+coupling</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A detailed discussion of stereo in the Vorbis codec can be found in the
+document <!--<A href="http://www.xiph.org/ogg/vorbis/doc/stereo.html" target=_top>--><I
+class=citetitle>Stereo Channel Coupling in the Vorbis CODEC</I><!--</A>-->. Vorbis is
+not limited to only stereo coupling, but the stereo document also gives a good
+overview of the generic coupling mechanism.</P>
+<P>Vorbis coupling applies to pairs of residue vectors at a time; decoupling is
+done in-place a pair at a time in the order and using the vectors specified in
+the current mapping configuration. The decoupling operation is the same for all
+pairs, converting square polar representation (where one vector is magnitude and
+the second angle) back to Cartesian representation.</P>
+<P>After decoupling, in order, each pair of vectors on the coupling list, the
+resulting residue vectors represent the fine spectral detail of each output
+channel.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5372977></A>1.3.2.7.&nbsp;generate floor
+curve</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The decoder may choose to generate the floor curve at any appropriate time.
+It is reasonable to generate the output curve when the floor data is decoded
+from the raw packet, or it can be generated after inverse coupling and applied
+to the spectral residue directly, combining generation and the dot product into
+one step and eliminating some working space.</P>
+<P>Both floor 0 and floor 1 generate a linear-range, linear-domain output vector
+to be multiplied (dot product) by the linear-range, linear-domain spectral
+residue.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5373003></A>1.3.2.8.&nbsp;compute floor/residue dot
+product</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>This step is straightforward; for each output channel, the decoder multiplies
+the floor curve and residue vectors element by element, producing the finished
+audio spectrum of each channel.</P>
+<P>One point is worth mentioning about this dot product; a common mistake in a
+fixed point implementation might be to assume that a 32 bit fixed-point
+representation for floor and residue and direct multiplication of the vectors is
+sufficient for acceptable spectral depth in all cases because it happens to
+mostly work with the current Xiph.Org reference encoder.</P>
+<P>However, floor vector values can span ~140dB (~24 bits unsigned), and the
+audio spectrum vector should represent a minimum of 120dB (~21 bits with sign),
+even when output is to a 16 bit PCM device. For the residue vector to represent
+full scale if the floor is nailed to -140dB, it must be able to span 0 to
++140dB. For the residue vector to reach full scale if the floor is nailed at
+0dB, it must be able to represent -140dB to +0dB. Thus, in order to handle full
+range dynamics, a residue vector may span -140dB to +140dB entirely within spec.
+A 280dB range is approximately 48 bits with sign; thus the residue vector must
+be able to represent a 48 bit range and the dot product must be able to handle
+an effective 48 bit times 24 bit multiplication. This range may be achieved
+using large (64 bit or larger) integers, or implementing a movable binary point
+representation.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5373050></A>1.3.2.9.&nbsp;inverse monolithic transform
+(MDCT)</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The audio spectrum is converted back into time domain PCM audio via an
+inverse Modified Discrete Cosine Transform (MDCT). A detailed description of the
+MDCT is available in the paper <!--<A
+href="http://www.iocon.com/resource/docs/ps/eusipco_corrected.ps"
+target=_top>-->“<SPAN class=citetitle>The use of multirate filter banks for coding
+of high quality digital audio</SPAN>”<!--</A>-->, by T. Sporer, K. Brandenburg and B.
+Edler.</P>
+<P>Note that the PCM produced directly from the MDCT is not yet finished audio;
+it must be lapped with surrounding frames using an appropriate window (such as
+the Vorbis window) before the MDCT can be considered orthogonal.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5373086></A>1.3.2.10.&nbsp;overlap/add
+data</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Windowed MDCT output is overlapped and added with the right hand data of the
+previous window such that the 3/4 point of the previous window is aligned with
+the 1/4 point of the current window (as illustrated in the window overlap
+diagram). At this point, the audio data between the center of the previous frame
+and the center of the current frame is now finished and ready to be returned.
+</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5373105></A>1.3.2.11.&nbsp;cache right hand
+data</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The decoder must cache the right hand portion of the current frame to be
+lapped with the left hand portion of the next frame. </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5373119></A>1.3.2.12.&nbsp;return finished audio
+data</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The overlapped portion produced from overlapping the previous and current
+frame data is finished data to be returned by the decoder. This data spans from
+the center of the previous window to the center of the current window. In the
+case of same-sized windows, the amount of data to return is one-half block
+consisting of and only of the overlapped portions. When overlapping a short and
+long window, much of the returned range is not actually overlap. This does not
+damage transform orthogonality. Pay attention however to returning the correct
+data range; the amount of data to be returned is: </P><PRE class=programlisting>window_blocksize(previous_window)/4+window_blocksize(current_window)/4
+</PRE>
+<P>from the center of the previous window to the center of the current
+window.</P>
+<P>Data is not returned from the first frame; it must be used to 'prime' the
+decode engine. The encoder accounts for this priming when calculating PCM
+offsets; after the first frame, the proper PCM output offset is '0' (as no data
+has been returned yet).</P></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-bitpacking></A>2.&nbsp;Bitpacking Convention</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 02-bitpacking.xml,v 1.6 2002/10/27 16:20:47 giles Exp
+$ <SPAN class=emphasis><EM>Last update to this document: July 14,
+2002</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5460949></A>2.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Vorbis codec uses relatively unstructured raw packets containing
+arbitrary-width binary integer fields. Logically, these packets are a bitstream
+in which bits are coded one-by-one by the encoder and then read one-by-one in
+the same monotonically increasing order by the decoder. Most current binary
+storage arrangements group bits into a native word size of eight bits (octets),
+sixteen bits, thirty-two bits or, less commonly other fixed word sizes. The
+Vorbis bitpacking convention specifies the correct mapping of the logical packet
+bitstream into an actual representation in fixed-width words. </P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5370101></A>2.1.1.&nbsp;octets, bytes and
+words</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>In most contemporary architectures, a 'byte' is synonymous with an 'octet',
+that is, eight bits. This has not always been the case; seven, ten, eleven and
+sixteen bit 'bytes' have been used. For purposes of the bitpacking convention, a
+byte implies the native, smallest integer storage representation offered by a
+platform. On modern platforms, this is generally assumed to be eight bits (not
+necessarily because of the processor but because of the filesystem/memory
+architecture. Modern filesystems invariably offer bytes as the fundamental atom
+of storage). A 'word' is an integer size that is a grouped multiple of this
+smallest size.</P>
+<P>The most ubiquitous architectures today consider a 'byte' to be an octet
+(eight bits) and a word to be a group of two, four or eight bytes (16, 32 or 64
+bits). Note however that the Vorbis bitpacking convention is still well defined
+for any native byte size; Vorbis uses the native bit-width of a given storage
+system. This document assumes that a byte is one octet for purposes of
+example.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461002></A>2.1.2.&nbsp;bit order</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A byte has a well-defined 'least significant' bit (LSb), which is the only
+bit set when the byte is storing the two's complement integer value +1. A byte's
+'most significant' bit (MSb) is at the opposite end of the byte. Bits in a byte
+are numbered from zero at the LSb to <SPAN class=emphasis><EM>n</EM></SPAN>
+(<SPAN class=emphasis><EM>n</EM></SPAN>=7 in an octet) for the MSb.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461027></A>2.1.3.&nbsp;byte order</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Words are native groupings of multiple bytes. Several byte orderings are
+possible in a word; the common ones are 3-2-1-0 ('big endian' or 'most
+significant byte first' in which the highest-valued byte comes first), 0-1-2-3
+('little endian' or 'least significant byte first' in which the lowest value
+byte comes first) and less commonly 3-1-2-0 and 0-2-1-3 ('mixed endian').</P>
+<P>The Vorbis bitpacking convention specifies storage and bitstream manipulation
+at the byte, not word, level, thus host word ordering is of a concern only
+during optimization when writing high performance code that operates on a word
+of storage at a time rather than by byte. Logically, bytes are always coded and
+decoded in order from byte zero through byte <SPAN
+class=emphasis><EM>n</EM></SPAN>.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461060></A>2.1.4.&nbsp;coding bits into byte
+sequences</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Vorbis codec has need to code arbitrary bit-width integers, from zero to
+32 bits wide, into packets. These integer fields are not aligned to the
+boundaries of the byte representation; the next field is written at the bit
+position at which the previous field ends.</P>
+<P>The encoder logically packs integers by writing the LSb of a binary integer
+to the logical bitstream first, followed by next least significant bit, etc,
+until the requested number of bits have been coded. When packing the bits into
+bytes, the encoder begins by placing the LSb of the integer to be written into
+the least significant unused bit position of the destination byte, followed by
+the next-least significant bit of the source integer and so on up to the
+requested number of bits. When all bits of the destination byte have been
+filled, encoding continues by zeroing all bits of the next byte and writing the
+next bit into the bit position 0 of that byte. Decoding follows the same process
+as encoding, but by reading bits from the byte stream and reassembling them into
+integers.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461096></A>2.1.5.&nbsp;signedness</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The signedness of a specific number resulting from decode is to be
+interpreted by the decoder given decode context. That is, the three bit binary
+pattern 'b111' can be taken to represent either 'seven' as an unsigned integer,
+or '-1' as a signed, two's complement integer. The encoder and decoder are
+responsible for knowing if fields are to be treated as signed or
+unsigned.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461114></A>2.1.6.&nbsp;coding
+example</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Code the 4 bit integer value '12' [b1100] into an empty bytestream.
+Bytestream result: </P><PRE class=screen>
+              |
+              V
+
+        7 6 5 4 3 2 1 0
+byte 0 [0 0 0 0 1 1 0 0]  &lt;-
+byte 1 [               ]
+byte 2 [               ]
+byte 3 [               ]
+             ...
+byte n [               ]  bytestream length == 1 byte
+
+</PRE>
+<P></P>
+<P>Continue by coding the 3 bit integer value '-1' [b111]: </P><PRE class=screen>        |
+        V
+
+        7 6 5 4 3 2 1 0
+byte 0 [0 1 1 1 1 1 0 0]  &lt;-
+byte 1 [               ]
+byte 2 [               ]
+byte 3 [               ]
+             ...
+byte n [               ]  bytestream length == 1 byte
+</PRE>
+<P></P>
+<P>Continue by coding the 7 bit integer value '17' [b0010001]: </P><PRE class=screen>          |
+          V
+
+        7 6 5 4 3 2 1 0
+byte 0 [1 1 1 1 1 1 0 0]
+byte 1 [0 0 0 0 1 0 0 0]  &lt;-
+byte 2 [               ]
+byte 3 [               ]
+             ...
+byte n [               ]  bytestream length == 2 bytes
+                          bit cursor == 6
+</PRE>
+<P></P>
+<P>Continue by coding the 13 bit integer value '6969' [b110 11001110 01]: </P><PRE class=screen>                |
+                V
+
+        7 6 5 4 3 2 1 0
+byte 0 [1 1 1 1 1 1 0 0]
+byte 1 [0 1 0 0 1 0 0 0]
+byte 2 [1 1 0 0 1 1 1 0]
+byte 3 [0 0 0 0 0 1 1 0]  &lt;-
+             ...
+byte n [               ]  bytestream length == 4 bytes
+
+</PRE>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5442602></A>2.1.7.&nbsp;decoding
+example</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Reading from the beginning of the bytestream encoded in the above example:
+</P><PRE class=screen>                      |
+                      V
+
+        7 6 5 4 3 2 1 0
+byte 0 [1 1 1 1 1 1 0 0]  &lt;-
+byte 1 [0 1 0 0 1 0 0 0]
+byte 2 [1 1 0 0 1 1 1 0]
+byte 3 [0 0 0 0 0 1 1 0]  bytestream length == 4 bytes
+
+</PRE>
+<P></P>
+<P>We read two, two-bit integer fields, resulting in the returned numbers 'b00'
+and 'b11'. Two things are worth noting here: </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>
+  <P>Although these four bits were originally written as a single four-bit
+  integer, reading some other combination of bit-widths from the bitstream is
+  well defined. There are no artificial alignment boundaries maintained in the
+  bitstream.</P>
+  <LI>
+  <P>The second value is the two-bit-wide integer 'b11'. This value may be
+  interpreted either as the unsigned value '3', or the signed value '-1'.
+  Signedness is dependent on decode context.</P></LI></UL></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5442660></A>2.1.8.&nbsp;end-of-packet
+alignment</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The typical use of bitpacking is to produce many independent byte-aligned
+packets which are embedded into a larger byte-aligned container structure, such
+as an Ogg transport bitstream. Externally, each bytestream (encoded bitstream)
+must begin and end on a byte boundary. Often, the encoded bitstream is not an
+integer number of bytes, and so there is unused (uncoded) space in the last byte
+of a packet.</P>
+<P>Unused space in the last byte of a bytestream is always zeroed during the
+coding process. Thus, should this unused space be read, it will return binary
+zeroes.</P>
+<P>Attempting to read past the end of an encoded packet results in an
+'end-of-packet' condition. End-of-packet is not to be considered an error; it is
+merely a state indicating that there is insufficient remaining data to fulfill
+the desired read size. Vorbis uses truncated packets as a normal mode of
+operation, and as such, decoders must handle reading past the end of a packet as
+a typical mode of operation. Any further read operations after an
+'end-of-packet' condition shall also return 'end-of-packet'.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5442700></A>2.1.9.&nbsp; reading zero
+bits</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Reading a zero-bit-wide integer returns the value '0' and does not increment
+the stream cursor. Reading to the end of the packet (but not past, such that an
+'end-of-packet' condition has not triggered) and then reading a zero bit integer
+shall succeed, returning 0, and not trigger an end-of-packet condition. Reading
+a zero-bit-wide integer after a previous read sets 'end-of-packet' shall also
+fail with 'end-of-packet'.</P></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-codebook></A>3.&nbsp;Probability Model and Codebooks</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 03-codebook.xml,v 1.5 2002/10/27 16:20:47 giles Exp $
+<SPAN class=emphasis><EM>Last update to this document: August 8,
+2002</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5462989></A>3.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Unlike practically every other mainstream audio codec, Vorbis has no
+statically configured probability model, instead packing all entropy decoding
+configuration, VQ and Huffman, into the bitstream itself in the third header,
+the codec setup header. This packed configuration consists of multiple
+'codebooks', each containing a specific Huffman-equivalent representation for
+decoding compressed codewords as well as an optional lookup table of output
+vector values to which a decoded Huffman value is applied as an offset,
+generating the final decoded output corresponding to a given compressed
+codeword.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5460834></A>3.1.1.&nbsp;Bitwise
+operation</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The codebook mechanism is built on top of the vorbis bitpacker. Both the
+codebooks themselves and the codewords they decode are unrolled from a packet as
+a series of arbitrary-width values read from the stream according to <!--<A
+title="2.&nbsp;Bitpacking Convention"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-bitpacking">-->Section&nbsp;2,
+“Bitpacking Convention”<!--</A>-->.</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5463029></A>3.2.&nbsp;Packed codebook
+format</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>For purposes of the examples below, we assume that the storage system's
+native byte width is eight bits. This is not universally true; see <!--<A
+title="2.&nbsp;Bitpacking Convention"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-bitpacking">-->Section&nbsp;2,
+“Bitpacking Convention”<!--</A>--> for discussion relating to non-eight-bit bytes.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5463047></A>3.2.1.&nbsp;codebook
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A codebook begins with a 24 bit sync pattern, 0x564342: </P><PRE class=screen>byte 0: [ 0 1 0 0 0 0 1 0 ] (0x42)
+byte 1: [ 0 1 0 0 0 0 1 1 ] (0x43)
+byte 2: [ 0 1 0 1 0 1 1 0 ] (0x56)
+</PRE>
+<P>16 bit <TT class=varname>[codebook_dimensions]</TT> and 24 bit <TT
+class=varname>[codebook_entries]</TT> fields: </P><PRE class=screen>
+byte 3: [ X X X X X X X X ]
+byte 4: [ X X X X X X X X ] [codebook_dimensions] (16 bit unsigned)
+
+byte 5: [ X X X X X X X X ]
+byte 6: [ X X X X X X X X ]
+byte 7: [ X X X X X X X X ] [codebook_entries] (24 bit unsigned)
+
+</PRE>
+<P>Next is the <TT class=varname>[ordered]</TT> bit flag: </P><PRE class=screen>
+byte 8: [               X ] [ordered] (1 bit)
+
+</PRE>
+<P>Each entry, numbering a total of <TT class=varname>[codebook_entries]</TT>,
+is assigned a codeword length. We now read the list of codeword lengths and
+store these lengths in the array <TT
+class=varname>[codebook_codeword_lengths]</TT>. Decode of lengths is according
+to whether the <TT class=varname>[ordered]</TT> flag is set or unset. </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>
+  <P>If the <TT class=varname>[ordered]</TT> flag is unset, the codeword list is
+  not length ordered and the decoder needs to read each codeword length
+  one-by-one.</P>
+  <P>The decoder first reads one additional bit flag, the <TT
+  class=varname>[sparse]</TT> flag. This flag determines whether or not the
+  codebook contains unused entries that are not to be included in the codeword
+  decode tree: </P><PRE class=screen>byte 8: [             X 1 ] [sparse] flag (1 bit)
+</PRE>
+  <P>The decoder now performs for each of the <TT
+  class=varname>[codebook_entries]</TT> codebook entries: </P><PRE class=screen>
+  1) if([sparse] is set){
+
+         2) [flag] = read one bit;
+         3) if([flag] is set){
+
+              4) [length] = read a five bit unsigned integer;
+              5) codeword length for this entry is [length]+1;
+
+            } else {
+
+              6) this entry is unused.  mark it as such.
+
+            }
+
+     } else the sparse flag is not set {
+
+        7) [length] = read a five bit unsigned integer;
+        8) the codeword length for this entry is [length]+1;
+
+     }
+
+</PRE>
+  <LI>
+  <P>If the <TT class=varname>[ordered]</TT> flag is set, the codeword list for
+  this codebook is encoded in ascending length order. Rather than reading a
+  length for every codeword, the encoder reads the number of codewords per
+  length. That is, beginning at entry zero: </P><PRE class=screen>  1) [current_entry] = 0;
+  2) [current_length] = read a five bit unsigned integer and add 1;
+  3) [number] = read <!--<A title=9.2.1.&nbsp;ilog href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->([codebook_entries] - [current_entry]) bits as an unsigned integer
+  4) set the entries [current_entry] through [current_entry]+[number]-1, inclusive,
+    of the [codebook_codeword_lengths] array to [current_length]
+  5) set [current_entry] to [number] + [current_entry]
+  6) increment [current_length] by 1
+  7) if [current_entry] is greater than [codebook_entries] ERROR CONDITION;
+    the decoder will not be able to read this stream.
+  8) if [current_entry] is less than [codebook_entries], repeat process starting at 3)
+  9) done.
+</PRE></LI></UL></DIV>
+<P>After all codeword lengths have been decoded, the decoder reads the vector
+lookup table. Vorbis I supports three lookup types: </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>No lookup
+  <LI>Implicitly populated value mapping (lattice VQ)
+  <LI>Explicitly populated value mapping (tessellated or 'foam'
+VQ)</LI></OL></DIV>
+<P></P>
+<P>The lookup table type is read as a four bit unsigned integer: </P><PRE class=screen>  1) [codebook_lookup_type] = read four bits as an unsigned integer
+</PRE>
+<P>Codebook decode precedes according to <TT
+class=varname>[codebook_lookup_type]</TT>: </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>
+  <P>Lookup type zero indicates no lookup to be read. Proceed past lookup
+  decode.</P>
+  <LI>
+  <P>Lookup types one and two are similar, differing only in the number of
+  lookup values to be read. Lookup type one reads a list of values that are
+  permuted in a set pattern to build a list of vectors, each vector of order <TT
+  class=varname>[codebook_dimensions]</TT> scalars. Lookup type two builds the
+  same vector list, but reads each scalar for each vector explicitly, rather
+  than building vectors from a smaller list of possible scalar values. Lookup
+  decode proceeds as follows: </P><PRE class=screen>  1) [codebook_minimum_value] = <!--<A title=9.2.2.&nbsp;float32_unpack href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-float32_unpack">-->float32_unpack<!--</A>-->( read 32 bits as an unsigned integer)
+  2) [codebook_delta_value] = <!--<A title=9.2.2.&nbsp;float32_unpack href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-float32_unpack">-->float32_unpack<!--</A>-->( read 32 bits as an unsigned integer)
+  3) [codebook_value_bits] = read 4 bits as an unsigned integer and add 1
+  4) [codebook_sequence_p] = read 1 bit as a boolean flag
+
+  if ( [codebook_lookup_type] is 1 ) {
+
+     5) [codebook_lookup_values] = <!--<A title=9.2.3.&nbsp;lookup1_values href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-lookup1_values">-->lookup1_values<!--</A>-->(<TT class=varname>[codebook_entries]</TT>, <TT class=varname>[codebook_dimensions]</TT> )
+
+  } else {
+
+     6) [codebook_lookup_values] = <TT class=varname>[codebook_entries]</TT> * <TT class=varname>[codebook_dimensions]</TT>
+
+  }
+
+  7) read a total of [codebook_lookup_values] unsigned integers of [codebook_value_bits] each;
+     store these in order in the array [codebook_multiplicands]
+</PRE>
+  <LI>
+  <P>A <TT class=varname>[codebook_lookup_type]</TT> of greater than two is
+  reserved and indicates a stream that is not decodable by the specification in
+  this document.</P></LI></UL></DIV>
+<P></P>
+<P>An 'end of packet' during any read operation in the above steps is considered
+an error condition rendering the stream undecodable.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5462629></A>3.2.1.1.&nbsp;Huffman decision tree
+representation</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The <TT class=varname>[codebook_codeword_lengths]</TT> array and <TT
+class=varname>[codebook_entries]</TT> value uniquely define the Huffman decision
+tree used for entropy decoding.</P>
+<P>Briefly, each used codebook entry (recall that length-unordered codebooks
+support unused codeword entries) is assigned, in order, the lowest valued unused
+binary Huffman codeword possible. Assume the following codeword length list:
+</P><PRE class=screen>entry 0: length 2
+entry 1: length 4
+entry 2: length 4
+entry 3: length 4
+entry 4: length 4
+entry 5: length 2
+entry 6: length 3
+entry 7: length 3
+</PRE>
+<P>Assigning codewords in order (lowest possible value of the appropriate length
+to highest) results in the following codeword list: </P><PRE class=screen>entry 0: length 2 codeword 00
+entry 1: length 4 codeword 0100
+entry 2: length 4 codeword 0101
+entry 3: length 4 codeword 0110
+entry 4: length 4 codeword 0111
+entry 5: length 2 codeword 10
+entry 6: length 3 codeword 110
+entry 7: length 3 codeword 111
+</PRE>
+<DIV class=note style="MARGIN-LEFT: 0.5in; MARGIN-RIGHT: 0.5in">
+<H3 class=title>Note</H3>
+<P>Unlike most binary numerical values in this document, we intend the above
+codewords to be read and used bit by bit from left to right, thus the codeword
+'001' is the bit string 'zero, zero, one'. When determining 'lowest possible
+value' in the assignment definition above, the leftmost bit is the
+MSb.</P></DIV>
+<P>It is clear that the codeword length list represents a Huffman decision tree
+with the entry numbers equivalent to the leaves numbered left-to-right: </P>
+<DIV class=mediaobject><IMG alt="[huffman tree illustration]"
+src="vorbis.files/hufftree.png"></DIV>
+<P></P>
+<P>As we assign codewords in order, we see that each choice constructs a new
+leaf in the leftmost possible position.</P>
+<P>Note that it's possible to underspecify or overspecify a Huffman tree via the
+length list. In the above example, if codeword seven were eliminated, it's clear
+that the tree is unfinished: </P>
+<DIV class=mediaobject><IMG alt="[underspecified huffman tree illustration]"
+src="vorbis.files/hufftree-under.png"></DIV>
+<P></P>
+<P>Similarly, in the original codebook, it's clear that the tree is fully
+populated and a ninth codeword is impossible. Both underspecified and
+overspecified trees are an error condition rendering the stream undecodable.</P>
+<P>Codebook entries marked 'unused' are simply skipped in the assigning process.
+They have no codeword and do not appear in the decision tree, thus it's
+impossible for any bit pattern read from the stream to decode to that entry
+number.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5462786></A>3.2.1.2.&nbsp;VQ lookup table vector
+representation</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Unpacking the VQ lookup table vectors relies on the following values: </P><PRE class=programlisting>the [codebook_multiplicands] array
+[codebook_minimum_value]
+[codebook_delta_value]
+[codebook_sequence_p]
+[codebook_lookup_type]
+[codebook_entries]
+[codebook_dimensions]
+[codebook_lookup_values]
+</PRE>
+<P></P>
+<P>Decoding (unpacking) a specific vector in the vector lookup table proceeds
+according to <TT class=varname>[codebook_lookup_type]</TT>. The unpacked vector
+values are what a codebook would return during audio packet decode in a VQ
+context.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H6 class=title><A name=id5459417></A>3.2.1.2.1.&nbsp;Vector value decode:
+Lookup type 1</H6></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Lookup type one specifies a lattice VQ lookup table built algorithmically
+from a list of scalar values. Calculate (unpack) the final values of a codebook
+entry vector from the entries in <TT class=varname>[codebook_multiplicands]</TT>
+as follows (<TT class=varname>[value_vector]</TT> is the output vector
+representing the vector of values for entry number <TT
+class=varname>[lookup_offset]</TT> in this codebook): </P><PRE class=screen>  1) [last] = 0;
+  2) [index_divisor] = 1;
+  3) iterate [i] over the range 0 ... [codebook_dimensions]-1 (once for each scalar value in the value vector) {
+
+       4) [multiplicand_offset] = ( [lookup_offset] divided by [index_divisor] using integer
+          division ) integer modulo [codebook_lookup_values]
+
+       5) vector [value_vector] element [i] =
+            ( [codebook_multiplicands] array element number [multiplicand_offset] ) *
+            [codebook_delta_value] + [codebook_minimum_value] + [last];
+
+       6) if ( [codebook_sequence_p] is set ) then set [last] = vector [value_vector] element [i]
+
+       7) [index_divisor] = [index_divisor] * [codebook_lookup_values]
+
+     }
+
+  8) vector calculation completed.
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H6 class=title><A name=id5459466></A>3.2.1.2.2.&nbsp;Vector value decode:
+Lookup type 2</H6></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Lookup type two specifies a VQ lookup table in which each scalar in each
+vector is explicitly set by the <TT class=varname>[codebook_multiplicands]</TT>
+array in a one-to-one mapping. Calculate [unpack] the final values of a codebook
+entry vector from the entries in <TT class=varname>[codebook_multiplicands]</TT>
+as follows (<TT class=varname>[value_vector]</TT> is the output vector
+representing the vector of values for entry number <TT
+class=varname>[lookup_offset]</TT> in this codebook): </P><PRE class=screen>  1) [last] = 0;
+  2) [multiplicand_offset] = [lookup_offset] * [codebook_dimensions]
+  3) iterate [i] over the range 0 ... [codebook_dimensions]-1 (once for each scalar value in the value vector) {
+
+       4) vector [value_vector] element [i] =
+            ( [codebook_multiplicands] array element number [multiplicand_offset] ) *
+            [codebook_delta_value] + [codebook_minimum_value] + [last];
+
+       5) if ( [codebook_sequence_p] is set ) then set [last] = vector [value_vector] element [i]
+
+       6) increment [multiplicand_offset]
+
+     }
+
+  7) vector calculation completed.
+</PRE></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5459522></A>3.3.&nbsp;Use of the codebook
+abstraction</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The decoder uses the codebook abstraction much as it does the bit-unpacking
+convention; a specific codebook reads a codeword from the bitstream, decoding it
+into an entry number, and then returns that entry number to the decoder (when
+used in a scalar entropy coding context), or uses that entry number as an offset
+into the VQ lookup table, returning a vector of values (when used in a context
+desiring a VQ value). Scalar or VQ context is always explicit; any call to the
+codebook mechanism requests either a scalar entry number or a lookup vector.</P>
+<P>Note that VQ lookup type zero indicates that there is no lookup table;
+requesting decode using a codebook of lookup type 0 in any context expecting a
+vector return value (even in a case where a vector of dimension one) is
+forbidden. If decoder setup or decode requests such an action, that is an error
+condition rendering the packet undecodable.</P>
+<P>Using a codebook to read from the packet bitstream consists first of reading
+and decoding the next codeword in the bitstream. The decoder reads bits until
+the accumulated bits match a codeword in the codebook. This process can be
+though of as logically walking the Huffman decode tree by reading one bit at a
+time from the bitstream, and using the bit as a decision boolean to take the 0
+branch (left in the above examples) or the 1 branch (right in the above
+examples). Walking the tree finishes when the decode process hits a leaf in the
+decision tree; the result is the entry number corresponding to that leaf.
+Reading past the end of a packet propagates the 'end-of-stream' condition to the
+decoder.</P>
+<P>When used in a scalar context, the resulting codeword entry is the desired
+return value.</P>
+<P>When used in a VQ context, the codeword entry number is used as an offset
+into the VQ lookup table. The value returned to the decoder is the vector of
+scalars corresponding to this offset.</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A name=vorbis-spec-codec></A>4.&nbsp;Codec
+Setup and Packet Decode</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 04-codec.xml,v 1.8 2003/03/11 11:02:17 xiphmont Exp $
+<SPAN class=emphasis><EM>Last update to this document: March 11,
+2003</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5442379></A>4.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>This document serves as the top-level reference document for the bit-by-bit
+decode specification of Vorbis I. This document assumes a high-level
+understanding of the Vorbis decode process, which is provided in <!--<A
+title="1.&nbsp;Introduction and Description"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-intro">-->Section&nbsp;1,
+“Introduction and Description”<!--</A>-->. <!--<A title="2.&nbsp;Bitpacking Convention"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-bitpacking">-->Section&nbsp;2,
+“Bitpacking Convention”<!--</A>--> covers reading and writing bit fields from and to
+bitstream packets.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5442405></A>4.2.&nbsp;Header decode and decode
+setup</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A Vorbis bitstream begins with three header packets. The header packets are,
+in order, the identification header, the comments header, and the setup header.
+All are required for decode compliance. An end-of-packet condition during
+decoding the first or third header packet renders the stream undecodable.
+End-of-packet decoding the comment header is a non-fatal error condition.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5442424></A>4.2.1.&nbsp;Common header
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Each header packet begins with the same header fields. </P><PRE class=screen>  1) [packet_type] : 8 bit value
+  2) 0x76, 0x6f, 0x72, 0x62, 0x69, 0x73: the characters 'v','o','r','b','i','s' as six octets
+</PRE>
+<P>Decode continues according to packet type; the identification header is type
+1, the comment header type 3 and the setup header type 5 (these types are all
+odd as a packet with a leading single bit of '0' is an audio packet). The
+packets must occur in the order of identification, comment, setup.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5442452></A>4.2.2.&nbsp;Identification
+header</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The identification header is a short header of only a few fields used to
+declare the stream definitively as Vorbis, and provide a few externally relevant
+pieces of information about the audio stream. The identification header is coded
+as follows:</P><PRE class=screen> 1) [vorbis_version] = read 32 bits as unsigned integer
+ 2) [audio_channels] = read 8 bit integer as unsigned
+ 3) [audio_sample_rate] = read 32 bits as unsigned integer
+ 4) [bitrate_maximum] = read 32 bits as signed integer
+ 5) [bitrate_nominal] = read 32 bits as signed integer
+ 6) [bitrate_minimum] = read 32 bits as signed integer
+ 7) [blocksize_0] = 2 exponent (read 4 bits as unsigned integer)
+ 8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
+ 9) [framing_flag] = read one bit
+</PRE>
+<P><TT class=varname>[vorbis_version]</TT> is to read '0' in order to be
+compatible with this document. Both <TT class=varname>[audio_channels]</TT> and
+<TT class=varname>[audio_sample_rate]</TT> must read greater than zero. Allowed
+final blocksize values are 64, 128, 256, 512, 1024, 2048, 4096 and 8192 in
+Vorbis I. <TT class=varname>[blocksize_0]</TT> must be less than or equal to <TT
+class=varname>[blocksize_1]</TT>. The framing bit must be nonzero. Failure to
+meet any of these conditions renders a stream undecodable.</P>
+<P>The bitrate fields above are used only as hints. The nominal bitrate field
+especially may be considerably off in purely VBR streams. The fields are
+meaningful only when greater than zero.</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>All three fields set to the same value implies a fixed rate, or tightly
+  bounded, nearly fixed-rate bitstream
+  <LI>Only nominal set implies a VBR or ABR stream that averages the nominal
+  bitrate
+  <LI>Maximum and or minimum set implies a VBR bitstream that obeys the bitrate
+  limits
+  <LI>None set indicates the encoder does not care to
+speculate.</LI></UL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5440977></A>4.2.3.&nbsp;Comment
+header</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Comment header decode and data specification is covered in <!--<A
+title="5.&nbsp;comment field and header specification"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-comment">-->Section&nbsp;5,
+“comment field and header specification”<!--</A>-->.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5440994></A>4.2.4.&nbsp;Setup header</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis codec setup is configurable to an extreme degree: </P>
+<DIV class=mediaobject><IMG alt="[decoder pipeline configuration]"
+src="vorbis.files/components.png"></DIV>
+<P></P>
+<P>The setup header contains the bulk of the codec setup information needed for
+decode. The setup header contains, in order, the lists of codebook
+configurations, time-domain transform configurations (placeholders in Vorbis I),
+floor configurations, residue configurations, channel mapping configurations and
+mode configurations. It finishes with a framing bit of '1'. Header decode
+proceeds in the following order:</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5441042></A>4.2.4.1.&nbsp;Codebooks</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_codebook_count]</TT> = read eight bits as
+  unsigned integer and add one
+  <LI>Decode <TT class=varname>[vorbis_codebook_count]</TT> codebooks in order
+  as defined in <!--<A title="3.&nbsp;Probability Model and Codebooks"
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-codebook">-->Section&nbsp;3,
+  “Probability Model and Codebooks”<!--</A>-->. Save each configuration, in order, in
+  an array of codebook configurations <TT
+  class=varname>[vorbis_codebook_configurations]</TT>.</LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5441090></A>4.2.4.2.&nbsp;Time domain
+transforms</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>These hooks are placeholders in Vorbis I. Nevertheless, the configuration
+placeholder values must be read to maintain bitstream sync.</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_time_count]</TT> = read 6 bits as unsigned
+  integer and add one
+  <LI>read <TT class=varname>[vorbis_time_count]</TT> 16 bit values; each value
+  should be zero. If any value is nonzero, this is an error condition and the
+  stream is undecodable.</LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5441135></A>4.2.4.3.&nbsp;Floors</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis uses two floor types; header decode is handed to the decode
+abstraction of the appropriate type.</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_floor_count]</TT> = read 6 bits as unsigned
+  integer and add one
+  <LI>
+  <P>For each <TT class=varname>[i]</TT> of <TT
+  class=varname>[vorbis_floor_count]</TT> floor numbers: </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>read the floor type: vector <TT class=varname>[vorbis_floor_types]</TT>
+    element <TT class=varname>[i]</TT> = read 16 bits as unsigned integer
+    <LI>If the floor type is zero, decode the floor configuration as defined in
+    <!--<A title="6.&nbsp;Floor type 0 setup and decode"
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor0">-->Section&nbsp;6,
+    “Floor type 0 setup and decode”<!--</A>-->; save this configuration in slot <TT
+    class=varname>[i]</TT> of the floor configuration array <TT
+    class=varname>[vorbis_floor_configurations]</TT>.
+    <LI>If the floor type is one, decode the floor configuration as defined in
+    <!--<A title="7.&nbsp;Floor type 1 setup and decode"
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor1">-->Section&nbsp;7,
+    “Floor type 1 setup and decode”<!--</A>-->; save this configuration in slot <TT
+    class=varname>[i]</TT> of the floor configuration array <TT
+    class=varname>[vorbis_floor_configurations]</TT>.
+    <LI>If the the floor type is greater than one, this stream is undecodable;
+    ERROR CONDITION</LI></OL></DIV>
+  <P></P></LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5505719></A>4.2.4.4.&nbsp;Residues</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis uses three residue types; header decode of each type is identical.
+</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_residue_count]</TT> = read 6 bits as unsigned
+  integer and add one
+  <LI>
+  <P>For each of <TT class=varname>[vorbis_residue_count]</TT> residue numbers:
+  </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>read the residue type; vector <TT
+    class=varname>[vorbis_residue_types]</TT> element <TT class=varname>[i]</TT>
+    = read 16 bits as unsigned integer
+    <LI>If the residue type is zero, one or two, decode the residue
+    configuration as defined in <!--<A title="8.&nbsp;Residue setup and decode"
+    href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-residue">-->Section&nbsp;8,
+    “Residue setup and decode”<!--</A>-->; save this configuration in slot <TT
+    class=varname>[i]</TT> of the residue configuration array <TT
+    class=varname>[vorbis_residue_configurations]</TT>.
+    <LI>If the the residue type is greater than two, this stream is undecodable;
+    ERROR CONDITION</LI></OL></DIV>
+  <P></P></LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5505814></A>4.2.4.5.&nbsp;Mappings</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Mappings are used to set up specific pipelines for encoding multichannel
+audio with varying channel mapping applications. Vorbis I uses a single mapping
+type (0), with implicit PCM channel mappings.</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_mapping_count]</TT> = read 6 bits as unsigned
+  integer and add one
+  <LI>
+  <P>For each <TT class=varname>[i]</TT> of <TT
+  class=varname>[vorbis_mapping_count]</TT> mapping numbers: </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>read the mapping type: 16 bits as unsigned integer. There's no reason to
+    save the mapping type in Vorbis I.
+    <LI>If the mapping type is nonzero, the stream is undecodable
+    <LI>
+    <P>If the mapping type is zero: </P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>
+      <P>read 1 bit as a boolean flag </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>if set, <TT class=varname>[vorbis_mapping_submaps]</TT> = read 4
+        bits as unsigned integer and add one
+        <LI>if unset, <TT class=varname>[vorbis_mapping_submaps]</TT> =
+      1</LI></OL></DIV>
+      <P></P>
+      <LI>
+      <P>read 1 bit as a boolean flag </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>
+        <P>if set, square polar channel mapping is in use: </P>
+        <DIV class=orderedlist>
+        <OL type=I>
+          <LI><TT class=varname>[vorbis_mapping_coupling_steps]</TT> = read 8
+          bits as unsigned integer and add one
+          <LI>
+          <P>for <TT class=varname>[j]</TT> each of <TT
+          class=varname>[vorbis_mapping_coupling_steps]</TT> steps: </P>
+          <DIV class=orderedlist>
+          <OL type=1>
+            <LI>vector <TT class=varname>[vorbis_mapping_magnitude]</TT> element
+            <TT class=varname>[j]</TT>= read <!--<A title=9.2.1.&nbsp;ilog
+            href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->(<TT
+            class=varname>[audio_channels]</TT> - 1) bits as unsigned integer
+            <LI>vector <TT class=varname>[vorbis_mapping_angle]</TT> element <TT
+            class=varname>[j]</TT>= read <!--<A title=9.2.1.&nbsp;ilog
+            href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->(<TT
+            class=varname>[audio_channels]</TT> - 1) bits as unsigned integer
+            <LI>the numbers read in the above two steps are channel numbers
+            representing the channel to treat as magnitude and the channel to
+            treat as angle, respectively. If for any coupling step the angle
+            channel number equals the magnitude channel number, the magnitude
+            channel number is greater than <TT
+            class=varname>[audio_channels]</TT>-1, or the angle channel is
+            greater than <TT class=varname>[audio_channels]</TT>-1, the stream
+            is undecodable.</LI></OL></DIV>
+          <P></P></LI></OL></DIV>
+        <P></P>
+        <LI>if unset, <TT class=varname>[vorbis_mapping_coupling_steps]</TT> =
+        0</LI></OL></DIV>
+      <P></P>
+      <LI>read 2 bits (reserved field); if the value is nonzero, the stream is
+      undecodable
+      <LI>
+      <P>if <TT class=varname>[vorbis_mapping_submaps]</TT> is greater than one,
+      we read channel multiplex settings. For each <TT class=varname>[j]</TT> of
+      <TT class=varname>[audio_channels]</TT> channels:</P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>vector <TT class=varname>[vorbis_mapping_mux]</TT> element <TT
+        class=varname>[j]</TT> = read 4 bits as unsigned integer
+        <LI>if the value is greater than the highest numbered submap (<TT
+        class=varname>[vorbis_mapping_submaps]</TT> - 1), this in an error
+        condition rendering the stream undecodable</LI></OL></DIV>
+      <LI>
+      <P>for each submap <TT class=varname>[j]</TT> of <TT
+      class=varname>[vorbis_mapping_submaps]</TT> submaps, read the floor and
+      residue numbers for use in decoding that submap:</P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>read and discard 8 bits (the unused time configuration placeholder)
+        <LI>read 8 bits as unsigned integer for the floor number; save in vector
+        <TT class=varname>[vorbis_mapping_submap_floor]</TT> element <TT
+        class=varname>[j]</TT>
+        <LI>verify the floor number is not greater than the highest number floor
+        configured for the bitstream. If it is, the bitstream is undecodable
+        <LI>read 8 bits as unsigned integer for the residue number; save in
+        vector <TT class=varname>[vorbis_mapping_submap_residue]</TT> element
+        <TT class=varname>[j]</TT>
+        <LI>verify the residue number is not greater than the highest number
+        residue configured for the bitstream. If it is, the bitstream is
+        undecodable</LI></OL></DIV>
+      <LI>save this mapping configuration in slot <TT class=varname>[i]</TT> of
+      the mapping configuration array <TT
+      class=varname>[vorbis_mapping_configurations]</TT>.</LI></OL></DIV></LI></OL></DIV>
+  <P></P></LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5463340></A>4.2.4.6.&nbsp;Modes</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[vorbis_mode_count]</TT> = read 6 bits as unsigned
+  integer and add one
+  <LI>
+  <P>For each of <TT class=varname>[vorbis_mode_count]</TT> mode numbers:</P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI><TT class=varname>[vorbis_mode_blockflag]</TT> = read 1 bit
+    <LI><TT class=varname>[vorbis_mode_windowtype]</TT> = read 16 bits as
+    unsigned integer
+    <LI><TT class=varname>[vorbis_mode_transformtype]</TT> = read 16 bits as
+    unsigned integer
+    <LI><TT class=varname>[vorbis_mode_mapping]</TT> = read 8 bits as unsigned
+    integer
+    <LI>verify ranges; zero is the only legal value in Vorbis I for <TT
+    class=varname>[vorbis_mode_windowtype]</TT> and <TT
+    class=varname>[vorbis_mode_transformtype]</TT>. <TT
+    class=varname>[vorbis_mode_mapping]</TT> must not be greater than the
+    highest number mapping in use. Any illegal values render the stream
+    undecodable.
+    <LI>save this mode configuration in slot <TT class=varname>[i]</TT> of the
+    mode configuration array <TT
+    class=varname>[vorbis_mode_configurations]</TT>.</LI></OL></DIV>
+  <LI>read 1 bit as a framing flag. If unset, a framing error occurred and the
+  stream is not decodable.</LI></OL></DIV>
+<P>After reading mode descriptions, setup header decode is complete.
+</P></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5463476></A>4.3.&nbsp;Audio packet decode and
+synthesis</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Following the three header packets, all packets in a Vorbis I stream are
+audio. The first step of audio packet decode is to read and verify the packet
+type. <SPAN class=emphasis><EM>A non-audio packet when audio is expected
+indicates stream corruption or a non-compliant stream. The decoder must ignore
+the packet and not attempt decoding it to audio</EM></SPAN>. </P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5463497></A>4.3.1.&nbsp;packet type, mode and window
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>read 1 bit <TT class=varname>[packet_type]</TT>; check that packet type is
+  0 (audio)
+  <LI>read <!--<A title=9.2.1.&nbsp;ilog
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->([vorbis_mode_count]-1)
+  bits <TT class=varname>[mode_number]</TT>
+  <LI>decode blocksize <TT class=varname>[n]</TT> is equal to <TT
+  class=varname>[blocksize_0]</TT> if <TT
+  class=varname>[vorbis_mode_blockflag]</TT> is 0, else <TT
+  class=varname>[n]</TT> is equal to <TT class=varname>[blocksize_1]</TT>.
+  <LI>
+  <P>perform window selection and setup; this window is used later by the
+  inverse MDCT:</P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>if this is a long window (the <TT
+    class=varname>[vorbis_mode_blockflag]</TT> flag of this mode is set):</P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>read 1 bit for <TT class=varname>[previous_window_flag]</TT>
+      <LI>read 1 bit for <TT class=varname>[next_window_flag]</TT>
+      <LI>if <TT class=varname>[previous_window_flag]</TT> is not set, the left
+      half of the window will be a hybrid window for lapping with a short block.
+      See <!--<A title="1.3.2.3.&nbsp;Window shape decode (long windows only)"
+      href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-window">-->Section&nbsp;1.3.2.3,
+      “Window shape decode (long windows only)”<!--</A>--> for an illustration of
+      overlapping dissimilar windows. Else, the left half window will have
+      normal long shape.
+      <LI>if <TT class=varname>[next_window_flag]</TT> is not set, the right
+      half of the window will be a hybrid window for lapping with a short block.
+      See <!--<A title="1.3.2.3.&nbsp;Window shape decode (long windows only)"
+      href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-window">-->Section&nbsp;1.3.2.3,
+      “Window shape decode (long windows only)”<!--</A>--> for an illustration of
+      overlapping dissimilar windows. Else, the left right window will have
+      normal long shape.</LI></OL></DIV>
+    <LI>if this is a short window, the window is always the same short-window
+    shape.</LI></OL></DIV></LI></OL></DIV>
+<P>Vorbis windows all use the slope function y=sin(0.5 * &#960; * sin^2((x+.5)/n *
+&#960;)), where n is window size and x ranges 0...n-1, but dissimilar lapping
+requirements can affect overall shape. Window generation proceeds as
+follows:</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[window_center]</TT> = <TT class=varname>[n]</TT> / 2
+  <LI>
+  <P>if (<TT class=varname>[vorbis_mode_blockflag]</TT> is set and <TT
+  class=varname>[previous_window_flag]</TT> is not set) then </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI><TT class=varname>[left_window_start]</TT> = <TT
+    class=varname>[n]</TT>/4 - <TT class=varname>[blocksize_0]</TT>/4
+    <LI><TT class=varname>[left_window_end]</TT> = <TT class=varname>[n]</TT>/4
+    + <TT class=varname>[blocksize_0]</TT>/4
+    <LI><TT class=varname>[left_n]</TT> = <TT
+    class=varname>[blocksize_0]</TT>/2</LI></OL></DIV>
+  <P>else </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI><TT class=varname>[left_window_start]</TT> = 0
+    <LI><TT class=varname>[left_window_end]</TT> = <TT
+    class=varname>[window_center]</TT>
+    <LI><TT class=varname>[left_n]</TT> = <TT
+  class=varname>[n]</TT>/2</LI></OL></DIV>
+  <LI>
+  <P>if (<TT class=varname>[vorbis_mode_blockflag]</TT> is set and <TT
+  class=varname>[next_window_flag]</TT> is not set) then </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI><TT class=varname>[right_window_start]</TT> = <TT
+    class=varname>[n]*3</TT>/4 - <TT class=varname>[blocksize_0]</TT>/4
+    <LI><TT class=varname>[right_window_end]</TT> = <TT
+    class=varname>[n]*3</TT>/4 + <TT class=varname>[blocksize_0]</TT>/4
+    <LI><TT class=varname>[right_n]</TT> = <TT
+    class=varname>[blocksize_0]</TT>/2</LI></OL></DIV>
+  <P>else </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI><TT class=varname>[right_window_start]</TT> = <TT
+    class=varname>[window_center]</TT>
+    <LI><TT class=varname>[right_window_end]</TT> = <TT class=varname>[n]</TT>
+    <LI><TT class=varname>[right_n]</TT> = <TT
+  class=varname>[n]</TT>/2</LI></OL></DIV>
+  <LI>window from range 0 ... <TT class=varname>[left_window_start]</TT>-1
+  inclusive is zero
+  <LI>for <TT class=varname>[i]</TT> in range <TT
+  class=varname>[left_window_start]</TT> ... <TT
+  class=varname>[left_window_end]</TT>-1, window(<TT class=varname>[i]</TT>) =
+  sin(.5 * &#960; * sin^2( (<TT class=varname>[i]</TT>-<TT
+  class=varname>[left_window_start]</TT>+.5) / <TT class=varname>[left_n]</TT> *
+  .5 * &#960;) )
+  <LI>window from range <TT class=varname>[left_window_end]</TT> ... <TT
+  class=varname>[right_window_start]</TT>-1 inclusive is one
+  <LI>for <TT class=varname>[i]</TT> in range <TT
+  class=varname>[right_window_start]</TT> ... <TT
+  class=varname>[right_window_end]</TT>-1, window(<TT class=varname>[i]</TT>) =
+  sin(.5 * &#960; * sin^2( (<TT class=varname>[i]</TT>-<TT
+  class=varname>[right_window_start]</TT>+.5) / <TT class=varname>[right_n]</TT>
+  * .5 * &#960; + .5 * &#960;) )
+  <LI>window from range <TT class=varname>[rigth_window_start]</TT> ... <TT
+  class=varname>[n]</TT>-1 is zero</LI></OL></DIV>
+<P>An end-of-packet condition up to this point should be considered an error
+that discards this packet from the stream. An end of packet condition past this
+point is to be considered a possible nominal occurrence.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5508680></A>4.3.2.&nbsp;floor curve
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>From this point on, we assume out decode context is using mode number <TT
+class=varname>[mode_number]</TT> from configuration array <TT
+class=varname>[vorbis_mode_configurations]</TT> and the map number <TT
+class=varname>[vorbis_mode_mapping]</TT> (specified by the current mode) taken
+from the mapping configuration array <TT
+class=varname>[vorbis_mapping_configurations]</TT>.</P>
+<P>Floor curves are decoded one-by-one in channel order.</P>
+<P>For each floor <TT class=varname>[i]</TT> of <TT
+class=varname>[audio_channels]</TT> </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[submap_number]</TT> = element <TT
+  class=varname>[i]</TT> of vector [vorbis_mapping_mux]
+  <LI><TT class=varname>[floor_number]</TT> = element <TT
+  class=varname>[submap_number]</TT> of vector [vorbis_submap_floor]
+  <LI>if the floor type of this floor (vector <TT
+  class=varname>[vorbis_floor_types]</TT> element <TT
+  class=varname>[floor_number]</TT>) is zero then decode the floor for channel
+  <TT class=varname>[i]</TT> according to the <!--<A
+  title="6.2.2.&nbsp;packet decode"
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor0-decode">-->Section&nbsp;6.2.2,
+  “packet decode”<!--</A>-->
+  <LI>if the type of this floor is one then decode the floor for channel <TT
+  class=varname>[i]</TT> according to the <!--<A title="7.2.2.1.&nbsp;packet decode"
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor1-decode">-->Section&nbsp;7.2.2.1,
+  “packet decode”<!--</A>-->
+  <LI>save the needed decoded floor information for channel for later synthesis
+  <LI>if the decoded floor returned 'unused', set vector <TT
+  class=varname>[no_residue]</TT> element <TT class=varname>[i]</TT> to true,
+  else set vector <TT class=varname>[no_residue]</TT> element <TT
+  class=varname>[i]</TT> to false</LI></OL></DIV>
+<P></P>
+<P>An end-of-packet condition during floor decode shall result in packet decode
+zeroing all channel output vectors and skipping to the add/overlap output
+stage.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5508843></A>4.3.3.&nbsp;nonzero vector
+propagate</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A possible result of floor decode is that a specific vector is marked
+'unused' which indicates that that final output vector is all-zero values (and
+the floor is zero). The residue for that vector is not coded in the stream, save
+for one complication. If some vectors are used and some are not, channel
+coupling could result in mixing a zeroed and nonzeroed vector to produce two
+nonzeroed vectors.</P>
+<P>for each <TT class=varname>[i]</TT> from 0 ... <TT
+class=varname>[vorbis_mapping_coupling_steps]</TT>-1 </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>if either <TT class=varname>[no_residue]</TT> entry for channel (<TT
+  class=varname>[vorbis_mapping_magnitude]</TT> element <TT
+  class=varname>[i]</TT>) or (channel <TT
+  class=varname>[vorbis_mapping_angle]</TT> element <TT class=varname>[i]</TT>)
+  are set to false, then both must be set to false. Note that an 'unused' floor
+  has no decoded floor information; it is important that this is remembered at
+  floor curve synthesis time.</LI></OL></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5508915></A>4.3.4.&nbsp;residue
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Unlike floors, which are decoded in channel order, the residue vectors are
+decoded in submap order.</P>
+<P>for each submap <TT class=varname>[i]</TT> in order from 0 ... <TT
+class=varname>[vorbis_mapping_submaps]</TT>-1</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[ch]</TT> = 0
+  <LI>
+  <P>for each channel <TT class=varname>[j]</TT> in order from 0 ... <TT
+  class=varname>[audio_channels]</TT> - 1</P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>if channel <TT class=varname>[j]</TT> in submap <TT
+    class=varname>[i]</TT> (vector <TT class=varname>[vorbis_mapping_mux]</TT>
+    element <TT class=varname>[j]</TT> is equal to <TT
+    class=varname>[i]</TT>)</P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>
+      <P>if vector <TT class=varname>[no_residue]</TT> element <TT
+      class=varname>[j]</TT> is true </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>vector <TT class=varname>[do_not_decode_flag]</TT> element <TT
+        class=varname>[ch]</TT> is set</LI></OL></DIV>
+      <P>else </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI>vector <TT class=varname>[do_not_decode_flag]</TT> element <TT
+        class=varname>[ch]</TT> is unset</LI></OL></DIV>
+      <LI>increment <TT class=varname>[ch]</TT></LI></OL></DIV></LI></OL></DIV>
+  <LI><TT class=varname>[residue_number]</TT> = vector <TT
+  class=varname>[vorbis_mapping_submap_residue]</TT> element <TT
+  class=varname>[i]</TT>
+  <LI><TT class=varname>[residue_type]</TT> = vector <TT
+  class=varname>[vorbis_residue_types]</TT> element <TT
+  class=varname>[residue_number]</TT>
+  <LI>decode <TT class=varname>[ch]</TT> vectors using residue <TT
+  class=varname>[residue_number]</TT>, according to type <TT
+  class=varname>[residue_type]</TT>, also passing vector <TT
+  class=varname>[do_not_decode_flag]</TT> to indicate which vectors in the
+  bundle should not be decoded. Correct per-vector decode length is <TT
+  class=varname>[n]</TT>/2.
+  <LI><TT class=varname>[ch]</TT> = 0
+  <LI>
+  <P>for each channel <TT class=varname>[j]</TT> in order from 0 ... <TT
+  class=varname>[audio_channels]</TT></P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>if channel <TT class=varname>[j]</TT> is in submap <TT
+    class=varname>[i]</TT> (vector <TT class=varname>[vorbis_mapping_mux]</TT>
+    element <TT class=varname>[j]</TT> is equal to <TT
+    class=varname>[i]</TT>)</P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>residue vector for channel <TT class=varname>[j]</TT> is set to
+      decoded residue vector <TT class=varname>[ch]</TT>
+      <LI>increment <TT
+class=varname>[ch]</TT></LI></OL></DIV></LI></OL></DIV></LI></OL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5509244></A>4.3.5.&nbsp;inverse
+coupling</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>for each <TT class=varname>[i]</TT> from <TT
+class=varname>[vorbis_mapping_coupling_steps]</TT>-1 descending to 0 </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[magnitude_vector]</TT> = the residue vector for channel
+  (vector <TT class=varname>[vorbis_mapping_magnitude]</TT> element <TT
+  class=varname>[i]</TT>)
+  <LI><TT class=varname>[angle_vector]</TT> = the residue vector for channel
+  (vector <TT class=varname>[vorbis_mapping_angle]</TT> element <TT
+  class=varname>[i]</TT>)
+  <LI>
+  <P>for each scalar value <TT class=varname>[M]</TT> in vector <TT
+  class=varname>[magnitude_vector]</TT> and the corresponding scalar value <TT
+  class=varname>[A]</TT> in vector <TT class=varname>[angle_vector]</TT>:</P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>if (<TT class=varname>[M]</TT> is greater than zero) </P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>
+      <P>if (<TT class=varname>[A]</TT> is greater than zero) </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI><TT class=varname>[new_M]</TT> = <TT class=varname>[M]</TT>
+        <LI><TT class=varname>[new_A]</TT> = <TT class=varname>[M]</TT>-<TT
+        class=varname>[A]</TT></LI></OL></DIV>
+      <P>else </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI><TT class=varname>[new_A]</TT> = <TT class=varname>[M]</TT>
+        <LI><TT class=varname>[new_M]</TT> = <TT class=varname>[M]</TT>+<TT
+        class=varname>[A]</TT></LI></OL></DIV>
+      <P></P></LI></OL></DIV>
+    <P>else </P>
+    <DIV class=orderedlist>
+    <OL type=i>
+      <LI>
+      <P>if (<TT class=varname>[A]</TT> is greater than zero) </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI><TT class=varname>[new_M]</TT> = <TT class=varname>[M]</TT>
+        <LI><TT class=varname>[new_A]</TT> = <TT class=varname>[M]</TT>+<TT
+        class=varname>[A]</TT></LI></OL></DIV>
+      <P>else </P>
+      <DIV class=orderedlist>
+      <OL type=A>
+        <LI><TT class=varname>[new_A]</TT> = <TT class=varname>[M]</TT>
+        <LI><TT class=varname>[new_M]</TT> = <TT class=varname>[M]</TT>-<TT
+        class=varname>[A]</TT></LI></OL></DIV>
+      <P></P></LI></OL></DIV>
+    <P></P>
+    <LI>set scalar value <TT class=varname>[M]</TT> in vector <TT
+    class=varname>[magnitude_vector]</TT> to <TT class=varname>[new_M]</TT>
+    <LI>set scalar value <TT class=varname>[A]</TT> in vector <TT
+    class=varname>[angle_vector]</TT> to <TT
+  class=varname>[new_A]</TT></LI></OL></DIV></LI></OL></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5509571></A>4.3.6.&nbsp;dot product</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>For each channel, synthesize the floor curve from the decoded floor
+information, according to packet type. Note that the vector synthesis length for
+floor computation is <TT class=varname>[n]</TT>/2.</P>
+<P>For each channel, multiply each element of the floor curve by each element of
+that channel's residue vector. The result is the dot product of the floor and
+residue vectors for each channel; the produced vectors are the length <TT
+class=varname>[n]</TT>/2 audio spectrum for each channel.</P>
+<P>One point is worth mentioning about this dot product; a common mistake in a
+fixed point implementation might be to assume that a 32 bit fixed-point
+representation for floor and residue and direct multiplication of the vectors is
+sufficient for acceptable spectral depth in all cases because it happens to
+mostly work with the current Xiph.Org reference encoder. </P>
+<P>However, floor vector values can span ~140dB (~24 bits unsigned), and the
+audio spectrum vector should represent a minimum of 120dB (~21 bits with sign),
+even when output is to a 16 bit PCM device. For the residue vector to represent
+full scale if the floor is nailed to -140dB, it must be able to span 0 to
++140dB. For the residue vector to reach full scale if the floor is nailed at
+0dB, it must be able to represent -140dB to +0dB. Thus, in order to handle full
+range dynamics, a residue vector may span -140dB to +140dB entirely within spec.
+A 280dB range is approximately 48 bits with sign; thus the residue vector must
+be able to represent a 48 bit range and the dot product must be able to handle
+an effective 48 bit times 24 bit multiplication. This range may be achieved
+using large (64 bit or larger) integers, or implementing a movable binary point
+representation.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5509634></A>4.3.7.&nbsp;inverse MDCT</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Convert the audio spectrum vector of each channel back into time domain PCM
+audio via an inverse Modified Discrete Cosine Transform (MDCT). A detailed
+description of the MDCT is available in the paper <!--<A
+href="http://www.iocon.com/resource/docs/ps/eusipco_corrected.ps"
+target=_top>-->“<SPAN class=citetitle>The use of multirate filter banks for coding
+of high quality digital audio</SPAN>”<!--</A>-->, by T. Sporer, K. Brandenburg and B.
+Edler. The window function used for the MDCT is the function described
+earlier.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5509664></A>4.3.8.&nbsp;overlap_add</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Windowed MDCT output is overlapped and added with the right hand data of the
+previous window such that the 3/4 point of the previous window is aligned with
+the 1/4 point of the current window (as illustrated in <!--<A
+title="1.3.2.3.&nbsp;Window shape decode (long windows only)"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-window">-->Section&nbsp;1.3.2.3,
+“Window shape decode (long windows only)”<!--</A>-->). The overlapped portion produced
+from overlapping the previous and current frame data is finished data to be
+returned by the decoder. This data spans from the center of the previous window
+to the center of the current window. In the case of same-sized windows, the
+amount of data to return is one-half block consisting of and only of the
+overlapped portions. When overlapping a short and long window, much of the
+returned range does not actually overlap. This does not damage transform
+orthogonality. Pay attention however to returning the correct data range; the
+amount of data to be returned is: </P><PRE class=programlisting>window_blocksize(previous_window)/4+window_blocksize(current_window)/4
+</PRE>
+<P>from the center (element windowsize/2) of the previous window to the center
+(element windowsize/2-1, inclusive) of the current window.</P>
+<P>Data is not returned from the first frame; it must be used to 'prime' the
+decode engine. The encoder accounts for this priming when calculating PCM
+offsets; after the first frame, the proper PCM output offset is '0' (as no data
+has been returned yet).</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5509716></A>4.3.9.&nbsp;output channel
+order</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis I specifies only a channel mapping type 0. In mapping type 0, channel
+mapping is implicitly defined as follows for standard audio applications:</P>
+<DIV class=variablelist>
+<DL>
+  <DT><SPAN class=term>one channel</SPAN>
+  <DD>the stream is monophonic
+  <DT><SPAN class=term>two channels</SPAN>
+  <DD>the stream is stereo. channel order: left, right
+  <DT><SPAN class=term>three channels</SPAN>
+  <DD>the stream is a 1d-surround encoding. channel order: left, center, right
+  <DT><SPAN class=term>four channels</SPAN>
+  <DD>the stream is quadraphonic surround. channel order: front left, front
+  right, rear left, rear right
+  <DT><SPAN class=term>five channels</SPAN>
+  <DD>the stream is five-channel surround. channel order: front left, front
+  center, front right, rear left, rear right
+  <DT><SPAN class=term>six channels</SPAN>
+  <DD>the stream is 5.1 surround. channel order: front left, front center, front
+  right, rear left, rear right, LFE
+  <DT><SPAN class=term>greater than six channels</SPAN>
+  <DD>channel use and order is defined by the application</DD></DL></DIV>
+<P>Applications using Vorbis for dedicated purposes may define channel mapping
+as seen fit. Future channel mappings (such as three and four channel <!--<A
+href="http://www.ambisonic.net/" target=_top>-->Ambisonics<!--</A>-->) will make use of
+channel mappings other than mapping 0.</P></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-comment></A>5.&nbsp;comment field and header
+specification</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 05-comment.xml,v 1.5 2002/10/31 19:37:57 giles Exp $
+<SPAN class=emphasis><EM>Last update to this document: July 16, 2002</EM></SPAN>
+</P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506020></A>5.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Vorbis text comment header is the second (of three) header packets that
+begin a Vorbis bitstream. It is meant for short text comments, not arbitrary
+metadata; arbitrary metadata belongs in a separate logical bitstream (usually an
+XML stream type) that provides greater structure and machine parseability.</P>
+<P>The comment field is meant to be used much like someone jotting a quick note
+on the bottom of a CDR. It should be a little information to remember the disc
+by and explain it to others; a short, to-the-point text note that need not only
+be a couple words, but isn't going to be more than a short paragraph. The
+essentials, in other words, whatever they turn out to be, eg: </P>
+<DIV class=blockquote>
+<BLOCKQUOTE class=blockquote>
+  <P>Honest Bob and the Factory-to-Dealer-Incentives, <I class=citetitle>I'm
+  Still Around</I>, opening for Moxy Frьvous, 1997.</P></BLOCKQUOTE></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506061></A>5.2.&nbsp;Comment
+encoding</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5506067></A>5.2.1.&nbsp;Structure</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The comment header is logically a list of eight-bit-clean vectors; the number
+of vectors is bounded to 2^32-1 and the length of each vector is limited to
+2^32-1 bytes. The vector length is encoded; the vector contents themselves are
+not null terminated. In addition to the vector list, there is a single vector
+for vendor name (also 8 bit clean, length encoded in 32 bits). The 1.0 release
+of libvorbis sets the vendor string to "Xiph.Org libVorbis I 20020717".</P>
+<P>The comment header is decoded as follows: </P><PRE class=programlisting>  1) [vendor_length] = read an unsigned integer of 32 bits
+  2) [vendor_string] = read a UTF-8 vector as [vendor_length] octets
+  3) [user_comment_list_length] = read an unsigned integer of 32 bits
+  4) iterate [user_comment_list_length] times {
+       5) [length] = read an unsigned integer of 32 bits
+       6) this iteration's user comment = read a UTF-8 vector as [length] octets
+     }
+  7) [framing_bit] = read a single bit as boolean
+  8) if ( [framing_bit] unset or end-of-packet ) then ERROR
+  9) done.
+</PRE>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5506105></A>5.2.2.&nbsp;Content vector
+format</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The comment vectors are structured similarly to a UNIX environment variable.
+That is, comment fields consist of a field name and a corresponding value and
+look like:</P>
+<DIV class=blockquote>
+<BLOCKQUOTE class=blockquote><PRE class=programlisting>comment[0]="ARTIST=me";
+comment[1]="TITLE=the sound of Vorbis";
+</PRE></BLOCKQUOTE></DIV>
+<P>The field name is case-insensitive and may consist of ASCII 0x20 through
+0x7D, 0x3D ('=') excluded. ASCII 0x41 through 0x5A inclusive (characters A-Z) is
+to be considered equivalent to ASCII 0x61 through 0x7A inclusive (characters
+a-z). </P>
+<P>The field name is immediately followed by ASCII 0x3D ('='); this equals sign
+is used to terminate the field name. </P>
+<P>0x3D is followed by 8 bit clean UTF-8 encoded value of the field contents to
+the end of the field. </P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=id5506175></A>5.2.2.1.&nbsp;Field names</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Below is a proposed, minimal list of standard filed names with a description
+of intended use. No single or group of field names is mandatory; a comment
+header may contain one, all or none of the names in this list.</P>
+<DIV class=variablelist>
+<DL>
+  <DT><SPAN class=term>TITLE</SPAN>
+  <DD>Track/Work name
+  <DT><SPAN class=term>VERSION</SPAN>
+  <DD>The version field may be used to differentiate multiple versions of the
+  same track title in a single collection. (e.g. remix info)
+  <DT><SPAN class=term>ALBUM</SPAN>
+  <DD>The collection name to which this track belongs
+  <DT><SPAN class=term>TRACKNUMBER</SPAN>
+  <DD>The track number of this piece if part of a specific larger collection or
+  album
+  <DT><SPAN class=term>ARTIST</SPAN>
+  <DD>The artist generally considered responsible for the work. In popular music
+  this is usually the performing band or singer. For classical music it would be
+  the composer. For an audio book it would be the author of the original text.
+  <DT><SPAN class=term>PERFORMER</SPAN>
+  <DD>The artist(s) who performed the work. In classical music this would be the
+  conductor, orchestra, soloists. In an audio book it would be the actor who did
+  the reading. In popular music this is typically the same as the ARTIST and is
+  omitted.
+  <DT><SPAN class=term>COPYRIGHT</SPAN>
+  <DD>Copyright attribution, e.g., '2001 Nobody's Band' or '1999 Jack Moffitt'
+  <DT><SPAN class=term>LICENSE</SPAN>
+  <DD>License information, eg, 'All Rights Reserved', 'Any Use Permitted', a URL
+  to a license such as a Creative Commons license
+  ("www.creativecommons.org/blahblah/license.html") or the EFF Open Audio
+  License ('distributed under the terms of the Open Audio License. see
+  http://www.eff.org/IP/Open_licenses/eff_oal.html for details'), etc.
+  <DT><SPAN class=term>ORGANIZATION</SPAN>
+  <DD>Name of the organization producing the track (i.e. the 'record label')
+  <DT><SPAN class=term>DESCRIPTION</SPAN>
+  <DD>A short text description of the contents
+  <DT><SPAN class=term>GENRE</SPAN>
+  <DD>A short text indication of music genre
+  <DT><SPAN class=term>DATE</SPAN>
+  <DD>Date the track was recorded
+  <DT><SPAN class=term>LOCATION</SPAN>
+  <DD>Location where track was recorded
+  <DT><SPAN class=term>CONTACT</SPAN>
+  <DD>Contact information for the creators or distributors of the track. This
+  could be a URL, an email address, the physical address of the producing label.
+
+  <DT><SPAN class=term>ISRC</SPAN>
+  <DD>International Standard Recording Code for the track; see <!--<A
+  href="http://www.ifpi.org/site-content/online/isrc_intro.html" target=_top>-->the
+  ISRC intro page<!--</A>--> for more information on ISRC numbers. </DD></DL></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A
+name=id5461177></A>5.2.2.2.&nbsp;Implications</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Field names should not be 'internationalized'; this is a concession to
+simplicity not an attempt to exclude the majority of the world that doesn't
+speak English. Field <SPAN class=emphasis><EM>contents</EM></SPAN> however, use
+the UTF-8 character encoding to allow easy representation of any language.</P>
+<P>We have the length of the entirety of the field and restrictions on the field
+name so that the field name is bounded in a known way. Thus we also have the
+length of the field contents.</P>
+<P>Individual 'vendors' may use non-standard field names within reason. The
+proper use of comment fields should be clear through context at this point.
+Abuse will be discouraged.</P>
+<P>There is no vendor-specific prefix to 'nonstandard' field names. Vendors
+should make some effort to avoid arbitrarily polluting the common namespace. We
+will generally collect the more useful tags here to help with
+standardization.</P>
+<P>Field names are not required to be unique (occur once) within a comment
+header. As an example, assume a track was recorded by three well know artists;
+the following is permissible, and encouraged: </P>
+<DIV class=blockquote>
+<BLOCKQUOTE class=blockquote><PRE class=programlisting>ARTIST=Dizzy Gillespie
+ARTIST=Sonny Rollins
+ARTIST=Sonny Stitt
+</PRE></BLOCKQUOTE></DIV>
+<P></P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5461239></A>5.2.3.&nbsp;Encoding</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The comment header comprises the entirety of the second bitstream header
+packet. Unlike the first bitstream header packet, it is not generally the only
+packet on the second page and may not be restricted to within the second
+bitstream page. The length of the comment header packet is (practically)
+unbounded. The comment header packet is not optional; it must be present in the
+bitstream even if it is effectively empty.</P>
+<P>The comment header is encoded as follows (as per Ogg's standard bitstream
+mapping which renders least-significant-bit of the word to be coded into the
+least significant available bit of the current bitstream octet first): </P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>Vendor string length (32 bit unsigned quantity specifying number of
+  octets)
+  <LI>Vendor string ([vendor string length] octets coded from beginning of
+  string to end of string, not null terminated)
+  <LI>Number of comment fields (32 bit unsigned quantity specifying number of
+  fields)
+  <LI>Comment field 0 length (if [Number of comment fields]&gt;0; 32 bit
+  unsigned quantity specifying number of octets)
+  <LI>Comment field 0 ([Comment field 0 length] octets coded from beginning of
+  string to end of string, not null terminated)
+  <LI>Comment field 1 length (if [Number of comment fields]&gt;1...)...
+</LI></OL></DIV>
+<P></P>
+<P>This is actually somewhat easier to describe in code; implementation of the
+above can be found in <TT class=filename>vorbis/lib/info.c</TT>, <TT
+class=function>_vorbis_pack_comment()</TT> and <TT
+class=function>_vorbis_unpack_comment()</TT>. </P></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A name=vorbis-spec-floor0></A>6.&nbsp;Floor
+type 0 setup and decode</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 06-floor0.xml,v 1.7 2002/10/27 16:20:47 giles Exp $
+<SPAN class=emphasis><EM>Last update to this document: July 19, 2002</EM></SPAN>
+</P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506139></A>6.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis floor type zero uses Line Spectral Pair (LSP, also alternately known
+as Line Spectral Frequency or LSF) representation to encode a smooth spectral
+envelope curve as the frequency response of the LSP filter. This representation
+is equivalent to a traditional all-pole infinite impulse response filter as
+would be used in linear predictive coding; LSP representation may be converted
+to LPC representation and vice-versa.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5445522></A>6.2.&nbsp;Floor 0 format</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Floor zero configuration consists of six integer fields and a list of VQ
+codebooks for use in coding/decoding the LSP filter coefficient values used by
+each frame. </P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5445536></A>6.2.1.&nbsp;header decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Configuration information for instances of floor zero decodes from the codec
+setup header (third packet). configuration decode proceeds as follows:</P><PRE class=screen>  1) [floor0_order] = read an unsigned integer of 8 bits
+  2) [floor0_rate] = read an unsigned integer of 16 bits
+  3) [floor0_bark_map_size] = read an unsigned integer of 16 bits
+  4) [floor0_amplitude_bits] = read an unsigned integer of six bits
+  5) [floor0_amplitude_offset] = read an unsigned integer of eight bits
+  6) [floor0_number_of_books] = read an unsigned integer of four bits and add 1
+  7) if any of [floor0_order], [floor0_rate], [floor0_bark_map_size], [floor0_amplitude_bits],
+     [floor0_amplitude_offset] or [floor0_number_of_books] are less than zero, the stream is not decodable
+  8) array [floor0_book_list] = read a list of [floor0_number_of_books] unsigned integers of eight bits each;
+</PRE>
+<P>An end-of-packet condition during any of these bitstream reads renders this
+stream undecodable. In addition, any element of the array <TT
+class=varname>[floor0_book_list]</TT> that is greater than the maximum codebook
+number for this bitstream is an error condition that also renders the stream
+undecodable.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=vorbis-spec-floor0-decode></A>6.2.2.&nbsp;packet
+decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Extracting a floor0 curve from an audio packet consists of first decoding the
+curve amplitude and <TT class=varname>[floor0_order]</TT> LSP coefficient values
+from the bitstream, and then computing the floor curve, which is defined as the
+frequency response of the decoded LSP filter.</P>
+<P>Packet decode proceeds as follows:</P><PRE class=screen>  1) [amplitude] = read an unsigned integer of [floor0_amplitude_bits] bits
+  2) if ( [amplitude] is greater than zero ) {
+       3) [coefficients] is an empty, zero length vector
+
+       4) [booknumber] = read an unsigned integer of <!--<A title=9.2.1.&nbsp;ilog href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->( [floor0_number_of_books] ) bits
+       5) if ( [booknumber] is greater than the highest number decode codebook ) then packet is undecodable
+       6) [lastval] = zero;
+       7) vector [temp_vector] = read vector from bitstream using codebook number [booknumber] in VQ context.
+       8) add the scalar value [last] to each scalar in vector [temp_vector]
+       9) [last] = the value of the last scalar in vector [temp_vector]
+      10) concatenate [temp_vector] onto the end of the [coefficients] vector
+      11) if (length of vector [coefficients] is less than [floor0_order], continue at step 6
+
+     }
+
+ 12) done.
+
+</PRE>
+<P>Take note of the following properties of decode: </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>An <TT class=varname>[amplitude]</TT> value of zero must result in a
+  return code that indicates this channel is unused in this frame (the output of
+  the channel will be all-zeroes in synthesis). Several later stages of decode
+  don't occur for an unused channel.
+  <LI>An end-of-packet condition during decode should be considered a nominal
+  occruence; if end-of-packet is reached during any read operation above, floor
+  decode is to return 'unused' status as if the <TT
+  class=varname>[amplitude]</TT> value had read zero at the beginning of decode.
+  <LI>The book number used for decode can, in fact, be stored in the bitstream
+  in <!--<A title=9.2.1.&nbsp;ilog
+  href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->(
+  <TT class=varname>[floor0_number_of_books]</TT> - 1 ) bits. Nevertheless, the
+  above specification is correct and values greater than the maximum possible
+  book value are reserved.
+  <LI>The number of scalars read into the vector <TT
+  class=varname>[coefficients]</TT> may be greater than <TT
+  class=varname>[floor0_order]</TT>, the number actually required for curve
+  computation. For example, if the VQ codebook used for the floor currently
+  being decoded has a <TT class=varname>[codebook_dimensions]</TT> value of
+  three and <TT class=varname>[floor0_order]</TT> is ten, the only way to fill
+  all the needed scalars in <TT class=varname>[coefficients]</TT> is to to read
+  a total of twelve scalars as four vectors of three scalars each. This is not
+  an error condition, and care must be taken not to allow a buffer overflow in
+  decode. The extra values are not used and may be ignored or
+discarded.</LI></UL></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=vorbis-spec-floor0-synth></A>6.2.3.&nbsp;curve
+computation</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Given an <TT class=varname>[amplitude]</TT> integer and <TT
+class=varname>[coefficients]</TT> vector from packet decode as well as the
+[floor0_order], [floor0_rate], [floor0_bark_map_size], [floor0_amplitude_bits]
+and [floor0_amplitude_offset] values from floor setup, and an output vector size
+<TT class=varname>[n]</TT> specified by the decode process, we compute a floor
+output vector.</P>
+<P>If the value <TT class=varname>[amplitude]</TT> is zero, the return value is
+a length <TT class=varname>[n]</TT> vector with all-zero scalars. Otherwise,
+begin by assuming the following definitions for the given vector to be
+synthesized:</P>
+<DIV class=informalequation>
+<DIV class=mediaobject><IMG alt="[lsp map equation]"
+src="vorbis.files/lspmap.png"></DIV></DIV>
+<P>The above is used to synthesize the LSP curve on a Bark-scale frequency axis,
+then map the result to a linear-scale frequency axis. Similarly, the below
+calculation synthesizes the output LSP curve <TT class=varname>[output]</TT> on
+a log (dB) amplitude scale, mapping it to linear amplitude in the last step:</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI><TT class=varname>[i]</TT> = 0
+  <LI>
+  <P>if ( <TT class=varname>[floor0_order]</TT> is odd ) { </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>calculate <TT class=varname>[p]</TT> and <TT class=varname>[q]</TT>
+    according to: </P>
+    <DIV class=informalequation>
+    <DIV class=mediaobject><IMG alt="[equation for odd lsp]"
+    src="vorbis.files/oddlsp.png"></DIV></DIV>
+    <P></P></LI></OL></DIV>
+  <P>} else <TT class=varname>[floor0_order]</TT> is even { </P>
+  <DIV class=orderedlist>
+  <OL type=a>
+    <LI>
+    <P>calculate <TT class=varname>[p]</TT> and <TT class=varname>[q]</TT>
+    according to: </P>
+    <DIV class=informalequation>
+    <DIV class=mediaobject><IMG alt="[equation for even lsp]"
+    src="vorbis.files/evenlsp.png"></DIV></DIV>
+    <P></P></LI></OL></DIV>
+  <P>} </P>
+  <LI>
+  <P>calculate <TT class=varname>[linear_floor_value]</TT> according to: </P>
+  <DIV class=informalequation>
+  <DIV class=mediaobject><IMG alt="[expression for floorval]"
+  src="vorbis.files/floorval.png"></DIV></DIV>
+  <P></P>
+  <LI><TT class=varname>[iteration_condition]</TT> = map element <TT
+  class=varname>[i]</TT>
+  <LI><TT class=varname>[output]</TT> element <TT class=varname>[i]</TT> = <TT
+  class=varname>[linear_floor_value]</TT>
+  <LI>increment <TT class=varname>[i]</TT>
+  <LI>if ( map element <TT class=varname>[i]</TT> is equal to <TT
+  class=varname>[iteration_condition]</TT> ) continue at step 7
+  <LI>if ( <TT class=varname>[i]</TT> is less than <TT class=varname>[n]</TT> )
+  continue at step 2
+  <LI>done</LI></OL></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A name=vorbis-spec-floor1></A>7.&nbsp;Floor
+type 1 setup and decode</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 07-floor1.xml,v 1.5 2003/03/11 11:02:17 xiphmont Exp $
+<SPAN class=emphasis><EM>Last update to this document: March 11,
+2003</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5491631></A>7.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Vorbis floor type one uses a piecewise straight-line representation to encode
+a spectral envelope curve. The representation plots this curve mechanically on a
+linear frequency axis and a logarithmic (dB) amplitude axis. The integer
+plotting algorithm used is similar to Bresenham's algorithm.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5491649></A>7.2.&nbsp;Floor 1 format</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5491655></A>7.2.1.&nbsp;model</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Floor type one represents a spectral curve as a series of line segments.
+Synthesis constructs a floor curve using iterative prediction in a process
+roughly equivalent to the following simplified description:</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>the first line segment (base case) is a logical line spanning from x_0,y_0
+  to x_1,y_1 where in the base case x_0=0 and x_1=[n], the full range of the
+  spectral floor to be computed.
+  <LI>the induction step chooses a point x_new within an existing logical line
+  segment and produces a y_new value at that point computed from the existing
+  line's y value at x_new (as plotted by the line) and a difference value
+  decoded from the bitstream packet.
+  <LI>floor computation produces two new line segments, one running from x_0,y_0
+  to x_new,y_new and from x_new,y_new to x_1,y_1. This step is performed
+  logically even if y_new represents no change to the amplitude value at x_new
+  so that later refinement is additionally bounded at x_new.
+  <LI>the induction step repeats, using a list of x values specified in the
+  codec setup header at floor 1 initialization time. Computation is completed at
+  the end of the x value list.</LI></UL></DIV>
+<P>Consider the following example, with values chosen for ease of understanding
+rather than representing typical configuration:</P>
+<P>For the below example, we assume a floor setup with an [n] of 128. The list
+of selected X values in increasing order is 0,16,32,48,64,80,96,112 and 128. In
+list order, the values interleave as 0, 128, 64, 32, 96, 16, 48, 80 and 112. The
+corresponding list-order Y values as decoded from an example packet are 110, 20,
+-5, -45, 0, -25, -10, 30 and -10. We compute the floor in the following way,
+beginning with the first line:</P>
+<DIV class=mediaobject><IMG alt="[graph of example floor]"
+src="vorbis.files/floor1-1.png"></DIV>
+<P>We now draw new logical lines to reflect the correction to new_Y, and iterate
+for X positions 32 and 96:</P>
+<DIV class=mediaobject><IMG alt="[graph of example floor]"
+src="vorbis.files/floor1-2.png"></DIV>
+<P>Although the new Y value at X position 96 is unchanged, it is still used
+later as an endpoint for further refinement. From here on, the pattern should be
+clear; we complete the floor computation as follows:</P>
+<DIV class=mediaobject><IMG alt="[graph of example floor]"
+src="vorbis.files/floor1-3.png"></DIV>
+<DIV class=mediaobject><IMG alt="[graph of example floor]"
+src="vorbis.files/floor1-4.png"></DIV>
+<P>A more efficient algorithm with carefully defined integer rounding behavior
+is used for actual decode, as described later. The actual algorithm splits Y
+value computation and line plotting into two steps with modifications to the
+above algorithm to eliminate noise accumulation through integer
+roundoff/truncation. </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5458271></A>7.2.2.&nbsp;header decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A list of floor X values is stored in the packet header in interleaved format
+(used in list order during packet decode and synthesis). This list is split into
+partitions, and each partition is assigned to a partition class. X positions 0
+and [n] are implicit and do not belong to an explicit partition or partition
+class.</P>
+<P>A partition class consists of a representation vector width (the number of Y
+values which the partition class encodes at once), a 'subclass' value
+representing the number of alternate entropy books the partition class may use
+in representing Y values, the list of [subclass] books and a master book used to
+encode which alternate books were chosen for representation in a given packet.
+The master/subclass mechanism is meant to be used as a flexible representation
+cascade while still using codebooks only in a scalar context.</P><PRE class=screen>
+  1) [floor1_partitions] = read 5 bits as unsigned integer
+  2) [maximum_class] = -1
+  3) iterate [i] over the range 0 ... [floor1_partitions]-1 {
+
+        4) vector [floor1_partition_class_list] element [i] = read 4 bits as unsigned integer
+
+     }
+
+  5) [maximum_class] = largest integer scalar value in vector [floor1_partition_class_list]
+  6) iterate [i] over the range 0 ... [maximum_class] {
+
+        7) vector [floor1_class_dimensions] element [i] = read 3 bits as unsigned integer and add 1
+	8) vector [floor1_class_subclasses] element [i] = read 2 bits as unsigned integer
+        9) if ( vector [floor1_class_subclasses] element [i] is nonzero ) {
+
+             10) vector [floor1_class_masterbooks] element [i] = read 8 bits as unsigned integer
+
+           }
+
+       11) iterate [j] over the range 0 ... (2 exponent [floor1_class_subclasses] element [i]) - 1  {
+
+             12) array [floor1_subclass_books] element [i],[j] =
+                 read 8 bits as unsigned integer and subtract one
+           }
+      }
+
+ 13) [floor1_multiplier] = read 2 bits as unsigned integer and add one
+ 14) [rangebits] = read 4 bits as unsigned integer
+ 15) vector [floor1_X_list] element [0] = 0
+ 16) vector [floor1_X_list] element [1] = 2 exponent [rangebits];
+ 17) [floor1_values] = 2
+ 18) iterate [i] over the range 0 ... [floor1_partitions]-1 {
+
+       19) [current_class_number] = vector [floor1_partition_class_list] element [i]
+       20) iterate [j] over the range 0 ... ([floor1_class_dimensions] element [current_class_number])-1 {
+             21) vector [floor1_X_list] element ([j] + [floor1_values]) =
+                 read [rangebits] bits as unsigned integer
+             22) increment [floor1_values] by one
+           }
+     }
+
+ 23) done
+</PRE>
+<P>An end-of-packet condition while reading any aspect of a floor 1
+configuration during setup renders a stream undecodable. In addition, a <TT
+class=varname>[floor1_class_masterbooks]</TT> or <TT
+class=varname>[floor1_subclass_books]</TT> scalar element greater than the
+highest numbered codebook configured in this stream is an error condition that
+renders the stream undecodable.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=vorbis-spec-floor1-decode></A>7.2.2.1.&nbsp;packet
+decode</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Packet decode begins by checking the <TT class=varname>[nonzero]</TT>
+flag:</P><PRE class=screen>  1) [nonzero] = read 1 bit as boolean
+</PRE>
+<P>If <TT class=varname>[nonzero]</TT> is unset, that indicates this channel
+contained no audio energy in this frame. Decode immediately returns a status
+indicating this floor curve (and thus this channel) is unused this frame. (A
+return status of 'unused' is different from decoding a floor that has all points
+set to minimum representation amplitude, which happens to be approximately
+-140dB). </P>
+<P>Assuming <TT class=varname>[nonzero]</TT> is set, decode proceeds as
+follows:</P><PRE class=screen>  1) [range] = vector { 256, 128, 86, 64 } element ([floor1_multiplier]-1)
+  2) vector [floor1_Y] element [0] = read <!--<A title=9.2.1.&nbsp;ilog href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->([range]-1) bits as unsigned integer
+  3) vector [floor1_Y] element [1] = read <!--<A title=9.2.1.&nbsp;ilog href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-ilog">-->ilog<!--</A>-->([range]-1) bits as unsigned integer
+  4) [offset] = 2;
+  5) iterate [i] over the range 0 ... [floor1_partitions]-1 {
+
+       6) [class] = vector [floor1_partition_class]  element [i]
+       7) [cdim]  = vector [floor1_class_dimensions] element [class]
+       8) [cbits] = vector [floor1_class_subclasses] element [class]
+       9) [csub]  = (2 exponent [cbits])-1
+      10) [cval]  = 0
+      11) if ( [cbits] is greater than zero ) {
+
+             12) [cval] = read from packet using codebook number
+                 (vector [floor1_class_masterbooks] element [class]) in scalar context
+          }
+
+      13) iterate [j] over the range 0 ... [cdim]-1 {
+
+             14) [book] = array [floor1_subclass_books] element [class],([cval] bitwise AND [csub])
+             15) [cval] = [cval] right shifted [cbits] bits
+	     16) if ( [book] is not less than zero ) {
+
+	           17) vector [floor1_Y] element ([j]+[offset]) = read from packet using codebook
+                       [book] in scalar context
+
+                 } else [book] is less than zero {
+
+	           18) vector [floor1_Y] element ([j]+[offset]) = 0
+
+                 }
+          }
+
+      19) [offset] = [offset] + [cdim]
+
+     }
+
+ 20) done
+</PRE>
+<P>An end-of-packet condition during curve decode should be considered a nominal
+occurrence; if end-of-packet is reached during any read operation above, floor
+decode is to return 'unused' status as if the <TT class=varname>[nonzero]</TT>
+flag had been unset at the beginning of decode. </P>
+<P>Vector <TT class=varname>[floor1_Y]</TT> contains the values from packet
+decode needed for floor 1 synthesis.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A name=vorbis-spec-floor1-synth></A>7.2.2.2.&nbsp;curve
+computation</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Curve computation is split into two logical steps; the first step derives
+final Y amplitude values from the encoded, wrapped difference values taken from
+the bitstream. The second step plots the curve lines. Also, although
+zero-difference values are used in the iterative prediction to find final Y
+values, these points are conditionally skipped during final line computation in
+step two. Skipping zero-difference values allows a smoother line fit. </P>
+<P>Although some aspects of the below algorithm look like inconsequential
+optimizations, implementors are warned to follow the details closely. Deviation
+from implementing a strictly equivalent algorithm can result in serious decoding
+errors.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H6 class=title><A name=id5373664></A>7.2.2.2.1.&nbsp;step 1: amplitude value
+synthesis</H6></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Unwrap the always-positive-or-zero values read from the packet into +/-
+difference values, then apply to line prediction.</P><PRE class=screen>  1) [range] = vector { 256, 128, 86, 64 } element ([floor1_multiplier]-1)
+  2) vector [floor1_step2_flag] element [0] = set
+  3) vector [floor1_step2_flag] element [1] = set
+  4) vector [floor1_final_Y] element [0] = vector [floor1_Y] element [0]
+  5) vector [floor1_final_Y] element [1] = vector [floor1_Y] element [1]
+  6) iterate [i] over the range 2 ... [floor1_values]-1 {
+
+       7) [low_neighbor_offset] = <!--<A title=9.2.4.&nbsp;low_neighbor href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-low_neighbor">-->low_neighbor<!--</A>-->([floor1_X_list],[i])
+       8) [high_neighbor_offset] = <!--<A title=9.2.4.1.&nbsp;high_neighbor href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-high_neighbor">-->high_neighbor<!--</A>-->([floor1_X_list],[i])
+
+       9) [predicted] = <!--<A title=9.2.4.2.&nbsp;render_point href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-render_point">-->render_point<!--</A>-->( vector [floor1_X_list] element [low_neighbor_offset],
+				      vector [floor1_final_Y] element [low_neighbor_offset],
+                                      vector [floor1_X_list] element [high_neighbor_offset],
+				      vector [floor1_final_Y] element [high_neighbor_offset],
+                                      vector [floor1_X_list] element [i] )
+
+      10) [val] = vector [floor1_Y] element [i]
+      11) [highroom] = [range] - [predicted]
+      12) [lowroom]  = [predicted]
+      13) if ( [highroom] is less than [lowroom] ) {
+
+            14) [room] = [highroom] * 2
+
+          } else [highroom] is not less than [lowroom] {
+
+            15) [root] = [lowroom] * 2
+
+          }
+
+      16) if ( [val] is nonzero ) {
+
+            17) vector [floor1_step2_flag] element [low_neighbor_offset] = set
+            18) vector [floor1_step2_flag] element [high_neighbor_offset] = set
+            19) vector [floor1_step2_flag] element [i] = set
+            20) if ( [val] is greater than or equal to [room] ) {
+
+                  21) if ( [hiroom] is greater than [lowroom] ) {
+
+                        22) vector [floor1_final_Y] element [i] = [val] - [lowroom] + [predicted]
+
+		      } else [hiroom] is not greater than [lowroom] {
+
+                        23) vector [floor1_final_Y] element [i] = [predicted] - [val] + [hiroom] - 1
+
+                      }
+
+                } else [val] is less than [room] {
+
+		  24) if ([val] is odd) {
+
+                        25) vector [floor1_final_Y] element [i] =
+                            [predicted] - (([val] + 1) divided by  2 using integer division)
+
+                      } else [val] is even {
+
+                        26) vector [floor1_final_Y] element [i] =
+                            [predicted] + ([val] / 2 using integer division)
+
+                      }
+
+                }
+
+          } else [val] is zero {
+
+            27) vector [floor1_step2_flag] element [i] = unset
+            28) vector [floor1_final_Y] element [i] = [predicted]
+
+          }
+
+     }
+
+ 29) done
+
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H6 class=title><A name=id5510119></A>7.2.2.2.2.&nbsp;step 2: curve
+synthesis</H6></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Curve synthesis generates a return vector <TT class=varname>[floor]</TT> of
+length <TT class=varname>[n]</TT> (where <TT class=varname>[n]</TT> is provided
+by the decode process calling to floor decode). Floor 1 curve synthesis makes
+use of the <TT class=varname>[floor1_X_list]</TT>, <TT
+class=varname>[floor1_final_Y]</TT> and <TT
+class=varname>[floor1_step2_flag]</TT> vectors, as well as [floor1_multiplier]
+and [floor1_values] values.</P>
+<P>Decode begins by sorting the scalars from vectors <TT
+class=varname>[floor1_X_list]</TT>, <TT class=varname>[floor1_final_Y]</TT> and
+<TT class=varname>[floor1_step2_flag]</TT> together into new vectors <TT
+class=varname>[floor1_X_list]'</TT>, <TT class=varname>[floor1_final_Y]'</TT>
+and <TT class=varname>[floor1_step2_flag]'</TT> according to ascending sort
+order of the values in <TT class=varname>[floor1_X_list]</TT>. That is, sort the
+values of <TT class=varname>[floor1_X_list]</TT> and then apply the same
+permutation to elements of the other two vectors so that the X, Y and step2_flag
+values still match.</P>
+<P>Then compute the final curve in one pass:</P><PRE class=screen>  1) [hx] = 0
+  2) [lx] = 0
+  3) [ly] = vector [floor1_final_Y]' element [0] * [floor1_multiplier]
+  4) iterate [i] over the range 1 ... [floor1_values]-1 {
+
+       5) if ( [floor1_step2_flag]' is set ) {
+
+             6) [hy] = [floor1_final_Y]' element [i] * [floor1_multiplier]
+ 	     7) [hx] = [floor1_X_list]' element [i]
+             8) <!--<A title=9.2.4.3.&nbsp;render_line href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-render_line">-->render_line<!--</A>-->( [lx], [ly], [hx], [hy], [floor] )
+             9) [lx] = [hx]
+	    10) [ly] = [hy]
+          }
+     }
+
+ 11) if ( [hx] is less than [n] ) {
+
+        12) <!--<A title=9.2.4.3.&nbsp;render_line href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-render_line">-->render_line<!--</A>-->( [hx], [hy], [n], [hy], [floor] )
+
+     }
+
+ 13) if ( [hx] is greater than [n] ) {
+
+            14) truncate vector [floor] to [n] elements
+
+     }
+
+ 15) for each scalar in vector [floor], perform a lookup substitution using
+     the scalar value from [floor] as an offset into the vector <!--<A title=10.1.&nbsp;floor1_inverse_dB_table href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-floor1_inverse_dB_table">-->[floor1_inverse_dB_static_table]<!--</A>-->
+
+ 16) done
+
+</PRE></DIV></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-residue></A>8.&nbsp;Residue setup and decode</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 08-residue.xml,v 1.5 2003/03/11 11:02:17 xiphmont Exp
+$ <SPAN class=emphasis><EM>Last update to this document: March 11,
+2003</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5494391></A>8.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>A residue vector represents the fine detail of the audio spectrum of one
+channel in an audio frame after the encoder subtracts the floor curve and
+performs any channel coupling. A residue vector may represent spectral lines,
+spectral magnitude, spectral phase or hybrids as mixed by channel coupling. The
+exact semantic content of the vector does not matter to the residue
+abstraction.</P>
+<P>Whatever the exact qualities, the Vorbis residue abstraction codes the
+residue vectors into the bitstream packet, and then reconstructs the vectors
+during decode. Vorbis makes use of three different encoding variants (numbered
+0, 1 and 2) of the same basic vector encoding abstraction.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5494420></A>8.2.&nbsp;Residue format</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Reside format partitions each vector in the vector bundle into chunks,
+classifies each chunk, encodes the chunk classifications and finally encodes the
+chunks themselves using the the specific VQ arrangement defined for each
+selected selected classification. The exact interleaving and partitioning vary
+by residue encoding number, however the high-level process used to classify and
+encode the residue vector is the same in all three variants.</P>
+<P>A set of coded residue vectors are all of the same length. High level coding
+structure, ignoring for the moment exactly how a partition is encoded and simply
+trusting that it is, is as follows:</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>
+  <P>Each vector is partitioned into multiple equal sized chunks according to
+  configuration specified. If we have a vector size of <SPAN
+  class=emphasis><EM>n</EM></SPAN>, a partition size <SPAN
+  class=emphasis><EM>residue_partition_size</EM></SPAN>, and a total of <SPAN
+  class=emphasis><EM>ch</EM></SPAN> residue vectors, the total number of
+  partitioned chunks coded is <SPAN class=emphasis><EM>n</EM></SPAN>/<SPAN
+  class=emphasis><EM>residue_partition_size</EM></SPAN>*<SPAN
+  class=emphasis><EM>ch</EM></SPAN>. It is important to note that the integer
+  division truncates. In the below example, we assume an example <SPAN
+  class=emphasis><EM>residue_partition_size</EM></SPAN> of 8.</P>
+  <LI>
+  <P>Each partition in each vector has a classification number that specifies
+  which of multiple configured VQ codebook setups are used to decode that
+  partition. The classification numbers of each partition can be thought of as
+  forming a vector in their own right, as in the illustration below. Just as the
+  residue vectors are coded in grouped partitions to increase encoding
+  efficiency, the classification vector is also partitioned into chunks. The
+  integer elements of each scalar in a classification chunk are built into a
+  single scalar that represents the classification numbers in that chunk. In the
+  below example, the classification codeword encodes two classification
+  numbers.</P>
+  <LI>
+  <P>The values in a residue vector may be encoded monolithically in a single
+  pass through the residue vector, but more often efficient codebook design
+  dictates that each vector is encoded as the additive sum of several passes
+  through the residue vector using more than one VQ codebook. Thus, each residue
+  value potentially accumulates values from multiple decode passes. The
+  classification value associated with a partition is the same in each pass,
+  thus the classification codeword is coded only in the first
+pass.</P></LI></UL></DIV>
+<DIV class=mediaobject><IMG alt="[illustration of residue vector format]"
+src="vorbis.files/residue-pack.png"></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5494548></A>8.3.&nbsp;residue 0</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Residue 0 and 1 differ only in the way the values within a residue partition
+are interleaved during partition encoding (visually treated as a black box--or
+cyan box or brown box--in the above figure).</P>
+<P>Residue encoding 0 interleaves VQ encoding according to the dimension of the
+codebook used to encode a partition in a specific pass. The dimension of the
+codebook need not be the same in multiple passes, however the partition size
+must be an even multiple of the codebook dimension.</P>
+<P>As an example, assume a partition vector of size eight, to be encoded by
+residue 0 using codebook sizes of 8, 4, 2 and 1:</P><PRE class=programlisting>
+            original residue vector: [ 0 1 2 3 4 5 6 7 ]
+
+codebook dimensions = 8  encoded as: [ 0 1 2 3 4 5 6 7 ]
+
+codebook dimensions = 4  encoded as: [ 0 2 4 6 ], [ 1 3 5 7 ]
+
+codebook dimensions = 2  encoded as: [ 0 4 ], [ 1 5 ], [ 2 6 ], [ 3 7 ]
+
+codebook dimensions = 1  encoded as: [ 0 ], [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ]
+
+</PRE>
+<P>It is worth mentioning at this point that no configurable value in the
+residue coding setup is restricted to a power of two.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506416></A>8.4.&nbsp;residue 1</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Residue 1 does not interleave VQ encoding. It represents partition vector
+scalars in order. As with residue 0, however, partition length must be an
+integer multiple of the codebook dimension, although dimension may vary from
+pass to pass.</P>
+<P>As an example, assume a partition vector of size eight, to be encoded by
+residue 0 using codebook sizes of 8, 4, 2 and 1:</P><PRE class=programlisting>
+            original residue vector: [ 0 1 2 3 4 5 6 7 ]
+
+codebook dimensions = 8  encoded as: [ 0 1 2 3 4 5 6 7 ]
+
+codebook dimensions = 4  encoded as: [ 0 1 2 3 ], [ 4 5 6 7 ]
+
+codebook dimensions = 2  encoded as: [ 0 1 ], [ 2 3 ], [ 4 5 ], [ 6 7 ]
+
+codebook dimensions = 1  encoded as: [ 0 ], [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ]
+
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506450></A>8.5.&nbsp;residue 2</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Residue type two can be thought of as a variant of residue type 1. Rather
+than encoding multiple passed-in vectors as in residue type 1, the <SPAN
+class=emphasis><EM>ch</EM></SPAN> passed in vectors of length <SPAN
+class=emphasis><EM>n</EM></SPAN> are first interleaved and flattened into a
+single vector of length <SPAN class=emphasis><EM>ch</EM></SPAN>*<SPAN
+class=emphasis><EM>n</EM></SPAN>. Encoding then proceeds as in type 1. Decoding
+is as in type 1 with decode interleave reversed. If operating on a single vector
+to begin with, residue type 1 and type 2 are equivalent.</P>
+<DIV class=mediaobject><IMG alt="[illustration of residue type 2]"
+src="vorbis.files/residue2.png"></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5506510></A>8.6.&nbsp;Residue decode</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5506517></A>8.6.1.&nbsp;header decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Header decode for all three residue types is identical.</P><PRE class=programlisting>  1) [residue_begin] = read 24 bits as unsigned integer
+  2) [residue_end] = read 24 bits as unsigned integer
+  3) [residue_partition_size] = read 24 bits as unsigned integer and add one
+  4) [residue_classifications] = read 6 bits as unsigned integer and add one
+  5) [residue_classbook] = read 8 bits as unsigned integer
+</PRE>
+<P><TT class=varname>[residue_begin]</TT> and <TT
+class=varname>[residue_end]</TT> select the specific sub-portion of each vector
+that is actually coded; it implements akin to a bandpass where, for coding
+purposes, the vector effectively begins at element <TT
+class=varname>[residue_begin]</TT> and ends at <TT
+class=varname>[residue_end]</TT>. Preceding and following values in the unpacked
+vectors are zeroed. Note that for residue type 2, these values as well as <TT
+class=varname>[residue_partition_size]</TT>apply to the interleaved vector, not
+the individual vectors before interleave. <TT
+class=varname>[residue_partition_size]</TT> is as explained above, <TT
+class=varname>[residue_classifications]</TT> is the number of possible
+classification to which a partition can belong and <TT
+class=varname>[residue_classbook]</TT> is the codebook number used to code
+classification codewords. The number of dimensions in book <TT
+class=varname>[residue_classbook]</TT> determines how many classification values
+are grouped into a single classification codeword.</P>
+<P>Next we read a bitmap pattern that specifies which partition classes code
+values in which passes.</P><PRE class=programlisting>  1) iterate [i] over the range 0 ... [residue_classifications]-1 {
+
+       2) [high_bits] = 0
+       3) [low_bits] = read 3 bits as unsigned integer
+       4) [bitflag] = read one bit as boolean
+       5) if ( [bitflag] is set ) then [high_bits] = read five bits as unsigned integer
+       6) vector [residue_cascade] element [i] = [high_bits] * 8 + [low_bits]
+     }
+  7) done
+</PRE>
+<P>Finally, we read in a list of book numbers, each corresponding to specific
+bit set in the cascade bitmap. We loop over the possible codebook
+classifications and the maximum possible number of encoding stages (8 in Vorbis
+I, as constrained by the elements of the cascade bitmap being eight bits):</P><PRE class=programlisting>  1) iterate [i] over the range 0 ... [residue_classifications]-1 {
+
+       2) iterate [j] over the range 0 ... 7 {
+
+            3) if ( vector [residue_cascade] element [i] bit [j] is set ) {
+
+                 4) array [residue_books] element [i][j] = read 8 bits as unsigned integer
+
+               } else {
+
+                 5) array [residue_books] element [i][j] = unused
+
+               }
+          }
+      }
+
+  6) done
+</PRE>
+<P>An end-of-packet condition at any point in header decode renders the stream
+undecodable. In addition, any codebook number greater than the maximum numbered
+codebook set up in this stream also renders the stream undecodable.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5376899></A>8.6.2.&nbsp;packet decode</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Format 0 and 1 packet decode is identical except for specific partition
+interleave. Format 2 packet decode can be built out of the format 1 decode
+process. Thus we describe first the decode infrastructure identical to all three
+formats.</P>
+<P>In addition to configuration information, the residue decode process is
+passed the number of vectors in the submap bundle and a vector of flags
+indicating if any of the vectors are not to be decoded. If the passed in number
+of vectors is 3 and vector number 1 is marked 'do not decode', decode skips
+vector 1 during the decode loop. However, even 'do not decode' vectors are
+allocated and zeroed.</P>
+<P>The following convenience values are conceptually useful to clarifying the
+decode process:</P><PRE class=programlisting>  1) [classwords_per_codeword] = [codebook_dimensions] value of codebook [residue_classbook]
+  2) [n_to_read] = [residue_end] - [residue_begin]
+  3) [partitions_to_read] = [n_to_read] / [residue_partition_size]
+</PRE>
+<P>Packet decode proceeds as follows, matching the description offered earlier
+in the document. We assume that the number of vectors being encoded, <TT
+class=varname>[ch]</TT> is provided by the higher level decoding process.</P><PRE class=programlisting>  1) allocate and zero all vectors that will be returned.
+  2) iterate [pass] over the range 0 ... 7 {
+
+       3) [partition_count] = 0
+
+       4) if ([pass] is zero) {
+
+            5) iterate [j] over the range 0 .. [ch]-1 {
+
+                 6) if vector [j] is not marked 'do not decode' {
+
+                      7) [temp] = read from packet using codebook [residue_classbook] in scalar context
+                      8) iterate [i] descending over the range [classwords_per_codeword]-1 ... 0 {
+
+                           9) array [classifications] element [j],([i]+[partition_count]) =
+                              [temp] integer modulo [residue_classifications]
+                          10) [temp] = [temp] / [residue_classifications] using integer division
+
+                         }
+
+                    }
+
+               }
+
+          }
+
+      11) iterate [i] over the range 0 .. ([classwords_per_codeword] - 1) while [partition_count]
+          is also less than [partitions_to_read] {
+
+            12) iterate [j] over the range 0 .. [ch]-1 {
+
+                 13) if vector [j] is not marked 'do not decode' {
+
+                      14) [vqclass] = array [classifications] element [j],[partition_count]
+                      15) [vqbook] = array [residue_books] element [vqclass],[pass]
+                      16) if ([vqbook] is not 'unused') {
+
+                           17) decode partition into output vector number [j], starting at scalar
+                           offset [residue_begin]+[partition_count]*[residue_partition_size] using
+                           codebook number [vqbook] in VQ context
+                     }
+                }
+
+            18) increment [partition_count] by one
+
+          }
+     }
+
+ 19) done
+
+</PRE>
+<P>An end-of-packet condition during packet decode is to be considered a nominal
+occurrence. Decode returns the result of vector decode up to that
+point.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5377003></A>8.6.3.&nbsp;format 0
+specifics</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Format zero decodes partitions exactly as described earlier in the 'Residue
+Format: residue 0' section. The following pseudocode presents the same
+algorithm. Assume:</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI><TT class=varname>[n]</TT> is the value in <TT
+  class=varname>[residue_partition_size]</TT>
+  <LI><TT class=varname>[v]</TT> is the residue vector
+  <LI><TT class=varname>[offset]</TT> is the beginning read offset in
+[v]</LI></UL></DIV><PRE class=programlisting> 1) [step] = [n] / [codebook_dimensions]
+ 2) iterate [i] over the range 0 ... [step]-1 {
+
+      3) vector [entry_temp] = read vector from packet using current codebook in VQ context
+      4) iterate [j] over the range 0 ... [codebook_dimensions]-1 {
+
+           5) vector [v] element ([offset]+[i]+[j]*[step]) =
+	        vector [v] element ([offset]+[i]+[j]*[step]) +
+                vector [entry_temp] element [j]
+
+         }
+
+    }
+
+  6) done
+
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5377068></A>8.6.4.&nbsp;format 1
+specifics</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Format 1 decodes partitions exactly as described earlier in the 'Residue
+Format: residue 1' section. The following pseudocode presents the same
+algorithm. Assume:</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI><TT class=varname>[n]</TT> is the value in <TT
+  class=varname>[residue_partition_size]</TT>
+  <LI><TT class=varname>[v]</TT> is the residue vector
+  <LI><TT class=varname>[offset]</TT> is the beginning read offset in
+[v]</LI></UL></DIV><PRE class=programlisting> 1) [i] = 0
+ 2) vector [entry_temp] = read vector from packet using current codebook in VQ context
+ 3) iterate [j] over the range 0 ... [codebook_dimensions]-1 {
+
+      5) vector [v] element ([offset]+[i]) =
+	  vector [v] element ([offset]+[i]) +
+          vector [entry_temp] element [j]
+      6) increment [i]
+
+    }
+
+  4) if ( [i] is less than [n] ) continue at step 2
+  5) done
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5377131></A>8.6.5.&nbsp;format 2
+specifics</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Format 2 is reducible to format 1. It may be implemented as an additional
+stepprior to and an additional post-decode step after a normal format 1 decode.
+</P>
+<P>Format 2 handles 'do not decode' vectors differently than residue 0 or 1; if
+all vectors are marked 'do not decode', no decode occurrs. However, if at least
+one vector is to be decoded, all the vectors are decoded. We then request normal
+format 1 to decode a single vector representing all output channels, rather than
+a vector for each channel. After decode, deinterleave the vector into
+independent vectors, one for each output channel. That is:</P>
+<DIV class=orderedlist>
+<OL type=1>
+  <LI>If all vectors 0 through <SPAN class=emphasis><EM>ch</EM></SPAN>-1 are
+  marked 'do not decode', allocate and clear a single vector <TT
+  class=varname>[v]</TT>of length <SPAN class=emphasis><EM>ch*n</EM></SPAN> and
+  skip step 2 below; proceed directly to the post-decode step.
+  <LI>Rather than performing format 1 decode to produce <SPAN
+  class=emphasis><EM>ch</EM></SPAN> vectors of length <SPAN
+  class=emphasis><EM>n</EM></SPAN> each, call format 1 decode to produce a
+  single vector <TT class=varname>[v]</TT> of length <SPAN
+  class=emphasis><EM>ch*n</EM></SPAN>.
+  <LI>
+  <P>Post decode: Deinterleave the single vector <TT class=varname>[v]</TT>
+  returned by format 1 decode as described above into <SPAN
+  class=emphasis><EM>ch</EM></SPAN> independent vectors, one for each
+  outputchannel, according to: </P><PRE class=programlisting>  1) iterate [i] over the range 0 ... [n]-1 {
+
+       2) iterate [j] over the range 0 ... [ch]-1 {
+
+            3) output vector number [j] element [i] = vector [v] element ([i] * [ch] + [j])
+
+          }
+     }
+
+  4) done
+  </PRE>
+  <P></P></LI></OL></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-helper></A>9.&nbsp;Helper equations</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 09-helper.xml,v 1.5 2002/10/27 16:20:47 giles Exp $
+<SPAN class=emphasis><EM>Last update to this document: October 15,
+2002</EM></SPAN> </P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5511135></A>9.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The equations below are used in multiple places by the Vorbis codec
+specification. Rather than cluttering up the main specification documents, they
+are defined here and referenced where appropriate. </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5511152></A>9.2.&nbsp;Functions</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=vorbis-spec-ilog></A>9.2.1.&nbsp;ilog</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The "ilog(x)" function returns the position number (1 through n) of the
+highest set bit in the two's complement integer value <TT
+class=varname>[x]</TT>. Values of <TT class=varname>[x]</TT> less than zero are
+defined to return zero.</P><PRE class=programlisting>  1) [return_value] = 0;
+  2) if ( [x] is greater than zero ){
+
+       3) increment [return_value];
+       4) logical shift [x] one bit to the right, padding the MSb with zero
+       5) repeat at step 2)
+
+     }
+
+   6) done
+</PRE>
+<P>Examples: </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>ilog(0) = 0;
+  <LI>ilog(1) = 1;
+  <LI>ilog(2) = 2;
+  <LI>ilog(3) = 2;
+  <LI>ilog(4) = 3;
+  <LI>ilog(7) = 3;
+  <LI>ilog(negative number) = 0;</LI></UL></DIV>
+<P></P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A
+name=vorbis-spec-float32_unpack></A>9.2.2.&nbsp;float32_unpack</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>"float32_unpack(x)" is intended to translate the packed binary representation
+of a Vorbis codebook float value into the representation used by the decoder for
+floating point numbers. For purposes of this example, we will unpack a Vorbis
+float32 into a host-native floating point number.</P><PRE class=programlisting>  1) [mantissa] = [x] bitwise AND 0x1fffff (unsigned result)
+  2) [sign] = [x] bitwise AND 0x80000000 (unsigned result)
+  3) [exponent] = ( [x] bitwise AND 0x7fe00000) shifted right 21 bits (unsigned result)
+  4) if ( [sign] is nonzero ) then negate [mantissa]
+  5) return [mantissa] * ( 2 ^ ( [exponent] - 788 ) )
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A
+name=vorbis-spec-lookup1_values></A>9.2.3.&nbsp;lookup1_values</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>"lookup1_values(codebook_entries,codebook_dimensions)" is used to compute the
+correct length of the value index for a codebook VQ lookup table of lookup type
+1. The values on this list are permuted to construct the VQ vector lookup table
+of size <TT class=varname>[codebook_entries]</TT>.</P>
+<P>The return value for this function is defined to be 'the greatest integer
+value for which <TT class=varname>[return_value] to the power of
+[codebook_dimensions] is less than or equal to
+[codebook_entries]</TT>'.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A
+name=vorbis-spec-low_neighbor></A>9.2.4.&nbsp;low_neighbor</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>"low_neighbor(v,x)" finds the position <TT class=varname>n</TT> in vector <TT
+class=varname>[v]</TT> of the greatest value scalar element for which <TT
+class=varname>n</TT> is less than <TT class=varname>[x]</TT> and vector <TT
+class=varname>[v]</TT> element <TT class=varname>n</TT> is less than vector <TT
+class=varname>[v]</TT> element <TT class=varname>[x]</TT>.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A
+name=vorbis-spec-high_neighbor></A>9.2.4.1.&nbsp;high_neighbor</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>"high_neighbor(v,x)" finds the position <TT class=varname>n</TT> in vector
+[v] of the lowest value scalar element for which <TT class=varname>n</TT> is
+less than <TT class=varname>[x]</TT> and vector <TT class=varname>[v]</TT>
+element <TT class=varname>n</TT> is greater than vector <TT
+class=varname>[v]</TT> element <TT class=varname>[x]</TT>.</P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A
+name=vorbis-spec-render_point></A>9.2.4.2.&nbsp;render_point</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>"render_point(x0,y0,x1,y1,X)" is used to find the Y value at point X along
+the line specified by x0, x1, y0 and y1. This function uses an integer algorithm
+to solve for the point directly without calculating intervening values along the
+line.</P><PRE class=programlisting>  1)  [dy] = [y1] - [y0]
+  2) [adx] = [x1] - [x0]
+  3) [ady] = absolute value of [dy]
+  4) [err] = [ady] * ([X] - [x0])
+  5) [off] = [err] / [adx] using integer division
+  6) if ( [dy] is less than zero ) {
+
+       7) [Y] = [y0] - [off]
+
+     } else {
+
+       8) [Y] = [y0] + [off]
+
+     }
+
+  9) done
+</PRE></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H5 class=title><A
+name=vorbis-spec-render_line></A>9.2.4.3.&nbsp;render_line</H5></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Floor decode type one uses the integer line drawing algorithm of
+"render_line(x0, y0, x1, y1, v)" to construct an integer floor curve for
+contiguous piecewise line segments. Note that it has not been relevant
+elsewhere, but here we must define integer division as rounding division of both
+positive and negative numbers toward zero. </P><PRE class=programlisting>  1)   [dy] = [y1] - [y0]
+  2)  [adx] = [x1] - [x0]
+  3)  [ady] = absolute value of [dy]
+  4) [base] = [dy] / [adx] using integer division
+  5)    [x] = [x0]
+  6)    [y] = [y0]
+  7)  [err] = 0
+
+  8) if ( [dy] is less than 0 ) {
+
+        9) [sy] = [base] - 1
+
+     } else {
+
+       10) [sy] = [base] + 1
+
+     }
+
+ 11) [ady] = [ady] - (absolute value of [base]) * [adx]
+ 12) vector [v] element [x] = [y]
+
+ 13) iterate [x] over the range [x0]+1 ... [x1]-1 {
+
+       14) [err] = [err] + [ady];
+       15) if ( [err] &gt;= [adx] ) {
+
+             15) [err] = [err] - [adx]
+             16)   [y] = [y] + [sy]
+
+           } else {
+
+             17) [y] = [y] + [base]
+
+           }
+
+       18) vector [v] element [x] = [y]
+
+     }
+</PRE></DIV></DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-spec-tables></A>10.&nbsp;Tables</H2></DIV>
+<DIV>
+<P class=releaseinfo>$Id: 10-tables.xml,v 1.2 2002/10/27 14:55:31 giles Exp $
+<SPAN class=emphasis><EM>Last update to this document: July 18, 2002</EM></SPAN>
+</P></DIV></DIV>
+<DIV></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A
+name=vorbis-spec-floor1_inverse_dB_table></A>10.1.&nbsp;floor1_inverse_dB_table</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The vector <TT class=varname>[floor1_inverse_dB_table]</TT> is a 256 element
+static lookup table consiting of the following values (read left to right then
+top to bottom):</P><PRE class=screen>  1.0649863e-07, 1.1341951e-07, 1.2079015e-07, 1.2863978e-07,
+  1.3699951e-07, 1.4590251e-07, 1.5538408e-07, 1.6548181e-07,
+  1.7623575e-07, 1.8768855e-07, 1.9988561e-07, 2.1287530e-07,
+  2.2670913e-07, 2.4144197e-07, 2.5713223e-07, 2.7384213e-07,
+  2.9163793e-07, 3.1059021e-07, 3.3077411e-07, 3.5226968e-07,
+  3.7516214e-07, 3.9954229e-07, 4.2550680e-07, 4.5315863e-07,
+  4.8260743e-07, 5.1396998e-07, 5.4737065e-07, 5.8294187e-07,
+  6.2082472e-07, 6.6116941e-07, 7.0413592e-07, 7.4989464e-07,
+  7.9862701e-07, 8.5052630e-07, 9.0579828e-07, 9.6466216e-07,
+  1.0273513e-06, 1.0941144e-06, 1.1652161e-06, 1.2409384e-06,
+  1.3215816e-06, 1.4074654e-06, 1.4989305e-06, 1.5963394e-06,
+  1.7000785e-06, 1.8105592e-06, 1.9282195e-06, 2.0535261e-06,
+  2.1869758e-06, 2.3290978e-06, 2.4804557e-06, 2.6416497e-06,
+  2.8133190e-06, 2.9961443e-06, 3.1908506e-06, 3.3982101e-06,
+  3.6190449e-06, 3.8542308e-06, 4.1047004e-06, 4.3714470e-06,
+  4.6555282e-06, 4.9580707e-06, 5.2802740e-06, 5.6234160e-06,
+  5.9888572e-06, 6.3780469e-06, 6.7925283e-06, 7.2339451e-06,
+  7.7040476e-06, 8.2047000e-06, 8.7378876e-06, 9.3057248e-06,
+  9.9104632e-06, 1.0554501e-05, 1.1240392e-05, 1.1970856e-05,
+  1.2748789e-05, 1.3577278e-05, 1.4459606e-05, 1.5399272e-05,
+  1.6400004e-05, 1.7465768e-05, 1.8600792e-05, 1.9809576e-05,
+  2.1096914e-05, 2.2467911e-05, 2.3928002e-05, 2.5482978e-05,
+  2.7139006e-05, 2.8902651e-05, 3.0780908e-05, 3.2781225e-05,
+  3.4911534e-05, 3.7180282e-05, 3.9596466e-05, 4.2169667e-05,
+  4.4910090e-05, 4.7828601e-05, 5.0936773e-05, 5.4246931e-05,
+  5.7772202e-05, 6.1526565e-05, 6.5524908e-05, 6.9783085e-05,
+  7.4317983e-05, 7.9147585e-05, 8.4291040e-05, 8.9768747e-05,
+  9.5602426e-05, 0.00010181521, 0.00010843174, 0.00011547824,
+  0.00012298267, 0.00013097477, 0.00013948625, 0.00014855085,
+  0.00015820453, 0.00016848555, 0.00017943469, 0.00019109536,
+  0.00020351382, 0.00021673929, 0.00023082423, 0.00024582449,
+  0.00026179955, 0.00027881276, 0.00029693158, 0.00031622787,
+  0.00033677814, 0.00035866388, 0.00038197188, 0.00040679456,
+  0.00043323036, 0.00046138411, 0.00049136745, 0.00052329927,
+  0.00055730621, 0.00059352311, 0.00063209358, 0.00067317058,
+  0.00071691700, 0.00076350630, 0.00081312324, 0.00086596457,
+  0.00092223983, 0.00098217216, 0.0010459992,  0.0011139742,
+  0.0011863665,  0.0012634633,  0.0013455702,  0.0014330129,
+  0.0015261382,  0.0016253153,  0.0017309374,  0.0018434235,
+  0.0019632195,  0.0020908006,  0.0022266726,  0.0023713743,
+  0.0025254795,  0.0026895994,  0.0028643847,  0.0030505286,
+  0.0032487691,  0.0034598925,  0.0036847358,  0.0039241906,
+  0.0041792066,  0.0044507950,  0.0047400328,  0.0050480668,
+  0.0053761186,  0.0057254891,  0.0060975636,  0.0064938176,
+  0.0069158225,  0.0073652516,  0.0078438871,  0.0083536271,
+  0.0088964928,  0.009474637,   0.010090352,   0.010746080,
+  0.011444421,   0.012188144,   0.012980198,   0.013823725,
+  0.014722068,   0.015678791,   0.016697687,   0.017782797,
+  0.018938423,   0.020169149,   0.021479854,   0.022875735,
+  0.024362330,   0.025945531,   0.027631618,   0.029427276,
+  0.031339626,   0.033376252,   0.035545228,   0.037855157,
+  0.040315199,   0.042935108,   0.045725273,   0.048696758,
+  0.051861348,   0.055231591,   0.058820850,   0.062643361,
+  0.066714279,   0.071049749,   0.075666962,   0.080584227,
+  0.085821044,   0.091398179,   0.097337747,   0.10366330,
+  0.11039993,    0.11757434,    0.12521498,    0.13335215,
+  0.14201813,    0.15124727,    0.16107617,    0.17154380,
+  0.18269168,    0.19456402,    0.20720788,    0.22067342,
+  0.23501402,    0.25028656,    0.26655159,    0.28387361,
+  0.30232132,    0.32196786,    0.34289114,    0.36517414,
+  0.38890521,    0.41417847,    0.44109412,    0.46975890,
+  0.50028648,    0.53279791,    0.56742212,    0.60429640,
+  0.64356699,    0.68538959,    0.72993007,    0.77736504,
+  0.82788260,    0.88168307,    0.9389798,     1.
+</PRE></DIV></DIV>
+<DIV class=appendix lang=en>
+<H2 class=title style="CLEAR: both"><A
+name=vorbis-over-ogg></A>A.&nbsp;Embedding Vorbis into an Ogg stream</H2>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5499999></A>A.1.&nbsp;Overview</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>This document describes using Ogg logical and physical transport streams to
+encapsulate Vorbis compressed audio packet data into file form.</P>
+<P>The <!--<A title="1.&nbsp;Introduction and Description"
+href="http://www.xiph.org/ogg/vorbis/doc/Vorbis_I_spec.html#vorbis-spec-intro">-->Section&nbsp;1,
+“Introduction and Description”<!--</A>--> provides an overview of the construction of
+Vorbis audio packets.</P>
+<P>The <!--<A href="http://www.xiph.org/ogg/vorbis/doc/oggstream.html"
+target=_top>-->Ogg bitstream overview<!--</A>--> and <!--<A
+href="http://www.xiph.org/ogg/vorbis/doc/framing.html" target=_top>-->Ogg logical
+bitstream and framing spec<!--</A>--> provide detailed descriptions of Ogg transport
+streams. This specification document assumes a working knowledge of the concepts
+covered in these named backround documents. Please read them first.</P>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5500042></A>A.1.1.&nbsp;Restrictions</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The Ogg/Vorbis I specification currently dictates that Ogg/Vorbis streams use
+Ogg transport streams in degenerate, unmultiplexed form only. That is: </P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>A meta-headerless Ogg file encapsulates the Vorbis I packets
+  <LI>The Ogg stream may be chained, i.e. contain multiple, contigous logical
+  streams (links).
+  <LI>The Ogg stream must be unmultiplexed (only one stream, a Vorbis audio
+  stream, per link) </LI></UL></DIV>
+<P></P>
+<P>This is not to say that it is not currently possible to multiplex Vorbis with
+other media types into a multi-stream Ogg file. At the time this document was
+written, Ogg was becoming a popular container for low-bitrate movies consisting
+of DiVX video and Vorbis audio. However, a 'Vorbis I audio file' is taken to
+imply Vorbis audio existing alone within a degenerate Ogg stream. A compliant
+'Vorbis audio player' is not required to implement Ogg support beyond the
+specific support of Vorbis within a degenrate ogg stream (naturally, application
+authors are encouraged to support full multiplexed Ogg handling). </P></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H4 class=title><A name=id5500095></A>A.1.2.&nbsp;MIME type</H4></DIV></DIV>
+<DIV></DIV></DIV>
+<P>The correct MIME type of any Ogg file is <TT
+class=literal>application/x-ogg</TT>. However, if a file is a Vorbis I audio
+file (which implies a degenerate Ogg stream including only unmultiplexed Vorbis
+audio), the mime type <TT class=literal>audio/x-vorbis</TT> is also
+allowed.</P></DIV></DIV>
+<DIV class=section lang=en>
+<DIV class=titlepage>
+<DIV>
+<DIV>
+<H3 class=title><A name=id5500122></A>A.2.&nbsp;Encapsulation</H3></DIV></DIV>
+<DIV></DIV></DIV>
+<P>Ogg encapsulation of a Vorbis packet stream is straightforward.</P>
+<DIV class=itemizedlist>
+<UL type=disc>
+  <LI>The first Vorbis packet (the indentification header), which uniquely
+  identifies a stream as Vorbis audio, is placed alone in the first page of the
+  logical Ogg stream. This results in a first Ogg page of exactly 58 bytes at
+  the very beginning of the logical stream.
+  <LI>This first page is marked 'beginning of stream' in the page flags.
+  <LI>The second and third vorbis packets (comment and setup headers) may span
+  one or more pages beginning on the second page of the logical stream. However
+  many pages they span, the third header packet finishes the page on which it
+  ends. The next (first audio) packet must begin on a fresh page.
+  <LI>The granule position of these first pages containing only headers is zero.
+
+  <LI>The first audio packet of the logical stream begins a fresh Ogg page.
+  <LI>Packets are placed into ogg pages in order until the end of stream.
+  <LI>The last page is marked 'end of stream' in the page flags.
+  <LI>Vorbis packets may span page boundaries.
+  <LI>The granule position of pages containing Vorbis audio is in units of PCM
+  audio samples (per channel; a stereo stream's granule position does not
+  increment at twice the speed of a mono stream).
+  <LI>The granule position of a page represents the end PCM sample position of
+  the last packet <SPAN class=emphasis><EM>completed</EM></SPAN> on that page. A
+  page that is entirely spanned by a single packet (that completes on a
+  subsequent page) has no granule position, and the granule position is set to
+  '-1'.
+  <LI>
+  <P>The granule (PCM) position of the first page need not indicate that the
+  stream started at position zero. Although the granule position belongs to the
+  last completed packet on the page and a valid granule position must be
+  positive, by inference it may indicate that the PCM position of the beginning
+  of audio is positive or negative. </P>
+  <DIV class=itemizedlist>
+  <UL type=circle>
+    <LI>A positive starting value simply indicates that this stream begins at
+    some positive time offset, potentially within a larger program. This is a
+    common case when connecting to the middle of broadcast stream.
+    <LI>A negative value indicates that output samples preceeding time zero
+    should be discarded during decoding; this technique is used to allow
+    sample-granularity editing of the stream start time of already-encoded
+    Vorbis streams. The number of samples to be discarded must not exceed the
+    overlap-add span of the first two audio packets. </LI></UL></DIV>
+  <P>In both of these cases in which the initial audio PCM starting offset is
+  nonzero, the second finished audio packet must flush the page on which it
+  appears and the third packet begin a fresh page. This allows the decoder to
+  always be able to perform PCM position adjustments before needing to return
+  any PCM data from synthesis, resulting in correct positioning information
+  without any aditional seeking logic. </P>
+  <DIV class=note style="MARGIN-LEFT: 0.5in; MARGIN-RIGHT: 0.5in">
+  <H3 class=title>Note</H3>
+  <P>Failure to do so should, at worst, cause a decoder implementation to return
+  incorrect positioning information for seeking operations at the very beginning
+  of the stream. </P></DIV>
+  <LI>A granule position on the final page in a stream that indicates less audio
+  data than the final packet would normally return is used to end the stream on
+  other than even frame boundaries. The difference between the actual available
+  data returned and the declared amount indicates how many trailing samples to
+  discard from the decoding process. </LI></UL></DIV></DIV></DIV>
+<DIV class=appendix lang=en>
+<H2 class=title style="CLEAR: both"><A name=vorbis-over-rtp></A>B.&nbsp;Vorbis
+encapsulation in RTP</H2><PRE class=literallayout>
+
+Network Working Group				Jack Moffitt
+Internet-Draft					Xiph.org Foundation
+Expire in six months				February 2001
+
+
+	    RTP Payload Format for Vorbis Encoded Audio
+
+		   &lt;draft-moffitt-vorbis-rtp-00.txt&gt;
+
+Status of this Memo
+
+   This document is an Internet-Draft and is in full conformance
+   with all provisions of Section 10 of RFC2026.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF), its areas, and its working groups.  Note that
+   other groups may also distribute working documents as
+   Internet-Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six
+   months and may be updated, replaced, or obsoleted by other
+   documents at any time.  It is inappropriate to use Internet-
+   Drafts as reference material or to cite them other than as
+   "work in progress".
+
+   The list of current Internet-Drafts can be accessed at
+   http://www.ietf.org/ietf/1id-abstracts.txt
+
+   The list of Internet-Draft Shadow Directories can be accessed at
+   http://www.ietf.org/shadow.html.
+
+Abstract
+
+   This document describes a RTP payload format for transporting Vorbis
+   encoded audio.
+
+1 Introduction
+
+   This document describes how Vorbis encoded audio may be formatted for
+   use as an RTP payload type.
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [1].
+
+2 Background
+
+   The Xiph.org Foundation creates and defines codecs for use in
+   multimedia that are not encumbered by patents and thus may be freely
+   implemented by any individual or organization.
+
+   Vorbis is the general purpose multi-channel audio codec created by
+   the Xiph.org Foundation.
+
+   Vorbis encoded audio is generally found within an Ogg format
+   bitstream, which provides framing and synchronization.  For the
+   purposes of RTP transport, this layer is unnecessary, and so raw
+   Vorbis packets are used in the payload.
+
+   Vorbis packets are unbounded in length currently.  At some future
+   point there will likely be a practical limit placed on packet
+   length.
+
+   Typical Vorbis packet sizes are from very small (2-3 bytes) to
+   quite large (8-12 kilobytes).  The reference implementation seems to
+   make every packet less than ~800 bytes, except for the codebooks
+   packet which is ~8-12 kilobytes.
+
+3 Payload Format
+
+   The standard RTP header is followed by an 8 bit payload header, and
+   the payload data.
+
+3.1 RTP Header
+
+   The following fields of the RTP header are used for Vorbis payloads:
+
+   Payload Type (PT): 7 bits
+      An RTP profile for a class of applications is expected to assign a
+      payload type for this format, or a dynamically allocated payload
+      type should be chosen which designates the payload as Vorbis.
+
+   Timestamp: 32 bits
+      A timestamp representing the sampling time of the first sample of
+      the first Vorbis packet in the RTP packet.  The clock frequency
+      MUST be set to the sample rate of the encoded audio data and is
+      conveyed out-of-band.
+
+   Marker (M): 1 bit
+      Set to one if the payload contains complete packets or if it
+      contains the last fragment of a fragmented packet.
+
+3.2 Payload Header
+
+   The first byte of the payload data is the payload header:
+
+           +---+---+---+---+---+---+---+---+
+           | C | R | R |  # of packets     |
+           +---+---+---+---+---+---+---+---+
+
+   C: 1 bit
+      Set to one if this is a continuation of a fragmented packet.
+
+   R: 1 bit x 2
+      Reserved, must be set to zero by senders, and ignored by
+      receivers.
+
+   The last 5 bits are the number of complete packets in this payload.
+   If C is set to one, this number should be 0.
+
+3.3 Payload Data
+
+   If the payload contains a single Vorbis packet or a Vorbis packet
+   fragment, the Vorbis packet data follows the payload header.
+
+   For payloads which consist of multiple Vorbis packets, payload data
+   consists of one byte representing the packet length followed by the
+   packet data for each of the Vorbis packets in the payload.
+
+   The Vorbis packet length byte is the length minus one.  A value of
+   0 means a length of 1.
+
+3.4 Example RTP Packet
+
+   Here is an example RTP packet containing two Vorbis packets.
+
+   RTP Packet Header:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 8 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|      PT     |      sequence number          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                 timestamp (in sample rate units)              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         sychronization source (SSRC) identifier               |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |         contributing source (CSRC) identifiers                |
+   |                      ...                                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   Payload Data:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|0|0| # pks: 2|      len      |  vorbis data ...              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                  ...vorbis data...                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     ...       |      len      | next vorbis packet data...    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+4 Frame Packetizing
+
+   Each RTP packet contains either one complete Vorbis packet, one
+   Vorbis packet fragment, or an integer number of complete Vorbis
+   packets (a max of 32 packets, since the number of packets is
+   defined by a 5 bit value).
+
+   Any Vorbis packet that is larger than 256 bytes and less than the
+   path-MTU should be placed in a RTP packet by itself.
+
+   Any Vorbis packet that is 256 bytes or less should be bundled in the
+   RTP packet with as many Vorbis packets as will fit, up to a maximum
+   of 32.
+
+   If a packet will not fit into the RTP packet, it must be fragmented.
+   A fragmented packet has a zero in the last five bits of the payload
+   header.  Each fragment after the first will also set the Continued
+   (C) bit to one in the payload header.  The RTP packet containing the
+   last fragment of the Vorbis packet will have the Marker (M) bit set
+   to one.
+
+5 Open Issues
+
+   To decode a Vorbis stream, a set of codebooks is required.  These
+   codebooks are allowed to change for each logical bitstream (for
+   example, for each song encoded in a radio stream).
+
+   The codebooks must be completely intact and a client can not decode
+   a stream with an incomplete or corrupted set.
+
+   A client connecting to a multicast RTP Vorbis session needs to get the
+   first set of codebooks in some manner.  These codebooks are typically
+   between 4 kilobytes and 8 kilobytes in size.
+
+   A final solution to how best to deliver the codebooks has not yet been
+   realized.  Here are the current proposals:
+
+   - Including the first set of codebooks in the SDP description
+
+   - Broadcasting a codebook only stream as a second multicast Vorbis
+     stream
+
+   - Create some method of requesting the codebooks via RTCP
+
+   - Periodically retransmit the headers inline
+
+6 Security Considerations
+
+   RTP packets using this payload format are subject to the security
+   considerations discussed in the RTP specification [1].  This implies
+   that the confidentiality of the media stream is achieved by using
+   encryption.  Becase the data compression used with this payload
+   format is applied end-to-end, encryption may be performed on the
+   compressed data.
+
+7 Acknowledgements
+
+   Thanks to the rest of the Xiph.org team, especially Monty
+   &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="472a2829333e073f2e372f69283520">[email&#160;protected]</a>&gt;. Thanks also to Rob Lanphier &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="94e6fbf6f8f5d4e6f1f5f8baf7fbf9">[email&#160;protected]</a>&gt; for
+   his guidance.
+
+8 References
+
+   1. RTP: A Transport Protocol for Real-Time Applications (RFC 1889)
+
+   2. Xiph.org's Ogg Vorbis pages http://www.xiph.org/ogg/vorbis/
+      Vorbis documentation only currently exists as API documenation,
+      or as source code.  The source can be obtained at
+      http://www.xiph.org/ogg/vorbis/download.html
+
+9 Author's Address
+
+   Jack Moffitt
+   Executive Director
+   Xiph.org Foundation
+   email: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0c666d6f674c74657c6422637e6b">[email&#160;protected]</a>
+   WWW: http://www.xiph.org/
+
+</PRE></DIV>
+<DIV class=appendix lang=en>
+<H2 class=title style="CLEAR: both"><A name=footer></A>C.&nbsp;Colophon</H2>
+<DIV class=mediaobject><IMG alt="[Xiph.org logo]"
+src="vorbis.files/white-xifish.png"></DIV>
+<P>Ogg is a <!--<A href="http://www.xiph.org/" target=_top>-->Xiph.org Foundation<!--</A>-->
+effort to protect essential tenets of Internet multimedia from corporate
+hostage-taking; Open Source is the net's greatest tool to keep everyone honest.
+See <!--<A href="http://www.xiph.org/about.html" target=_top>-->About the Xiph.org
+Foundation<!--</A>--> for details. </P>
+<P>Ogg Vorbis is the first Ogg audio CODEC. Anyone may freely use and distribute
+the Ogg and Vorbis specification, whether in a private, public or corporate
+capacity. However, the Xiph.org Foundation and the Ogg project (xiph.org)
+reserve the right to set the Ogg Vorbis specification and certify specification
+compliance.</P>
+<P>Xiph.org's Vorbis software CODEC implementation is distributed under a
+BSD-like license. This does not restrict third parties from distributing
+independent implementations of Vorbis software under other licenses.</P>
+<P>Ogg, Vorbis, Xiph.org Foundation and their logos are trademarks (tm) of the
+<!--<A href="http://www.xiph.org/" target=_top>-->Xiph.org Foundation<!--</A>-->. These pages
+are copyright (C) 1994-2002 Xiph.org Foundation. All rights reserved.</P>
+<P>This document is set in DocBook XML. </P></DIV></DIV>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,1293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Установка PPP-соединения в Linux — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Установка PPP-соединения в Linux</h1>
+
+<p><i>В. Водолазкий (<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="9ceaeaeadceef5f2f9e8b2eee9">[email&#160;protected]</a>)</i></p>
+
+<P>Ох, как же мне надоел навязчивый сервис от <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Microsoft! </SPAN>Надоели &laquo;особенности&raquo;
+операционной системы <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Windows95, </SPAN>надоели ошибки в <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Microsoft Word, </SPAN>которые
+стоили при подготовке диссертации немало бессонных ночей, в общем... плюнул я на
+красивые форточки и всерьез сел за <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Linux.<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp; </SPAN></SPAN></P>
+<P class=MsoNormal>Конечно же, многое поначалу было непривычно, а некоторые вещи
+поражают меня до сих пор. Возьмем, к примеру, проблему русификации. Есть и
+шрифты, и раскладки клавиатуры, и кодировка КОИ-8 постепенно пробила себе дорогу
+даже на экраны пользователей Windows... Но вот, чтобы воспользоваться всем этим,
+надо читать документацию на английском языке, подготовленную и переданную
+мировым сообществом гражданином Израиля, которому помогали ребята из Голландии,
+США, Тайваня, Замбии (или Заира &#8211; по e-mail адресу разве поймешь!) и только один
+наш соотечественник &#8211; Сергей Вакуленко оказался причастным к решению этой
+проблемы. Причем, как выяснилось, разработанные им шрифты и раскладки вошли в <B
+style="mso-bidi-font-weight: normal"><I
+style="mso-bidi-font-style: normal">официальную версию </I></B><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">X11 Release 6 </SPAN>и теперь доступны для
+всего человечества. Грустно, люди со всего мира о нас заботятся, бесплатно
+делают действительно нужную и важную работу, а нам наплевать! Знаете ли вы,
+например, о проекте интернационализации программных средств для <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX, </SPAN>предусматривающим разработку,
+среди прочего и полностью русскоязычных версий всех утилит и системных программ.
+Но руководит русской частью проекта не родной наш Госкомитет по Информатике, а
+Ульрих Дреппер из западногерманского университета в Карлсруэ. Вот так...</P>
+<P class=MsoNormal>Но к чему такое затянувшееся введение? А вот к чему! Дело в
+том, что университетские традиции Европы и Штатов предполагают обучение
+студентов на многопользовательских <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX- </SPAN>системах, что предполагает
+качественно иной уровень &laquo;массовой&raquo; <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX-</SPAN>культуры &#8211; базовых знаний системы,
+квалифицированных специалистов в пределах досягаемости неофитов, литературы,
+доступа к <SPAN lang=EN-US style="mso-ansi-language: EN-US">Internet</SPAN> и
+многих других факторов. У нас, по ряду причин, это не так. И поэтому нередко
+документация по установке <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX-</SPAN>программ<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">, </SPAN>особенно связанных с настройкой
+сетевого подключения оказывается не слишком понятной, или, что еще хуже,
+применимой. Одной из таких проблем является подключение <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Linux-</SPAN>машины к сети <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Internet. </SPAN>Поэтому давайте попробуем
+сделать эту операцию шаг за шагом.</P>
+<P class=MsoNormal>Прежде всего определимся с типом соединения. Отечественные
+провайдеры, в отличие от большинства администраторов многопользовательских
+систем на Западе отдают предпочтение не SLIP-соединению, а более современному
+протоколу PPP<SPAN lang=EN-US style="mso-ansi-language: EN-US">, </SPAN>что
+между прочим, опровергает расхожий тезис об отсталости российских <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Internet-</SPAN>технологий.</P>
+<DIV
+style="BORDER-BOTTOM: white 6pt solid; BORDER-LEFT: gray 4.5pt solid; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 3pt; PADDING-LEFT: 3pt; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm">
+<P class=MsoBlockText>Основные преимущества <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP</SPAN> по сравнению со <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">SLIP </SPAN>состоят в следующем:</P>
+<P class=MsoBlockText><![if !supportLists]><SPAN
+style="FONT-FAMILY: Symbol; FONT-STYLE: normal"> </SPAN><![endif]> назначение
+<SPAN lang=EN-US style="mso-ansi-language: EN-US">IP-</SPAN>адресов в <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">PPP </SPAN>реализуется <B
+style="mso-bidi-font-weight: normal">внутри </B><B
+style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP-</SPAN>соединения </B>между компьютерами
+провайдера и клиента. Это значительно упрощает процесс конфигурирования при
+использовании динамических <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адресов;</P>
+<P class=MsoBlockText><![if !supportLists]><SPAN
+style="FONT-FAMILY: Symbol; FONT-STYLE: normal"> </SPAN><![endif]> Коррекция
+ошибок, возникающих при передаче данных осуществляется не между владельцем
+информационных ресурсов и потребителем, как в <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">SLIP, </SPAN>а между провайдером и клиентом,
+что примерно на 15-20% повышает информационную скорость передачи
+данных.</P></DIV>
+<P class=MsoNormal>Поэтому выберем какой-нибудь хост, к которому можно
+подключиться у нас. Кстати, в первом номере &laquo;Планеты Internet&raquo; за прошлый год
+была опубликована заметка о подключении к сети RINET. Не отличаясь
+оригинальностью (поскольку я тоже пользуюсь услугами этого провайдера) я
+попытаюсь на глазах у почтенной публики &laquo;прицепиться&raquo; к сети через RINET.</P>
+<P class=MsoNormal>Прежде чем приступить к непосредственной установке необходимо
+собрать некоторый объем исходных данных. Вот что нам потребуется:</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<TABLE border=1 cellPadding=0 cellSpacing=0
+style="BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 0cm 5.4pt 0cm 5.4pt">
+  <TBODY>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt"
+    vAlign=top width=253>
+      <P class=aff5>Что нам нужно:</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5>Значения в примере:</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=aff5>Ваши данные:</P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5>Имя пользователя, используемое в электронной почте</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5>myname</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P
+  class=aff5><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5>Входной идентификатор для регистрации в системе</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">ppmyname</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=MsoNormal style="TEXT-INDENT: 0cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5>Регистрационный пароль</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">begemot</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=MsoNormal style="TEXT-INDENT: 0cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">IP-</SPAN>адрес
+      пользователя</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">194.87.171.</SPAN><SPAN
+      style="FONT-FAMILY: 'Times New Roman'">101</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=MsoNormal style="TEXT-INDENT: 0cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">IP-</SPAN>адрес
+      сервера <SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">DNS</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">194.87.171.65</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=MsoNormal style="TEXT-INDENT: 0cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR>
+  <TR>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 189.7pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=253>
+      <P class=aff5>Домен пользователя</P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 127.55pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=170>
+      <P class=aff5><SPAN lang=EN-US
+      style="FONT-FAMILY: 'Times New Roman'; mso-ansi-language: EN-US">rinet.ru</SPAN></P></TD>
+    <TD
+    style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: medium none; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 5.4pt; PADDING-RIGHT: 5.4pt; PADDING-TOP: 0cm; WIDTH: 149.25pt; mso-border-left-alt: solid windowtext .75pt; mso-border-top-alt: solid windowtext .75pt"
+    vAlign=top width=199>
+      <P class=MsoNormal style="TEXT-INDENT: 0cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></TD></TR></TBODY></TABLE>
+<P class=MsoNormal>Особенность подключения <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Linux-</SPAN>машины от <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">DOS </SPAN>состоит прежде всего в том, что ваш
+компьютер, подключенный с помощью <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP-</SPAN>соединения превращается в <B
+style="mso-bidi-font-weight: normal">полноправный </B>узел сети <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Internet, </SPAN>в котором вы можете выступать
+как клиентом, так и сервером. Это означает, что прежде всего необходимо решить
+проблему маршрутизации &#8211; то есть определения путей доступа от вашей машины к
+другим компьютерам сети и обратно. Проблема для <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX </SPAN>не нова и решается одним из трех
+способов:</P>
+<P class=MsoNormal style="MARGIN-LEFT: 0cm; mso-list: l0 level1 lfo1"><![if !supportLists]><SPAN
+style="FONT-FAMILY: Symbol"> </SPAN><![endif]> за счет локальной базы данных,
+помещаемой в файле <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/hosts;</SPAN></P>
+<P class=MsoNormal style="MARGIN-LEFT: 0cm; mso-list: l0 level1 lfo1"><![if !supportLists]><SPAN
+style="FONT-FAMILY: Symbol"> </SPAN><![endif]><SPAN
+style="mso-ansi-language: EN-US"> </SPAN>за счет использования специальных
+серверов доменных имен (<SPAN lang=EN-US style="mso-ansi-language: EN-US">Domain
+Name System &#8211; DNS)<A href="ppplinux.htm#_ftn1" name=_ftnref1 style="mso-footnote-id: ftn1"
+title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[1]<![endif]></SPAN></SPAN></A>;</SPAN></P>
+<P class=MsoNormal style="MARGIN-LEFT: 0cm; mso-list: l0 level1 lfo1"><![if !supportLists]><SPAN
+style="FONT-FAMILY: Symbol"> </SPAN><![endif]> за счет базы данных <SPAN
+style="mso-ansi-language: EN-US"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN></SPAN>на специальном сервере <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">NIS</SPAN> (<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Network Information Service).</SPAN></P>
+<P class=MsoNormal>Нам потребуется создать простейший инфантильный сервер,
+который при любом запросе обращается к &laquo;авторитету&raquo;, которым в нашем случае
+является сервер DNS вашего провайдера. При желании вы можете впоследствии
+нарастить мощность вашего <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">DNS-</SPAN>сервера, чтобы снизить накладные
+расходы на запрос <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адресов при длительной работе с
+одними и теми же узлами сети. Но об этом в следующий раз. А сейчас предположим,
+что в вашей сети всего одна машина &#8211; <B
+style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">myname</SPAN></B><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">.<o:p></o:p></SPAN></P>
+<DIV
+style="BORDER-BOTTOM: white 6pt solid; BORDER-LEFT: gray 4.5pt solid; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 3pt; PADDING-LEFT: 3pt; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm">
+<P class=MsoBlockText>Кстати, а как установить имя машины? Все проблемы
+решает<SPAN style="mso-ansi-language: EN-US"> </SPAN>строка типа:</P>
+<P class=MsoBlockText><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/bin/hostname myname.rinet.ru</SPAN>,<SPAN
+lang=EN-US style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P class=MsoBlockText>которая помещается в один из инициализационных файлов<A
+href="ppplinux.htm#_ftn2" name=_ftnref2 style="mso-footnote-id: ftn2" title=""><SPAN
+class=MsoFootnoteReference><SPAN style="mso-special-character: footnote"><![if !supportFootnotes]>[2]<![endif]></SPAN></SPAN></A>
+</P></DIV>
+<P class=MsoNormal>Что касается самого выбора имени, то надо было договариваться
+с провайдером раньше &#8211; при регистрации. А теперь ваш <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адрес будет ассоциироваться у всего
+мира с машиной <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">mynet.rinet.com. </SPAN>Ура, мы становимся
+сервером <SPAN lang=EN-US style="mso-ansi-language: EN-US">Internet </SPAN>и
+можем сами командовать электронной почтой в пределах машины! Так чтобы послать
+вам письмо, ваш корреспондент должен теперь использовать что-нибудь типа <SPAN
+lang=EN-US style="mso-ansi-language: EN-US"><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="40322f2f34002d392e212d256e32292e25346e3235">[email&#160;protected]</a>.
+</SPAN>Согласитесь, что это уже круто!</P>
+<P class=MsoNormal>Впрочем надувать щеки пока рано. Это ведь только перспектива,
+а пока нам предстоит немало потрудиться. Мы используем комбинированный подход:
+создадим крохотную локальную базу данных хостов и подключим внешний <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">DNS-</SPAN>сервер.<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Прежде всего необходимо установить значение нескольких
+конфигурационных файлов. Начнем с файла <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/host.conf. </SPAN>Вот его содержимое с
+учетом сделанных ранее допущений:</P>
+<P class=MsoNormal style="MARGIN: 0cm 150.95pt 0pt 2cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9>order hosts, bind</P>
+<P class=aff9>multi on</P></DIV>
+<P class=MsoNormal style="MARGIN: 0cm 150.95pt 0pt 2cm"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Первая строка указывает на способ организации поиска при
+поиске адресов узлов сети. Ключ <B style="mso-bidi-font-weight: normal"><SPAN
+lang=EN-US style="mso-ansi-language: EN-US">hosts </SPAN></B>говорит о
+необходимости просматривать прежде всего локальную базу данных, размещаемую
+обычно в файле <SPAN lang=EN-US style="mso-ansi-language: EN-US">/etc/hosts,
+</SPAN>а второй --<SPAN style="mso-ansi-language: EN-US"> </SPAN><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN><B
+style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">bind</SPAN></B> требует связаться для этого с
+внешним сервером <SPAN lang=EN-US style="mso-ansi-language: EN-US">DNS,
+</SPAN>который, между прочим, может быть запущен физически и на этой же
+физической машине.<SPAN style="mso-ansi-language: EN-US"> </SPAN>Вторая строка
+файла объявляет о поддержке этим сервером &laquo;многоженства&raquo;, то есть использовании
+сразу нескольких <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адресов. Хотя на работу служб <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">DNS </SPAN>этот параметр влияния не
+оказывает, не жадничайте &#8211; поставьте и забудьте.</P>
+<P class=MsoNormal>Зачем принята такая структура? Исключительно для удобства
+настройки системы! Так, если вы установили содержимое <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/host.conf </SPAN>в точности, как это
+написано в примере, то <SPAN lang=EN-US style="mso-ansi-language: EN-US">named
+</SPAN>вначале будет просматривать файл <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/hosts </SPAN>и лишь затем обращаться к
+внешним источникам информации, а если вы введете строку вида:</P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9><SPAN lang=EN-US style="mso-ansi-language: EN-US">order bind,
+hosts</SPAN></P></DIV>
+<P class=MsoNormal>то наоборот &#8211; вначале будет сделан запрос к удаленному
+серверу, и только в том случае, если вы обращаетесь к локальным адресам будет
+использована внутренняя база данных. Впрочем, как показала практика, первый
+вариант в большинстве случаев является оптимальным.</P>
+<P class=MsoNormal>Поэтому перейдет к обсуждению содержимого файла <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">/etc/hosts. </SPAN>Вот что подойдет
+вам в подавляющем большинстве случаев:</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9 style="MARGIN-RIGHT: 108.45pt">127.0.0.1<SPAN
+style="mso-tab-count: 1"> </SPAN><SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN></SPAN>localhost</P>
+<P class=aff9 style="MARGIN-RIGHT: 108.45pt">194.87.171.101<SPAN
+style="mso-tab-count: 1"> </SPAN><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">myname</SPAN>.rinet.ru <SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;</SPAN>myname</SPAN></P></DIV>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Нам необходимо только две записи &#8211; локальный хост,
+используемый для работы ряда программ в пределах машины и <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адрес вашей машины, который
+установлен вашим провайдером. Для упрощения доступа определяется также синоним &#8211;
+просто имя <B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">myname</SPAN></B><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">.</SPAN></P>
+<P class=MsoNormal>Но и это еще не все! Нам необходимо указать системе, какими
+же серверами <SPAN lang=EN-US style="mso-ansi-language: EN-US">DNS
+</SPAN>необходимо пользоваться для определения <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адресов. Эта информация хранится в
+файле <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/resolv.conf:<o:p></o:p></SPAN></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9>domain rinet.ru</P>
+<P class=aff9>nameserver 194.87.171.65</P></DIV>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>В этом файле мы резервируем домен и указываем имена серверов
+(по одному на строку), которые используются нашей системой. По большому счету,
+для конечного пользователя этой информации вполне достаточно. Теперь, как только
+вы подключитесь к провайдеру, все запросы к сетевым ресурсам будут обслуживаться
+внешним сервером <SPAN lang=EN-US style="mso-ansi-language: EN-US">DNS,
+IP-</SPAN>адрес которого мы указали выше.<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<DIV
+style="BORDER-BOTTOM: white 6pt solid; BORDER-LEFT: gray 4.5pt solid; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 3pt; PADDING-LEFT: 3pt; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm">
+<P class=MsoBlockText>Но что представляет из себя процесс подключения? Реально
+он состоит из нескольких этапов:</P>
+<P class=MsoBlockText><![if !supportLists]><SPAN lang=EN-US
+style="FONT-FAMILY: Symbol; FONT-STYLE: normal; mso-ansi-language: EN-US"> </SPAN><![endif]>
+соединение с компьютером провайдера по коммутируемой линии связи;<SPAN
+lang=EN-US style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P class=MsoBlockText><![if !supportLists]><SPAN lang=EN-US
+style="FONT-FAMILY: Symbol; FONT-STYLE: normal; mso-ansi-language: EN-US"> </SPAN><![endif]>
+регистрация пользователя в удаленной системе;<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P class=MsoBlockText><![if !supportLists]><SPAN lang=EN-US
+style="FONT-FAMILY: Symbol; FONT-STYLE: normal; mso-ansi-language: EN-US"> </SPAN><![endif]>
+инициализация <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP-</SPAN>соединения.<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P></DIV>
+<P class=MsoNormal>В <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Windows-</SPAN>среде решение этих трех задач
+осуществляется какой-либо программой-монстром<A href="ppplinux.htm#_ftn3" name=_ftnref3
+style="mso-footnote-id: ftn3" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[3]<![endif]></SPAN></SPAN></A>,
+в которой разработчики пытаются упаковать все функции сразу. Но если этот подход
+применим для неподготовленных пользователей, не <B
+style="mso-bidi-font-weight: normal">желающих эффективно использовать
+возможности аппаратных средств</B>, то в <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX </SPAN>мощь системы достигается за счет
+использования конвейера небольших, но тщательно отлаженных программ, каждая из
+которых решает какую-либо отдельную задачу. В случае с <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP </SPAN>этот функциональный набор состоит из
+следующих частей:</P>
+<P class=MsoNormal><B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/usr/sbin/ppp-on<o:p></o:p></SPAN></B></P>
+<P class=MsoNormal><B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/usr/sbin/ppp-off<o:p></o:p></SPAN></B></P>
+<P class=MsoNormal><B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/ppp-on-dialer<o:p></o:p></SPAN></B></P>
+<P class=MsoNormal><B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/options<o:p></o:p></SPAN></B></P>
+<P class=MsoNormal>и, конечно же, собственно демон <B
+style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/sbin/pppd. </SPAN></B>Но демон живет
+внутренней жизнью и запускается при установлении соединения автоматически. А
+чтобы это соединение было установлено, нам придется разобраться с перечисленными
+выше файлами. Несмотря на их &laquo;огромное количество&raquo;, работы совсем немного.
+Во-первых, с <SPAN lang=EN-US style="mso-ansi-language: EN-US">ppp-off
+</SPAN>вам делать ничего не придется &#8211; задача этого файла состоит в том, чтобы
+<B style="mso-bidi-font-weight: normal"><I
+style="mso-bidi-font-style: normal">убить демон </I></B><B
+style="mso-bidi-font-weight: normal"><I
+style="mso-bidi-font-style: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">pppd </SPAN></I></B>после того, как сеанс
+работы с сетью завершен. А остальные мы рассмотрим по порядку.<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Начнем с программы, которую обычно используют для установки
+соединения &#8211; <SPAN lang=EN-US style="mso-ansi-language: EN-US">ppp-on.
+</SPAN>Несмотря на то, что эта программа помещается при установке системы в
+каталог <SPAN lang=EN-US style="mso-ansi-language: EN-US">/sbin </SPAN>это
+обычный сценарный файл, в который вы, кстати, должны внести ваши данные:</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#!/bin/sh</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">ppp-on</SPAN></P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># Это основные
+параметры, которые вы должны настроить</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">TELEPHONE=9567800<SPAN
+style="mso-tab-count: 1"> </SPAN># По этому номеру будем звонить</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">ACCOUNT=ppmyname<SPAN
+style="mso-tab-count: 1"> </SPAN># Регистрационное имя</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">PASSWORD=<SPAN
+lang=EN-US style="mso-ansi-language: EN-US">begemot </SPAN><SPAN
+style="mso-tab-count: 1"></SPAN># Пароль</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">LOCAL_IP=194.87.171.101<SPAN
+style="mso-tab-count: 1"> </SPAN># А если динамический, то<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>0.0.0.0</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">REMOTE_IP=0.0.0.0<SPAN
+style="mso-tab-count: 1"> </SPAN># <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">IP-</SPAN>адрес с той стороны. Обычно :
+0.0.0.0</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">NETMASK=255.255.255.0<SPAN
+style="mso-tab-count: 1"> </SPAN># Маска подсети</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># Эти переменные
+нужны для работы<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>'ppp-on-dialer'.</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">export TELEPHONE
+ACCOUNT PASSWORD</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># </P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># Теперь укажем
+<B style="mso-bidi-font-weight: normal">полное </B>имя программы набора
+номера</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">DIALER_SCRIPT=/etc/ppp/ppp-on-dialer</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"># Наиболее
+типичный запуск демона после соединения с помощью</P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US"># ppp-on-dialer</SPAN></P>
+<P class=aff9 style="MARGIN-RIGHT: 16.3pt; TEXT-INDENT: 7.1pt">#</P>
+<P align=left class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-ALIGN: left; TEXT-INDENT: 7.1pt">exec
+/usr/sbin/pppd debug lock modem crtscts /dev/ttyS2 38400 \</P>
+<P align=left class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-ALIGN: left; TEXT-INDENT: 7.1pt"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp; </SPAN>asyncmap 20A0000 escape FF kdebug 0
+$LOCAL_IP:$REMOTE_IP \</P>
+<P align=left class=aff9
+style="MARGIN-RIGHT: 16.3pt; TEXT-ALIGN: left; TEXT-INDENT: 7.1pt"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp; </SPAN>noipdefault netmask $NETMASK
+defaultroute connect $DIALER_SCRIPT</P></DIV>
+<P class=MsoNormal style="MARGIN-RIGHT: 30.5pt; TEXT-INDENT: 7.1pt"><SPAN
+lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal style="MARGIN-RIGHT: 30.5pt; TEXT-INDENT: 7.1pt">Ну хорошо, в
+конце концов <SPAN lang=EN-US style="mso-ansi-language: EN-US">ppp-on
+</SPAN>вызовет программу <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ppp-on-dialer, </SPAN>а что представляет собой
+она? Это тоже небольшой сценарий, который приведен ниже:</P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P align=left class=aff9
+style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left">#!/bin/sh</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left">#</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"># <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">/etc/ppp-on-dialer</SPAN></P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left">#
+Выполняет всю черную работу по установке соединения</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left">#</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left">exec
+chat -v<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>TIMEOUT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>3 \</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>ABORT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>'\nBUSY\r'<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>ABORT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>'\nNO ANSWER\r'<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>ABORT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>'\nRINGING\r\n\r\nRINGING\r' \</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>''<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>\rAT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>'OK-+++\c-OK'<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>ATH0<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>TIMEOUT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>30<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><B style="mso-bidi-font-weight: normal">OK<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>ATDP$TELEPHONE<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</B></P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>CONNECT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>''<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>name:--name:<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>$ACCOUNT<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>\</P>
+<P align=left class=aff9 style="MARGIN-RIGHT: 30.5pt; TEXT-ALIGN: left"><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>assword:<SPAN style="mso-tab-count: 1">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>$PASSWORD</P></DIV>
+<P class=MsoNormal>Фактически, это последовательность сообщений, получаемых
+программой от модема и ее реакции. Нет ничего удивительного, что этот процесс,
+по большому счету, вполне стандартен для миллионов компьютеров во всем мире. Но,
+как говорится в одной рекламе:</P>
+<P class=MsoNormal><I style="mso-bidi-font-style: normal">&laquo;Вашему ребенку
+подойдет любой шампунь...<o:p></o:p></I></P>
+<P class=MsoNormal><I style="mso-bidi-font-style: normal">Но не моему
+малышу!&raquo;<o:p></o:p></I></P>
+<P class=MsoNormal>Попросту говоря, вам потребуется указать модему, что вы
+пользуетесь не тональным набором номера (<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ATD) </SPAN>, а импульсным (<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ATDP), </SPAN>который принят у нас. На этом
+изменения в этом файле можно считать законченными.</P>
+<P class=MsoNormal>Впрочем, это еще не все... Осталось установить еще одну
+строчку в файле <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/ppp/options, </SPAN>а именно &#8211; указать имя
+домена (в нашем случае &#8211; <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">rinet.ru).</SPAN></P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9>lock</P>
+<P class=aff9>domain rinet.ru</P></DIV>
+<P class=MsoNormal>Все! Вопреки многочисленным сказкам о неподъемности <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">UNIX</SPAN> для конечного
+пользователя мы установили клиентскую часть <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ppp-</SPAN>соединения, затратив на это,
+максимум полчаса<A href="ppplinux.htm#_ftn4" name=_ftnref4 style="mso-footnote-id: ftn4"
+title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[4]<![endif]></SPAN></SPAN></A>.
+Теперь нам потребуется только убедиться в работоспособности нашего
+соединения.</P>
+<P class=MsoNormal>Прежде всего, проверим, как работает <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">TCP/IP</SPAN>. Для этого нам достаточно
+использовать команду <SPAN lang=EN-US style="mso-ansi-language: EN-US">PING<A
+href="ppplinux.htm#_ftn5" name=_ftnref5 style="mso-footnote-id: ftn5" title=""><SPAN
+class=MsoFootnoteReference><SPAN style="mso-special-character: footnote"><![if !supportFootnotes]>[5]<![endif]></SPAN></SPAN></A>.
+</SPAN>Вначале потренируемся &laquo;на кошечках&raquo; и протестируем работу <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">TCP/IP </SPAN>внутри вашего
+компьютера без выхода в <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Internet.</SPAN></P>
+<P class=MsoNormal>Итак, на моей домашней <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">486DX4/100 </SPAN>получается следующее:</P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ping localhost</SPAN></P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">PING localhost (127.0.0.1): 56 data
+bytes</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">64 bytes from 127.0.0.1: icmp_seq=0
+ttl=64 time=1.0 ms</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">64 bytes from 127.0.0.1: icmp_seq=1
+ttl=64 time=0.8 ms</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">64 bytes from 127.0.0.1: icmp_seq=2
+ttl=64 time=0.8 ms</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">64 bytes from 127.0.0.1: icmp_seq=3
+ttl=64 time=0.8 ms</P>
+<P class=aff9
+style="MARGIN-RIGHT: 58.85pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">--- localhost ping statistics
+---</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">4 packets transmitted, 4 packets
+received, 0% packet loss</P>
+<P class=aff9 style="MARGIN-RIGHT: 58.85pt">round-trip min/avg/max = 0.8/0.8/1.0
+ms</P></DIV>
+<P class=MsoNormal>Теперь смело в бой! Соединяемся с сервером (<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ppp-on </SPAN>соединится с провайдером,
+запустит демон <SPAN lang=EN-US style="mso-ansi-language: EN-US">pppd </SPAN>и
+вернет вам управление &#8211; запускать его в фоновом режиме не нужно), а после этого
+можно проверить доступность вашего провайдера с помощью команды типа <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">ping www.rinet.ru</SPAN>. Если все в
+порядке, то вы получите времена задержки до 200-300 миллисекунд, в зависимости
+от пропускной способности вашего модема. Но это только небольшой, хотя и важный
+участок сети &#8211; между вами и провайдером. А как работает линия дальше? </P>
+<P class=MsoNormal>Можно для проверки вновь воспользоваться <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ping, </SPAN>но на мой взгляд это слишком
+однообразное и нудное занятие, которое не плохо бы слегка оживить. А для
+оживления мы используем программу <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">traceroute, </SPAN>которая возвращает список
+узлов, через который проходит ваш пакет при запросе типа <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ping. </SPAN>Для придания романтизма рутинной
+проверке работспособности <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP-</SPAN>соединения мы пойдем &laquo;в Пентагон&raquo;, а
+вернее в сетевой центр <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">NIC.DDN.MIL, </SPAN>который является одним из
+старейших и надежных сетевых информационных компьютеров. Вот что я получил для
+своего соединения (безымянный модем 14400):</P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN><B
+style="mso-bidi-font-weight: normal">traceroute nic.ddn.mil</B></P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>1<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>cs2511-1.rinet.ru (194.87.171.72)<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>263.971 ms<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>278.509 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>259.626 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>2<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>as51.rinet.ru (194.87.171.71)<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>229.535 ms<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>1829.28 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>189.497 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>3<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>hq-1-L0.Demos.net (194.87.15.1)<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>199.546 ms<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>279.114 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>260.114 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>4<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>m9-1-S5-1-2048K.Demos.net (194.87.15.130)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>209.016 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>299.288 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>229.57 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>5<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>mix-serial3-3.Boston.mci.net (204.189.128.157)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>389.54 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>509.237 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>469.622 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>6<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>core-fddi-0.Boston.mci.net (204.70.2.33)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>399.489 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>499.211 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>479.66 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>7<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>core3-hssi-2.WestOrange.mci.net (204.70.1.1)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>459.415 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>499.229 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>428.81 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>8<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>core3-hssi-2.WestOrange.mci.net (204.70.1.1)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>439.498 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>439.218 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>469.64 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt"><SPAN
+style="mso-spacerun: yes">&nbsp;</SPAN>9<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>sprint-nap.WestOrange.mci.net (204.70.1.210)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>509.465 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>389.307 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>499.47 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">10<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>sprint-nap.disa.mil (192.157.69.45)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>479.508 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>489.183 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>419.584 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">11<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>137.209.200.202 (137.209.200.202)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>589.512 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>409.272 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>430.3 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">12<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>RESTON-HUB.NIPR.MIL (137.209.60.1)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>568.761 ms *<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>540.131 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">13<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>198.26.127.26 (198.26.127.26)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>489.416 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>439.21 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>599.602 ms</P>
+<P class=MsoNormal
+style="BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 0cm; PADDING-LEFT: 0cm; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm; mso-border-alt: solid windowtext .75pt; mso-padding-alt: 1.0pt 1.0pt 1.0pt 1.0pt">14<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>nic.<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ddn.</SPAN>mil (192.112.36.5)<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>539.497 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>499.047 ms<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>489.617 ms</P></DIV>
+<P class=MsoNormal>Во-первых, мы проверили доступность и работу сервера <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">DNS (</SPAN>мы ведь обратились к
+серверу <SPAN lang=EN-US style="mso-ansi-language: EN-US">NIC </SPAN>по имени, а
+не по <SPAN lang=EN-US style="mso-ansi-language: EN-US">IP-</SPAN>адресу), а
+во-вторых убедились, что пакеты бегают как положено по всему <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Internet.</SPAN> Теперь вы без проблем можете
+пользоваться <SPAN lang=EN-US style="mso-ansi-language: EN-US">ftp, telnet,
+gopher, archie, www </SPAN>и прочими приятными программами.</P>
+<DIV
+style="BORDER-BOTTOM: white 6pt solid; BORDER-LEFT: gray 4.5pt solid; BORDER-RIGHT: medium none; BORDER-TOP: medium none; PADDING-BOTTOM: 3pt; PADDING-LEFT: 3pt; PADDING-RIGHT: 0cm; PADDING-TOP: 0cm">
+<P class=MsoBlockText>Не могу удержаться, чтобы лишний раз не пнуть <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">DOS, Windows </SPAN>и проч. Все
+необходимые клиенты для всех служб <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Internet </SPAN>входят в стандартную поставку
+<SPAN lang=EN-US style="mso-ansi-language: EN-US">Linux. </SPAN>Кстати, <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Netscape </SPAN>выпустила версии
+своего Навигатора для <SPAN lang=EN-US style="mso-ansi-language: EN-US">Linux
+</SPAN>(как 2.0, так и 3.01), и работают эти программы стабильнее и быстрее, чем
+в <SPAN lang=EN-US style="mso-ansi-language: EN-US">Windows. </SPAN></P></DIV>
+<P class=MsoNormal>Насчет &laquo;быстрее &laquo; можно и поконкретнее. Я пытался <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">&laquo;</SPAN>пропинговать&raquo; <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">nic.ddn.mil </SPAN>и из под <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Windows 95. </SPAN>На той же
+машине... И получил среднее время доступа порядка 760 миллисекунд. Факты говорят
+сами за себя...</P>
+<P class=MsoNormal>Но я знаю, знаю, что поклонники &laquo;форточек&raquo; уже заготовили
+смертельный удар! И состоит он в простом и каверзном одновременно вопросе: <I
+style="mso-bidi-font-style: normal">А что делать, если телефон провайдера занят?
+</I>Неужели потребуется еще и еще раз вручную вводить <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">ppp-on?<o:p></o:p></SPAN></P>
+<P class=MsoNormal>Вы что же, рассчитываете на ответ настоящего аскета &#8211; мол нет
+в этом никакой проблемы, и руки у пользователя не отвалятся? Не дождетесь, в
+<SPAN lang=EN-US style="mso-ansi-language: EN-US">UNIX-</SPAN>е ведь работают
+такие же люди как и везде, и тоже не любят дурной работы. А поэтому позвольте
+предложить вам небольшой сценарий, который организует дозвон до провайдера в
+автоматическом режиме. Вот он:</P>
+<DIV
+style="BORDER-BOTTOM: windowtext 0.75pt solid; BORDER-LEFT: windowtext 0.75pt solid; BORDER-RIGHT: windowtext 0.75pt solid; BORDER-TOP: windowtext 0.75pt solid; PADDING-BOTTOM: 1pt; PADDING-LEFT: 1pt; PADDING-RIGHT: 1pt; PADDING-TOP: 1pt">
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#!/bin/sh<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"># Установка<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>ppp-соединения с автоматическим дозвоном до
+провайдера<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"># Написано на основе заметочки в Linux Gazette No.13
+(<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5439273538353935142127357a3a3120">[email&#160;protected]</a>)<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<SPAN style="mso-spacerun: yes">&nbsp;&nbsp;
+</SPAN><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="92e4e4e4d2e0fbfcf7e6bce0e7">[email&#160;protected]</a><SPAN style="mso-spacerun: yes">&nbsp; </SPAN>В.В.Водолазкий,
+Москва, 1997<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>Вызов
+программы:<SPAN style="mso-spacerun: yes">&nbsp;&nbsp; </SPAN>isp
+[NNN]<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>где NNN - время дозвона в минутах (мне очень понравилось это в
+<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">#<SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp; </SPAN><SPAN
+style="mso-tab-count: 1">&nbsp;&nbsp; </SPAN><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN></SPAN><SPAN style="FONT-SIZE: 10pt">программе </SPAN><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">Trumpet Winsock<SPAN
+style="mso-tab-count: 1"> </SPAN></SPAN><SPAN
+style="FONT-SIZE: 10pt"><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>По
+умолчанию дозваниваемся в течение 30 минут<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">wd=1<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># счетчик попыток<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">stopflag=1<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Признак окончания работы сценария<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">SLEEPTIME=45<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Время засыпания между попытками <o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>"Устанавливаю<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>ppp-соединение
+"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">#<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">if [ "$1" = "" ]; then<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN># Установка предельного
+времени дозвона<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">repeattime=30<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Если не указали специально, то будем ждать 30 минут
+<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">else<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">repeattime=$1<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">fi<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"># А не запущен ли </SPAN><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">pppd </SPAN><SPAN
+style="FONT-SIZE: 10pt">раньше. <o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"># Этой проверкой мы блокируем повторную инициализацию
+канала...<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>foo=$(ps -ax)<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN># Посмотрим,
+какие процессы крутятся в системе<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>bar=$(echo $foo | grep "/usr/sbin/pppd")<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN># Есть ли родимый </SPAN><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">pppd?</SPAN><SPAN
+style="FONT-SIZE: 10pt"><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>if [ $bar ]; then<SPAN style="mso-spacerun: yes">&nbsp;&nbsp;
+</SPAN>#</SPAN><SPAN style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">
+</SPAN><SPAN style="FONT-SIZE: 10pt">Есть, поэтому заканчиваем
+работу...<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>stopflag=0<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>echo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>echo " pppd уже
+функционирует!"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>echo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN>exit
+0<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>fi<SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo "Время на дозвон к провайдеру:
+$repeattime"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">while [ $stopflag ]; do # Основной цикл дозвона
+<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo "Попытка соединения:<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>$wd"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">ppp-on<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Просто вызываем программу установки соединения<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">sleep $SLEEPTIME <o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">foo=$(ifconfig);<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </SPAN># смотрим,
+не образовался ли канал ppp0<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">echo $foo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">bar=$(echo $foo | grep "ppp0" )<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp; </SPAN><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">if [ "$bar" = 1 ]; then<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN># Да, все в
+порядке<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>echo "**********************"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>echo "*** Соединение с провайдером установлено!
+****"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>echo "**********************"<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;
+</SPAN>exit 0<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;</SPAN>else<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Не вышло...<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp; </SPAN>let
+wd=$wd+1<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Корректируем счетчик попыток<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp; </SPAN>if [ $wd
+-gt $repeattime ]; then<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN>stopflag=0<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-tab-count: 1"></SPAN><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN>echo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-tab-count: 1"></SPAN><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN>echo "Установить соединение
+не удалось..."<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-tab-count: 1"></SPAN><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp; </SPAN>echo<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN><SPAN style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;</SPAN>exit
+1<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>fi<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">fi<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt">done<SPAN
+style="mso-spacerun: yes">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</SPAN># Завершаем работу сценария<o:p></o:p></SPAN></P>
+<P class=aff9 style="MARGIN: 0cm 30.5pt 0pt 1cm; TEXT-INDENT: 14.2pt"><SPAN
+style="FONT-SIZE: 10pt"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P></DIV>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>На этом можно сделать паузу. Паузу, потому что за кадром
+остались такие немаловажные вопросы, как установка и настройка <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">Linux-</SPAN>машины в качестве узла <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Internet</SPAN>, обеспечивающего
+доступ пользователей Сети к его ресурсам. Но об этом в следующий раз.</P></DIV>
+<DIV style="mso-element: footnote-list"><![if !supportFootnotes]><BR clear=all>
+<HR align=left SIZE=1 width="33%">
+<![endif]>
+<DIV id=ftn1 style="mso-element: footnote">
+<P class=MsoFootnoteText><A href="ppplinux.htm#_ftnref1" name=_ftn1
+style="mso-footnote-id: ftn1" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[1]<![endif]></SPAN></SPAN></A>
+За подробностями отправляю читателя к книге П.Храмцова &laquo;Лабиринт <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Internet&raquo;</SPAN>, выпущенной в 1996
+году издательством &laquo;ЭлектроИнформ&raquo;.</P></DIV>
+<DIV id=ftn2 style="mso-element: footnote">
+<P class=MsoFootnoteText><A href="ppplinux.htm#_ftnref2" name=_ftn2
+style="mso-footnote-id: ftn2" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[2]<![endif]></SPAN></SPAN></A>
+Обычно это файл <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">/etc/rc.d/rc.local </SPAN>в котором хранятся
+команды настройки для данной машины.</P></DIV>
+<DIV id=ftn3 style="mso-element: footnote">
+<P class=MsoFootnoteText><A href="ppplinux.htm#_ftnref3" name=_ftn3
+style="mso-footnote-id: ftn3" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[3]<![endif]></SPAN></SPAN></A>
+Которая обычно носит гордое имя <B
+style="mso-bidi-font-weight: normal">&laquo;дайлер&raquo;</B></P></DIV>
+<DIV id=ftn4 style="mso-element: footnote">
+<P class=MsoFootnoteText><A href="ppplinux.htm#_ftnref4" name=_ftn4
+style="mso-footnote-id: ftn4" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[4]<![endif]></SPAN></SPAN></A>
+Естественно, я полагаю, что ваше ядро поддерживает <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">PPP, </SPAN>а при установке системы с
+дистрибутива вы не забыли попросить ее установить <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">pppd &#8211; </SPAN>все остальные файлы будут
+установлены вместе с демоном.</P></DIV>
+<DIV id=ftn5 style="mso-element: footnote">
+<P class=MsoFootnoteText><A href="ppplinux.htm#_ftnref5" name=_ftn5
+style="mso-footnote-id: ftn5" title=""><SPAN class=MsoFootnoteReference><SPAN
+style="mso-special-character: footnote"><![if !supportFootnotes]>[5]<![endif]></SPAN></SPAN></A>
+Одну минутку... Эту команду, вообще говоря, имеет право использовать только
+<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">root!</SPAN></P></DIV></DIV>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

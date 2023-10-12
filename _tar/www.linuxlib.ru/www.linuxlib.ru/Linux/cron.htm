@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Как заставить cron выполнять наши приказания / Linuxоид / Софтерра — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#loading">установка, загрузчики</A> |
+    <A HREF="index.htm#setting">настройка Linux</A> |
+    <A HREF="index.htm#console">консоль</A> |
+    <A HREF="index.htm#filesys">файловые системы</A> |
+    <A HREF="index.htm#proc">процессы</A> |
+    <A HREF="index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<H1>Как заставить cron выполнять наши приказания</H1><BR>Автор: Станислав
+Лапшанский, <A href="../cdn-cgi/l/email-protection.html#7d0e111c0d0e153d16120e50121f115316100913530f08"><span class="__cf_email__" data-cfemail="23504f4253504b63484c500e4c414f0d484e574d0d5156">[email&#160;protected]</span></A><BR>Опубликовано:
+15.03.2002<BR>Оригинал: <A
+href="index.html">http://www.softerra.ru/freeos/16683/</A></DIV><BR><BR>
+<P align=justify class=maintext>Статья является <!--<A
+href="http://www.onlamp.com/pub/a/bsd/2000/09/27/FreeBSD_Basics.html"
+target=_blank>-->переводом текста Dru Lavigne<!--</A>-->
+<P align=justify class=maintext>Было бы здорово, если бы ваша FreeBSD постоянно
+автоматически выполняла свое техническое обслуживание и докладывала бы вам об
+этом по электронной почте. К счастью, благодаря демону cron и обслуживающим
+сценариям, ваша FreeBSD регулярно делает это. В сегодняшней статье мы обсудим
+как демон cron выполняет запланированные команды и обучимся как сконфигурировать
+cron для запуска ваших сценариев и программ.
+<P align=justify class=maintext>Так же как большинство других демонов, cron
+запускается вместе с FreeBSD и потом тихонько работает в фоновом режиме. Что бы
+доказать себе, что нет необходимости запускать cron самостоятельно, поищите
+слово "cron" в списке запущенный процессов, например таким образом: <PRE>ps -ax | grep cron
+</PRE>
+<P align=justify class=maintext>У вас должно получиться нечто похожее: <PRE>97 ?? Is 0:07.71 cron
+</PRE>
+<P align=justify class=maintext>В данном примере cron имеет 97-й номер процесса.
+
+<P align=justify class=maintext>Cron "просыпается" каждую минуту и проверяет
+списки запланированных заданий -- crontab (сокращение от "chron or time table"),
+на предмет наличия там заданий подлежащих запуску. Crontab это обычный файл,
+содержащий список команд, а также время в которое эти команды должны
+запуститься. Когда вы установили FreeBSD, системный список запланированных
+заданий был создан автоматически. Вы не должны производить никаких изменений в
+этом файле. Далее мы опишем как используя утилиту crontab вы сможете создавать
+пользовательские списки запланированных заданий, которые cron будет выполнять
+помимо системного списка.
+<P align=justify class=maintext>Системный список хранится в файле /etc/crontab.
+Воспользуйтесь командой more, для того что бы просмотреть этот файл,
+гарантированно не отредактировав его. Возможно вам следует войти в систему сразу
+на двух консолях, это позволит вам на одной консоли читать системный список
+заданий, а на другой выполнять различные команды. Напишите на первой консоли: <PRE>more /etc/crontab
+</PRE>
+<P align=justify class=maintext>В результате вы увидите следующие строки: <PRE># /etc/crontab - root's crontab for FreeBSD
+#
+# $FreeBSD: src/etc/crontab,v 1.21 1999/12/15 17:58:29 obrien Exp $
+#
+SHELL=/bin/sh
+PATH=/etc:/bin:/sbin:/usr/bin:/usr/sbin
+HOME=/var/log
+#
+#minute hour mday month wday who command
+#
+*/5 * * * * root /usr/libexec/atrun
+</PRE>
+<P align=justify class=maintext>Как и в любом файле комментарий начинается с
+символа решетки "#". Наиболее полезны комментарии, описывающие содержимое полей
+этого файла. Заметьте -- пять полей описывают время, потом идет поле
+пользователя (поле "кто"), а затем команда. На первый взгляд формат этого файла
+может показаться вам странным, но каждая строка этого файла, не являющаяся
+комментарием, просто говорит cron'у когда следует запустить указанную команду.
+<P align=justify class=maintext>В следующей таблице показаны границы допустимых
+значений аргументов столбцов описывающих время: <PRE>Поле Допустимое значение
+Минуты (minute) 0-59
+Час (hour) 0-23
+День месяца (dayofmonth) 1-31
+Месяц (month) 1-12 или первые три буквы английского
+ названия месяца (регистр не учитывается)
+День недели (dayofweek) 0-7 (где 0 и 7 это воскресенье) или первые
+ три буквы английского названия дня в неделе
+ (регистр не учитывается)
+</PRE>
+<P align=justify class=maintext>Значения могут быть числом, трехбуквенным
+названием, а так же диапазоном например запись "1-5" в поле dayofweek будет
+означать "с понедельника по пятницу". Значения могут отделяться запятыми:
+"1,15,31" в поле dayofmonth будет запускать указанную команду 1-го, 15-го и
+31-го числа каждого месяца.
+<P align=justify class=maintext>Все пять полей времени допускают использование
+символа звездочка -- "*", который обозначает "использовать любое допустимое
+значение" для этого поля. Например для того что бы запускать команду каждый
+месяц, поставьте "звездочку" в поле month.
+<P align=justify class=maintext>Также можно использовать значения вида
+"*/число". Например "*/2" в поле месяца будет означать "запускать каждый второй
+месяц". В системном списке заданий есть подобный пример: <PRE>#minute hour mday month wday who command
+*/5 * * * * root /usr/libexec/atrun
+</PRE>
+<P align=justify class=maintext>Эта строка читается так: выполнять команду
+/usr/libexec/atrun от пользователя root, если текущая минута делится нацело на
+пять (или просто каждые пять минут), каждый час каждый день любого месяца. Если
+вы не в курсе что делает команда atrun, напечатайте на консоли: <PRE>whatis atrun
+</PRE>
+<P align=justify class=maintext>В ответ будет сказано: <PRE>atrun(8) - run jobs queued for later execution
+</PRE>
+<P align=justify class=maintext>Т.е. команда atrun запускает задачи из очереди
+отложенного выполнения. Если ваше любопытство не удовлетворено таким
+объяснением, то загляните в man 8 atrun.
+<P align=justify class=maintext>И заключительная таблица, перед тем как снова
+обратиться к /etc/crontab. Вы можете заменить все пять полей времени следующими
+подстановками: <PRE>Строка Что это значит
+@reboot Запускать при начальной загрузке
+@yearly Заменяет "0 0 1 1 *" т.е. "ежегодно в 00:00 1 января"
+@annually Тоже что и yearly
+@monthly Заменяет "0 0 1 * *" т.е. "ежемесячно в 00:00 1 числа"
+@weekly Заменяет "0 0 * * 0" т.е. "еженедельно в 00:00 воскресенье
+@daily Заменяет "0 0 * * *" т.е. "ежедневно в 00:00"
+@midnight Тоже что и daily
+@hourly Заменяет "0 * * * *" т.е. "ежечасно в 00 минут"
+</PRE>
+<P align=justify class=maintext>Вернемся в первую консоль и продолжим чтение
+/etc/crontab: <PRE># rotate log files every hour, if necessary
+# (произвести ротацию журналов каждый час, если это необходимо)
+0 * * * * root newsyslog
+</PRE>
+<P align=justify class=maintext>Т.е. производить ротацию файлов журналов каждый
+час, если это необходимо. Опять комментарий оказался полезен. Для того что бы
+узнать что делает команда newsyslog напишите: <PRE>whatis newsyslog
+</PRE>
+<P align=justify class=maintext>Система ответит: <PRE>newsyslog(8) - maintain system log files to manageable sizes
+</PRE>
+<P align=justify class=maintext>Т.е. newsyslog предназначен для придания
+системным журналам управляемых размеров.
+<P align=justify class=maintext>Итак, читаем /etc/crontab дальше: <PRE># do daily/weekly/monthly maintenance
+# (проводить ежедневное/еженедельное/ежемесячное обслуживание)
+59 1 * * * root periodic daily 2&gt;&amp;1 | sendmail root
+30 3 * * 6 root periodic weekly 2&gt;&amp;1 | sendmail root
+30 5 1 * * root periodic monthly 2&gt;&amp;1 | sendmail root
+</PRE>
+<P align=justify class=maintext>Обратите внимание, что обслуживающие сценарии
+никогда не запускаются одновременно. Ежедневное обслуживание запускается каждую
+ночь в 1:59, если вы спите рядом с вашей FreeBSD-системой, то вы можете услышать
+треск винчестера в это, казалось бы, странное время. Еженедельное обслуживание
+проводится каждую субботу, ночью в 3:30. Ежемесячное -- запускается в первый
+день каждого месяца в 5:30 утра. Вообще, это неплохая мысль -- запускать
+обслуживание, когда процессор не загружен работой (т.е. в середине ночи), и не
+обрабатывать сразу все сценарии одновременно, для предотвращения излишней
+загрузки процессора вашей системы.
+<P align=justify class=maintext>Комбинация 2&gt;&amp;1 говорит интерпретатору
+команд, что все ошибки и сообщения должны быть сохранены вместе. При помощи
+канала они передаются программе sendmail, которая отсылает их пользователю root,
+таким образом весь вывод (вместе с ошибками) порождаемый обслуживающими
+сценариями будет отослан по электронной почте пользователю root. (На самом деле
+в текущих версиях FreeBSD процесс протекает несколько иначе -- сценарий periodic
+формирует почтовое сообщение сам. Следовательно необходимости в 2&gt;&amp;1 |
+sendmail root уже нет -- прим. переводчика).
+<P align=justify class=maintext>Где cron находит обслуживающие сценарии? На
+второй консоли попробуйте напечатать: <PRE># ls /etc/periodic
+daily monthly weekly
+
+# ls -F /etc/periodic/weekly
+300.uucp* 330.catman* 310.locate*
+340.noid* 120.clean-kvmdb* 320.whatis*
+999.local*
+</PRE>
+<P align=justify class=maintext>Ключ -F добавляет к названиям всех запускаемых
+файлов символ звездочки "*". Таким образом мы видим, что /etc/periodic содержит
+подкаталоги в которых содержатся сценарии, которые, в свою очередь ежедневно
+(daily), еженедельно (weekly) и ежемесячно (monthly) выполняет cron (тут автор
+статьи умалчивает о том, что на самом деле сценарии из этих подкаталогов
+выполняет сценарий /usr/sbin/periodic, который и указан в файле /etc/crontab --
+прим. переводчика). Если вы действительно любознательны, попробуйте написать: <PRE>more /etc/periodic/weekly/310.locate
+</PRE>
+<P align=justify class=maintext>Если вы учитесь писать сценарии для
+интерпретатора команд, исследование встроенных в систему сценариев даст вам
+множество примеров правильного и общепринятого синтаксиса.
+<P align=justify class=maintext>Поскольку результаты работы этих сценариев
+отправляются по почте пользователю root, он, используя почтовую программу, может
+контролировать возникающие в системе неполадки. Обычно вы не конфигурируете ваш
+любимый почтовый клиент для получения почты пользователя root, так как в
+большинстве ситуаций вам не требуется получать или отправлять почту от имени
+пользователя root (мягко говоря спорное утверждение -- прим. переводчика).
+Однако вы все же хотите получать уведомления о проблемах в системе, которые
+пришлет вам cron. Зарегистрируйтесь в системе как суперпользователь и
+воспользуйтесь вашим любимым почтовым клиентом для получения этой почты
+(большинство почтовых клиентов не требуют никакого конфигурирования для чтения
+почты любого пользователя -- необходимо только зарегистрироваться в системе от
+имени желаемого пользователя и запустить клиент -- прим. переводчика).
+<P align=justify class=maintext>Если вы никогда не делали этого до этого, то
+вполне возможно, что вы получите сотни сообщений, в зависимости от того сколько
+времени включен ваш компьютер (в день обычно генерируется два сообщения, не
+считая еженедельных и ежемесячных отчетов -- прим. переводчика). Однако, если вы
+всегда выключаете компьютер до полуночи, то вероятно вы не получите вообще ни
+одного сообщения, так как все сценарии запускаются после полуночи.
+<P align=justify class=maintext>Если у вас есть несколько сообщений, то помимо
+прочего вы должны получить как минимум одно названное "daily run output", если
+вы прочтете это сообщение, то вы увидите, сколько работы проделывает для вас
+cron каждую ночь в 1:59. Обратите внимание, что сообщения относящиеся к
+безопасности присылаются отдельным письмом которое называется "security check
+output". Это сообщение весьма полезно для прочтения так как оно содержит
+информацию о проверке файлов имеющих атрибут setuid, uid 0, пользователях без
+паролей, сообщениях ядра, отвергнутых попытках зарегистрироваться в системе и
+отклоненных соединениях.
+<P align=justify class=maintext>После прочтения эти сообщения могут быть
+безопасно удалены. После выхода из почтового клиента не забудьте завершить сеанс
+суперпользователя.
+<P align=justify class=maintext>До сего момента мы исследовали системный файл
+crontab, который не следует изменять. Теперь мы поглядим как создавать свой
+собственный файл crontab, для того что бы заставить cron выполнять наши команды.
+Во FreeBSD по умолчанию любой пользователь имеет право создать собственный файл
+crontab. Эти файлы хранятся в каталоге /var/cron/tabs. Если вы напечатаете (от
+пользователя root): <PRE>ls /var/cron/tabs
+</PRE>
+<P align=justify class=maintext>то вы обнаружите, что по умолчанию там пусто.
+Создавая crontab, вы создаете файл в этом каталоге, с именем пользователя.
+Никогда не редактируйте этот файл используя текстовый редактор, вместо этого для
+редактирования и создания используйте утилиту crontab.
+<P align=justify class=maintext>Вы можете быть удивлены, сколько разных команд и
+сценариев следует поручить cron'у для исполнения. Спросите себя какие команды вы
+выполняете регулярно или должны выполнять регулярно, но иногда об этом
+забываете. Например вы можете захотеть удалять core-файлы или dead.letter (т.е.
+обычно ненужные файлы -- прим. переводчика). Или возможно вам хочется регулярно
+очищать кеш вашего браузера.
+<P align=justify class=maintext>Когда вы определитесь что вы хотите что бы cron
+сделал для вас, подумайте какими командами, или наборами команд, могут быть
+выполнены эти задачи. Каждая запись в crontab'е должна состоять из одной строки.
+Вполне нормально, если строка будет переноситься по границе экрана пока вы не
+нажмете клавишу "Enter". Однако если команда слишком длинна, то может быть проще
+создать для нее отдельный файл (сценарий) и указать в crontab'е уже этот файл.
+Покажем это на примерах.
+<P align=justify class=maintext>Если я хочу найти и удалить файлы с
+определенными расширениями, то я могу ввести подобную команду (вы должны ввести
+ее на одной строке): <PRE>find / \( -name "*.core" -or -name "dead.*" \)
+ -print -exec rm -rf {} \;
+</PRE>
+<P align=justify class=maintext>Посмотрим, как можно интерпретировать эту
+малопонятную фразу. В общем виде эта команда что-то ищет. Поисковые выражения
+всегда выглядят как: <PRE>find точка_начала_поиска искать_вот_это с_найденным_делать_это
+</PRE>
+<P align=justify class=maintext>Итак, когда я пишу find /, я говорю команде find
+искать от корня файловой системы.
+<P align=justify class=maintext>Дальше я говорю find, что бы она искала файлы,
+чьи имена заканчиваются на ".core" или начинаются на "dead.". Так как в конечном
+итоге я хочу что бы оба типа фалов были удалены, то я окружил их скобками. Я
+добавил перед скобками по обратному слешу для того что бы интерпретатор команд
+не воспринял их на свой счет.
+<P align=justify class=maintext>Когда find найдет такие файлы он применит к ним
+команду "rm -rf", указанную в параметре "-exec". Всякий раз когда вы используете
+предложение "-exec" в find, вы должны заканчивать его символами "\;", иначе
+ничего не будет работать. Фигурные скобки указывают exec место, куда следует
+подставить информацию найденную find.
+<P align=justify class=maintext>Ну что, мне кажется это было не так уж плохо?
+Теперь создадим простой сценарий для очистки кеша браузера Netscape. Этот
+сценарий я взял из списка рассылки FreeBSD -- <!--<A
+href="http://www.freebsd.org/cgi/getmsg.cgi?fetch=1589921+1591876+/usr/local/www/db/text/2000/freebsd-questions/20000820.freebsd-questions"
+target=_blank>-->отсюда<!--</A>--> и еще <!--<A
+href="http://www.freebsd.org/cgi/getmsg.cgi?fetch=1635531+1637438+/usr/local/www/db/text/2000/freebsd-questions/20000820.freebsd-questions"
+target=_blank>-->отсюда<!--</A>-->.
+<P align=justify class=maintext>Откройте ваш любимый текстовый редактор и
+напечатайте следующий текст: <PRE>#!/bin/sh
+
+# First, double-check that the user is not
+# currently using Netscape
+# Then remove the contents of all the subdirectories
+# in the Netscape cache
+# Во-первых двойная проверка, не использует ли
+# пользователь сейчас Netscape. Если нет, то удалить
+# содержимое кеша Netscape
+
+if ! (`ps wxu $USER | grep -q [n]etscape`)
+ then
+ echo "Clearing Netscape cache..."
+ rm -rf ~/.netscape/cache/*
+
+fi
+
+echo "Exiting...."
+</PRE>
+<P align=justify class=maintext>Попробуем разобраться что мы тут написали. Все
+сценарии начинаются вот с такой штуки: <PRE>#!
+</PRE>
+<P align=justify class=maintext>за которой следует полный путь к программе
+которая будет выполнять сценарий. Мы создали сценарий для интерпретатора команд
+Bourne и указали что команда sh (Bourne shell) будет интерпретировать этот
+скрипт: <PRE>#!/bin/sh
+</PRE>
+<P align=justify class=maintext>Далее мы включили семь строк комментариев (они
+начинаются с символа решетки "#") для того что бы не забыть для чего этот
+сценарий предназначается.
+<P align=justify class=maintext>Далее идет полезное содержимое сценария. Оно
+содержит предложение "если", начинающееся ключевым словом "if" и заканчивается
+"fi". В первой строке предложения "если" указывается условие которое может
+принимать значение "истина" или "ложь": <PRE>if ! (`ps wxu $USER | grep -q [n]etscape`)
+</PRE>
+<P align=justify class=maintext>Знак "!" это операция отрицания "не", которая
+позволяет блоку "if" выполняться когда выражение в скобках не истинно. По
+существу команда ps используется для поиска запущенного процесса Netscape у
+данного пользователя. В случае отсутствия такого процесса сценарий продолжается
+выводом строки заключенной в кавычки: <PRE>echo "Clearing Netscape cache..."
+</PRE>
+<P align=justify class=maintext>Далее идет непосредственно очистка кеша
+Netscape, который находится в домашнем каталоге пользователя: <PRE>rm -rf ~/.netscape/cache/*
+</PRE>
+<P align=justify class=maintext>В случае, если у пользователя существует
+запущенный процесс Netscape, то интерпретатор выходит из блока "if" не выполняя
+пункт "then".
+<P align=justify class=maintext>Сохраните ваш сценарий. Я сохранил его под
+именем "clean". Вы же можете назвать ваш сценарий как вам будет угодно, однако
+не следует назвать его именем какой-нибудь существующей команды. Для
+перестраховки запустите на второй консоли следующую команду: <PRE>whereis -b предполагаемое_имя_сценария
+</PRE>
+<P align=justify class=maintext>Если вы получите какой-то путь, то команда с
+таким названием существует и вам следует выбрать другое имя. Однако, если
+полученный результат выглядит примерно вот так: <PRE>whereis -b clean
+clean:
+</PRE>
+<P align=justify class=maintext>то, вероятнее всего вы выбрали удачное имя для
+вашего сценария.
+<P align=justify class=maintext>После того как вы сохраните ваш сценарий, вам
+следует установить у него атрибут выполняемого файла: <PRE>chmod +x clean
+</PRE>
+<P align=justify class=maintext>Хорошим тоном будет создание в вашей домашнем
+каталоге подкаталога bin, в котором вы будете хранить ваши сценарии: <PRE>cd ~
+mkdir bin
+mv clean ~/bin
+</PRE>
+<P align=justify class=maintext>И наконец вы должны испытать ваш сценарий на
+работоспособность, прежде чем отдать его cron'у. В каталоге bin напишите: <PRE>./clean
+</PRE>
+<P align=justify class=maintext>Если вы находитесь в другом каталоге напишите: <PRE>clean
+</PRE>
+<P align=justify class=maintext>Если вы используйте интерпретатор C-shell и
+получите сообщение "Command not found", то напечатайте: <PRE>rehash
+</PRE>
+<P align=justify class=maintext>и повторите запуск сценария.
+<P align=justify class=maintext>Теперь мы готовы к созданию файла crontab для
+того что бы cron выполнял наш сценарий, а так же команду find. Зарегистрируйтесь
+в системе под обычным пользователем. Я регистрируюсь под именем genisis. Теперь
+пишите: <PRE>crontab -e
+</PRE>
+<P align=justify class=maintext>для использования утилиты crontab в режиме
+редактирования. Если вы очень шустрый, то вы успеете увидеть сообщение перед
+запуском редактора vi: <PRE>crontab: no crontab for genisis - using an empty one
+(crontab: нет файла crontab для пользователя
+genisis -- используем пустой файл)
+</PRE>
+<P align=justify class=maintext>Поскольку мы находимся в vi, нажмите клавишу
+"ESC" и следом символ "i" для входа в режим вставки, затем введите этот текст: <PRE>#every morning at 4:32 search and
+#destroy all core or dead files
+#каждое утро в 4:32 искать и удалять
+#все core и dead-файлы
+32 4 * * * find / \( -name "*.core" -or
+-name "dead.*" \) -print -exec rm -rf {} \;
+
+#run the script that clears the Netscape
+#cache every morning at 2:48
+#запуск сценария который чистит кеш
+#Netscape каждую ночь в 2:48
+48 2 * * * ~/bin/clean
+</PRE>
+<P align=justify class=maintext>(разумеется строки 5 и 6 это на самом деле одна
+строка).
+<P align=justify class=maintext>Обратите внимание, что синтаксис несколько
+отличается от синтаксиса системного файла crontab, а именно отсутствует поле
+"кто". Так как этот файл crontab имеет такое же имя как и имя создавшего его
+пользователя, поле "кто" будет равно имени создавшего файл пользователя (т.е.
+все указанные в этом файле команды будут выполняться только от имени
+пользователя который создал этот файл -- прим. переводчика). Когда вы закончите,
+тщательно проверьте текст на наличие ошибок, а после этого нажмите клавишу
+"ESC", а затем "wq". Изменения будут сохранены и вы покинете редактор. Если вы
+введете неверные данные в какие-нибудь поля, утилита crontab сообщит вам об этом
+и попросит вас заново отредактировать файл. В этом случае скажите "yes" и заново
+проверьте файл на опечатки. В случае если все правильно, вы увидите следующую
+надпись: <PRE>crontab: installing new crontab
+</PRE>
+<P align=justify class=maintext>Когда вы завтра будете проверять свой почтовый
+ящик, вы увидите два письма от cron'а с результатами деятельности записей в
+вашем файле crontab. Если ваши команды выполнились успешно, то вы получите нечто
+похожее: <PRE>From <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bddad8d3d4ced4cefd93d4cec9dccf93dedc">[email&#160;protected]</a>. Thu Sep 14 04:38:31 2000
+Date: Thu, 14 Sep 2000 04:38:50 -0400 (EDT)
+From: genisis (Cron Daemon)
+To: genisis
+Subject: cron find / \( -name "*.core" -or
+-name "dead.*" \) -print -exec rm -rf {} \;
+
+find: /usr/games/hide: Permission denied
+/usr/home/genisis/dead.letter
+/usr/home/genisis/netscape.bin.core
+find: /var/spool/opielocks: Permission denied
+find: /var/cron/tabs: Permission denied
+find: /var/games/hackdir: Permission denied
+find: /stand/etc: Permission denied
+find: /etc/isdn: Permission denied
+find: /etc/uucp: Permission denied
+find: /root/mail: Permission denied
+
+From <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="89eeece7e0fae0fac9a7e0fafde8fba7eae8">[email&#160;protected]</a>. Thu Sep 14 02:51:36 2000
+Date: Thu, 14 Sep 2000 02:52:01 -0400 (EDT)
+From: genisis (Cron Daemon)
+To: genisis
+Subject: cron ~genisis/bin/clean
+
+Clearing Netscape cache...
+Exiting....
+</PRE>
+<P align=justify class=maintext>Теперь несколько финальных замечаний
+относительно crontab. Если вы хотите увидеть содержимое своего файла crontab,
+напечатайте: <PRE>crontab -l
+</PRE>
+<P align=justify class=maintext>Если вы хотите изменить этот файл, опять пишите
+crontab -e.
+<P align=justify class=maintext>Только суперпользователь root имеет право
+видеть, у каких пользователей установлены файлы crontab. Зарегистрируйтесь под
+пользователем root, и попробуйте написать следующее: <PRE>ls /var/cron/tabs
+genisis
+</PRE>
+<P align=justify class=maintext>Вы должны будете увидеть новую запись с именем
+пользователя, который только что создал свой crontab-файл.
+<P align=justify class=maintext>Мы лишь прикоснулись к функциональности файлов
+crontab. В следующих статьях мы исследуем новые команды и научимся писать более
+сложные сценарии и обязательно добавим записей в наши файлы crontab.</P><BR>
+<HR noShade SIZE=1>
+
+<DIV align=center>Вниманию вебмастеров: использование данной статьи возможно
+только в соответствии<BR>с <A href="https://www.linuxlib.ru/site/rules/page1.html">правилами
+использования материалов сайта &laquo;Софтерра&raquo;
+</A>(http://www.softerra.ru/site/rules/)</DIV><BR>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

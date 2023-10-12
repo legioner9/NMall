@@ -1,0 +1,870 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини-HOWTO: Визуализация звукового сигнала — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Мини-HOWTO: Визуализация звукового сигнала</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Alessandro Rubini</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="97e5e2f5fef9fed7fbfef9e2efb9fee3">[email&#160;protected]</a></P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+>Перевод: <A HREF="../cdn-cgi/l/email-protection.html#4d3d2c350d2c3e3d602124233835632e2220" TARGET="_top">Павел Гашев</A
+>,
+<!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>--></H3
+></DIV
+><P
+CLASS="PUBDATE"
+>версия 2.2, 11 ноября 1997<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN15"
+></A
+><P
+></P
+><P
+>В этом документе содержится информация о том, как визуализировать звуковой сигнал при помощи termcap.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Visual-Bell.html#AEN17"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="Visual-Bell.html#AEN21"
+>Онемение</A
+></DT
+><DT
+>3. <A
+HREF="Visual-Bell.html#AEN26"
+>Настройка звукового сигнала на каждой консоли</A
+></DT
+><DT
+>4. <A
+HREF="Visual-Bell.html#AEN50"
+>Основные понятия Termcap и Terminfo</A
+></DT
+><DT
+>5. <A
+HREF="Visual-Bell.html#AEN81"
+>Определение визуального сигнала</A
+></DT
+><DT
+>6. <A
+HREF="Visual-Bell.html#AEN96"
+>Отключение звукового сигнала в текстовом режиме</A
+></DT
+><DT
+>7. <A
+HREF="Visual-Bell.html#AEN102"
+>Заставляем приложение замолчать</A
+></DT
+><DT
+>8. <A
+HREF="Visual-Bell.html#AEN160"
+>Другая сторона проблемы</A
+></DT
+><DT
+>9. <A
+HREF="Visual-Bell.html#AEN166"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN17"
+>1. Введение</A
+></H1
+><P
+>Драйвер консоли Linux производит звуковой сигнал каждый раз, когда выводится символ BEL (ASCII код 7). Это считается нормальным поведением, но некоторым пользователям не нравится, когда их компьютер начинает пищать. Это мини-HOWTO описывает, как указать приложениям не выводить символ BEL, и как заставить ядро и X-windows не пищать при выводе символа BEL. Замечу, что большая часть этого документа имеет отношение к текстовой консоли; тем не менее любой пользователь, работающий в графическом окружении, может легко понять, как настроить X-сервер.</P
+><P
+>Хотя, по-моему, лучший выход усмирить нервный компьютер - это отключить динамик (что я и сделал).</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN21"
+>2. Онемение</A
+></H1
+><P
+>Онемение (лат. speakerotomy :-) - это самое лучшее решение нашей проблемы. Как следует из названия, она представляет из себя удаление звуковых сигналов путем удаления того, что издает эти сигналы. Операция довольна проста и не требует никаких анестезирующих средств.</P
+><P
+>Персональный компьютер обычно поставляется с идиотской кнопкой "Turbo", снижающей тактовую частоту процессора. Обычно она никогда не используется, за исключением случаев, когда вы хотите поиграть в старую-добрую игру времен XT. Т.е. обычно мы не используем эту кнопку по прямому назначению, но мы можем легко ее переделать для включения/выключения динамика, т.к. иногда динамик очень даже нужен (например, для уведомления о том, что закончилась продолжительная компиляция). Чтобы это сделать, просто отключите ее от материнской платы и подсоедините провода последовательно с динамиком.</P
+><P
+>К сожалению, пользователи портативных компьютеров не имеют доступа к динамику, кроме того, у них нет свободной кнопки для этого. Самое лучшее решение для таких пользователей - соответственно настроить программное обеспечение. Что мы и сделаем.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN26"
+>3. Настройка звукового сигнала на каждой консоли</A
+></H1
+><P
+>В Linux 1.3.43, Martin Mares, изменив <TT
+CLASS="LITERAL"
+>console.c</TT
+>, добавил возможность настраивать частоту и длительность звукового сигнала. Каждая консоль, при помощи escape-последовательностей, может быть настроена на звуковой сигнал с разной частотой и/или длительностью. Вы можете изменить <TT
+CLASS="LITERAL"
+>~/.profile</TT
+>
+или <TT
+CLASS="LITERAL"
+>~/.login</TT
+>, настроив разный сигнал для каждой консоли (или вообще его выключить).</P
+><P
+>Escape-последовательности следующие:
+
+<P
+></P
+><UL
+><LI
+><P
+>ESC-<TT
+CLASS="LITERAL"
+>[10;</TT
+>xx<TT
+CLASS="LITERAL"
+>]</TT
+> устанавливает частоту сигнала в герцах. Значение должно быть в диапазоне 21-32766. При отсутствии или неправильном значении `xx', устанавливается значение по умолчанию (750Гц).</P
+></LI
+><LI
+><P
+>ESC-<TT
+CLASS="LITERAL"
+>[11;</TT
+>xx<TT
+CLASS="LITERAL"
+>]</TT
+> устанавливает длительность звукового сигнала в миллисекундах. Опять же при отсутствии или неправильном значении `xx' устанавливается значение по умолчанию (125мс).</P
+></LI
+></UL
+>&#13;</P
+><P
+>Например для установки звукового сигнала в 50Гц и длительностью в одну секунду, вы можете выполнить
+"<TT
+CLASS="LITERAL"
+>echo -e "\\33[10;50]\\33[11;1000]"</TT
+>" в <TT
+CLASS="LITERAL"
+>bash</TT
+> (гдк "-e" означает `используются escape-последовательности'. Если вы пользуетесь <TT
+CLASS="LITERAL"
+>tcsh</TT
+>, та же команда выгдядит так "<TT
+CLASS="LITERAL"
+>echo "\\033[10;50]\\033[11;1000]"</TT
+>".</P
+><P
+>Насколько я знаю, команда <TT
+CLASS="LITERAL"
+>setterm</TT
+> не поддерживает такую настройку, хотя вполне может быть, что будущие версии будут делать это.</P
+><P
+>Если у вас Linux-1.3.43 или выше, вас могут удовлетворить escape-последовательности, и можно не читать дальше. Если у вас старое ядро или вы хотите настроить визуальный сигнал, то вам понравится оставшаяся часть документа.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN50"
+>4. Основные понятия Termcap и Terminfo</A
+></H1
+><P
+><TT
+CLASS="LITERAL"
+>/etc/termcap</TT
+> - это текстовый файл, описывающий возможности терминала
+(<TT
+CLASS="LITERAL"
+>term</TT
+>inal <TT
+CLASS="LITERAL"
+>cap</TT
+>abilities). Различные приложения используют
+<TT
+CLASS="LITERAL"
+>termcap</TT
+> для получения информации о том, как двигать курсор по экрану и т.д. <TT
+CLASS="LITERAL"
+>tcsh</TT
+>, <TT
+CLASS="LITERAL"
+>bash</TT
+>, <TT
+CLASS="LITERAL"
+>vi</TT
+> и другие приложения, основанные на <TT
+CLASS="LITERAL"
+>curses</TT
+>, используют базу данных <TT
+CLASS="LITERAL"
+>termcap</TT
+>.</P
+><P
+>База данных описывает различные типы терминалов. Переменная окружения
+<TT
+CLASS="LITERAL"
+>TERM</TT
+> указывает приложениям на соответствующий терминал в <TT
+CLASS="LITERAL"
+>termcap</TT
+>.</P
+><P
+>Внутри базы данных каждая возможность терминала описывается двухбуквенным кодом и представляет из себя escape-последовательность, которую надо вывести, чтобы добиться желаемого эффекта. Для разделения используется символ двоеточия (":"). Например, звуковой сигнал с кодом "bl" обычно описывается как "<TT
+CLASS="LITERAL"
+>bl=&circ;G</TT
+>". Это значит, что для звукового сигнала нужно вывести символ Ctrl-G (ASCII BEL).</P
+><P
+>В дополнении к <TT
+CLASS="LITERAL"
+>bl</TT
+> поддерживается код <TT
+CLASS="LITERAL"
+>vb</TT
+> Он описывает визуальный сигнал ("visible bell") и обычно отсутствует в файле <TT
+CLASS="LITERAL"
+>termcap</TT
+> для терминала <TT
+CLASS="LITERAL"
+>linux</TT
+>.</P
+><P
+>Большинство современных приложений и библиотек вместо <TT
+CLASS="LITERAL"
+>termcap</TT
+> используют базу данных <TT
+CLASS="LITERAL"
+>terminfo</TT
+>. Эта база данных описывает каждый вид терминала в отдельном файле из каталога <TT
+CLASS="LITERAL"
+>/usr/lib/terminfo</TT
+>. Чтобы избежать использования каталога с большим количеством файлов, каждый файл находится в подкаталоге, названном по первой букве названия терминала; например, терминал <TT
+CLASS="LITERAL"
+>linux</TT
+> описывается в файле <TT
+CLASS="LITERAL"
+>/usr/lib/terminfo/l/linux</TT
+>. Чтобы создать запись в
+<TT
+CLASS="LITERAL"
+>terminfo</TT
+>, вы должны "откомпилировать" описание <TT
+CLASS="LITERAL"
+>termcap</TT
+> (<TT
+CLASS="LITERAL"
+>man tic</TT
+>).</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN81"
+>5. Определение визуального сигнала</A
+></H1
+><P
+>Вы можете добавить запись <TT
+CLASS="LITERAL"
+>vb</TT
+> в файл termcap, если там ее еще нет. Dennis Henriksen (<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0763726c6247636e6c7229636c">[email&#160;protected]</a>) предложил вставлять в
+<TT
+CLASS="LITERAL"
+>termcap</TT
+> для терминала <TT
+CLASS="LITERAL"
+>linux</TT
+> (в старых дистрибутивах
+<TT
+CLASS="LITERAL"
+>console</TT
+>) следующую строку:
+
+<PRE
+CLASS="SCREEN"
+>:vb=\E7\E[?5h\E[?5l\E[?5h\E[?5l\E[?5h\E[?5l\E[?5h\E[?5l\E8:\</PRE
+>
+
+Последняя наклонная черта необходима, чтобы избежать перевод строки в файле базы данных. Эта строка выполняет следующее (по словам Dennis'а):
+
+<P
+></P
+><UL
+><LI
+><P
+>Сохраняем позицию курсора (просто мера предосторожности).</P
+></LI
+><LI
+><P
+>Несколько раз меняем цвет фона с нормального на реверсный и обратно.</P
+></LI
+><LI
+><P
+>Восстанавливаем позицию курсора.</P
+></LI
+></UL
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN96"
+>6. Отключение звукового сигнала в текстовом режиме</A
+></H1
+><P
+>Если вы хотите использовать визуальный сигнал вместо звукового, определите в
+<TT
+CLASS="LITERAL"
+>termcap</TT
+> "<TT
+CLASS="LITERAL"
+>bl</TT
+>" так же, как "<TT
+CLASS="LITERAL"
+>vb</TT
+>" из предыдущего раздела. Этот метод удобен, если вы не хотите настраивать каждое приложение (впрочем, это все равно описывается ниже). Я использую этот способ на всех машинах, где не могу отключить динамик.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN102"
+>7. Заставляем приложение замолчать</A
+></H1
+><P
+>Вот незаконченный список приложений, которые можно заставить использовать визуальный сигнал вместо звукового:</P
+><P
+>&#13;<P
+></P
+><UL
+><LI
+><P
+>X-сервер: используйте команду "<TT
+CLASS="LITERAL"
+>xset b</TT
+>", чтобы определить параметры звукового сигнала. Она имеет три числовых аргумента: громкость, частоту и длительность. Кроме того, "<TT
+CLASS="LITERAL"
+>xset -b</TT
+>" вообще выключат звуковой сигнал. Эта настройка оказывает влияние на все приложения, запущенные на данном X-сервере.&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>xterm</TT
+>: xterm может преобразовывать визуальный и звуковой сигнал из одного в другой. В
+<TT
+CLASS="LITERAL"
+>xterm</TT
+> сигнал по умолчанию - звуковой, но вы можете использовать "<TT
+CLASS="LITERAL"
+>xset -vb</TT
+>" или изменить ресурс "<TT
+CLASS="LITERAL"
+>xterm*visualBell: true</TT
+>", чтобы превратить звуковой сигнал в визуальный. Для переключения визуального/звукового сигнала, можно также использовать меню, вызываемое Ctrl-левая_кнопка_мыши. Если вы работаете в основном под X-windows, дальнейшая информация может не понадобиться.
+&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>tcsh</TT
+> (6.04 и выше): "<TT
+CLASS="LITERAL"
+>set visiblebell</TT
+>". Команда может быть помещена в <TT
+CLASS="LITERAL"
+>.cshrc</TT
+> или введена вручную. "<TT
+CLASS="LITERAL"
+>unset visiblebell</TT
+>" снова включает звуковой сигнал. Чтобы вообще выключить любые сигналы, используйте "<TT
+CLASS="LITERAL"
+>set nobeep</TT
+>".&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>bash</TT
+> (любой bash, насколько я знаю): поместите "<TT
+CLASS="LITERAL"
+>set bell-style
+visible</TT
+>" в <TT
+CLASS="LITERAL"
+>&tilde;/.bashrc</TT
+>. Возможные типы сигналов также "none" или "audible".&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>bash</TT
+> (С <TT
+CLASS="LITERAL"
+>readline</TT
+>, как и для других приложений основанных на <TT
+CLASS="LITERAL"
+>readline</TT
+>
+): поместите "<TT
+CLASS="LITERAL"
+>set prefer-visible-bell</TT
+>" в
+<TT
+CLASS="LITERAL"
+>&tilde;/.inputrc</TT
+>.&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>nvi</TT
+> и <TT
+CLASS="LITERAL"
+>elvis</TT
+>: поместите "<TT
+CLASS="LITERAL"
+>set flash</TT
+>" в
+<TT
+CLASS="LITERAL"
+>&tilde;/.exrc</TT
+> или наберите "<TT
+CLASS="LITERAL"
+>:set flash</TT
+>" вручную. Чтобы выключить звуковой сигнал, введите <TT
+CLASS="LITERAL"
+>noflash</TT
+> вместо <TT
+CLASS="LITERAL"
+>flash</TT
+>.&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>emacs</TT
+>: поместите "<TT
+CLASS="LITERAL"
+>(setq visible-bell t)</TT
+>" в
+<TT
+CLASS="LITERAL"
+>&tilde;/.emacs</TT
+>. Чтобы выключить - "<TT
+CLASS="LITERAL"
+>(setq visible-bell
+nil)</TT
+>".&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>less</TT
+>: используйте опцию "<TT
+CLASS="LITERAL"
+>-q</TT
+>" для визуального сигнала, и "<TT
+CLASS="LITERAL"
+>-Q</TT
+>" вообще без сигналов. Опции по умолчанию могут быть помещены в переменную окружения "<TT
+CLASS="LITERAL"
+>LESS</TT
+>".&#13;</P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>screen</TT
+>: CtrlA-CtrlG меняет поведение всех виртуальных экранов. Чтобы установить это по умолчанию, см. man screen раздел "НАСТРОЙКА" ("CUSTOMIZATION").&#13;</P
+></LI
+></UL
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN160"
+>8. Другая сторона проблемы</A
+></H1
+><P
+>Есть плохие новости. Не каждое приложение использует <TT
+CLASS="LITERAL"
+>termcap</TT
+> или
+<TT
+CLASS="LITERAL"
+>terminfo</TT
+>. Большинство маленьких программ используют символы '\a' (alarm) прямо в исходном тексте на C. Во время выполнения программы этот символ превращается в ASCII BEL. Реальное приложение обычно не падает под эту категорию, но остерегайтесь новичков в C, дающих вам свои программы. Из них хуже всего студенты, изучающие информатику.</P
+><P
+>Единственный путь заставить эти программы замолчать - это онемение, или использование escape-последовательностей Martin'а Mares'а.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN166"
+>9. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#1c70757269643174736b68735c7179687d707d7e3269727f32797869"><span class="__cf_email__" data-cfemail="204c494e55580d484f57544f604d4554414c41420e554e430e454455">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#2d41444358550045425a59426d4c5e5d4144435855035f58"><span class="__cf_email__" data-cfemail="ed8184839895c085829a9982ad8c9e9d8184839895c39f98">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

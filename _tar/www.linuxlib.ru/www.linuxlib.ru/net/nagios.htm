@@ -1,0 +1,1235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Создание системы сетевого мониторинга на основе Nagios — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<p align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="+2" color="#0080ff"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="+2"><b>Создание
+  системы сетевого мониторинга на основе Nagios</b></font></b></font><b></b>
+</p><p>Бешков Андрей<br>
+  <a href="../cdn-cgi/l/email-protection.html#55213c32273c263d3415262c263431383c3b267b2720"><span class="__cf_email__" data-cfemail="86f2efe1f4eff5eee7c6f5fff5e7e2ebefe8f5a8f4f3">[email&#160;protected]</span></a> </p>
+<p>            С увеличением размера подконтрольных сетей перед каждым администратором
+  встает вопрос о создании единой системы мониторинга серверов и сервисов. Внедрение
+  такой системы позволит повысить производительность работы компании и уменьшить
+  время простоя оборудования. Несмотря на свои неоспоримые достоинства, коммерческие
+  системы вроде Solar Winds, 3COM Network Superviser и HP OpenView в данной статье
+  рассматриватся не будут из-за своих довольно высоких цен. Для выполнения вышеописанной
+  задачи мы будем использовать инструмент по имени Nagios. Кроме него в сети существует
+  множество других бесплатных систем мониторинга. Наиболее известными являются
+  Big Brother, Angel Network Monitor, HiWayS, MARS, Autostatus, NocMonitor, RITW.
+</p>
+<p>Давайте рассмотрим главные задачи системы мониторинга. Она должна оповещать
+  администратора с помощью электронной почты, пейджера или sms сообщений, если
+  с наблюдаемыми объектами случаются какие-либо неприятности. Также оповещения
+  должны отсылаться, когда состояние объекта возвращается в норму. Вдобавок ко
+  всем способам, перечисленным выше, Nagios позволяет использовать в качестве
+  инструмента оповещения программы, разработанные пользователями. </p>
+<p>Перед тем, как мы станем более подробно обсуждать возможности Nagios, Вам стоит
+  посмотреть на демонстрационную систему, которую Tom Welsh установил специально
+  для этих нужд. Быстренько идем на сайт <!--<a href="http://nagios.square-box.com/">-->http://nagios.square-box.com/<!--</a>-->.
+  Для авторизации используем имя пользователя guest и пароль guest. </p>
+<p>Набродившись по разным меню и полюбовавшись на все красоты web-интерфейса давайте
+  поговорим о достоинствах Nagios. На основе увиденного мы можем сделать вывод:
+  Nagios позволяет производить мониторинг таких сетевых сервисов как SMTP, TELNET,
+  SSH, HTTP, DNS, POP3, IMAP, NNTP и многих других. Еще можно следить за использованием
+  ресурсов серверов, таких как расход дискового пространства, свободная память
+  и загруженность процессора. Существует возможность создавать свои собственные
+  обработчики событий. Эти обработчики будут выполняться при возникновении тех
+  или иных событий, инициированных проверками сервисов или серверов. Такой подход
+  позволит активно реагировать на происходящие события и пытаться автоматически
+  решать возникшие проблемы. К примеру, можно создать обработчик событий, который
+  будет самостоятельно перезапускать повисший сервис. Еще одним достоинством системы
+  мониторинга Nagios является возможность управлять ею удаленно с помощью wap
+  интерфейса мобильного телефона. Используя концепцию "родительских" хостов, легко
+  описать иерархию и зависимости между всеми хостами. Такой подход чрезвычайно
+  полезен для больших сетей, потому что позволяет производить сложную диагностику.
+  А это качество, в свою очередь, помогает отличить не работающие хосты, от тех,
+  что недоступны в данный момент из-за неполадок в работе промежуточных звеньев.
+  Nagios умеет строить графики работы наблюдаемых систем и карты контролируемой
+  сетевой инфраструктуры. </p>
+<p>Из своей практики работы с Nagios приведу пример, показывающий, насколько полезен
+  он оказался для меня. На внешнем сетевом интерфейсе нашего брандмауэра с периодичность
+  в несколько часов начиналась потеря пакетов. Из-за неисправности терялось до
+  20 процентов проходящего трафика. По истечении минуты - другой интерфейс снова
+  начинал работать как положено. По причине плавающего характера этой неполадки
+  несколько недель я не мог понять, почему при работе с Интернет периодически
+  происходят кратковременные сбои. Без Nagios поиск неисправности затянулся бы
+  надолго.</p>
+<p>Многим из администраторов хорошо знаком предок Nagios по имени NetSaint. Несмотря
+  на то, что сайт проекта NetSaint все еще исправно функционирует, новые разработки
+  базируются уже на исходном коде Nagios. Поэтому всем рекомендуется потихоньку
+  перебираться на Nagios. Изначально проект разрабатывался для Linux, но наша
+  система мониторинга будет работать на основе FreeBSD 4.5. В документации, поставляемой
+  с Nagios, говорится, что он будет стабильно работать и со многими другими Unix
+  подобными системами. Для отображения web-интерфейса Nagios нам понадобится
+  сервер Apache. Вы вольны, использовать любой другой, но в данной статье будет
+  рассматриваться именно Apache, как наиболее распространенный на Unix платформах
+  web-сервер. Можно установить систему мониторинга вообще без web-интерфейса,
+  но мы так делать не станем, потому что это существенно уменьшает удобство пользования.
+</p>
+<p>Для создания графиков нам понадобится библиотека GD Graphics, которую написал
+  Thomas Boutel. Она необходима для создания изображений в формате PNG, JPEG
+  и WBMP. Последний чаще всего используется клиентами беспроводных устройств.
+  Подавляющее большинство браузеров пока не умеет работать с WBMP,
+  поэтому для нас он интереса не представляет. До перехода на версию 2.0.6 была
+  возможность работать с форматом GIF, но от нее пришлось
+  отказаться из-за проблем с патентным законодательством. Для сжатия информации
+  внутри изображений GIF используется алгоритм LZW.
+  Эксклюзивными правами на него обладает Unisys. В связи
+  с вышеуказанными проблемами, сетевому сообществу рекомендуется использовать
+  свободные от подобных неудобств форматы PNG и JPEG.
+  В свою очередь, библиотека GD опирается на библиотеки
+zlib, LibPng и jpeg.
+  У нас есть три пути, следуя которыми мы можем установить все необходимые библиотеки.
+  В статье они будут подробно описаны по очереди. Я люблю все собирать и устанавливать
+  вручную, потому, как подобный подход дает более полное понимание происходящих
+  процессов и возможность использовать самое свежее программное обеспечение. Итак,
+  начнем нашу эпопею со способа красноречиво называемого в народе "закат солнца
+  вручную". </p>
+<p>Первый ингредиент - библиотека zlib, написанная двумя программистами- Jean-loup
+  Gailly и Mark Adler. Она проектировалась как API общего назначения для сжатия
+  данных без потерь. Как ни странно, но в нашем проекте она будет использоваться
+  по своему прямому назначению, то есть для сжатия изображений. Берем новейшую
+  версию <!--<a href="http://www.gzip.org/zlib/">-->http://www.gzip.org/zlib<!--</a>-->. На
+  момент написания это была весрия 1.1.4. Распаковываем и компилируем. </p>
+<pre><code># tar zvxf zlib-1.1.4.tar.gz
+# cd zlib-1.1.4
+# ./configure
+# make test
+# make install</code></pre>
+Как Вы могли бы предположить, LibPng служит для создания изображений в формате
+PNG. Я использовал версию 1.2.5. Взять ее можно тут:
+<p><!--<a href="http://www.graphicswiz.com/png/libpng.html">-->http://www.graphicswiz.com/png/libpng.html<!--</a>--><br>
+</p>
+<p>Собирается LibPng довольно-таки странным и нестандартным
+  путем. </p>
+<pre><code># tar zxvf libpng-1.2.5.tar.gz
+# cd libpng-1.2.5</code></pre>
+Ориентируясь на тип операционной системы, из директории scripts выбираем нужный
+нам makefile и копируем его в директорию с исходными файлами. Для нашего случая
+исходный файл называется makefile.freebsd.
+<pre># cp ./scripts/makefile.freebsd</pre>
+<p>Затем создаем директорию zlib и кладем в нее из дистрибутива
+  zlib все файлы с расширением *.h</p>
+<pre># mkdir zlib </pre>
+<p>Вот теперь можно проводить компилляцию. Что мы с радость выполняем.</p>
+<pre># make all
+# make test</pre>
+В результате на экране вы должны увидеть что-то вроде этого:
+<pre>Testing pngtest.png:
+Pass 0: rwrwrwrwrwrwrwrwrw
+Pass 1: rwrwrwrwrwrwrwrwrw
+Pass 2: rwrwrwrwrwrwrwrw
+Pass 3: rwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrw
+Pass 4: rwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrw
+Pass 5: rwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrw
+Pass 6: rwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrwrw
+PASS (9782 zero samples)
+Filter 0 was used 21 times
+Filter 1 was used 15 times
+Filter 2 was used 52 times
+Filter 3 was used 10 times
+Filter 4 was used 33 times
+tIME = <st1:date year="1996" day="7" month="6">7 Jun 1996</st1:date> <st1:time minute="58" hour="17"> 17:58:08</st1:time> +0000
+Current memory allocation:          0 bytes
+Maximum memory allocation:     337346 bytes
+Total   memory allocation:    1023516 bytes
+Number of allocations:        198
+libpng passes test
+mkdir /usr/local/include/libpng</pre>
+И наконец пришло время инсталляции. Тут уж все должно пройти легко и просто.
+<pre># make install</pre>
+<p>Теперь берем по адресу <!--<a href="http://www.ijg.org/files/">-->http://www.ijg.org/files/<!--</a>--> библиотеку
+  jpeg версии 6b. Я надеюсь, самые догадливые читатели уже поняли, что она
+  понадобится нам для создания изображений в формате jpeg.
+  Поверив моим заявлениям о том, что процедура установки довольно проста, начнем
+  ее выполнение.</p>
+<pre># tar zxvf jpegsrcv6b.tar.gz
+# cd jpeg-6b
+# ./configure
+# make</pre>
+<p>После тестовой сборки должны увидеть такую картину:</p>
+<pre># make test
+rm -f testout*
+./djpeg -dct int -ppm -outfile testout.ppm  ./testorig.jpg
+./djpeg -dct int -bmp -colors 256 -outfile testout.bmp  ./testorig.jpg
+./cjpeg -dct int -outfile testout.jpg  ./testimg.ppm
+./djpeg -dct int -ppm -outfile testoutp.ppm ./testprog.jpg
+./cjpeg -dct int -progressive -opt -outfile testoutp.jpg ./testimg.ppm
+./jpegtran -outfile testoutt.jpg ./testprog.jpg
+cmp ./testimg.ppm testout.ppm
+cmp ./testimg.bmp testout.bmp
+cmp ./testimg.jpg testout.jpg
+cmp ./testimg.ppm testoutp.ppm
+cmp ./testimgp.jpg testoutp.jpg
+cmp ./testorig.jpg testoutt.jpg</pre>
+<p>Следующей командой устанавливаем библиотеку jpeg.</p>
+<pre># make install</pre>
+<p>Наконец, после всех этих мытарств можно заняться инсталляцией библиотеки GD.
+  Скачиваем исходные тексты с сайта проекта <!--<a href="http://www.boutell.com/gd/">-->http://www.boutell.com/gd/<!--</a>-->.
+  Как всегда, распаковываем и конфигурируем дистрибутив.</p>
+<pre># tar zxvf gd-2.0.6.tar.gz
+# cd gd-2.0.6
+# ./configure --x-includes=/usr/local/include x-libraries=/usr/local/lib</pre>
+<p>Ключи -x-includes и -x-libraries
+  указывают скрипту конфигурации, где у нас находятся заголовочные и библиотечные
+  файлы всех установленных ранее библиотек. </p>
+<pre># make all</pre>
+<p>Если компиляция завершилась с ошибками, то нам необходимо удалить временные
+  файлы, созданные в процессе работы команды make.</p>
+<pre># make devclean</pre>
+<p>После выполнения чистки нужно принять меры к устранению причин возникновения
+  ошибок. При необходимости подправьте ключи команды configure, а затем проведите повторную компиляцию. И если предыдущие
+  шаги завершились нормально, запускаем инсталляцию.</p>
+<pre># make install</pre>
+<p>Теперь давайте обсудим второй способ установки. При наличии устойчивого соединения
+  с Интернетом можно попытаться установить библиотеки GD, zlib,
+  LibPng и jpeg с помощью механизма
+  портов. Мы запустим установку GD, а она, в свою очередь,
+  автоматически выполнит скачивание, компиляцию и установку всех необходимых библиотек
+  на основе зависимостей между ними.</p>
+<pre># cd /usr/ports/graphics/gd
+# make install</pre>
+<p>Третий способ установки не требует подключения к сети Интернет. Скорее всего,
+  он является самым простым и, видимо, лучше всего подходит для начинающих администраторов.
+  Как и во втором способе, все необходимое будет автоматически установлено из
+  пакетов, поставлявшихся вместе с операционной системой FreeBSD. По аналогии
+  со вторым способом за удобство придется заплатить свежестью устанавливаемого
+  программного обеспечения. В CD привод кладем компакт диск с пакетами и запускаем
+  программу sysinstall.</p>
+<pre># /stand/sysinstall</pre>
+<p>А затем, последовательно пройдя через все перечисленные ниже меню, выполняем
+  инсталляцию.</p>
+<p>Configure-&gt;Packages-&gt;CD/DVD-&gt;graphics-&gt;gd-1.8.4_3-&gt;ok-&gt;install-&gt;ok</p>
+<p>Аналогичного эффекта можно добиться, используя команду pkg_add. Посмотрим,
+  куда у нас все это установилось. Файлы библиотек лежат в /usr/local/lib, а
+  заголовочные файлы в /usr/local/include/gd. Не стоит огорчаться, если, несмотря
+  на все попытки, библиотеку не удалось установить
+  ни одним из трех способов. Хотя я с трудом представляю, как такое возможно.
+  Отложите установку до лучших времен. Наличие вышеназванных библиотек необходимо
+  только для правильной работы модулей построения графиков и генерирования сетевой
+  карты. Nagios работает стабильно и остается очень полезным
+  инструментом даже без этих модулей. </p>
+<p>Пришло время детально разобраться с архитектурой системы мониторинга. Обычно
+  комплекс на основе Nagios состоит из двух частей - главной
+  программы, в документации чаше всего называемой core program, и подключаемых
+  модулей соответственно plugins. Модульный дизайн позволяет отделить логику основной
+  программы от процесса выполнения проверок. Это в свою очередь дает возможность
+  всем желающим без особых усилий расширять область применения Nagios
+  через написание собственных подключаемых модулей. </p>
+<p>Скачиваем последнюю версию главной программы и подключаемых модулей с официального
+  сайта проекта <!--<a href="http://www.nagios.org/download/">-->http://www.nagios.org/download/<!--</a>-->.
+  На момент написания статьи были доступны версии nagios-1.0b6 и nagiosplug-1.3-beta1.
+  Засучив рукава, приступим к установке главной программы. </p>
+<pre># tar zxvf nagios-1.0b6.tar.gz
+# cd nagios-1.0b6</pre>
+<p>Теперь нужно решить, в какой каталог мы хотим инсталлировать Nagios.
+  По умолчанию предполагается каталог /usr/local/nagios/. Думаю, нам тоже стоит
+  придерживаться его, потому что в прилагающейся к дистрибутиву документации указан
+  именно этот каталог. При последующем устранении ошибок или проблем с конфигурированием
+  будет гораздо проще читать документацию. Создаем каталог, куда мы впоследствии
+  будем проводить инсталляцию. Не совсем понятно, почему ее должен создавать администратор,
+  а не программа инсталляции. Надеюсь, в следующих версиях этот недочет будет
+  исправлен.</p>
+<pre># mkdir /usr/local/nagios</pre>
+<p>С помощью скрипта adduser либо каким-нибудь другим способом создаем пользователя nagios, состоящего в группе nagios.</p>
+<pre># adduser nagios
+# ./configure --prefix=/usr/local/nagios --with-cgi-url=/nagios/cgi-bin --with-html-url=/nagios/ \
+--with-nagios-user=nagios --with-nagios-grp=nagios --with-gd-lib=/usr/local/lib \
+--with-gd-inc=/usr/local/include/gd</pre>
+<p>Давайте быстренько разберемся с назначением используемых при конфигурировании
+  ключей.</p>
+<p>--prefix=/usr/local/nagios - Сюда мы будем устанавливать файлы после компиляции. Вот и пригодилась созданная
+  вручную директория /usr/local/nagios.</p>
+<p>--with-cgi-url=/nagios/cgi-bin - URL с помощью которого мы будем
+обращаться к CGI скриптам web-интерфейса nagios. В конце URL символ "/"
+добавлять не нужно. В качестве примера для вымышленного сайта
+somesite.ru можно привести абсолютный URL одного из CGI скриптов
+httt://somesite.ru/nagios/cgi-bin/statusmap.cgi. </p>
+<p>--with-html-url=/nagios/  - URL где будут находиться html  файлы, в
+которых хранятся главное меню web-интерфейса и документация.</p>
+<p>--with-nagios-user=nagios - пользователь, которому будут принадлежать файлы инсталляции.</p>
+<p>--with-nagios-grp=nagios  - соответственно группа этого пользователя.</p>
+<p>--with-gd-lib=/usr/local/lib - тут у нас лежит библиотека GD</p>
+<p>--with-gd-inc=/usr/local/include/gd - а здесь находятся ее  заголовочные файлы. </p>
+<p>Осмыслив все прочитанное и разобравшись с опциями команды configure, проводим сборку и инсталляцию.</p>
+<pre># make all
+# make install</pre>
+<p>Следующий шаг является необязательным, но желательно его все же выполнить. С помощью команды make install-init можно создать скрипт, который будет выполнять запуск Nagios  после перезагрузки системы. Вдобавок к этому у нас появится возможность управлять работой процесса Nagios с помощью команд stop, reload, start, restart, reload, force-reload.    Давайте подробнее рассмотрим каждую из этих команд.</p>
+<p>start - запускает процесс Nagios.</p>
+<p>stop - останавливает текущий процесс Nagios.</p>
+<p>restart - останавливает выполняющийся процесс Nagios  и запускает новый</p>
+<p>reload - отправляет процессу Nagios сигнал SIGHUP, заставляя его перечитать конфигурационные
+  файлы, а затем продолжить мониторинг</p>
+<p>force-reload - производит принудительную перезагрузку конфигурационных
+  файлов</p>
+<p>status - показывает статус работающего процесса</p>
+<p>Для FreeBSD файл скрипта должен располагаться в директории
+  /usr/local/etc/rc.d  и называться nagios.sh. В зависимости от типа операционной системы, инсталлятор
+  должен сам выбрать подходящие права доступа, местоположение и имя скрипта.
+  Например, для систем на основе Slackware должны получить
+  соответственно /etc/rc.d/init.d
+  и rc.nagios. Ну что же давайте, попытаемся
+  выполнить установку скрипта.</p>
+<pre># make install-init</pre>
+<p>Получаем следующие ошибки:</p>
+<pre>/usr/bin/install -c -m 755 -d -o root -g root /usr/local/etc/rc.d</pre>
+<pre>install: unknown group root</pre>
+<pre>*** Error code 67</pre>
+<pre>Stop in /tmp/nagios-1.0b6.</pre>
+Жаль, но установка с наскоку не удалась. Ну и ладно, вот исправим ошибки программистов,
+писавших скрипт, и все заработает как надо. С помощью любимого текстового редактора
+начинаем редактировать файл Makefile.
+<p>Идем на строку 32 и ищем символы </p>
+<p>INIT_OPTS=-o root -g root</p>
+<p>Обдумав увиденную строку, понимаем, что под FreeBSD пользователь root входит в группу wheel. Вносим изменения.</p>
+<p>INIT_OPTS=-o root -g wheel</p>
+<p>Переходим на строку 154 </p>
+<p>$(INSTALL) -m 774 $(INIT_OPTS) daemon-init $(DESTDIR)$(INIT_DIR)/nagios</p>
+<p>Правильно задаем имя файла nagios.sh
+  вместо nagios. Не стоит давать общий доступ на чтение
+  для файла скрипта. Вполне хватит режима доступа 100. Измененная строка будет
+  выглядеть так:</p>
+<p>$(INSTALL) -m 100 $(INIT_OPTS) daemon-init
+  $(DESTDIR)$(INIT_DIR)/nagios.sh</p>
+<p>Сохраняем файл и снова выполняем команду инсталляции.</p>
+<pre># make install-init</pre>
+<p>Итак, скрипт автозапуска создан, но он все еще не готов к работе. Все дело
+  в том, что при перезагрузке файл nagios.sh
+  будет выполнен без единого параметра командной строки, а для безукоризненной
+  работы нужно запускать его с параметром start. Сейчас
+  мы это исправим. Открываем файл для редактирования и выполняем поиск строки:</p>
+<p>echo "Usage: nagios {start|stop|restart|reload|force-reload|status}"</p>
+<p>Затем сразу после нее вставляем вот это:</p>
+<p>/usr/local/etc/rc.d/nagios.sh start</p>
+<p>Внесенными изменениями мы заставляем nagios.sh,  запущенный без
+обязательных параметров, рекурсивно выполнить самого себя с параметром
+ start. </p>
+<p>Еще одна ошибка - это путь к файлу, в котором будут храниться внешние команды,
+  переданные на выполнение процессу Nagios. После инсталляции
+  подразумевается, что файл должен располагаться в /usr/local/nagios/var/rw/nagios.cmd.
+  Но, к сожалению, директория /usr/local/nagios/var/rw/ автоматически не создается. К тому же, не совсем
+  понятен смысл создания отдельной директории для единственного файла nagios.cmd.
+  Чтобы исправить вышеуказанную ошибку, ищем строку</p>
+<p>NagiosCmd=${prefix}/var/rw/nagios.cmd</p>
+<p>и заменяем ее на такую:</p>
+<p>NagiosCmd=${prefix}/var/nagios.cmd</p>
+<p>Теперь файл nagios.cmd
+  будет создаваться в директории /usr/local/nagios/var/.</p>
+<p>К сожалению, это не последняя проблема, связанная   с файлом
+nagios.cmd. При каждом перезапуске процесса Nagios файл внешних команд
+сначала удаляется, а затем создается   вновь. Беда в том, что
+создается nagios.cmd с правами процесса. Соответственно, он принадлежит
+пользователю   nagios и группе nagios. На первый взгляд, здесь нет
+никакой   проблемы. Поразмышляв некоторое время, мы понимаем, что
+главным поставщиком   внешних команд для процесса Nagios будет
+web-интерфейс. Сервер Apache обычно запускается с правами пользователя
+nobody группы nogroup. А это значит, что процесс web-сервера   не
+сможет вносить новые данные в файл nagios.cmd. Самым простым решением
+было бы дать доступ на запись всем, но с точки зрения безопасности
+такое решение   выглядит довольно неприглядно. Вторым способом
+разрешения конфликта могло бы   стать введение пользователя nobody в
+группу nagios. Но с безопасностью опять возникают   неувязки. Самым
+лучшим выходом из этой ситуации является частичная передача   прав на
+файл пользователю nobody. В результате такой операции файлом должен
+владеть пользователь   nobody и группа nagios. Таким образом, доступ к
+файлу получат   и процесс nagios, и web-сервер.   Ищем в файле
+nagios.sh вот такие строки</p>
+<p>sleep 1</p>
+<p>status_nagios
+  nagios</p>
+<p>и добавляем сразу за ними команду </p>
+<p>chown nobody $NagiosCmd</p>
+<p>Покончив с файлом nagios.sh,
+  можно быть уверенным, что уж теперь - то он будет работать, как положено. </p>
+<p>С помощью команды make install-config
+  создаем файлы конфигурации, заполняем их значениями по умолчанию и помещаем
+  в директорию /usr/local/nagios/etc/.</p>
+<pre># make install-config</pre>
+<p>Заглянув в директорию /usr/local/nagios/, мы видим, что после инсталляции внутри нее образовалось
+  еще 5 директорий. </p>
+<pre># ls /usr/local/nagios
+bin     etc     sbin    share   var</pre>
+<p>Опишем, для чего нужна каждая из этих директорий.</p>
+<p>bin - здесь находится выполняемый файл основной программы.
+  Он же демон Nagios. </p>
+<p>etc - конфигурационные файлы </p>
+<p>sbin - тут лежат файлы CGI
+  для web-интерфейса</p>
+<p>share - здесь находятся html
+  файлы web-интерфейса и документация</p>
+<p>var - файлы протоколов и данные о состоянии проверяемых
+  объектов</p>
+<p>Можете себя поздравить с окончанием установки главной программы Nagios.
+  Можно было сделать все то же самое с помощью портов или пакетов. К сожалению,
+  на такой способ установки времени у меня не хватило. Поэтому сказать об удобстве
+  или подводных камнях такого пути ничего не могу. Есть подозрение, что возможно
+  возникновение проблем с конфигурированием, да и свежесть установленного программного
+  обеспечения будет весьма сомнительна. Еще одной причиной не использовать порты
+  стало желание заняться русификацией системы. Подробнее о результатах этого эксперимента
+  будет рассказано в следующей статье. Несмотря на то, что инсталляция главной
+  программы закончена, толку нам от этого пока никакого. Без установленных модулей
+  Nagios совершенно бесполезен, так как не имеет возможности
+  взаимодействовать с объектами, за которыми нужно наблюдать. Настало время приняться
+  за инсталляцию этих самых модулей. С помощью make,
+  поставляющегося вместе с операционной системой, собрать их не удалось. Посему
+  для компиляции будем пользоваться gmake.</p>
+<pre># tar zxvf nagiosplug-1.3-beta1.tar.gz
+# cd nagiosplug-1.3-beta1
+# ./configure --prefix=/usr/local/nagios --with-nagios-user=nagios    --with-nagios-grp=nagios</pre>
+Значение ключей конфигурации аналогично тем, что мы использовали при компиляции
+главной программы. Почитать детальные объяснения о назначении каждого ключа можно
+с помощью команды ./configure help.
+<pre># gmake all
+# gmake install</pre>
+После компиляции подключаемые модули устанавливаются в директорию /usr/local/nagios/libexec.
+Некоторые из них написаны на С, другие на perl. В принципе, модуль может быть
+написан на любом языке. Каждый модуль является выполняемым файлом. Это дает возможность
+использовать модули не только в комплексе с Nagios, но и с другими программами.
+Можно выполнять проверки даже из командной строки. Каждый модуль должен поддерживать
+опцию help или -h, иначе он не может считаться совместимым с Nagios. Такие жесткие
+требования позволяют легко разобраться с любым модулем. Давайте посмотрим, какие
+параметры командной строки должен получать модуль check_dns.
+<pre># check_dns -h</pre>
+<pre>check_dns (nagios-plugins 1.3.0-alpha1) 1.1.1.1
+The nagios plugins come with ABSOLUTELY NO WARRANTY. You may    redistribute
+copies of the plugins under the terms of the GNU General Public    License.
+For more information about these matters, see the file named    COPYING.
+Copyright (c) 1999 Ethan Galstad (<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="026c63656b6d71426c63656b6d712c6d7065">[email&#160;protected]</a>)</pre>
+<pre>Usage: check_dns -H host [-s server] [-t timeout]</pre>
+<pre>       check_dns --help
+       check_dns --version
+-H, --hostname=HOST   The name or address you want to query</pre>
+<pre>-s, --server=HOST
+   Optional DNS server you want to use for the lookup</pre>
+<pre>-t, --timeout=INTEGER
+   Seconds before connection times out (default: 10)</pre>
+<pre>-h, --help
+   Print detailed help</pre>
+<pre>-V, --version
+   Print version numbers and license information</pre>
+<pre>This plugin uses the nslookup program to obtain the IP address
+for the given host/domain query.  A optional DNS server to use may
+be specified.  If no DNS server is specified, the default server(s)
+specified in /etc/resolv.conf will be used.</pre>
+<p>Прочитав и обдумав вывод предыдущей команды, можно понять, что модуль check_dns
+  принимает один обязательный параметр H и два необязательных
+  параметра -s, -t. Итак, по порядку
+  H имя или адрес проверяемого хоста. В параметре -s
+  определяется адрес сервера DNS, используемого для перевода
+  имени в адрес, если в первом параметре вместо адреса передано имя хоста. Затем
+  -t устанавливает таймаут, по истечении которого служба
+  считается нефункционирующей. Для проверки сервиса DNS машины с адресом 192.168.10.254
+  нужно выполнить следующую команду.</p>
+<pre># check_dns -H 192.168.10.254
+DNS ok - 0 seconds response time, Address(es) is/are 192.168.10.254</pre>
+<p>Интуиция странным образом подсказывает мне, что DNS работает нормально.</p>
+<p>Закончив установку и разобравшись с механизмом работы подключаемых модулей,
+  прейдем к настройке Nagios. Давайте осмотрим содержимое директории конфигурационных
+  файлов.</p>
+<pre># cd /usr/local/nagios/etc
+# ll
+total 92
+-rw-rw-r--  1 nagios  nagios  17028 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> cgi.cfg-sample
+-rw-rw-r--  1 nagios  nagios   4480 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> checkcommands.cfg-sample
+-rw-rw-r--  1 nagios  nagios   1577 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> contactgroups.cfg-sample
+-rw-rw-r--  1 nagios  nagios   1485 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> contacts.cfg-sample
+-rw-rw-r--  1 nagios  nagios   1651 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time>    dependencies.cfg-sample
+-rw-rw-r--  1 nagios  nagios   2022 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> escalations.cfg-sample
+-rw-rw-r--  1 nagios  nagios   1658 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> hostgroups.cfg-sample
+-rw-rw-r--  1 nagios  nagios   5774 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> hosts.cfg-sample
+-rw-rw-r--  1 nagios  nagios   4277 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> misccommands.cfg-sample
+-rw-rw-r--  1 nagios  nagios  21332 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> nagios.cfg-sample
+-rw-rw----  1 nagios  nagios   3074 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> resource.cfg-sample
+-rw-rw-r--  1 nagios  nagios  17668 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> services.cfg-sample
+-rw-rw-r--  1 nagios  nagios   1594 Nov 11 <st1:time minute="41" hour="15">15:41</st1:time> timeperiods.cfg-sample</pre>
+В названии каждого файла есть фрагмент -sample, значит,  все вышеперечисленные
+файлы являются не полноценными конфигурациями, а всего лишь примерами. На случай,
+если нам вдруг захочется посмотреть, что там у них внутри, скопируем их  в директорию
+sample. Может быть, когда-то они нам еще пригодятся.
+<pre># mkdir sample
+# cp * ./sample</pre>
+Переименовываем все файлы, отсекая цепочку символов -sample. Таким образом, мы
+готовим файлы к тому, чтобы Nagios смог их заметить и правильно воспринять. В
+результате должно получиться что-то вроде:
+<pre># ll
+total 94
+-rw-rw-r--  1 nagios     nagios  17028 Nov 11 16:13 cgi.cfg
+-rw-rw-r--  1 nagios  nagios   4480 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> checkcommands.cfg
+-rw-rw-r--  1 nagios  nagios   1577 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> contactgroups.cfg
+-rw-rw-r--  1 nagios  nagios   1485 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> contacts.cfg
+-rw-rw-r--  1 nagios  nagios   1651 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> dependencies.cfg
+-rw-rw-r--  1 nagios  nagios   2022 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> escalations.cfg
+-rw-rw-r--  1 nagios  nagios   1658 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> hostgroups.cfg
+-rw-rw-r--  1 nagios  nagios   5774 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> hosts.cfg
+-rw-rw-r--  1 nagios  nagios   4277 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> misccommands.cfg
+-rw-rw-r--  1 nagios  nagios  21332 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> nagios.cfg
+-rw-rw----  1 nagios  nagios   3074 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> resource.cfg
+drwxr-xr-x  2 root    nagios    512 Nov 11 <st1:time minute="7" hour="16">16:07</st1:time> sample
+-rw-rw-r--  1 nagios  nagios  17668 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> services.cfg
+-rw-rw-r--  1 nagios  nagios   1594 Nov 11 <st1:time minute="13" hour="16">16:13</st1:time> timeperiods.cfg</pre>
+<p>К сожалению, файлы все еще не готовы к употреблению. Nagios даже не сможет
+  стартовать, если мы попытаемся его запустить. Разобраться в содержимом файлов
+  примеров, созданных во время инсталляции, довольно сложно. Самым лучшим выходом
+  из подобной ситуации будет уничтожение всех конфигурационных данных и создание
+  их вручную под моим чутким руководством. Такой подход принесет более глубокое
+  понимание используемой методики настройки. Обнуляем  все необходимые файлы.</p>
+<pre># cp /dev/null hosts.cfg services.cfg contacts.cfg contactgroups.cfg    hostgroups.cfg
+# cp /dev/null dependencies.cfg escalations.cfg</pre>
+Начиная с версии 1.0b2, в Nagios появилась возможность использовать шаблоны внутри
+конфигурационных файлов. Такая методика настройки позволяет многократно снизить
+время создания рабочей конфигурации.
+<p>Перед нами стоит задача описать два хоста mail.regata.ru и proxy.regata.ru. </p>
+<p>Каждый сервер, находящийся под наблюдением, должен быть описан в файле хостов.
+  Поэтому первым делом заполняем именно этот файл.</p>
+<p>Содержимое файла hosts.cfg</p>
+<p><font color="#0000a0"># Описываем шаблон хоста</font><br>
+define host{<br>
+name                            generic-host<br>
+<font color="#0000a0"># Имя шаблона -  будем ссылаться на него позже
+  при описании каждого хоста</font> </p>
+<p>notifications_enabled           1<br>
+<font color="#0000a0"># Включаем уведомления </font></p>
+<p>event_handler_enabled           1<br>
+<font color="#0000a0"># Включаем обработчик событий </font></p>
+<p>flap_detection_enabled          1<br>
+<font color="#0000a0"># Включаем обнаружение мерцания</font></p>
+<p>process_perf_data               1<br>
+<font color="#0000a0"># Собирать статистику об эффективности  работы процесса</font></p>
+<p>retain_status_information       1<br>
+<font color="#0000a0"># Сохранять статусную информацию между перезагрузками
+  программы</font></p>
+<p>retain_nonstatus_information    1<br>
+<font color="#0000a0"># Сохранять нестатусную информацию между перезагрузками программы</font></p>
+<p>register                        0<br>
+  <font color="#0000a0"># Указываем, что все вышеописанное - это шаблон.
+  Запрещаем регистрировать<br>
+  #  это описание как хост</font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем хост по имени mail</font></p>
+<p>define host{<br>
+use                     generic-host<br>
+<font color="#0000a0"># Ссылка на используемый шаблон</font><br>
+</p><p>host_name         mail<br>
+<font color="#0000a0"># Имя хоста</font><br>
+</p><p>alias                   Mail Server<br>
+<font color="#0000a0"># Псевдоним хоста</font><br>
+</p><p>address                 mail.regata.ru<br>
+<font color="#0000a0"># Имя хоста в формате fqdn или его адрес </font></p>
+<p>check_command           check-host-alive<br>
+<font color="#0000a0"># Команда проверки хоста выполняется обычно с помощью
+  ping. Подробнее можно </font><br>
+<font color="#0000a0"># почитать в файле checkcommands.cfg</font></p>
+<p>max_check_attempts      10<br>
+<font color="#0000a0"># Количество попыток повторного тестирования после того,
+  как одна из попыток </font><br>
+<font color="#0000a0"># возвратила ошибочный статус.</font></p>
+<p>notification_interval   120<br>
+<font color="#0000a0"># Интервал в минутах, по прошествию которого нужно повторно
+  отсылать </font><br>
+<font color="#0000a0"># уведомление, если сервер все еще не работает.</font></p>
+<p>notification_period     24x7<br>
+<font color="#0000a0"># Период времени, в течение которого серверу разрешено
+  беспокоить администратора</font><br>
+<font color="#0000a0"># своими уведомлениями. В данном случае это круглые сутки.
+  Подробнее о периодах </font><br>
+<font color="#0000a0"># можно почитать в файле timeperiods.cfg.</font></p>
+<p>notification_options    d,u,r<br>
+  <font color="#0000a0"># Список событий, при наступлении которых необходимо отсылать
+  </font><br>
+  <font color="#0000a0"># уведомления. Соответственно d,u,r (DOWN, UNREACHABLE,
+  RECOVERY) </font><br>
+  <font color="#0000a0"># означает события "работает", "недоступен", "восстановлен".</font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем хост по имени proxy</font></p>
+<p>define host{<br>
+use                     generic-host<br>
+host_name         proxy<br>
+<font color="#0000a0"># Имя хоста. Также стоит обратить внимание на изменившиеся
+  записи alias и address.</font><br>
+alias                   Proxy Server<br>
+address                 proxy.regata.ru<br>
+check_command           check-host-alive<br>
+max_check_attempts      10<br>
+notification_interval   120<br>
+notification_period     24x7<br>
+notification_options    d,u,r<br>
+}</p>
+<p>Каждый хост должен состоять хотя бы в одной группе хостов. Опираясь на группы
+  хостов, Nagios сможет определить, какую из групп администраторов
+  нужно оповещать. Данные,  полностью описывающие группы хостов, находятся в файле
+  hostgroups.cfg. Формат этого файла настолько прост, что механизм шаблонов применять
+  смысла нет. Посмотрим,  чем заполнен этот файл.</p>
+<p>Содержимое файла hostgroups.cfg</p>
+<p>define hostgroup{<br>
+hostgroup_name  regata-servers<br>
+<font color="#0000a0"># Имя группы</font></p>
+<p>alias           Regata Servers<br>
+<font color="#0000a0"># Псевдоним группы</font></p>
+<p>contact_groups  regata-admins<br>
+<font color="#0000a0"># Список групп контактов, которые нужно уведомлять</font></p>
+<p> members         mail proxy<br>
+<font color="#0000a0"># Список серверов, принадлежащих к группе</font><br>
+}</p>
+<p>Пришло время  вплотную заняться описанием сервисов, за которыми нужно наблюдать.
+  Как и во всех остальных конфигурационных файлах, первым делом необходимо создать
+  шаблон сервиса. Мы разберем его подробно. Затем, второй и третьей записью, будут
+  описаны сервисы HTTP и PING, базирующиеся на хосте proxy.regata.ru.
+  Соответственно, далее мы работаем с mail.regata.ru, на котором  у нас базируются 
+  SMTP и IMAP. </p>
+<p>Содержимое файла services.cfg</p>
+<p><font color="#0000a0"># Описываем шаблон сервиса</font></p>
+<p>define service{<br>
+name    generic-service<br>
+<font color="#0000a0"># Имя шаблона</font></p>
+<p>active_checks_enabled  1<br>
+<font color="#0000a0"># Включить активные проверки</font></p>
+<p>passive_checks_enabled  1<br>
+<font color="#0000a0"># Принимать результаты пассивных проверок</font></p>
+<p>parallelize_check  1<br>
+<font color="#0000a0"># Активные проверки лучше выполнять паралельно,</font><br>
+<font color="#0000a0"># такой подход повышает скорость работы</font></p>
+<p>obsess_over_service  0<br>
+<font color="#0000a0"># Эту опцию стоит включать только при создании распределенной 
+  </font><br>
+<font color="#0000a0"># системы мониторинга.</font></p>
+<p>check_freshness   0<br>
+<font color="#0000a0"># Следить за свежестью результатов проверок. По умолчанию
+  отключено</font></p>
+<p>notifications_enabled  1<br>
+<font color="#0000a0"># Уведомления включены</font></p>
+<p>event_handler_enabled  1<br>
+<font color="#0000a0"># Включить обработчики событий</font></p>
+<p>flap_detection_enabled  1<br>
+<font color="#0000a0"># Использовать обнаружение мерцания</font></p>
+<p>process_perf_data  1<br>
+<font color="#0000a0"># Собирать данне об эффективности выполнения проверок</font></p>
+<p>retain_status_information 1<br>
+<font color="#0000a0"># Сохранять информацию о статусе между перезапусками
+  Nagios </font> </p>
+<p>retain_nonstatus_information 1<br>
+<font color="#0000a0"># Сохранять нестатусную информацию между перезапусками
+  Nagios </font></p>
+<p>register   0<br>
+  <font color="#0000a0">#  Запрещаем регистрировать это описание как сервис </font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем сервис HTTP для хоста proxy.regata.ru</font></p>
+<p>define service{<br>
+use    generic-service<br>
+<font color="#0000a0"># Имя используемого шаблона</font></p>
+<p>hostname proxy.regata.ru<br>
+<font color="#0000a0"># Имя хоста</font></p>
+<p>service_description HTTP<br>
+<font color="#0000a0"># Описание сервиса</font></p>
+<p>is_volatile 0<br>
+<font color="#0000a0"># Для стандартных сервисов лучше оставить значение 0</font><br>
+<font color="#0000a0"># К нестандартным сервисам стоит относить те сервисы,
+  которые</font><br>
+<font color="#0000a0"># после каждой проверки автоматически возвращаются в
+  состояние "ОК" </font><br>
+<font color="#0000a0"># вне зависимости от режима, в котором они находились
+  до проверки.</font></p>
+<p>check_period     24x7<br>
+<font color="#0000a0"># Период, в течение которого можно выполнять проверки</font></p>
+<p>max_check_attemps    3<br>
+<font color="#0000a0"># Максимальное количество повторных проверок</font></p>
+<p>normal_check_interval   5<br>
+<font color="#0000a0"># Интервал между нормальными проверками</font></p>
+<p>retry_check_interval   1<br>
+<font color="#0000a0"># Интервал между повторными проверками. Применяется,
+  если </font><br>
+<font color="#0000a0"># нормальная проверка завершилась неудачно</font></p>
+<p>contact_groups  regata-admins<br>
+<font color="#0000a0"># Группа контактов, используемая для оповещения</font></p>
+<p>notification_interval    120<br>
+<font color="#0000a0"># Интервал (в минутах), после которого нужно послать
+  повторное уведомление,</font><br>
+<font color="#0000a0"># если сервис так и не восстановился</font></p>
+<p>notification_period     24x7<br>
+<font color="#0000a0"># Период, в течение которого можно производить отправку
+  уведомлений</font></p>
+<p>notification_options     w,u,c,r<br>
+<font color="#0000a0"># Список событий, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>check_command check_http<br>
+  <font color="#0000a0">#  Имя команды, выполняемой для проверки сервиса </font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем сервис PING для хоста proxy.regata.ru</font></p>
+<p>define service{<br>
+use    generic-service<br>
+<font color="#0000a0"># Имя используемого шаблона</font></p>
+<p>hostname proxy.regata.ru<br>
+<font color="#0000a0"># Имя хоста</font></p>
+<p>service_description <st1:place>PING</st1:place><br>
+<font color="#0000a0"># Описание сервиса</font></p>
+<p>is_volatile 0<br>
+</p><p>check_period     24x7<br>
+<font color="#0000a0"># Период, в течение которого можно выполнять проверки</font></p>
+<p>max_check_attemps    3<br>
+<font color="#0000a0"># Максимальное количество повторных проверок</font></p>
+<p>normal_check_interval   5<br>
+<font color="#0000a0"># Интервал между нормальными проверками</font></p>
+<p>retry_check_interval   1<br>
+<font color="#0000a0"># Интервал между повторными проверками. Применяется,
+  если </font><br>
+<font color="#0000a0"># нормальная проверка завершилась неудачно</font></p>
+<p>contact_groups  regata-admins<br>
+<font color="#0000a0"># Группа контактов, используемая для оповещения</font></p>
+<p>notification_interval    120<br>
+<font color="#0000a0"># Интервал (в минутах), после которого нужно послать
+  повторное уведомление,</font><br>
+<font color="#0000a0"># если сервис так и не восстановился</font></p>
+<p>notification_period     24x7<br>
+<font color="#0000a0"># Период, в течение которого можно производить отправку
+  уведомлений</font></p>
+<p>notification_options     w,u,c,r<br>
+<font color="#0000a0"># Список событий, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>check_command check_ping<br>
+  <font color="#0000a0">#  Имя команды, выполняемой для проверки сервиса </font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем сервис SMTP для хоста <!--<a href="http://mail.regata.ru/">-->mail.regata.ru<!--</a>--></font></p>
+<p>define service{<br>
+use    generic-service<br>
+hostname mail.regata.ru<br>
+service_description  SMTP <br>
+<font color="#0000a0"># Описание сервиса</font></p>
+<p>is_volatile 0<br>
+  check_period     24x7<br>
+  max_check_attemps    3<br>
+  normal_check_interval   5<br>
+  retry_check_interval   1<br>
+  contact_groups  regata-admins<br>
+  notification_interval    120<br>
+  notification_period     24x7<br>
+  notification_options     w,u,c,r<br>
+  check_command check_smtp<br>
+  <font color="#0000a0">#  Имя команды, выполняемой для проверки сервиса </font><br>
+  }</p>
+<p> </p>
+<p><font color="#0000a0"># Описываем сервис IMAP для хоста <!--<a href="http://mail.regata.ru/">-->mail.regata.ru<!--</a>--></font></p>
+<p>define service{<br>
+use    generic-service<br>
+hostname mail.regata.ru<br>
+service_description  IMAP <br>
+<font color="#0000a0"># Описание сервиса</font></p>
+<p>is_volatile 0<br>
+check_period     24x7<br>
+max_check_attemps    3<br>
+normal_check_interval   5<br>
+retry_check_interval   1<br>
+contact_groups  regata-admins<br>
+notification_interval    120<br>
+notification_period     24x7<br>
+notification_options     w,u,c,r<br>
+check_command check_imap<br>
+<font color="#0000a0">#  Имя команды, выполняемой для проверки сервиса </font><br>
+}</p>
+<p>Как Вы, возможно, сумели догадаться, имена команд, вызываемых для
+выполнения   проверки того или иного сервиса, определяются параметром
+check_command. Сами же команды описываются в файле checkcommands.cfg.
+По странному стечению обстоятельств команда check_imap в этом файле не
+описана, несмотря на то, что среди модулей,   установленных в
+директорию /usr/local/nagios/libexec/,   файл check_imap присутствует.
+Видимо, это еще одна ошибка программистов   Nagios. Ну и ладно, нам не
+привыкать делать все собственными   руками. Разместим в любом месте
+файла   checkcommands.cfg следующие строки:</p>
+<p><font color="#0000a0"># 'check_imap' command definition</font><br>
+  define command{<br>
+          command_name    check_imap<br>
+          command_line    $USER1$/check_imap -H $HOSTADDRESS$<br>
+          }<br>
+  <br>
+</p>
+<p>Создав описание сервисов, самое время перейти к определению списка людей, которым
+  система будет отсылать оповещения. В терминологии Nagios каждая запись в файле contacts.cfg описывающая человека -
+  это контакт. Формат записи довольно прост, поэтому и в данном случае шаблоны
+  нам не пригодятся.</p>
+<p>Содержимое файла contacts.cfg</p>
+<p>define contact{<br>
+contact_name                    tigrisha<br>
+  <font color="#0000a0"># Имя контакта</font></p>
+<p>alias                           Andrei Beshkov<br>
+<font color="#0000a0"># Имя человека</font></p>
+<p>service_notification_period     24x7<br>
+<font color="#0000a0"># Период времени, в течение которого разрешено посылать
+  уведомления</font> <br>
+<font color="#0000a0"># о состоянии сервисов</font></p>
+<p>host_notification_period        24x7<br>
+<font color="#0000a0"># Период времени, в течение которого разрешено посылать
+  уведомления </font><br>
+<font color="#0000a0"># о состоянии хостов</font></p>
+<p>service_notification_options    w,u,c,r<br>
+<font color="#0000a0"># Список событий сервисов, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>host_notification_options       d,u,r<br>
+<font color="#0000a0"># Список событий хостов, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>service_notification_commands   notify-by-email, notify-by-epager<br>
+<font color="#0000a0"># Команды рассылки уведомлений о событиях сервиса</font></p>
+<p>host_notification_commands      host-notify-by-email, host-notify-by-epager<br>
+<font color="#0000a0"># Команды рассылки уведомлений о событиях хоста</font></p>
+<p>email                          <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e9888d848087a99b8c8e889d88c79b9c">[email&#160;protected]</a><br>
+<font color="#0000a0"># Почтовый адрес</font></p>
+<p>pager                           <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="79484c4d4a4f4a4c4f4c3909181e1c0b57101a08571a1614">[email&#160;protected]</a><br>
+  <font color="#0000a0"># Адрес системы пейджинга</font><br>
+  }</p>
+<p> </p>
+<p>define contact{<br>
+contact_name                    amon<br>
+<font color="#0000a0"># Имя контакта</font></p>
+<p>alias                           Dmitry Larin<br>
+<font color="#0000a0"># Имя человека</font></p>
+<p>service_notification_period     24x7<br>
+<font color="#0000a0"># Период времени, в течение которого разрешено посылать
+  уведомления о состоянии сервисов</font></p>
+<p>host_notification_period        24x7<br>
+<font color="#0000a0"># Период времени, в течение которого разрешено посылать
+  уведомления о состоянии хостов</font></p>
+<p>service_notification_options    w,u,c,r<br>
+<font color="#0000a0"># Список событий сервисов, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>host_notification_options       d,u,r<br>
+<font color="#0000a0"># Список событий хостов, при наступлении которых необходимо
+  </font><br>
+<font color="#0000a0"># отсылать уведомления. </font></p>
+<p>service_notification_commands   notify-by-email, notify-by-epager<br>
+<font color="#0000a0"># Команды рассылки уведомлений о событиях сервиса</font></p>
+<p>host_notification_commands      host-notify-by-email, host-notify-by-epager<br>
+<font color="#0000a0"># Команды рассылки уведомлений о событиях хоста</font></p>
+<p>email                           <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c0a1adafae80b2a5a7a1b4a1eeb2b5">[email&#160;protected]</a><br>
+<font color="#0000a0"># Почтовый адрес</font></p>
+<p>pager                           <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="cbfaf9f8f8fffef3fdfe8bbbaaacaeb9e5a2a8bae5a8a4a6">[email&#160;protected]</a><br>
+<font color="#0000a0"># Адрес системы пейджинга</font><br>
+}</p>
+<p>Каждый контакт должен принадлежать как минимум одной контактной группе. Давайте
+  создадим такую группу для контактов, описанных выше.</p>
+<p>Содержимое файла contactgroups.cfg</p>
+<p>define contactgroup{<br>
+contactgroup_name       regata-admins<br>
+<font color="#0000a0"># Имя контактной группы</font></p>
+<p>alias                   regata.ru Admins<br>
+<font color="#0000a0"># Псевдоним группы</font></p>
+<p>members                 tigrisha amon<br>
+<font color="#0000a0"># Список контактов состоящих в группе</font><br>
+}</p>
+<p>Файл dependencies.cfg отвечает за зависимости между хостами. Ну а
+файл escalations.cfg, в свою очередь, описывает эскалацию оповещений. В
+связи   с тем, что рассматриваемый нами пример состоит всего из двух
+хостов, файлы зависимостей   и эскалации нам не пригодятся. Отсюда
+вытекает приятный факт, говорящий, что   необходимости заполнять их у
+нас нет. Возможно, в следующей статье я подробно   опишу работу с 
+файлами зависимостей и эскалации.</p>
+<p>Конфигурирование наконец-то завершено. Перед пробным запуском стоит упомянуть,
+  что Nagios может быть запущен четырьмя способами. Давайте, перечислим их. </p>
+<p>1)Вручную как процесс переднего плана.</p>
+<p>2)Вручную как фоновый процесс.</p>
+<p>3)Вручную как демон.</p>
+<p>4)Автоматически как демон, при старте системы.</p>
+<p>Для проверки конфигурации воспользуемся третьим способом. Собравшись с духом, можно
+  попытаться запустить систему и начать мониторинг. Воспользуемся для этих целей
+  скриптом nagios.sh.</p>
+<pre># /usr/local/etc/rc.d/nagios.sh </pre>
+<p>После этого должно произойти одно из двух: либо Nagios начнет работать, либо
+  на экране появится следующая ошибка.</p>
+<pre>Starting network monitor: nagios
+/bin/sh:  -l: unrecognized option</pre>
+Не пугайтесь, если Вам довелось наступить на эти грабли. Приведенное выше сообщение
+об ошибке значит, что операционная система, на которой Вы работаете, не поддерживает
+опцию -l команды su. В случае с FreeBSD дело обстоит именно таким образом. Поэтому
+команда должна выглядеть так su -. В файле /usr/local/etc/rc.d/ nagios.sh ищем
+строку, содержащую символы su -l и удаляем из нее букву l. Вот теперь-то все должно
+работать, как положено. Снова запускаем Nagios. Проверяем, как он себя чувствует,
+с помощью ключа командной строки status.
+<pre># /usr/local/etc/rc.d/nagios.sh  status
+  PID  TT  STAT      TIME COMMAND
+  101  ??  Ss     0:20.81 /usr/local/nagios/bin/nagios -d /usr/local/nagios/etc</pre>
+<p>Если, несмотря на все принятые предосторожности, Nagios продолжает
+кричать   об ошибках, то стоит убедиться, что директория
+/usr/local/nagios/   вместе со всем свои содержимым принадлежит
+пользователю nagios и группе nagios. В случае ежели подобные  ожидания
+не оправдываются,   выполняем смену владельца.</p>
+<pre># chown -R nagios:nagios /usr/local/nagios/</pre>
+<p>Ну, если и это не помогло, то Вам стоит запустить Nagios в режиме отладки.
+</p>
+<pre class="MsoBodyText">#  /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg</pre>
+<p>В режиме отладки тексты сообщений обо всех найденных неполадках будут более
+  подробными. Это обстоятельство поможет легче и быстрее обнаружить ошибки. </p>
+<p>Процедура исправления ошибок в таком случае довольно проста. Исходя из этого,
+  я надеюсь, что у Вас все получится если не с первого, то со второго раза точно.</p>
+<p>Nagios уже выполняет мониторинг сервисов и при наступлении критических событий
+  отправляет оповещения всем, кому положено. Но по одним оповещениям понять, что
+  происходит, не так уж и легко. Согласитесь, что в интерактивном режиме смотреть
+  статистику работы и разбираться с проблемами гораздо легче. Исходя из этого,
+  давайте, обратим наши взоры к процедуре настройки web-интерфейса. В данной статье
+  предполагается, что на машине, занимающейся системой мониторинга, работает web-сервер
+  Apache. Он обязан быть хотя бы минимально настроен и должен функционировать
+  достаточно стабильно.</p>
+<p>В файле настроек Apache httpd.conf 
+  ищем такой фрагмент текста:</p>
+<pre>    &lt;Directory "/usr/local/apache/cgi-bin"&gt;
+        AllowOverride None
+        Options None
+        Order allow,deny
+        Allow from all
+    &lt;/Directory&gt;</pre>
+<p>Сразу же после них добавляем такие строки:</p>
+<pre>ScriptAlias /nagios/cgi-bin/ "/usr/local/nagios/sbin/"
+    &lt;Directory "/usr/local/nagios/sbin/"&gt;
+        AllowOverride AuthConfig
+        Options ExecCGI
+        Order allow,deny
+        Allow from all
+    &lt;/Directory&gt;</pre>
+<pre>Alias /nagios/ /usr/local/nagios/share/
+   &lt;Directory "/usr/local/nagios/share/"&gt;
+       AllowOverride AuthConfig
+       Options None
+       Order allow,deny
+       Allow from all
+   &lt;/Directory&gt;</pre>
+<p>Выполнив эту, процедуру мы создали два псевдонима. Первый - для cgi
+  директории nagios, находящейся в "/usr/local/nagios/sbin/".
+  Доступ к ней можно получить, выполнив подобный http
+  запрос http://ваш сайт/nagios/cgi-bin/.
+  Второй псевдоним указывает, что в директории /usr/local/nagios/share/
+  находятся html файлы web-интерфейса и справочной документации. Просмотреть эти страницы
+  можно, посетив адрес  http://ваш сайт /nagios/. При
+  попытке посетить эти страницы, получаем ошибку. Для того чтобы псевдонимы и
+  авторизация заработали, нужно создать файл .htaccess в директории /usr/local/nagios/sbin/
+  и внести в него следующие строки:</p>
+<pre>AuthName "Nagios Access"
+AuthType Basic
+AuthUserFile /usr/local/nagios/etc/htpasswd.users
+require valid-user</pre>
+<p>Для вступления в силу выполненных изменений осталось лишь перезапустить Apache.
+</p>
+<pre># /usr/local/apache/bin/apachectl restart</pre>
+<p>Таким образом, мы объясняем web-серверу, что доступ
+  к файлам директории /usr/local/nagios/sbin/ может получить только авторизованный
+  пользователь. Если есть желание, чтобы пользователи не смогли войти даже на
+  главную страницу Nagios без ввода пароля, то нужно скопировать файл .htaccess
+  из директории /usr/local/nagios/sbin/ в /usr/local/nagios/share/.</p>
+<p>Список паролей и имен пользователей должен находится в файле /usr/local/nagios/etc/htpasswd.users, который на данный момент
+  еще не существует. Заводим нового пользователя и заодно с помощью ключа c
+  создаем файл.</p>
+<pre># /usr/local/apache/bin/htpasswd -c /usr/local/nagios/etc/htpasswd.users    tigrisha
+New password: ******
+Re-type new password: ******
+
+
+Adding password for user tigrisha</pre>
+<p>С помощью той же команды, но без ключа с, создаем еще одного пользователя.</p>
+<pre># /usr/local/apache/bin/htpasswd /usr/local/nagios/etc/htpasswd.users amon
+New password: ******
+Re-type new password: ******</pre>
+<pre>Adding password for user amon</pre>
+<p>Теперь давайте займемся конфигурационным файлом /usr/local/nagios/etc/cgi.cfg. Нам нужно изменить некоторые
+  параметры:</p>
+<p>authorized_for_system_information=tigrisha, amon<br>
+<font color="#0000a0"># Список пользователей, которым разрешен просмотр</font><br>
+<font color="#0000a0"># информации о работе процесса Nagios</font></p>
+<p>authorized_for_configuration_information= tigrisha, amon <br>
+<font color="#0000a0"># Список пользователей, которым разрешен просмотр</font><br>
+<font color="#0000a0"># информации о конфигурации всех хостов и сервисов.</font><br>
+<font color="#0000a0"># По умолчанию пользователь может смотреть  </font><br>
+<font color="#0000a0"># конфигурацию только хостов и сервисов,  </font><br>
+<font color="#0000a0"># принадлежащих к его контактной группе.</font></p>
+<p>authorized_for_system_commands=tigrisha, amon<br>
+<font color="#0000a0"># Список пользователей, авторизованных для выполнения</font><br>
+<font color="#0000a0"># через cmd.cgi команд управления процессом Nagios. </font></p>
+<p>authorized_for_all_services=tigrisha, amon<br>
+authorized_for_all_hosts=tigrisha, amon<br>
+<font color="#0000a0"># Эти два параметра определяют список пользователей,
+  которым разрешен просмотр</font><br>
+<font color="#0000a0"># информации обо всех наблюдаемых хоста и сервисах.</font><br>
+<font color="#0000a0"># По умолчанию пользователь может видеть</font><br>
+<font color="#0000a0"># только те хосты и сервисы,  которые принадлежат к его
+  контактной группе.</font></p>
+<p>refresh_rate=10<br>
+<font color="#0000a0"># Частота обновления (в секундах) информации, просматриваемой
+  через web-интерфейс.</font><br>
+<font color="#0000a0"># По умолчанию установлено 90 секунд, но нам такой большой
+  интервал не подходит.</font><br>
+<font color="#0000a0"># Поэтому поставим 10 секунд.</font></p>
+<p>Теперь в файл nagios.cfg вносим следующие изменения</p>
+<p>date_format=euro<br>
+<font color="#0000a0"># Устанавливаем формат даты более привычный для России</font></p>
+<p>use_authentication=1<br>
+<font color="#0000a0"># Включаем аутентификацию пользователей</font></p>
+<p>check_external_commands=1<br>
+<font color="#0000a0"># Разрешаем обрабатывать команды, передаваемые процессу
+  Nagios через web-интерфейс.</font></p>
+<p>command_file=/usr/local/nagios/var/nagios.cmd<br>
+<font color="#0000a0"># Местоположение файла внешних команд.</font></p>
+<p>Для того чтобы внесенные изменения вступили в силу,
+  перезапускаем процесс Nagios:</p>
+<pre># /usr/local/etc/rc.d/nagios.sh restart</pre>
+<p>Если все сделали правильно, то теперь самое время
+  наслаждаться отлично работающей системой мониторинга. Мы установили наблюдение
+  за двумя тестовыми хостами. Процедуру добавления остальных хостов оставляю читателю
+  в качестве самостоятельного упражнения. </p>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Система виртуальной памяти — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Руководство FreeBSD для
+          разработчиков</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "x1784.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">
+          </td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "dma.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="CHAPTER">
+      <h1><a name="VM">Chapter 14. Система виртуальной
+      памяти</a></h1>
+
+      <p>Перевод на русский язык: Андрей Захватов (<tt class=
+      "EMAIL">&#60;<a href="../cdn-cgi/l/email-protection.html#7819161c01383e0a1d1d3a2b3c56170a1f"><span class="__cf_email__" data-cfemail="6b0a050f122b2d190e0e29382f4504190c">[email&#160;protected]</span></a>&#62;</tt>)</p>
+
+      <div class="SECT1">
+        <h1 class="SECT1"><a name="INTERNALS-VM">14.1. Система VM
+        во FreeBSD</a></h1>
+
+        <p><span class="emphasis"><i class="EMPHASIS">Материал
+        предоставил Matthew Dillon <tt class="EMAIL">&#60;<a href="../cdn-cgi/l/email-protection.html#1074797c7c7f7e50566275755243543e7f6277"><span class="__cf_email__" data-cfemail="c3a7aaafafacad8385b1a6a6819087edacb1a4">[email&#160;protected]</span></a>&#62;</tt>.
+        6 февраля 1999</i></span></p>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1817">14.1.1. Управление
+          физической памятью--<tt class=
+          "LITERAL">vm_page_t</tt></a></h2>
+
+          <p>Физическая память управляется на уровне отдельных
+          страниц посредством структур <tt class=
+          "LITERAL">vm_page_t</tt>. Страницы физической памяти
+          разделены на категории через помещение соответствующих им
+          структур <tt class="LITERAL">vm_page_t</tt> в одну из
+          нескольких очередей страниц.</p>
+
+          <p>Страница может находиться в связанном, активном,
+          неактивном, кэшированном или свободном состоянии. Кроме
+          случая связанного состояния, страница обычно помещается в
+          двойной связный список очереди, соответствующей состоянию
+          страницы. Закрепленные страницы не помещаются ни в какую
+          очередь.</p>
+
+          <p>Для реализации алгоритма подгонки страниц во FreeBSD в
+          основном применяется очередь для кэшированных и свободных
+          страниц. Каждое из этих состояний затрагивает несколько
+          очередей, которые строятся согласно размерам кэшей L1 и
+          L2 процессора. Когда требуется выделение новой страницы,
+          FreeBSD пытается получить ту, что расположена в
+          достаточной мере рядом с точки зрения кэшей L1 и L2
+          относительно объекта VM, для которого выделяется
+          страница.</p>
+
+          <p>Кроме того, страница может удерживаться счетчиком
+          ссылок или может быть заблокирована счетчиком занятости.
+          Система VM также реализует состояние <span class=
+          "QUOTE">"безусловной блокировки"</span> для страницы
+          установкой бита PG_BUSY в поле флагов страницы.</p>
+
+          <p>Говоря общими словами, каждая из очередей страниц
+          работает по принципу LRU. Первоначально страница обычно
+          приводится в связанное или активное состояние. Если она
+          связана, то страница обычно указана где-то в таблице
+          страниц. Система VM отслеживает устаревание страницы,
+          сканируя страницы в более активной очереди страниц (LRU)
+          для того, чтобы переместить их в менее активную очередь
+          страниц. Страницы, которые перемещены в кэш, остаются
+          связанными с объектом VM, но являются кандидатами на
+          немедленное повторное использование. Страницы в очереди
+          свободных страниц действительно являются свободными.
+          FreeBSD пытается минимизировать количество страниц в
+          очереди свободных страниц, однако для обеспечения
+          выделения страниц во время обработки прерываний должно
+          поддерживаться некоторое минимальное количество
+          действительно свободных страниц.</p>
+
+          <p>Если процесс пытается обратиться к странице, которой
+          не существует в его таблице страниц, но она имеется в
+          одной из очередей страниц (например, в очереди неактивных
+          страниц или очереди кэша), возникает сравнительно легко
+          обрабатываемая ошибка отсутствия страницы, что приводит к
+          повторной активации страницы. Если страницы вообще нет в
+          системной памяти, то процесс должен быть блокирован, пока
+          страница не будет взята с диска.</p>
+
+          <p>FreeBSD динамически изменяет свои очереди страниц, и
+          пытается поддерживать разумное соотношение страниц в
+          различных очередях, а также пытается поддерживать
+          разумную схему работы с чистыми и грязными страницами.
+          Количество случающихся перемещений зависит от нагрузки на
+          память системы. Это премещение выполняется даемоном
+          выгрузки страниц и затрагивает стирание грязных страниц
+          (синхронизируя их с хранилищем), пометку страниц при
+          активной работе с ними (обновляя их расположение в
+          очередях LRU или перемещая их между очередями),
+          постепенное перемещение страниц между очередями при
+          нарушении баланса между очередями, и так далее.
+          VM-система FreeBSD старается обработать достаточное
+          количество ошибок доступа к странице для реактивации,
+          чтобы определить реальную активность или простой
+          страницы. Это приводит к повышению качества решений,
+          принимаемых при стирании или выгрузке страницы в раздел
+          подкачки.</p>
+        </div>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1830">14.1.2. Универсальный
+          буферизирующий кэш--<tt class=
+          "LITERAL">vm_object_t</tt></a></h2>
+
+          <p>Во FreeBSD реализована идея <span class=
+          "QUOTE">"объекта VM"</span> общего вида. Объекты VM могут
+          быть связаны с хранилищами различного типа--без
+          долговременного хранения, с хранением в области подкачки,
+          с хранением на физическом устройстве или с хранением в
+          файле. Так как файловая система использует одни и те же
+          объекты VM для управления внутренними данными, связанными
+          с файлами, то в результате получается универсальный
+          буферизирующий кэш.</p>
+
+          <p>Объекты VM могут <span class="emphasis"><i class=
+          "EMPHASIS">затеняться</i></span>. Это значит, что они
+          могут выстраиваться один над другим. Например, вы можете
+          иметь объект VM с хранением в области подкачки, который
+          выстроен над VM-объектом с хранением в файле, для
+          реализации операции mmap() типа MAP_PRIVATE. Такое
+          построение также используется для реализации различных
+          функций при совместном использовании, включая копирование
+          при записи для разветвляющегося адресного
+          пространства.</p>
+
+          <p>Должно быть отмечено, что <tt class=
+          "LITERAL">vm_page_t</tt> может быть одновременно связана
+          только с одним объектов VM. Затенение VM-объекта
+          реализует эффективное совместное использование одной и
+          той же страницы между несколькими экземплярами.</p>
+        </div>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1839">14.1.3. Ввод/вывод в
+          файловой системе--<tt class="LITERAL">struct
+          buf</tt></a></h2>
+
+          <p>Объектам VM, хранящимся в vnode-узлах, таким, как
+          объекты с хранением в файле, как правило, нужно
+          поддерживать собственную информацию о
+          чистоте/использованности независимо от предположении
+          системы VM о чистоте/использованности. Например, когда
+          система VM решает синхронизировать физическую страницу с
+          ее хранилищем, то ей нужно помечать страницу как
+          очищенную перед тем, как она действительно будет записана
+          в хранилище. Кроме того, файловым системам нужно
+          отображать части файла или метаданных файла в KVM для
+          работы с ним.</p>
+
+          <p>Структуры, используемые для этого, известны как буферы
+          файловой системы, <tt class="LITERAL">struct buf</tt>,
+          или <tt class="LITERAL">bp</tt>. Когда файловой системе
+          нужно произвести операцию с частью объекта VM, она обычно
+          отображает часть объекта в struct buf и отображает
+          страницы из struct buf в KVM. Таким же образом дисковый
+          ввод/вывод обычно осуществляется отображением частей
+          объектов в буферные структуры с последующим выполнением
+          ввода/вывода этих структур. Низлежащие vm_page_t, как
+          правило, на время ввода/вывода становятся занятыми, что
+          удобно с точки зрения кода драйвера файловой системы,
+          которому нужно будет работать с буферами файловой
+          системы, а не прямо со страницами VM..</p>
+
+          <p>FreeBSD резервирует ограниченное число KVM для
+          хранения отображений из struct bufs, но должно быть
+          понятно, что эти KVM используются строго для хранения
+          отображений и не ограничивают возможности по кэшированию
+          данных. Кэширование физических данных является
+          исключительно функцией <tt class=
+          "LITERAL">vm_page_t</tt>, а не буферов файловой системы.
+          Однако, так как буферы файловой системы являются
+          заменителями ввода/вывода, они соответственно
+          ограничивают количество выполняемых одновременно операций
+          ввода/вывода. Так как обычно доступно несколько тысяч
+          буферов файловой системы, то это, как правило, проблем не
+          вызывает.</p>
+        </div>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1848">14.1.4. Таблицы
+          отображения страниц - vm_map_t, vm_entry_t</a></h2>
+
+          <p>Во FreeBSD таблица расположения физических страниц
+          отделена от системы VM. Все жесткие таблицы страниц для
+          каждого процесса могут быть перестроены на лету и обычно
+          являются временными. Специальные таблицы страниц,
+          например, те, что управляют KVM, обычно выделяются
+          предварительно и перманентно. Эти таблицы страниц не
+          являются временными.</p>
+
+          <p>FreeBSD связывает группы объектов vm_object с
+          диапазонами адресов в виртуальной памяти посредством
+          структур <tt class="LITERAL">vm_map_t</tt> и <tt class=
+          "LITERAL">vm_entry_t</tt>. Таблицы страниц строятся
+          непосредственно из иерархии <tt class=
+          "LITERAL">vm_map_t</tt>/<tt class=
+          "LITERAL">vm_entry_t</tt>/ <tt class=
+          "LITERAL">vm_object_t</tt>. Вспомните, что я говорил о
+          том, что физические страницы являются единственными,
+          прямо связанными с <tt class="LITERAL">vm_object</tt>. На
+          самом деле это не совсем так. Объекты <tt class=
+          "LITERAL">vm_page_t</tt> также связаны в таблицы страниц,
+          с которыми они активно связаны. Один <tt class=
+          "LITERAL">vm_page_t</tt> может быть связан в несколько
+          карт <span class="emphasis"><i class=
+          "EMPHASIS">pmaps</i></span>, так называются таблицы
+          страниц. Однако иерархическая связь хранит все ссылки
+          так, что одна и та же страница в том же самом объекте
+          ссылается на одну и ту же <tt class=
+          "LITERAL">vm_page_t</tt>, что дает нам универсальный
+          кэширующий буфер.</p>
+        </div>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1862">14.1.5. Отображение
+          памяти KVM</a></h2>
+
+          <p>FreeBSD использует KVM для хранения различных структур
+          ядра. Самым большим единственным объектом, хранящимся в
+          KVM, является кэширующий буфер файловой системы. Это
+          отображения, связанные с объектами <tt class=
+          "LITERAL">struct buf</tt>.</p>
+
+          <p>В отличие от Linux, FreeBSD НЕ отображает всю
+          физическую память в KVM. Это значит, что FreeBSD на
+          32-разрядных платформах может работать с конфигурациями
+          памяти до 4ГБ. На самом деле, если бы аппаратный модуль
+          управления памятью мог это делать, то на 32-разрядных
+          платформах FreeBSD может теоретически работать с
+          конфигурациями памяти до 8ТБ. Однако, так как большинство
+          32-разрядных платформ могут отображать только 4ГБ
+          оперативной памяти, то этот вопрос остается
+          теоретическим.</p>
+
+          <p>KVM управляется посредством нескольких методов.
+          Основным механизмом, используемым для управления KVM,
+          является <span class="emphasis"><i class="EMPHASIS">zone
+          allocator</i></span>. Распределитель зоны берет кусок KVM
+          и разделяет его на блоки памяти постоянного размера для
+          того, чтобы выделить место под некоторый тип структуры.
+          Вы можете воспользоваться командой <tt class=
+          "COMMAND">vmstat -m</tt> для получения статистики
+          текущего использования KVM до уровня зон.</p>
+        </div>
+
+        <div class="SECT2">
+          <h2 class="SECT2"><a name="AEN1870">14.1.6. Тонкая
+          настройка системы VM во FreeBSD</a></h2>
+
+          <p>Прилагались совместные усилия для того, чтобы сделать
+          ядро FreeBSD самонастраивающимся. Обычно вам не нужно
+          разбираться ни с чем, кроме параметров конфигурации ядра
+          <tt class="LITERAL">maxusers</tt> и <tt class=
+          "LITERAL">NMBCLUSTERS</tt>. Это те параметры компиляции
+          ядра, что указываются (обычно) в файле <tt class=
+          "FILENAME">/usr/src/sys/i386/conf/<tt class=
+          "REPLACEABLE"><i>CONFIG_FILE</i></tt></tt>. Описание всех
+          доступных параметров настройки ядра может быть найдено в
+          файле <tt class=
+          "FILENAME">/usr/src/sys/i386/conf/LINT</tt>.</p>
+
+          <p>В случае большой системы вам может понадобиться
+          увеличить значение <tt class="LITERAL">maxusers</tt>.
+          Значения этого параметра, как правило, располагаются в
+          диапазоне от 10 до 128. Заметьте, что слишком большое
+          значение <tt class="LITERAL">maxusers</tt> может привести
+          к переполнению доступной KVM, что влечет за собой
+          непредсказуемые результаты. Лучше задать некоторое
+          разумное значение maxusers и добавить другие параметры,
+          такие, как <tt class="LITERAL">NMBCLUSTERS</tt>, для
+          увеличения конкретных ресурсов.</p>
+
+          <p>Если ваша система будет интенсивно работать с сетью,
+          вам может потребоваться увеличить значение <tt class=
+          "LITERAL">NMBCLUSTERS</tt>. Обычно значения этого
+          параметра находятся в пределах от 1024 до 4096.</p>
+
+          <p>Параметр <tt class="LITERAL">NBUF</tt> традиционно
+          использовался для масштабирования системы. Этот параметр
+          определяет количество KVA, которое может использоваться
+          системой для отображения буферов файловой системы для
+          ввода/вывода. Заметьте, что этот параметр не имеет
+          никакого отношения с единым кэшируемым буфером! Этот
+          параметр динамически настраивается в ядрах версии
+          3.0-CURRENT и более поздних и не должен изменяться
+          вручную. Мы рекомендуем вам <span class="emphasis"><i
+          class="EMPHASIS">НЕ</i></span> пытаться задавать значение
+          параметра <tt class="LITERAL">NBUF</tt>. Позвольте
+          сделать это системе. Слишком маленькое значение может
+          привести к очень низкой эффективности операций с файловой
+          системой, когда как слишком большое значение может
+          истощить очереди страниц, так как слишком много страниц
+          окажутся связанными.</p>
+
+          <p>По умолчанию ядра FreeBSD не оптимизированы. Вы можете
+          задать флаги отладки и оптимизации при помощи директивы
+          <tt class="LITERAL">makeoptions</tt> в файле конфигурации
+          ядра. Заметьте, что вы не должны использовать параметр
+          <tt class="OPTION">-g</tt>, если не сможете использовать
+          получающиеся при этом большие ядра (обычно превышающие
+          размером 7МБ).</p>
+<pre class="PROGRAMLISTING">
+    makeoptions      DEBUG="-g"
+    makeoptions      COPTFLAGS="-O -pipe"
+</pre>
+
+          <p>Утилита sysctl дает возможность изменить параметры
+          ядра во время его работы. Как правило, вам не приходится
+          работать ни с какими sysctl-переменными, особенно с теми,
+          что относятся к VM.</p>
+
+          <p>Тонкая оптимизация VM и системы во время работы
+          сравнительно проста и понятна. Сначала включите
+          использование softupdates на ваших файловых системах
+          UFS/FFS везде, где это возможно. В файле <tt class=
+          "FILENAME">/usr/src/contrib/sys/softupdates/README</tt>
+          находятся инструкции (и ограничения) по настройке этой
+          функциональности.</p>
+
+          <p>Затем выделите достаточное количество пространства в
+          области подкачки. Вы должны иметь на каждом физическом
+          диске до четырех настроенных разделов подкачки, даже на
+          <span class="QUOTE">"рабочих"</span> дисках. Пространства
+          в области подкачки должно быть не менее чем в два раза
+          больше объема оперативной памяти, и даже больше, если
+          памяти у вас не очень много. Вы должны также определять
+          размер раздела подкачки, исходя из максимального объема
+          оперативной памяти, который может быть на вашей машине,
+          чтобы потом не выполнять разбиение диска повторно. Если
+          вы хотите иметь возможность работы с дампом аварийного
+          останова, то ваш первый раздел подкачки должен иметь
+          объем, по крайней мере равный объему оперативной памяти,
+          а в каталоге <tt class="FILENAME">/var/crash</tt> должно
+          быть достаточно свободного места для размещения
+          дампа.</p>
+
+          <p>Подкачка поверх NFS прекрасно работает на системах
+          версий -4.x и более поздних, но вы должны иметь в виду,
+          что нагрузка от подкачки страниц ляжет на сервер NFS.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "x1784.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "dma.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Использование
+          Sysinit</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "kernel.html" accesskey="U">Up</a></td>
+
+          <td width="33%" align="right" valign="top">* DMA</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

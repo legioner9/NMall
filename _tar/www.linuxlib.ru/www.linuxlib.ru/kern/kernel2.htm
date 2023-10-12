@@ -1,0 +1,533 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Компилируем ядро — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<basefont size="3">
+
+<CENTER>
+<H1><FONT COLOR="#13D788">Компилируем ядро</FONT></H1></CENTER>
+<P>
+      Вот мы поставили линукс, прикрутили к нему
+      поддержку русского языка ... давайте его немного пооптимизируем, чтобы он
+      быстрее работал и меньше памяти занимал ...давайте перекомпилируем ядро
+      ... это не так страшно, как кажется, да и рано или поздно Вам придеться
+      это делать - ведь новые версии ядра появляются довольно часто ...Итак,
+      если у вас свежепоставленный линукс и вы не забыли поставить
+      <B>полностью</B> комплекты A,AP,D,К из дистрибутива или скачать
+      linux-x.x.x.tar.gz c ftp.kernel.org (напомню, что речь идет о slackware,
+      хотя другие дистрибутивы можно точно так же апгрейдить ...)<BR>Копируем
+      полученный файл (в случае апгрейда) в /usr/src и говорим <B>gzip -d</B>
+      linux-x.x.x.tar.gz;<B>tar xvf</B> linux-x.x.x.tar .....говорим <B>cd
+      /usr/src/linux</B> если не получилось - значит либо вы не поставили
+      исходники, либо их не развернули. теперь проверим символьные ссылки на
+      нужные для сборки каталоги ... быстренько делаем так <PRE> <B>cd /usr/include
+ rm -rf asm linux scsi
+ ln -s /usr/src/linux/include/asm-i386 asm
+ ln -s /usr/src/linux/include/linux linux
+ ln -s /usr/src/linux/include/scsi scsi
+ cd /usr/src/linux
+ make mrproper</B>
+</PRE>Этими командами мы удалили и заново создали нужные ссылки, а также
+      удалили старые объектные модули, которые могли остаться в системе ...
+      теперь даем команду <B>make menuconfig</B> - если через некоторое время
+      система обругалась - значит скорее всего вы не поставили библиотеки
+      curses, которые необходимы для отрисовки красивых менюшек. <BR>Немного про
+      обозначения - если вы напротив пункта меню видите пустое место - значит
+      соответствующий пункт не включен ... звездочку - включен и будет
+      вкомпилирован в ядро .. буква <B>М</B> - будет модулем ...но некоторые
+      пункты не могут быть модулями, их можно только в ядро вкомпилировать ... Пойдем по порядку. <BR><B><H3>Code maturity
+      level options ---&gt;</H3>
+</B> - если у вас есть нестандартные драйверы в исходных
+      текстах, то при установке * вам в последствии предложать их включить. Сам
+      я этот пункт не пробовал, поэтому результатов рассказать не могу.
+      <BR><B><H3>Processor type and features ---&gt;</H3>
+</B> - Установка типа вашего процессора
+      и некоторых особенностей. <BR><B>Processor family</B> - тип процессора <BR><B>Math
+      emulation</B> - включать эмуляцию матсопроцессора.(надо для процессоров sx)
+      <BR><B>MTRR (Memory Type Range Register) support</B> - поддержка спец.регистров
+      на процессорах Pentium Pro и Pentium II. <BR><B>Symmetric multi-processing
+      support</B> - поддержка многопроцессорных машин <BR><B><H3>Loadable module
+      support ---&gt;</H3>
+</B> - поддержка загружаемых в качестве модулей драйверов.
+      <BR><B>Enable loadable module support</B> - включить поддержку модулей. <BR><B>Set
+      version information on all symbols for modules</B> - устанавливать в модуль
+      информацию о том, для какой версии ядра он скомпилирован. Если вы
+      установите этот пункт и перекомпилируете модули, а потом перейдете на
+      другую версию ядра, модули откажутся загружаться. <BR><B>Kernel module loader</B>
+      - поместить автозагрузчик модулей в ядро ? Если нет, то надо будет пускать
+      kerneld. <BR><B><H3>General setup ---&gt;</H3>
+</B> - основные установки <BR><B>Networking
+      support</B> - поддержка сети <BR><B>PCI support</b> - поддержка шины PCI. Если ее
+      включите, то появится следующие три пункта <BR><B>PCI access mode</B> - режим
+      (BIOS, Direct, Any) доступа до функций PCI. <BR><B>PCI quirks</B> - я не знаю,
+      что это значит, но по умолчанию у меня это стоит. <BR><B>Backward-compatible
+      /proc/pci</B> - Обратная совместимость с /proc/pci, по крайней мере это так
+      переводится, но на самом деле это включает отображение информации о PCI
+      устройствах в каталоге /proc/pci. <BR><B>MCA support</B> - поддержка старой шины
+      MCA <BR><B>SGI Visual Workstation support</B> - У вас ядро компилируется на
+      Silicon Graphics ? <BR><B>System V IPC - поддержка System V IPC</B> - у меня
+      выключено <BR><B>BSD Process Accounting</B> - Поддержка суммирования информации о
+      процесах в стиле BSD - у меня тоже выключена <BR><B>Sysctl support</B> -
+      Поддержка системных вызовов. <BR><B>Kernel support for a.out binaries</B> -
+      поддержка ядром старого формата исполнимый файлов.Хоть таких файлов и
+      осталось мало, но все-таки они встречаются, поэтому лучше оставить ее
+      включенной. <BR><B><H3>Kernel support for ELF binaries ---&gt;</H3>
+</B> - поддержка ядром нового
+      формата исполнимых файлов. Эту опцию обязательно включите. <BR><B>Kernel
+      support for MISC binaries</B> - поддержка других форматов исполняемых файлов.
+      То есть вы сможете исполнять программы, скомпилированные для BSD,Solaric и
+      так далее, естественно при наличии всех необходимый библиотек и программ.
+      <BR><B>Parallel port support</B> - поддержка параллельного порта. Зачем эта опция
+      здесь - я не знаю. <BR><B>Advanced Power Management BIOS support</B> - поддержка
+      APM. То есть линукс научиться сам останавливать винты, засыпать, а при
+      наличии ATX и выключать компьютер. <BR><B><H3>Plug and Play support ---&gt;</H3>
+</B> -
+      Поддержка стандарта PNP. <BR><B><H3>Block devices ---&gt;</H3>
+</B> - поддержка флопиков,
+      винтов и прочего.<BR> <B>Floppy, IDE, and other block
+      devices</B> - Здесь мы укажем ядру, что у нас на машине есть в наличии из
+      средств хранения информации. <BR><B>Normal floppy disk support</B> - У вас
+      флопики в наличии ? <BR><B>Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy
+      support</B> - Расширенная поддержка новых и не очень контроллеров. <BR><B>Use old
+      disk-only driver on primary interface</B> - Использовать старые драйвера
+      ,которые поддерживают только винты на первичном IDE канале. Это опять же
+      для старых IDE контроллеров, которые при попытке ядра пробежаться по всем
+      подключенным к нему устройствам вешают машину (я толко один раз видел
+      такую машину ;-) <BR><B>Include IDE/ATAPI CDROM support</B> - У нас CD-ROM
+      подключен к IDE ? <BR><B>Include IDE/ATAPI TAPE support</B> - Накопители на
+      магнитной ленте есть на IDE ? <BR><B>Include IDE/ATAPI FLOPPY support</B> -
+      Флоппи (ZIP,JAZ, etc)на IDE есть ? <BR><B>SCSI emulation support</B> - Это надо,
+      если у вас что-то из устройств висит на LPT порту - линукс будет
+      эмулировать их, как SCSI устройства ... <BR><B>Support removable IDE
+      interfaces (PCMCIA)</B> - Мы на ноутбуке или где ? PCMCIA поддерживать надо ?
+      <BR><B>CMD640 chipset bugfix/support</B> - Если у Вас этот чипсет на материнской
+      плате, то включите его в конфигурации .. а остальные выключите ...
+      <BR><B>RZ1000 chipset bugfix/support</B> <BR><B>Intel 82371 PIIX (Triton I/II) DMA
+      support</B> - то же самое для соответствующих чипсетов ... <BR><B>Other IDE
+      chipset support</B> - Поддержка других чипсетов (ALI,DTC,Holtek,QDI,UMC) ...
+      <BR><B>Loopback device support</B> - Поддержка "пустых" устройств. Очень хорошая
+      опция. Она позволит вам монтировать диски сами на себя, монтировать образы
+      дисков, иметь "локальную" сеть при отсутствии настоящей сети. и много
+      другое ... <BR><B>Multiple devices driver support</B> - Поддержка RAID <BR>R<B>AM
+      disk support</B> - Поддержка виртуально диска в памяти ... Оно Вам это надо ?
+      <BR><B>XT harddisk support</B> - Поддержка старых дисковых контроллеров.
+      <BR><B>Parallel port IDE device support</B> - Есть переносные винчестеры, которые
+      подключаются к параллельному порту машины ... они у вас есть ?  <BR><B><H3>Networking
+      options ---&gt;</H3>
+</B> - поддержка и конфигурирование сетевых опций ядра. <BR><B>Packet
+      socket</B> - я не знаю, для чего эта опция, но она у меня включена по
+      умолчанию. <BR><B>Kernel/User netlink socket</B> - поддержка сокетов для связи в
+      пределах одной машины. <BR><B>Network firewalls</B> - если вы планируете
+      использовать машину в качестве файрволла, включите эту опцию. <BR><B>Network
+      aliasing</B> - нужна для обеспечения подвешивания нескольких адресов(алиасов)
+      на одну физическую карточку. <BR><B>Socket Filtering</B> - поддержка фильтрации
+      TCP/IP потока. <BR><B>Unix domain sockets</B> - поддержка сщкетов в формате UNIX
+      - включите ее !! <BR><B>TCP/IP networking</B> - вообще, поддерживаем TCP/IP ?
+      <BR><B>IP: multicasting</B> - поддержка широковещетельного формата протокола
+      TCP/IP. То есть машина будет рассылать одинаковый пакеты не каждому хосту
+      отдельно, а всем сразу. Это может понадобиться для RealAudio сервера,
+      например ... <BR><B>IP: advanced router</B> - улучшенные опции роутинга. <BR><B>IP:
+      kernel level autoconfiguration</B> - не знаю, что это. <BR><B>IP: optimize as
+      router not host</B> - оптимизация функция для использования машины больше в
+      качестве роутера, а не обычного сервера. <BR><B>IP: tunneling</B> - обеспечение
+      IP-туннеллинга. <BR><B>IP: GRE tunnels over IP</B> - GRE - туннелинг. <BR><B>IP:
+      aliasing support</B> - поддержка алиасов. <BR><B>IP: TCP syncookie support (not
+      enabled per default)</B> - не знаю, что это, у меня выключено. <BR><B>IP:
+      Reverse ARP</B> - обеспечение реверсного ARP. То есть машина не будет
+      принимать пакеты да тех пор, пока не проверит, что заголовок пакета
+      совпадает с MAC-адресом пославшего. <BR><B>IP: Drop source routed frames</B> -
+      сброс кадров с информацией о роутинге. В этом случае машина сама должна
+      собирать информацию о роутинге с помощью других средств. <BR><B>IP: Allow
+      large windows (not recommended if &lt;16Mb of memory)</B> - принимать большие
+      кадры. Не рекомендуется для машин с малым объемом памяти. <BR><B><BIG>The IPX
+
+      protocol</BIG></B> <BR><B>IPX: Full internal IPX network</B> - включите эти два пункта,
+      если вы собираетесь устанавливать Novell - эмулятор или соединяться с
+      новелл-серверами. <BR><B>Appletalk DDP</B> - поддержка протоколов Macintosh'ей
+      .... <BR><B><H3>SCSI support ---&gt;</H3>
+</B> - Поддержка SCSI устройств. К сожалению, у
+      меня на машине нет ни одного SCSI устройства, по этому я не буду описывать
+      этот пункт. Но он по содержанию аналогичен пункту Block Devices.
+      <BR><B><H3>Network device support ---&gt;</H3>
+</B> - поддержка сетевых карточек.
+      <BR><B>Network device support</B> - вообще поддержка сетевых карточек <BR><B>ARCnet
+      support</B> - поддержка ARCnet карточек. <BR><B>Dummy net driver support</B> -
+      поддержка "тупых" сетевых устройств. Используется редко. <BR><B>EQL (serial
+      line load balancing) support</B> - поддержка балансировки при подключении 2 и
+      более одновременно модемов. <BR><B>Ethernet (10 or 100Mbit)</B> - поддержка
+      Ethernet - карточек. При этом открываются следующие пункты. <BR><B>3COM cards</B>
+      -карточки от 3COM <BR><B>AMD LANCE and PCnet (AT1500 and NE2100) support</B> - от
+      AMD <BR><B>Western Digital/SMC cards</B> - от SMC <BR><B>Racal-Interlan (Micom) NI
+      cards</B> - от Racal. <BR><B>Other ISA cards</B> - другие ISA карточки. <BR><B>EISA,
+      VLB, PCI and on board controllers</B> - карточки, которые сидят на EISA, VLB,
+      PCI или вмонтированы прямо на матплату машины. Ниже откроется список
+      поддерживаемых чипсетов для этих карточек - выберите тот, который у вас.
+      <BR><B>Pocket and portable adaptors</B> - Портативные адаптеры. <BR><B>FDDI driver
+      support</B> - поддержка FDDI <BR><B>Frame relay DLCI support</B> - поддержка Frame
+      Relay <BR><B>PPP (point-to-point) support</B> - Поддержка PPP - протокола
+      <BR><B>SLIP (serial line) support</B> - Поддержка SLIP - старый формат для
+      подключению в инет. <BR><B>Wireless LAN (non-hamradio)</B> - Радио-карточки.
+      <BR><B>Token Ring driver support</B> - Tocen Ring карточки. <BR><B>Control Hostess
+      SV-11 support</B> <BR><B>COSA/SRP sync serial boards support</B> <BR><B>Red Creek
+      Hardware VPN (EXPERIMENTAL)</B> - Что из себя представляют эти 3 пункта, я не
+      знаю .... <BR><B>WAN drivers</B> - поддержка WAN карточек ( это те, которые
+      работают с потоками E1 и подобными им ;-))) <BR><B><H3>Amateur Radio
+      support ---&gt;</H3>
+</B> - Поддержка карточек, которые работают через X.25, поддержка
+      SoundModem и прочей бяки. У меня ничего подобного нет, поэтому я опускаю
+      этот пункт. <BR><B><H3>ISDN subsystem ---&gt;</H3>
+</B> - Поддержка ISDN - у меня ее нет.
+      <BR><B><H3>CD-ROM drivers (not for SCSI or IDE/ATAPI drives) ---&gt;</H3>
+</B> - поддержка
+      старых приводов CD-ROM, которые подключаются не через IDE или SCSI,
+      например через звуковую карточку. <BR><B><H3>Character devices ---&gt;</H3>
+</B> - поддержка
+      остальных устройств ввода. <BR><B>Virtual terminal</B> - поддержка виртуальных
+      терминалов на одном физическом. <BR><B>Support for console on virtual
+      terminal</B> - поддержка косоли на виртуальных терминалах.
+      <BR><B>Standard/generic (dumb) serial support</B> - поддержка стандартных
+      последовательных портов. <BR><B>Support for console on serial port</B> -
+      поддержка консоли, которая подключена через последовательный порт.
+      <BR><B>Extended dumb serial driver options</B> - расширенная поддержка
+      последовательных портов, в чем заключается конкретно - я не знаю.
+      <BR><B>Non-standard serial port support</B> - поддержка нестандартных
+      последовательных портов. <BR><B>Unix98 PTY support</B> - поддержка нового
+      стандарта на консоли. <BR><B>Maximum number of Unix98 PTYs in use (0-2048)</B> -
+      их число. <BR><B>Mouse Support (not serial mice)</B> - поддержка мышек, которые
+      висят не на последовательном порту. <BR><B>QIC-02 tape support</B> - поддержка
+      стандарта QIC-02 (это старый формат для накопителей на магнитной ленте)
+      <BR><B>Watchdog Timer Support</B> - поддержка аппаратного устройства, которое
+      следит за работоспособностью системы. <BR><B>/dev/nvram support</B> - я не знаю,
+      что это ...у меня включено. <BR><B>Enhanced Real Time Clock Support</B> -
+      расширенная поддержка RTC. <BR><B>Video For Linux</B> ---&gt; поддержка карточек
+      с видео вводом/выводом. У меня их нет. <BR><B><H3>Joystick support ---&gt;</H3>
+</B>
+      поддержка джойстиков. У меня их тоже нет ;-) <BR><H3><B>Ftape, the floppy tape
+      device driver ---&gt;</B></H3>
+ поддержка накопителей на магнитной ленте, которые
+      подключаются на floppy-шлейф. <BR><B><H3>Filesystems ---&gt;</H3>
+</B> - Поддержка файловых
+      систем. К этому пункту следует отнестись с большим вниманием ....
+      <BR><B>Quota support</B> - поддержка дисковых квот для пользователей. <BR><B>Kernel
+      automounter support</B> - встраивание автоматического
+      монтировщика/демонтировщика дисковых разделов. <BR><B>Amiga FFS filesystem
+      support</B> - поддержка файловой системы Амиги. <BR><B>Apple Macintosh filesystem
+      support (experimental)</B> - поддержка макинтошевских разделов. <BR><B>DOS FAT fs
+      support</B> - поддержка DOS - разделов, обязательно включите MSDOS,UMSDOS,VFAT
+      опции ... <BR><B>ISO 9660 CDROM filesystem support</B> - поддержка файловой
+      системы компакт-дисков. <BR><B>Microsoft Joliet CDROM extensions</B> - поддержка
+      расширений микрософт для компакт-дисков. <BR><B>Minix fs support</B> - поддержка
+      minix системы. очень старая система, я не знаю, где она применяется.
+      <BR><B>NTFS filesystem support (read only)</B> - поддержка на чтение NTFS
+      разделов. <BR><B>OS/2 HPFS filesystem support (read only)</B> - аналогично для
+      HPFS. <BR><B>/proc filesystem support</B> - поддержка /proc. Здесь можно будет
+      найти всю информацию о системе. утилиты ps,free и прочие пользуются ей,
+      потому включите ее. <BR><B>/dev/pts filesystem for Unix98 PTYs</B> - поддержка
+      новых стандартов. <BR><B>ROM filesystem support</B> - поддержка файловых систем,
+      размещенных в ПЗУ. <BR><B>Second extended fs support</B> - поддержка родной для
+      линукса фаловой системы. <BR><B>System V and Coherent filesystem support</B> -
+      поддержка файловой системы для System V <BR><B>UFS filesystem support</B> -
+      поддержка UFS системы. Применяется на коммерческих версиях Unix.
+      <BR><B>Network File Systems</B> ---&gt; поддержка сетевых файловых систем
+      <BR><B>Coda filesystem support (advanced network fs)</B> - файловая система,
+      предназначенная для динамического подключения/отключения клиентов.
+      Навороченная до безобразия. Я пока не смог найти ей более-менее разумного
+      применения, кроме кластеров. ;-))). <BR><B>NFS filesystem support</B> - поддержка
+      NFS - родной для юниксов сетевой файловой системы. <BR><B>SMB filesystem
+      support (to mount WfW shares etc.)</B> - поддержка файловой системы, по
+      которой общаются представители windows - мира. <BR><B>NCP filesystem support
+      (to mount NetWare volumes)</B> - то же самое, но для мира новелл. <BR>я
+      советую включить все дополнительные опции - по моему, более безглючная
+      работа вам будет гарантирована ;-)))). <BR><B>Partition Types</B> ---&gt;
+      Поддержка форматов разбивок дисков для BSD, Macintosh, Sun, Solaris.
+      <BR><B>Native Language Support</B> ---&gt; Подержка национальных языков на
+      разделах. Здесь включите поддержку Codepage 437 (United States, Canada),
+      Codepage 866 (Cyrillic/Russian), NLS ISO 8859-5 (Cyrillic), NLS KOI8-R
+      (Russian) и вы сможете нормально видеть русские буквы в именах файлов.
+      <BR><B><H3>Console drivers ---&gt;</H3>
+</B> Поддержка аппаратной консоли. <BR>VGA
+      text console - поддержка VGA - консолей. <BR><B>Video mode selection support</B>
+      - поддержка выбора видеорежима на этапе загрузки. То есть вы можете
+      загрузить линукс не 25х80, а например 50х80. Если честно, то эта поддержка
+      была и в самых старых версиях ядра, но она устанавливалась вручную
+      спец.командами. <BR><B><H3>Sound ---&gt;</H3>
+</B> - Поддержка звуковых карт. Здесь опять же
+      просто выберите тот чипсет, на основе которого собрана ваша звуковая
+      карточка. Если вы не нашли ее, попробуйте включить модуль OSS - там
+      наверняка найдете то, что вам надо. Там же указываются порты и прерывания
+      для вашей звуковой карточки. <BR><B><H3>Kernel hacking ---&gt;</H3>
+</B> - "ломка" ядра. Я
+      ни разу не использовал этой опции. <BR><BR>Вот и все, что необходимо для
+      конфигурации ядра под ваши требования. Единственное, что я вам посоветую -
+      как можно больше вынести в модули, так как объем ядра увеличился и при
+      включении джентельменского набора опции для компиляции в ядро оно просто
+      получится очень большим. Теперь делайте make zlilo - ядро начнется
+      компилироваться и если оно скомпилировалось без ошибок, вызоветься lilo,
+      который подготовит загрузчик для ядра. Если компиляция прошла с ошибками,
+      то смотрите на то, какие ошибки и думайте, что их могло вызвать. У меня
+      единственнное что было - так это для ядра не хватило памяти и пресловутый
+      signal 11 из-за разогнанного процессора. Потом сделайте make modules;make
+      modules_install для компилирования и установки модулей, только не забудьте
+      удалить все из каталога /lib/modules/2.2.1 (если вы компилируете 2.2.1
+      версию, для 2.2.0 сами понимаете какой каталог должен быть ;-))<BR></P><HR>
+     <A href="https://www.linuxlib.ru/kern/multik@istu.edu"><span class="__cf_email__" data-cfemail="92ffe7fee6fbf9d2fbe1e6e7bcf7f6e7">[email&#160;protected]</span></A> ...
+      <BR>С уважением,
+      <BR><ADDRESS>Вячеслав Калошин</ADDRESS><hr noshade>
+
+</TABLE>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

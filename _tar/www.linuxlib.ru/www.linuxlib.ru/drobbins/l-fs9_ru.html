@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 9 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 9</h2>
+<br><h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs9.html">-->http://www-106.ibm.com/developerworks/library/l-fs9.html<!--</a>--></h3>
+<br><h2>Презентация XFS.</h2>
+<p><a href="l-fs9_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#0b6f796469696265784b6c6e657f64642564796c"><span class="__cf_email__" data-cfemail="debaacb1bcbcb7b0ad9eb9bbb0aab1b1f0b1acb9">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>January 2002</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования
+filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и других.
+Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно они
+могут делать, насколько они хороши и насколько оправдано их использование в
+промышленной Linux среде.  Daniel Robbins отвечает на эти вопросы по ходу
+пояснения инсталляции этих новых продвинутых filesystems под Linux 2.4.
+В этой статье Daniel представляет XFS, SGI's free enterprise-class файловую
+систему, ставшую доступной для Linux.</blockquote>
+<p>В этой статье мы познакомимся с XFS, SGI's free, 64-bit, высокопроизводительной
+файловой системой для Linux. Сначала будет проведено сравнение XFS с ext3 и
+ReiserFS и описаны некоторые из технологий, которые используют внутренние
+структуры XFS. В следующей статье будет описан процесс инсталляции XFS на
+вашей системе и даны несколько советов по настройке XFS и ее полезных features,
+например ACL (access control lists) и поддержки extended attribute.</p>
+<p>
+<a name="intro"><h2>Презентация XFS.</h2></a>
+Файловая система XFS первоначально была разработана Silicon Graphics, Inc.
+в начале 90-х годов. В то время в SGI пришли к выводу, что их "базовая" файловая
+система (EFS) по скорости перестала соответствовать современным требованиям.
+Изучив проблему, в SGI пришли к выводу, что лучше "с нуля" спроектировать новую
+высокопроизводительную 64-bit файловую систему, чем попытаться модернизировать EFS.
+Рождение XFS произошло в релизе IRIX 5.3 в 1994. С этого времени именно эта
+файловая система становится базовой для всех SGI's IRIX-based продуктов для
+workstations на основе supercomputers. Совсем недавно XFS стала доступна и
+для Linux. Появление поддержки XFS в Linux событие значимое. Теперь Linux
+community обладает устойчивой, современной файловой системой с богатым набором
+feature, масштабной и удовлетворяющей самым высоким требованиям к хранилищам
+данных.</p>
+<p>
+<a name="perf"><h2>Сравнение производительности XFS с ReiserFS и ext3.</h2></a>
+До недавнего времени выбор файловой системы для Linux был ободряюще прямым.
+Те, кому требовалась высокая производительность, склонялись к ReiserFS, а те,
+кого волновала целостность данных, предпочитали ext3. С появлением поддержки XFS
+для Linux выбор стал не столь прямолинеен. В частности, большой вопрос, а
+действительно ли ReiserFS при всех условиях является лидером по
+производительности?</p>
+<p>Недавно мной было проведено тестирование с целью сравнения XFS, ReiserFS и ext3
+в отношении raw performance. Но, прежде всего я замечу, что результаты отражают
+только общую тенденцию зависимости производительности файловых систем от нагрузки
+на однопроцессорной системе. Тесты, не претендуя на "абсолютную" истинность
+результатов, тем не менее, могут помочь в ответе на вопрос: для какой
+специфической задачи какой файловой системе следует отдавать предпочтение.
+И еще раз, результаты моего тестирования не рассматривайте как заключительные.
+В любом случае, для ответственного выбора следует проводить тестирование на
+конкретных приложениях.</p>
+<p>
+<a name="foobar"><h3>Результаты.</h3></a>
+Тестирование показало, что XFS очень быстрая файловая система. XFS постоянный
+лидер в тестах с манипуляциями большими файлами. Собственно такой результат
+вполне предсказуемый (она и проектировалась именно под это). Была замечена одна
+"причуда" в производительности - относительно медленные операции удаления файлов.
+В этом вопросе она проиграла и ReiserFS, и ext3. По замечанию Steve Lord
+(Principal Engineer по файловым системам в SGI) недавно был написан patch,
+решающий эту проблему (будет доступен в ближайшее время).</p>
+<p>В других тестах производительность XFS была близка к таковой у ReiserFS и
+всегда превосходила ext3. Приятная особенность XFS - она не генерит (впрочем,
+как и ReiserFS) излишнюю дисковую активность. XFS пытается кэшировать как можно
+больше данных и "основанием" для сброса на диск является заполнение памяти,
+а не интервал времени. Когда происходит сброс данных на диск, это не оказывает
+заметного влияния на другие IO операции. Как противоположность - в ext3 (режим
+"<code>data=ordered</code>") периодический сброс данных на диск порождает
+проблемы с интерактивностью и, при высокой интенсивности операций IO, даже
+disk thrashing.</p>
+<p>Следующие тесты на производительность и адаптацию к внешним факторам
+сосредоточились вокруг распаковки <i>kernel source tarball</i> на RAM disk и
+последующее рекурсивное копирование source tree в новый каталог на той же
+файловой системе. XFS справлялась с такой задачей хорошо, но проигрывала ReiserFS.
+Однако, после повторного <code>mkfs.xfs</code> и игры с опциями <code>mount</code>,
+XFS смогла немного "обойти" по скорости ReiserFS даже при обработке
+файлов среднего размера, характерных для kernel source tree. Словом, преимущество
+почти во всем, кроме маленькой детали - удаления старых файлов, "неудобной"
+для XFS операции (ReiserFS и ext3 удаляют файлы быстрее, чем XFS).</p>
+<p>
+<a name="foobar2"><h3>Выводы по производительности.</h3></a>
+Сказанного достаточно для понимания общей идеи относительно ожиданий
+производительности от XFS. Результаты тестирования подтвердили, что XFS лучший
+выбор среди файловых систем, если требуются манипуляции с большими файлами.
+При работе с файлами среднего размера XFS вполне конкурентоспособна, а в ряде
+случаев даже немного быстрее ReiserFS. Последнее справедливо, если создавать и
+монтировать XFS с некоторыми performance-enhancing опциями. Ext3 в режиме
+"<code>data=journal</code>" показывает сравнительно неплохую производительность
+с учетом гарантии целостности данных (а не только метаданных). Однако дать по
+настоящему высокую оценку ext3 мешают проблемы при сбросе данных на диск.</p>
+<p>
+<a name="moopski"><h2>Проект XFS.</h2></a>
+В документе <i>"Scalability in the XFS Filesystem"</i> (смотри
+<a href="l-fs9_ru.html#resources">Resources</a>) представленном в <i>USENIX '96</i>, инженеры
+SGI поясняют, что XFS была разработана под девизом "думайте о большем". И
+действительно, XFS снимает некоторые ограничения, присущие традиционным файловым
+системам. Остановимся на некоторых интригующих features проекта XFS.</p>
+<p>
+<a name="foobarosity"><h3>Презентация allocation groups.</h3></a>
+
+При создании файловой системы XFS основное block device разбивается на восемь
+или больше равных по размеру линейных областей. Их можно было бы назвать
+"chunks" или "linear ranges", но в терминологии XFS они именуются
+"<code>allocation group</code>". Уникальность allocation group в том, что каждая
+группа управляет своими собственными inodes и free space, что превращает группы
+в своего рода автономные sub-filesystem, сосуществующие в рамках общей XFS.</p>
+<p>
+<a name="g1"><h3>Allocation groups и масштабность.</h3></a>
+
+А зачем разработчики XFS решили использовать allocation groups? В первую очередь
+это сделано для эффективной параллельной обработки операций IO. Поскольку каждая
+allocation group это эффективно управляемый автономный объект, ядро может
+распределять нагрузку между несколькими allocation groups. Без allocation groups
+код файловой системы XFS стал бы "узким горлом" для производительности,
+вынуждая IO-hungry процессы "выстраиваться в цепочку" для модификации inode и
+выполнения других операций над метаданными. Благодаря allocation groups код XFS
+допускает multiple threads, а процессы могут работать параллельно, даже при
+сложных IO операциях на одной файловой системе. Если у вас работает XFS, то
+ограничения по скорости, даже на high-end hardware, не будут определяться кодом
+файловой системы. Allocation groups в еще большей степени способствуют оптимизации
+параллельных IO операций на многопроцессорных системах, так как "in transit"
+одновременно могут находиться несколько модификаций метаданных.</p>
+<p>
+<a name="bplus"><h3>B+ trees повсюду.</h3></a>
+
+Внутренне, allocation groups используют эффективные B+ trees для отслеживания
+важных данных, например, диапазонов [<i>ranges</i>] (еще называются "<i>extents</i>")
+свободного дискового пространства и, конечно, inodes. Фактически, каждая allocation group
+имеет три B+ trees, при этом для отслеживания free space используются два. Одно
+дерево индексирует extents свободного дискового пространства по размеру, а второе
+- по начальной физической location на блочном устройстве. Способность быстро находить
+подходящие regions в free space - критическое условие для maximizing операций
+записи (то, что положительно отличает XFS от других файловых систем).</p>
+<p>
+В XFS очень эффективно организовано управление inodes. Каждая allocation group
+ассигнует inodes как ей это удобно в группы по 64. Каждая allocation group хранит
+свои inodes, используя B+ tree, и каждый конкретный <i>inode number</i> может быть
+быстро найден на диске. Можно сказать, что XFS использует B+ trees где это только
+возможно, что и способствует повышению производительности.</p>
+<p>
+<a name="journaling"><h3>Journaling.</h3></a>
+
+Разумеется, как и большинство современных файловых систем, XFS поддерживает
+журналирование метаданных для быстрого восстановления в случае аварийной
+перезагрузки. Подобно ReiserFS, в XFS используется логическое журналирование.
+Иначе, журнал ведется не файловыми блоками (как в ext3), а в эффективном дисковом
+формате с регистрацией только изменяемых метаданных. Для XFS логическое
+журналирование особенно "показано". На high-end hardware (что обычно для XFS)
+журнал наиболее спорный ресурс. Использование space-efficient logical journal
+минимизирует непроизводительное расходование ресурсов. Кроме того, XFS допускает
+хранение журнала на другом блочном устройстве (partition, скажем так, на
+"дешевом" диске). Эта feature не только экономит дорогие ресурсы, но в еще большей
+степени "работает" на увеличение скорости XFS.</p>
+<p>
+Как и ReiserFS, XFS журналирует только метаданные и не делает это для самих
+данных. Из этого следует, что в XFS (как и в ReiserFS) возможна потеря данных,
+измененных перед аварийной перезагрузкой. Но, у журнала XFS имеется два свойства,
+снижающих вероятность потери данных по сравнению с ReiserFS.</p>
+<p>
+В ReiserFS неожиданная перезагрузка может иметь результатом попадание в изменяемый
+файл фрагмента из когда-то удаленного файла. Помимо очевидной потери данных,
+гипотетически это может иметь более серьезные последствия. В XFS имеется гарантия,
+что любые "недозаписанные" блоки заполнены нулями. Так как блоки с нулевыми
+байтами в системных файлах игнорируются, устраняется лазейка в безопасности.</p>
+<p>
+Теперь непосредственно о проблеме потери данных. Такая проблема в XFS
+минимизируется вследствие того, что операция сброса на диск ожидающих обработки
+модификаций метаданных в XFS происходит чаще, чем это происходит в ReiserFS
+(особенно при высокой интенсивности операций IO). Как следствие, после аварии
+в XFS потерь будет меньше, чем при тех же условиях в ReiserFS. Заметьте, сама
+по себе более частая запись метаданных не "купирует" проблему, а лишь провоцирует
+более частый сброс на диск и самих данных.</p>
+<p>
+<a name="delay"><h3>Delayed allocation.</h3></a>
+
+Этот краткий технический обзор XFS завершается описанием <i>delayed allocation</i>,
+еще одной feature, уникальной среди файловых систем. Определимся с терминами.
+Понятие <i>allocation</i> относится к процессу обнаружения областей free space
+для записи новых данных.</p>
+<p>
+XFS выполняет allocation, разделяя, казалось бы, неделимый процесс на два шага.
+Сначала, когда XFS получает данные для записи, выполняется запись ждущей
+транзакции [<i>pending transaction</i>] в RAM и просто резервируется
+соответствующее количество пространства на основной файловой системе. При этом,
+резервируя "количество пространства" для новых данных, XFS не решает, какие
+именно блоки файловой системы эту информацию будут хранить. XFS откладывает
+принятие окончательного решения до самого последнего момента, когда данные
+фактически сбрасываются на диск.</p>
+<p>
+Через delaying allocation файловая система XFS получает дополнительные возможности
+оптимизации скорости. Когда наступает момент фактического сброса данных на диск,
+XFS может быстро и интеллектуально ассигновать free space под оптимизацию
+производительности. В частности, если новые данные добавляются в конец одного
+файла, XFS может ассигновать смежные region на диске. Если бы XFS не задерживала
+"до последнего" принятие решения по ассигнованию физических блоков, возможно,
+данные были бы "размазаны" по множеству несмежных участков. Благодаря задержке
+"физического" ассигнования, XFS способна делать запись одной операцией, повышая
+производительность и снижая фрагментацию.</p>
+<p>
+Delayed allocation имеет еще один положительный эффект. Если создается много
+временных файлов с "маленьким временем жизни", XFS вообще не будет сбрасывать их
+на диск (ну и что, не только XFS). А теперь внимание, поскольку физические блоки
+не allocated, отсутствует необходимость в их последующей deallocate. Иначе, не
+пишутся на диск не только данные, но и не изменяются метаданные файловой системы
+(а вот это уже кое-то, по сравнению с другими FS).
+</p>
+<p>
+<a name="concl"><h2>Заключение.</h2></a>
+
+Я надеюсь, вам понравился рассказ о производительности и технических
+характеристиках XFS, одной из самых мощных файловых систем Linux нового поколения.
+Тогда приглашаю к чтению следующей статьи, где пойдет разговор о вещах
+практических. В планируемой статье будут также рассмотрены некоторые XFS'
+advanced features, например ACLs и extended attributes. До встречи!
+</p>
+<p><a name="resources"><h3>Resources</h3></a>
+</p><ul>
+
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul>
+<br>
+<br>
+</li>
+
+<li>You can learn more about XFS at <!--<a href="http://oss.sgi.com/projects/xfs">-->SGI's
+XFS page<!--</a>-->.  Read the <!--<a href="http://oss.sgi.com/projects/xfs/faq.html">-->FAQ<!--</a>-->.  Join the <!--<a href="http://oss.sgi.com/projects/xfs/mail.html">-->mailing list<!--</a>-->.  And if
+you're impatient, go ahead and <!--<a href="http://oss.sgi.com/projects/xfs/download.html">-->download and install
+XFS<!--</a>--> and start playing.<br>
+<br>
+</li>
+<li>To learn more about XFS internals, I highly recommend <!--<a href="http://oss.sgi.com/projects/xfs/papers/xfs_usenix/">-->"Scalability in the XFS File System"<!--</a>-->, written by Adam
+Sweeney, Doug Doucette, Wei Hu, Curtis Anderson, Mike Nishimoto, and Geoff Peck
+of SGI.<br>
+<br>
+</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on
+<i>developerWorks</i>.<br>
+<br>
+</li>
+<li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on
+<i>developerWorks</i>.</li>
+</ul>
+<p></p>
+
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs9_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of
+</a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->, an advanced Linux for the
+ PC, and the <b>Portage</b> system, a
+next-generation ports system for
+ Linux. He has also served as a contributing author for the Macmillan books
+ <i>Caldera
+OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba Unleashed</i>. Daniel has been involved with computers in
+some
+ fashion since the second grade, when he was first exposed to the Logo
+ programming language as well as a potentially
+dangerous dose of Pac Man.
+ This probably explains why he has since served as a Lead Graphic Artist at
+ <b>SONY Electronic
+Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his new baby daughter,
+ Hadassah. You can contact
+Daniel at <a href="../cdn-cgi/l/email-protection.html#2541574a47474c4b566542404b514a4a0b4a5742"><span class="__cf_email__" data-cfemail="5236203d30303b3c211235373c263d3d7c3d2035">[email&#160;protected]</span></a>.
+
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#d2a4b9babdbebf92a2bbbcbdb1bab7a6fcb1bba6abbebbbcb7fca0a7">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

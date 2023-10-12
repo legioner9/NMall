@@ -1,0 +1,1106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Язык обработки данных AWK — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#edit">редакторы</a> |
+    <A HREF="index.htm#office">офис</a> |
+    <A HREF="index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<a name=top></a>
+
+<center><H3>Язык обработки данных AWK</H3><p>
+
+<i>Галина О. В., <!--<a href="http://www.csa.ru/CSA/">-->Суперкомпьютерный Центр<!--</a>--></i></center>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#0">Part: ОБЩАЯ ИНФОРМАЦИЯ</A>
+
+<LI><A HREF="awkruk.htm#1">1. Назначение и Формат использования</A>
+
+<LI><A HREF="awkruk.htm#2">2. Общая структура AWK-программы</A>
+
+<LI><A HREF="awkruk.htm#3">Part: СТРУКТУРА AWK-ПРОГРАММЫ</A>
+
+<LI><A HREF="awkruk.htm#4">1. Язык AWK</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#5">1.1 Поля</A>
+
+<LI><A HREF="awkruk.htm#6">1.2 Переменные</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#7">1.2.1 Стандартные переменные</A>
+
+<LI><A HREF="awkruk.htm#8">1.2.2 Значения переменных</A>
+
+<LI><A HREF="awkruk.htm#9">1.2.3 Переменные поля</A>
+
+<LI><A HREF="awkruk.htm#10">1.2.4 Массивы</A>
+
+</UL>
+
+<LI><A HREF="awkruk.htm#11">1.3 Арифметические выражения</A>
+
+</UL>
+
+<LI><A HREF="awkruk.htm#12">2. Образцы /patterns/</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#13">2.1 Регулярное выражение</A>
+
+<LI><A HREF="awkruk.htm#14">2.2 Выражение отношения</A>
+
+<LI><A HREF="awkruk.htm#15">2.3 Комбинация образцов</A>
+
+<LI><A HREF="awkruk.htm#16">2.4 BEGIN и END</A>
+
+</UL>
+
+<LI><A HREF="awkruk.htm#17">3. Действия</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#18">3.1 Вывод /Печать/</A>
+
+<LI><A HREF="awkruk.htm#19">3.2 Присваивание</A>
+
+<LI><A HREF="awkruk.htm#20">3.3 Встроенные функции</A>
+
+<LI><A HREF="awkruk.htm#21">3.4 Управляющие структуры</A>
+
+</UL>
+
+<LI><A HREF="awkruk.htm#22">Part: Сравнительное решение задач с помощью SED и AWK</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#23">Примеры:</A>
+
+<UL>
+
+<LI><A HREF="awkruk.htm#24">1. Посчитать количество строк (input)</A>
+
+<LI><A HREF="awkruk.htm#25">2. Напечатать все строки, содержащие <TT>"olga"</TT></A>
+
+<LI><A HREF="awkruk.htm#26">3. Напечатать все строки, содержащие <TT>"olga"</TT>, <TT>"mike"</TT> или <TT>"mal"</TT></A>
+
+<LI><A HREF="awkruk.htm#27">4. Напечатать третье поле каждой строки</A>
+
+<LI><A HREF="awkruk.htm#28">5. Напечатать сначала третье, а затем второе поля каждой строки</A>
+
+<LI><A HREF="awkruk.htm#29">6. Добавить строки, содержащие <TT>"olga"</TT>, <TT>"mike"</TT> или <TT>"mal"</TT> соответственно к файлам: <TT>folga, fmike, fmal</TT></A>
+
+</UL></UL>
+
+
+
+
+
+</UL>
+
+<HR>
+
+
+
+
+
+<P>
+
+<H1><A NAME="0">Part: ОБЩАЯ ИНФОРМАЦИЯ</A></H1>
+
+
+
+<H1><A NAME="1">1. Назначение и Формат использования</A></H1>
+
+
+
+
+
+<P>
+
+
+
+<P><SAMP> AWK</SAMP> - утилита предназначенная для простых, механических и вычислительных манипуляций над данными. Довольно несложные операции часто необходимо выполнить над целыми пакетами файлов, а писать для этого программу на одном из стандартных языков программирования является утомительным и, как правило, не очень простым делом. Оптимальное решение проблемы -   использование специальной утилиты <SAMP> AWK</SAMP>, включающей в себя не громоздкий и удобный язык программирования, позволяющий решать задачи обработки данных с помощью коротких программ, состоящих из двух-трех строк.
+
+
+
+<P>Утилита AWK изначально объединяла свойства утилит <SAMP> UNIX</SAMP> -   <SAMP> sed</SAMP> и <SAMP> grep</SAMP>. В дальнейшем ее возможности значительно расширились. Настоящая документация ограничивается описанием возможностей утилиты <SAMP> AWK</SAMP> реализованной для компьютеров <SAMP> CONVEX</SAMP>. Утилита <SAMP> AWK</SAMP> была создана в 1977г, американскими авторами: <SAMP> Alfred V.Aho</SAMP>, <SAMP> Brian W.Kernighan</SAMP> и <SAMP> Peter J.Weinberger</SAMP>. Подробное описание всех возможностей утилиты <SAMP> AWK</SAMP> для <SAMP> UNIX</SAMP> дает их издание: ``The AWK Programming Language'', 1988.
+
+
+
+<P><SAMP> AWK</SAMP> сканирует <SAMP> input</SAMP> (стандартный или указываемый набор файлов), и над строками, удовлетворяющими заданному образцу, выполняет указываемые действия. Строка может содержать максимально до 256 символов.
+
+
+
+<P>Формат:
+
+
+
+<P><SAMP> awk [-Fc] [-f file] [files]</SAMP>
+
+
+
+<P><SAMP> awk [-Fc] [prog] [files]</SAMP>
+
+
+
+<P><SAMP> prog</SAMP> - программа, вида: <SAMP>'</SAMP> образец ${$действие$}$<SAMP>'</SAMP>
+
+
+
+<P><SAMP> file</SAMP> - файл с AWK-программой:
+
+
+
+<P> образец <SAMP>{</SAMP> действие<SAMP>}</SAMP>
+
+
+
+<P>образец <SAMP>{</SAMP> действие<SAMP>}</SAMP>
+
+
+
+<P>...
+
+
+
+<P><SAMP> files</SAMP> - файлы, предназначенные для AWK-обработки.
+
+
+
+<P> <SAMP>-Fc</SAMP> - устанавливает разделитель полей в ``с'' (См. 1.2.1 и 2.4)
+
+
+
+<P>
+
+<H1><A NAME="2">2. Общая структура AWK-программы</A></H1>
+
+ 1. Язык программирования AWK допускает использование:
+
+<UL>
+
+<LI>Полей;
+
+<LI>Переменных (Стандартных, Массивов);
+
+<LI>Арифметических выражений.
+
+</UL>
+
+
+
+<P>2. Образец:
+
+<UL>
+
+<LI>Регулярное выражение;
+
+<LI>Выражение отношения;
+
+<LI>Комбинация образцов;
+
+<LI><SAMP> BEGIN</SAMP> и <SAMP> END</SAMP>.
+
+</UL>
+
+
+
+<P>3. Действие:
+
+<UL>
+
+<LI>Последовательность предложений, разделенных ``<SAMP>;</SAMP>'' или ``<SAMP>\n</SAMP>'' (новая строка)
+
+</UL>
+
+
+
+<P>Предложение:
+
+<OL>
+
+<LI> Вывод (Печать);
+
+<LI> Присваивание;
+
+<LI> Встроенная функция;
+
+<LI> Управляющая структура.
+
+</OL>
+
+
+
+<P>
+
+<H1><A NAME="3">Part: СТРУКТУРА AWK-ПРОГРАММЫ</A></H1>
+
+
+
+<H1><A NAME="4">1. Язык AWK</A></H1>
+
+
+
+<H2><A NAME="5">1.1 Поля</A></H2>
+
+ Каждая сканируемая строка input рассматривается как состоящая из полей, разделенных разделительными символами (по умолчанию - пробел).
+
+
+
+<P>На поля можно ссылаться из AWK программы следующим образом:
+
+<OL>
+
+<LI> <SAMP>$1</SAMP> - Первое поле;
+
+<LI> <SAMP>$2</SAMP> - Второе поле;
+
+<LI> ... и так далее...
+
+<LI> <SAMP>$0</SAMP> - Ссылается на всю строку целиком.
+
+</OL>
+
+
+
+<P>Строка может содержать максимально до 100 полей.
+
+
+
+<P>
+
+<H2><A NAME="6">1.2 Переменные</A></H2>
+
+
+
+<H3><A NAME="7">1.2.1 Стандартные переменные</A></H3>
+
+
+
+
+
+<P>
+
+<HR>
+
+&lt Drawing or tabular insertion skipped...&gt
+
+<HR>
+
+
+
+
+
+<P>
+
+<H3><A NAME="8">1.2.2 Значения переменных</A></H3>
+
+ Переменные могут интерпретироваться как числовые или строковые. Они принимают значения в зависимости от контекста, например:
+
+
+
+<P><SAMP> x = 1</SAMP>, <SAMP> x</SAMP> воспринимается как число;
+
+
+
+<P><SAMP> x = " "</SAMP>, <SAMP> x</SAMP> - строка;
+
+
+
+<P><SAMP> x + "abc"  </SAMP> - результат операции интерпретируется как число независимо от того, было ли х числом или строкой. Если строка не может быть интерпретирована как число (<SAMP>"abc"</SAMP>), то ее значение становится 0.
+
+
+
+<P>Строка может содержать максимально до 256 символов.
+
+
+
+<P>
+
+<H3><A NAME="9">1.2.3 Переменные поля</A></H3>
+
+ Ссылки на поля <SAMP>$1</SAMP>, <SAMP>$2</SAMP>, ... могут интерпретироваться в качестве переменных, например:
+
+
+
+<P><SAMP>$1 = "3" + $2</SAMP> - первое поле принимает значение второго поля, увеличенного на 3.
+
+
+
+<P><SAMP>$(i+1)</SAMP> - интерпретируется как поле, номер которого зависит от значения переменной <SAMP> i</SAMP>.
+
+
+
+<P>
+
+<H3><A NAME="10">1.2.4 Массивы</A></H3>
+
+ Допускается использование массивов. Массивы не объявляются, а принимают значения из контекста, например:
+
+
+
+<P><SAMP> x[NR] = $0</SAMP> - элементу массива <SAMP> x</SAMP>, индексированному <SAMP> NR</SAMP>, присваивается обрабатываемая строка.
+
+
+
+<P><SAMP> x["apple"]</SAMP> - элементы массива могут индексироваться не числовым значением, т.е. строкой.
+
+
+
+<P>
+
+<H2><A NAME="11">1.3 Арифметические выражения</A></H2>
+
+ Выражение:
+
+<UL>
+
+<LI>Переменная;
+
+<LI>Число;
+
+<LI>Строка;
+
+<LI>Встроенная функция;
+
+<LI>Выражение <SAMP>&lt </SAMP> Операция<SAMP>&gt </SAMP> Выражение.
+
+</UL>
+
+
+
+<P><SAMP>&lt </SAMP> Операция<SAMP>&gt </SAMP>: <SAMP>"+"</SAMP>, <SAMP>"-"</SAMP>, <SAMP>"*"</SAMP>, <SAMP>"/"</SAMP>, <SAMP>"%"</SAMP>
+
+
+
+<P>
+
+<H1><A NAME="12">2. Образцы /patterns/</A></H1>
+
+
+
+<H2><A NAME="13">2.1 Регулярное выражение</A></H2>
+
+ Для осуществление поиска в AWK языке допускается использование регулярных выражений, определенных в описании SED, (см. ``Неинтерактивный текстовый редактор SED'' 2.1), заключенных в``<SAMP>/ /</SAMP>''. Дополнения к использованию регулярных выражений, допускаемые в AWK-языке:
+
+
+
+<P>
+
+<UL>
+
+<LI> <SAMP>"( )"</SAMP> - Скобки допускаются для группирования;
+
+<LI><TT>" |"</TT> -  Указание альтернативы "или";
+
+<LI><SAMP>" + "</SAMP> -  Плюс, стоящий за регулярным выражением означает любую последовательность вхождений этого выражения, начиная с 1;
+
+<LI><SAMP>" ? "</SAMP> -  Знак вопроса за регулярным выражением означает 0 или 1 вхождений этого выражения;
+
+<LI><SAMP>[A-Z]</SAMP> -  Допускается сокращенная форма записи для рангов ASCII символов;
+
+<LI>Установленный порядок выполнения операторов на одном скобочном уровне: <SAMP>"[] * + ?</SAMP> конкатенация <TT>|"</TT>.
+
+</UL>
+
+
+
+<P>Например:
+
+
+
+<P><SAMP>/Olga/</SAMP> - Указывает на строки, содержащие <SAMP> Olga</SAMP>.
+
+
+
+<P><TT>/[Oo]lga|[Mm]ike|[Mm]al/</TT> -  Указывает на строки, содержащие <SAMP> Olga</SAMP> или <SAMP> olga</SAMP> или <SAMP> Mike</SAMP> или <SAMP> mike</SAMP> или <SAMP> Mal</SAMP> или <SAMP> mal</SAMP>.
+
+
+
+<P><SAMP>/number[0-9]/</SAMP> - Указывает на строки, содержащие <SAMP> number0</SAMP> или <SAMP> number1</SAMP> или ... <SAMP> number9</SAMP>.
+
+
+
+<P><SAMP>/\/.+\//</SAMP> - Указывает на строки, содержащие любое количество символов, больше или равное 1, заключенных в <SAMP>/ /</SAMP>.
+
+
+
+<P>
+
+<H2><A NAME="14">2.2 Выражение отношения</A></H2>
+
+ Выражение отношение может быть двух типов:
+
+<UL>
+
+<LI><SAMP>&lt </SAMP> Выражение<SAMP>&gt  &lt </SAMP> Принадлежность<SAMP>&gt  &lt </SAMP> Выражение<SAMP>&gt </SAMP>
+
+<LI><SAMP>&lt </SAMP> Выражение<SAMP>&gt  &lt </SAMP> Лог. Операция<SAMP>&gt  &lt </SAMP> Выражение<SAMP>&gt </SAMP>
+
+</UL>
+
+
+
+<P>Принадлежность:
+
+
+
+<P><SAMP>~</SAMP> - Содержится;
+
+
+
+<P><SAMP>!~</SAMP> - Не содержится.
+
+
+
+<P>Лог. Операция: <SAMP>&lt </SAMP>, <SAMP>&lt =</SAMP>, <SAMP>==</SAMP>, <SAMP>!=</SAMP>, <SAMP>&gt =</SAMP>, <SAMP>&gt </SAMP>.
+
+
+
+<P>Например:
+
+
+
+<P><SAMP>$1 ~ /[Oo]lga/</SAMP> - Указывает на строки, первое поле которых содержит <SAMP> Olga</SAMP> или <SAMP> olga</SAMP>.
+
+
+
+<P><SAMP>$1 &gt = "s"</SAMP> - Указывает на строки, начинающиеся с символа <SAMP> s</SAMP> или следующих за ним по порядку: <SAMP> t</SAMP>, <SAMP> u</SAMP>, <SAMP> v</SAMP>...
+
+
+
+<P>
+
+
+
+<P>
+
+<H2><A NAME="15">2.3 Комбинация образцов</A></H2>
+
+ Допускается логическая комбинация образцов с использованием следующих знаков: <TT>||</TT> - ``или'', <SAMP>&amp &amp </SAMP> - ``и'', <SAMP>!</SAMP> - ``не''.
+
+
+
+<P>Последовательности образцов, соединенных одним из знаков читаются слева направо.
+
+
+
+<P>Комбинация: ``образец1, образец2'' указывает, что действие выполняется над строками, попадающими в указанный ранг: то есть, начиная от строки, удовлетворяющей ``образец1" и вплоть до строки, удовлетворяющей ``образец2", включая ее саму.
+
+
+
+<P>Например:
+
+
+
+<P><SAMP>/02\.95/ &amp &amp  ($1 !~ /\.su/ </SAMP><SAMP> $2 !~ /\.su/)</SAMP> - Указывает на строки, содержащие <SAMP>02.95</SAMP> и не имеющие <SAMP>.su</SAMP> одновременно в первом и во втором поле.
+
+
+
+<P><SAMP> NR == 100, NR == 200</SAMP> - Указывает строки с номерами от 100 до 200.
+
+
+
+<P>
+
+<H2><A NAME="16">2.4 BEGIN и END</A></H2>
+
+
+
+
+
+<P>Образец <SAMP> BEGIN</SAMP> указывает на начало <SAMP> input</SAMP> или на те действия, которые должны быть выполнены до какого бы то ни было анализа строк. Образец <SAMP> END</SAMP> указывает на конец <SAMP> input</SAMP> или на те действия, которые должны быть выполнены после обработки всех строк.
+
+
+
+<P>Например:
+
+
+
+<P><SAMP> BEGIN {FS = ":"}</SAMP> - Устанавливает разделитель полей в <SAMP>":"</SAMP> до начала обработки строк. Эквивалентно опции <SAMP>"-F:"</SAMP> при AWK вызове.
+
+
+
+<P><SAMP> END { print NR }</SAMP> - Печатает номер последней строки <SAMP> input</SAMP>, т.е. количество обработанных входных строк.
+
+
+
+<P>
+
+
+
+<P>
+
+<H1><A NAME="17">3. Действия</A></H1>
+
+
+
+<H2><A NAME="18">3.1 Вывод /Печать/</A></H2>
+
+ Формат оператора печати:
+
+
+
+<P><SAMP> PRINT [&lt </SAMP> список выражений<SAMP>&gt ] [ &gt  &lt </SAMP> выражение1<SAMP>&gt ]</SAMP>
+
+
+
+<P>Если в списке выражения находятся через запятую, то значения этих выражений выводятся на <SAMP> output</SAMP> (печатаются) через символ-разделитель <SAMP> OFS</SAMP> (по умолчанию пробел). Если же выражения стоят через пробел, то на печати происходит их конкатенация.
+
+
+
+<P>Значение <SAMP>&lt </SAMP> выражения1<SAMP>&gt </SAMP> рассматривается как имя файла. Само его присутствие означает печать в файл. Если вместо ``<SAMP>&gt </SAMP>'' стоит ``<SAMP>&gt &gt </SAMP>'', то это означает добавление к уже существующему файлу. Можно использовать в одной программе максимально до 10 <SAMP> output</SAMP> файлов.
+
+
+
+<P>Оператор форматированной печати:
+
+
+
+<P><SAMP> PRINTF</SAMP> формат <SAMP>[</SAMP>,список выражений<SAMP>] [ &gt  </SAMP> выражение1<SAMP>]</SAMP>
+
+
+
+<P>формат: символьная строка в двойных кавычках. Идентичен формату, используемому в функции <SAMP> printf</SAMP> в языке ``С''. Формат может содержать:
+
+<UL>
+
+<LI>обычные символы, они копируются на <SAMP> output</SAMP>.
+
+<LI><SAMP> esc</SAMP>последовательности, представляющие неграфические символы, например, <SAMP>"\n"</SAMP> - новая строка.
+
+<LI>спецификации для вывода аргументов, они следуют после символа ``<SAMP>%</SAMP>''. Число спецификаций должно быть равно числу аргументов. (Если оно меньше числа аргументов, то лишние аргументы игнорируются, если же больше - то это ошибка)
+
+</UL>
+
+
+
+<P>
+
+<H2><A NAME="19">3.2 Присваивание</A></H2>
+
+ Оператор присваивания имеет вид:
+
+
+
+<P><SAMP>&lt </SAMP> переменная<SAMP>&gt </SAMP> = <SAMP>&lt </SAMP> выражение<SAMP>&gt </SAMP>
+
+
+
+<P>Начальное значение переменной 0 или `` '' (пробел). Допускаются другие типы присваивания в соответствии с языком ``С'': <SAMP>"+="</SAMP>,<SAMP>"-="</SAMP>,<SAMP>"*="</SAMP>,<SAMP>"/="</SAMP>,<SAMP>"%="</SAMP>.
+
+
+
+<P><SAMP>&lt </SAMP> переменная<SAMP>&gt ++</SAMP>, <SAMP>++&lt </SAMP> переменная<SAMP>&gt </SAMP> - увеличение значения переменной на 1.
+
+
+
+<P><SAMP>&lt </SAMP> переменная<SAMP>&gt --</SAMP>, <SAMP>--&lt </SAMP> переменная<SAMP>&gt </SAMP> - уменьшение значения переменной на 1.
+
+
+
+<P>
+
+<H2><A NAME="20">3.3 Встроенные функции</A></H2>
+
+
+
+
+
+<P><SAMP> length(arg)</SAMP> - Функция длины <SAMP> arg</SAMP>. Если <SAMP> arg</SAMP> не указан, то выдает длину текущей строки.
+
+
+
+<P><SAMP> exp(),log(),sqrt()</SAMP> - Математические функции экспонента, логарифм и квадратный корень.
+
+
+
+<P><SAMP> int()</SAMP> - Функция целой части числа.
+
+
+
+<P><SAMP> substr(s,m,n)</SAMP> - Возвращает подстроку строки <SAMP> s</SAMP>, начиная с позиции <SAMP> m</SAMP>, всего <SAMP> n</SAMP> символов.
+
+
+
+<P><SAMP> index(s,t)</SAMP> - Возвращает начальную позицию подстроки <SAMP> t</SAMP> в строке <SAMP> s</SAMP>. (Или 0, если <SAMP> t</SAMP> в <SAMP> s</SAMP> не содержится.)
+
+
+
+<P><SAMP> sprintf(fmt,exp1,exp2,...)</SAMP> - Осуществляет форматированную печать (вывод) в строку, идентично <SAMP> PRINTF</SAMP>.
+
+
+
+<P><SAMP> split(s,array,sep)</SAMP> - Помещает поля строки s в массив <SAMP> array</SAMP> и возвращает число заполненных элементов массива. Если указан <SAMP> sep</SAMP>, то при анализе строки он понимается как разделитель.
+
+
+
+<P>
+
+<H2><A NAME="21">3.4 Управляющие структуры</A></H2>
+
+ Условное предложение:
+
+
+
+<P><SAMP> if ( &lt </SAMP> условие<SAMP>&gt  )  &lt </SAMP> предложение<SAMP>&gt </SAMP>
+
+
+
+<P>\hskip 1cm <SAMP>[else &lt </SAMP> предложение<SAMP>&gt  ]</SAMP>
+
+
+
+<P>Предложения цикла:
+
+
+
+<P><SAMP> while ( &lt </SAMP> условие<SAMP>&gt  )  &lt </SAMP> предложение<SAMP>&gt </SAMP>
+
+
+
+<P><SAMP> for (&lt </SAMP> выражение<SAMP>&gt ; &lt </SAMP> условие<SAMP>&gt ; &lt </SAMP> выражение<SAMP>&gt )</SAMP>
+
+
+
+<P>\hskip 1cm <SAMP>&lt </SAMP> предложение<SAMP>&gt </SAMP>
+
+
+
+<P>Например:
+
+
+
+<P><SAMP> for(i=1; i&lt =NF; i++)</SAMP> - Аналогично циклу for в языке ``С''
+
+
+
+<P><SAMP> for (i in array)</SAMP> - Цикл по элементам массива. Но, элементы массива доступны в этом случае в случайном порядке.
+
+
+
+<P><SAMP> break</SAMP> -  Немедленный выход из цикла.
+
+
+
+<P><SAMP> continue</SAMP> -  Переход к выполнению следующего предложения.
+
+
+
+<P><SAMP> next</SAMP> -  Немедленный переход к анализу следующей строки.
+
+
+
+<P><SAMP> exit</SAMP> -  Выход из программы (на конец input).
+
+
+
+<P><SAMP>#</SAMP> -  Комментарий
+
+
+
+<P>
+
+<H1><A NAME="22">Part: Сравнительное решение задач с помощью SED и AWK</A></H1>
+
+ Система <SAMP> UNIX</SAMP> обладает несколькими программами, которые обрабатывают входной поток данных: <SAMP> grep</SAMP>, <SAMP> egrep</SAMP>, <SAMP> fgrep</SAMP>, <SAMP> lex</SAMP> и <SAMP> sed</SAMP>. Неинтерактивный редактор <SAMP> sed</SAMP> обеспечивает выполнение в пакетном режиме большинства функций редактирования редактора <SAMP> ed</SAMP>. Как показано на примерах ниже, некоторые задачи обработки текстов могут быть решены как с помощью <SAMP> awk</SAMP>, так и с помощью <SAMP> sed</SAMP> и время решения простых задач с помощью <SAMP> sed</SAMP> будет меньше. Однако, решения некоторых примеров (как 4. и 5.) выглядят более наглядно с использованием <SAMP> awk</SAMP>. Кроме того, утилита <SAMP> awk</SAMP> безусловно шире по своим возможностям и позволяет численные манипуляции с данными, логические отношения, использование переменных и т.п., чего не обеспечивает ни одна из вышеперечисленных программ.
+
+
+
+<P>
+
+<H2><A NAME="23">Примеры:</A></H2>
+
+
+
+<H3><A NAME="24">1. Посчитать количество строк (input)</A></H3>
+
+
+
+
+
+<P><SAMP> SED:    $=               </SAMP> (10.2 c.)
+
+
+
+<P><SAMP> AWK:    END { PRINT NR } </SAMP> (15.0 c.)
+
+
+
+<P>
+
+<H3><A NAME="25">2. Напечатать все строки, содержащие <TT>"olga"</TT></A></H3>
+
+
+
+
+
+<P><SAMP> SED:   /olga/p  </SAMP> (11.6 c.)
+
+
+
+<P><SAMP> AWK:   /olga/   </SAMP> (25.6 c.)
+
+
+
+<P>
+
+<H3><A NAME="26">3. Напечатать все строки, содержащие <TT>"olga"</TT>, <TT>"mike"</TT> или <TT>"mal"</TT></A></H3>
+
+
+
+
+
+<P>
+
+
+
+<PRE>
+
+SED:  /olga/p
+
+      /olga/d
+
+      /mike/p
+
+      /mike/d
+
+      /mal/p
+
+      /mal/d            (15.8 c.)
+
+
+
+AWK:  /olga\bverb mike\everb mal/   (29.9 c.)
+
+</PRE>
+
+
+
+<P>
+
+<H3><A NAME="27">4. Напечатать третье поле каждой строки</A></H3>
+
+
+
+
+
+<P><SAMP> SED:  /[^ ]* [ ]*[^ ]* [ ]*\([^ ]*\).*/s//\1/p </SAMP> (29.0 c.)
+
+
+
+<P><SAMP> AWK:  {PRINT $3}  </SAMP> (33.3 c.)
+
+
+
+<P>
+
+<H3><A NAME="28">5. Напечатать сначала третье, а затем второе поля каждой строки</A></H3>
+
+
+
+
+
+<P><SAMP> SED:  /[^ ]* [ ]*\([^ ]*\) [ ]*\([^ ]*\).*/s//\2\1/p  </SAMP> (30.5 c.)
+
+
+
+<P><SAMP> AWK:  {PRINT $3 $2}  </SAMP> (38.9 c.)
+
+
+
+<P>
+
+<H3><A NAME="29">6. Добавить строки, содержащие <TT>"olga"</TT>, <TT>"mike"</TT> или <TT>"mal"</TT> соответственно к файлам: <TT>folga, fmike, fmal</TT></A></H3>
+
+
+
+
+
+<P>
+
+
+
+<P>
+
+
+
+<PRE>
+
+SED:     /olga/w folga
+
+         /mike/w fmike
+
+         /mal/w fmal         (16.1 c.)
+
+
+
+AWK:     /olga/ {print &gt  "folga"}
+
+         /mike/ {print &gt  "fmike"}
+
+         /mal/  {print &gt  "fmal"}   (46.4 c.)
+
+</PRE>
+
+<p>
+
+</td><td align=right>
+<!--adv right start-->
+
+  </div>
+</div>
+</body>
+</html>

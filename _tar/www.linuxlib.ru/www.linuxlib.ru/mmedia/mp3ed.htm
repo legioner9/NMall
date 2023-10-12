@@ -1,0 +1,745 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>lf204, Applications: Real-time mp3 recording, part 2 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE ALIGN=LEFT BORDER=0 hspace=4 vspace=4 WIDTH="30%" >
+<TR>
+<TD>
+
+
+<I>Об авторе:</I><BR>
+<P>Скоро он получит Ph.D. по <!--<A
+    href="http://www.sci.kun.nl/cac/index.html">-->chemometrics<!--</A>-->
+    в <!--<A href="http://www.kun.nl">-->университете Неймегена<!--</A>-->. Ему нравится
+    работать с Linux и передавать свой опыт, что он регулярно и делает.</P>
+<BR><i>Содержание</i>:
+<UL>
+  <LI><A HREF="mp3ed.htm#lfindex0">Редактирование mp3 файлов</A></LI>
+  <LI><A HREF="mp3ed.htm#lfindex1">Еще более продолжительные записи (&gt;24 часов)</A></LI>
+  <LI><A HREF="mp3ed.htm#lfindex2">Качество mp3 записей</A></LI>
+  <LI><A HREF="mp3ed.htm#lfindex3">Максимальное уменьшение mp3 записей</A></LI>
+  <LI><A HREF="mp3ed.htm#lfindex4">Стандартный скрипт для создания mp3 записей</A></LI>
+  <LI><!--<A HREF="http://cgi.linuxfocus.org/cgi-bin/lftalkback?anum=204&lang=ru">-->Страница отзывов<!--</A>--></LI>
+</UL>
+
+</TD></TR></TABLE>
+<!-- HEAD OF THE ARTICLE -->
+<H2>Создание записей в формате mp3, часть 2</H2>
+
+<P><i>Резюме</i>:
+<P>
+
+    Заметка продолжает разговор начатый в предыдущей <A href=
+    "https://www.linuxlib.ru/English/March2001/article178.shtml">заметке</A> о записи
+    mp3 файлов в реальном времени, например радиотрансляций. В предыдущей
+    заметке мы рассмотрели процесс создания большого mp3 файла
+    (650 Mb - 12 часов или 1.3 Gb - 24 часа музыки CD качества (128 kbit/s; стерео)).
+    Теперь перед нами встают такие вопросы - как его обработать, что лучше -
+    создать еще больший файл или сжать данные. Также немного поговорим
+    о качестве предоставляемым форматом mp3.
+
+    </P>
+<HR size="2" noshade align="right"><BR>
+<!-- BODY OF THE ARTICLE -->
+
+
+    <A NAME="lfindex0">&nbsp;</A>
+<H3>Редактирование mp3 файлов</H3>
+
+
+    Представьте, что вы сделали прекрасную 24-х часовую запись (например
+    <!--<A href="http://www.loostadradio.nl/top300.html">-->Eighties Top 300<!--</A>-->
+    передаваемые <!--<A href="http://www.loostadradio.nl">-->Loostad
+    radio<!--</A>-->), и хотели бы разделить ее на более мелкие части. Также неплохо
+    было бы удалить рекламу и новости. Как это все сделать? Предлагаю один
+    из вариантов:<BR>
+
+    <UL class="noindent">
+      <LI>перегоняем mp3 в wav</LI>
+      <LI>используем любой wave-редактор для 'вырезания и вставки'</LI>
+      <LI>перегоняем обратно - wav в mp3</LI>
+    </UL>
+    Теоретически все правильно и даже более того - возврат из wav в mp3 с тем
+    же алгоритмом не ухудшает качества записи. На самом деле, на практике,
+    возникают проблемы:<BR>
+
+    <UL class="noindent">
+      <LI>mp3 файл размером 650 Mb увеличится до 6.5 Gb в формате wav, не
+      говоря уже о требуемом процессорном времени!</LI>
+      <LI>во время декодирования mp3 в wav, mp3 файл остается. Редактирование
+      wav файла также требует дискового пространства - например разделение
+      файла на части по 1 часу потребует 2x6.5=13 Gb!</LI>
+    </UL>
+
+    <P>Короче говоря - не обойтись без программы способной редактировать
+    сами mp3 файлы! Такие программы есть, но (в настоящее время) не под
+    Linux. Достаточно много их под Windows, но у всех один большой недостаток -
+    они не способны обрабатывать файлы такого размера - 650 Mb. Но мне все же
+    удалось найти одну подходящую - <!--<A href=
+    "http://baserv.uci.kun.nl/~philipg/overige_updates/mp3/MannsMp3Edit_1.0.0.9.zip">-->
+    'Manns' mp3 edit'<!--</A>-->. Я использовал ее под Windows98. Графический интерфейс
+    этой программы позволяет отметить нужное место исходного mp3 файла и
+    скопировать его в другой файл командой 'trim'. Эта программа из категории
+    'donationware', что означает не обязательную плату за нее, но при
+    полезности ее для вас было бы неплохо за нее заплатить. Но и она не без
+    изъянов - первый: ужасно медленная работа с такими большими файлами (650 Mb)
+    и второй: способна обработать только файлы с постоянными частотами!!!
+    Поиск последнего часового фрагмента в 24 часовом mp3 файле занимает очень
+    много времени и сильно нагружает диск. Извлечение же нужного фрагмента
+    наоборот - достаточно быстрое (и без потери mp3 качества). До сих пор
+    я не обнаружил никаких проблем с воспроизведением mp3 файлов, созданных
+    с помощью этого редактора. Тем не менее я всегда проверяю вырезанные
+    фрагменты, помещая их  в mp3-редактор - если загрузка корректна - файл
+    в порядке. Во время первых экспериментов я жал на кнопку 'trim' в период
+    интенсивной работы программы с диском - вследствие чего портились файлы -
+    их становиилось невозможно воспроизводить! Обработка файла размером 650 Mb
+    занимает у меня примерно 1 час.<BR>
+    </P>
+
+    <A NAME="lfindex1">&nbsp;</A>
+<H3>Еще более продолжительные записи (&gt;24 часов)</H3>
+
+
+    Никаких особенных проблем не возникает при записи 24 часовой радиотрансляции -
+    файл получается достаточно компактный (1.3 Gb) для записи на жесткий диск.
+    Проблемы могут возникнуть при записи более продолжительных трансляций,
+    например целой недели. Возможно, в таком случае, у вас просто не хватит
+    дискового пространства. У меня такая проблема возникла во время
+    трансляции 'Alltimes Top 2000' на Рождество и Новый год 2000 (144 часа
+    музыки), которые передавала <!--<A href="http://www.radio2.nl">-->Radio 2<!--</A>-->.
+    Мой жесткий диск оказался слишком маленьким и мне пришлось искать
+    решение для такой ситуации. Вот мой рецепт:<BR>
+
+
+    <UL class="noindent">
+      <LI>создаем пустой файл для 700 Mb CD-R (80 минут CD)</LI>
+      <LI>создаем на нем файловую систему Linux - ext2</LI>
+      <LI>монтируем его, для доступа как к отдельному Linux диску</LI>
+      <LI>записываем туда 12 часовой mp3 файл (128 kbit/s; стерео; примерно 670 Mb)</LI>
+      <LI>размонтирываем его, монтируем второй и продолжаем запись на него</LI>
+      <LI>записываем первый на CD. У меня Pentium II 450 MHz - проблем не
+      возникло (без XWindows)</LI>
+      <LI>если запись прошла удачно - удаляем mp3 файл (файл, а не image).
+      Image будем использовать для следующей записи</LI>
+      <LI>Повторяем эту процедуру до конца трансляции</LI>
+    </UL>
+    Таким образом мне удалось записать полностью Top2000. Идея возникла при
+    чтении <!--<A href="http://www.linuxdoc.org/HOWTO/CD-Writing-HOWTO.html">-->CD-Burning-Howto<!--</A>-->
+    и ниже расскажу детальнее:
+
+    <UL class="noindent">
+      <LI>сначала я создал 4 images на отдельном разделе - для этого потребовалось
+      2.9 Gb дискового пространства</LI>
+      <LI>соответственно они получили такие имена - image_1, image_2, image_3, и
+      image_4:
+        <DIV style="margin-left: 2em">
+          dd if=/dev/zero of="image_1" bs=1024k count=700
+        </DIV>
+      И повторил эту команду 4 раза. Создание их заняло некоторое время!
+      </LI>
+      <LI>
+      Далее создал файловую систему Linux - ext2 на них:
+        <DIV style="margin-left: 2em">
+          shell&gt; /sbin/mke2fs -b 2048 image_1<BR>
+          empty_file is not a block special device.<BR>
+          Proceed anyway? (y,n) y
+        </DIV>
+      <b>Обратите внимание:</b> файловая система ext2 сама занимает некоторое место,
+      поэтому для записи у вас реально будет немного меньше 700 Mb!
+      </LI>
+
+      <LI>
+      Для монтирования надо использовать loopback device, что требует
+      поддержки в ядре (или на уровне модулей).
+
+        <DIV style="margin-left: 2em">
+          mount -t ext2 -o loop=/dev/loop1 image_1 /mnt
+        </DIV>
+      Теперь image доступен в каталоге /mnt. Можно попробовать делать записи!
+      </LI>
+
+      <LI>
+      Размонтирование и запись CD:
+
+        <DIV style="margin-left: 2em">
+          umount /mnt<BR>
+          cdrecord -v speed=2 dev=0,1,0 -data image_1
+        </DIV>
+      Также обратите внимание, что 'dev=0,1,0' зависит от конфигурации вашей
+      системы и может отличаться от приведенной в примере (команда
+      cdrecord -scanbus выдаст вам всю необходимую информацию). Далее
+      записываем CD и одновременно продолжаем запись трансляции на следующий
+      image (надеюсь).
+      </LI>
+
+      <LI>
+        Проверяем записанный CD:
+
+        <DIV style="margin-left: 2em">
+          mount -t ext2 /dev/scd0 /cdrom
+        </DIV>
+        Если все прошло удачно - mp3 файл доступен в каталоге /cdrom!
+        Должен заметить, что возникли некоторые проблемы с версиями ядер
+        с 2.4.0 по 2.4.2 - я не смог примонтировать эти CD (с файловой
+        системой ext2) и были проблемы с loopback device. В версии ядра
+        2.4.3 эти проблемы решены и все работает прекрасно (также как и с
+        версиями ядер 2.2.x).
+      </LI>
+    </UL>
+
+    <P><BR>
+    Преимущество этого способа в низких требованиях, предъявляемых к
+    процессору. Images уже созданы! Можно автоматизировать процесс с
+    помощью небольшого скрипта: монтирование image, запись mp3, размонтирование
+    после 12 часов записи, монтирование следующего image и продолжение записи
+    и т.д. Я записал все диски вручную, потому что возникла проблема (правда
+    всего один раз и была связана с носителем). Итак, я создал 4 images: 3
+    были в запасе на случай возникновения проблем с записью CD (36 часов на
+    решение проблемы). Скрипт, которым я пользовался, выглядит следующим образом:
+    <BR>
+    </P>
+<PRE>
+<SMALL>
+#!/bin/sh
+echo "loading modules for sound support..."
+modprobe -k snd-card-sb16
+modprobe -k snd-pcm-oss
+modprobe -k snd-mixer-oss
+echo "setting mixer..."
+amixer set Line 31 unmute capture; amixer set Master 31; amixer set PCM 31
+cd /where/ever/you/stored/the/images/
+for i in 1 2 3; do
+    for ii in 1 2 3 4; do
+    echo "mounting image_$ii on /mnt ..."
+        mount -t ext2 -o loop=/dev/loop1 image_$ii /mnt
+        echo "starting mpegrec ..."
+        mpegrec -b 128 -x -mj -o /mnt/top2000_$ii.mp3
+    echo "umount /mnt"
+        umount /mnt
+    done
+done
+</SMALL>
+</PRE>
+
+    <P>Всю работу я проделал без XWindows, только Bash-prompt.
+    Поддержка звука, эмуляция OSS и mixer были загружены вручную (конечно
+    вы можете автоматизировать этот процесс посредством опций файла
+    /etc/conf.modules). В 4-ой строке настраиваем mixer: источник записи-
+    "линейный вход", громкость на максимум. После настройки скрипт управляет
+    монтированием/размонтированием. Далее рассмотрим опции mpegrec: '-mj'
+    указывает на joined stereo. Я ожидал, используя эту опцию, что файлы станут
+    меньшего размера, но это оказалось не так - не имеет значения запиываете вы
+    stereo или joined-stereo! В следующий раз я буду использовать ordinary
+    stereo. Также было желание остановить 'mpegrec' после 12 часов записи.
+    Я подправил исходники - поменял 24 на 12, но к сожалению запись продолжалась
+    по-прежнему. Мне пришлось прерывать запись самому каждые 12 часов. Надо
+    будет повнимательнее посмотреть на исходники...<BR>
+    </P>
+
+    <P><B>Обратите внимание:</B><BR>
+    Также возникли проблемы с самым свежим релизом cdrecord (cdrecord-1.9).
+    Работа предыдущей версии была корректной. Эти проблемы были решены
+    модернизацией firmware моего CD recorder - Philips CDD 3610, с 3.02 на
+    3.09. Сначала я подумал, что проблемы записи дисков связаны с ядром 2.4.3,
+    но это предположение также оказалось ошибочным!</P>
+
+    <A NAME="lfindex2">&nbsp;</A>
+<H3>Качество mp3 записей</H3>
+
+
+    На <!--<A name="TalkBack" href="http://cgi.linuxfocus.org/cgi-bin/lftalkback?anum=178&lang;=en">-->
+    странице отзывов<!--</A>--> моей предыдущей заметки кто-то оставил ссылку на
+    сайт (<!--<A href="http://www.r3mix.net/">-->http://www.r3mix.net/<!--</A>-->), где я
+    обнаружил интересную информацию о mp3 записях - качество и т.д.
+    на основе программы 'lame'.
+
+    <P><BR>
+     Наиболее интересные моменты:</P>
+
+    <UL>
+      <LI>128 kbit/s - не является CD качеством. Но что касается радиотрансляций-
+      там речь не идет о таком качестве, поэтому такого вполне достаточно!!!
+      </LI>
+
+      <LI>реальное CD качество - это 256 kbit/s, другими словами - невозможно
+      отличить 256 kbit/s mp3 поток от CD.
+      </LI>
+
+      <LI>рекомендуется делать записи с переменной частотой (variable bitrate -
+      VBR). Стандартная частота 192 kbit/s - хорошая отправная точка. В
+      зависимости от сложности произведения частота может увеличиваться или
+      уменьшаться. Еще одна рекомендация - использование фильтров, которые
+      улучшаеют качество mp3 файлов до уровня, сравнимого с 256 kbit/s записью.
+      <!--<A href="http://www.philips.com">-->Philips<!--</A>--> определила эти фильтры во
+      время разработки технологии записи CD.
+      </LI>
+    </UL>
+   Обо всем этом можно подробно почитать на вышеупомянутом сайте!
+
+    <A NAME="lfindex3">&nbsp;</A>
+<H3>Максимальное уменьшение mp3 записей</H3>
+
+
+    Ниже рассмотрим небольшой скрипт, присланный мне по e-mail читателем.
+
+    <P></P>
+<PRE>
+<small>
+#!/bin/bash
+
+echo "record $1 named ($3) for $2 seconds"
+aumix -f ~/.aumixrc
+/usr/bin/yes x | /usr/bin/radio $1 &gt;/dev/null 2&gt;/dev/null
+sox -V -r 44100 -c 2 -t ossdsp -w -s /dev/dsp -t wav - 2&gt;/dev/null |
+lame - ~/$3.`/bin/date "+%H%M.%m-%d-%y"`.mp3 --resample 16 -b 8 -a -m m -h --lowpass 4 --highpass .12 --voice&amp;
+sleep $2
+kill -9 $!
+# copy the output to a different direcory. If you want you can
+# replace cp by rcp or scp and copy it to a different computer:
+cp $3.*`/bin/date "+.%m-%d-%y"`.mp3 /tmp/outputdir
+</small>
+</PRE>
+
+    <P>Основная задача его - создание различаемой записи радиотрансляции
+    ограниченной дисковым пространтсвом 3.5 Mb на час! Различаемая - значит
+    записанная речь должна быть понятна. Естественно качество получается
+    ужасное. В 1-ой строке настраиваем mixer, запускаем программу для
+    карточки и 'sox'. Основная хитрость в опциях 'lame':</P>
+
+    <DIV style="margin-left: 2em">
+      --resample 16 -b 8 -a -m m -h --lowpass 4 --highpass .12 --voice
+    </DIV>
+
+    <TABLE bgcolor="#bbbbbb">
+      <TR>
+        <TD valign="top">--resample 16</TD>
+
+        <TD>переопределяем частоту исходного файла с 44 kHz до 16 kHz.</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">-b 8</TD>
+
+        <TD>устанавливаем 8 kbit/s.</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">-a</TD>
+
+        <TD>объединяем стерео потоки в моно запись.</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">-m m</TD>
+
+        <TD>включаем моно mp3 кодирование.</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">-h</TD>
+
+        <TD>включаем высококачественное mp3 кодирование (медленное).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--lowpass 4</TD>
+
+        <TD>устанавливаем фильтр нижних частот на 4 kHz (все сигналы выше этого
+        предела будут удалены).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--highpass .12</TD>
+
+        <TD>устанавливаем фильтр верхних частот на 12 kHz (все сигналы ниже этого
+        предела будут удалены).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--voice</TD>
+
+        <TD>используем технологию mp3 сжатия адаптированную для речи.</TD>
+      </TR>
+    </TABLE>
+
+    <P>Ясно, что для записи речи такое сжатие приемлемо. Но в большинстве
+    случаев оно конечно не к чему. Тем не менее такая возможность есть!</P>
+
+    <A NAME="lfindex4">&nbsp;</A>
+<H3>Стандартный скрипт для создания mp3 записей</H3>
+
+
+    Этот скрипт также был получен чрез <A href="mp3ed.htm#TalkBack">TalkBack pages</A>
+    (я благодарен за это и несомненно каждый получит выгоду от этой
+    информации!). Это полезная сторона страницы отзывов. Любой читатель может
+    поделиться своим опытом, спросить совет и если коротко - различная
+    информация собирается в одном месте и доступна всем! Скрипт называется
+    'mp3_record':
+
+    <P></P>
+<PRE>
+#!/bin/sh
+ /usr/local/bin/mpegrec \
+ -l 5400 \
+ -x '--preset fm \
+ --tt "Computers in Your Life" \
+ --tl "Open Line with Tom Wieble" \
+ --ta "Tom Wieble" --ty `date +%Y` \
+ --tg "Speech" \
+ --tc "Copyright (c) 1997 - `date +%Y` WOSU" -c' \
+ -o open_line_`date +%d%b%y`_`date +%H%M`.mp3
+</PRE>
+
+    <P>Опция '-l 5400' ограничиваем время записи 90 минутами. Все опции
+    после '-x' перенаправляются 'lame' (строки с 4 по 9) и опция
+    '-o' задает имя файла в виде 'date_and_time.mp3'. Эти строки могут
+    быть изменены по желанию. Для этого не помешает более тесное знакомство
+    с опциями 'lame'. Рассмотрим опции подробнее:</P>
+
+    <TABLE bgcolor="#bbbbbb">
+      <TR>
+        <TD valign="top">--preset fm</TD>
+
+        <TD>Lame узнает некоторые стандартные установки. 'fm' для записи
+        радиотрансляций.</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--tt "Computers in Your Life"</TD>
+
+        <TD>'--tt' название записи (30 символов максимум).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--tl "Open Line with Tom Wieble"</TD>
+
+        <TD>'--tl': название альбома (30 символов максимум).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--ta "Tom Wieble" --ty `date +%Y`</TD>
+
+        <TD>'--ta': исполнитель (30 символов максимум).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--tg "Speech"</TD>
+
+        <TD>'--tg': жанр (название или номер).</TD>
+      </TR>
+
+      <TR>
+        <TD valign="top">--tc "Copyright (c) 1997 - `date +%Y` WOSU"
+        -c"</TD>
+
+        <TD>'--tc': комментарий (30 символов максимум).</TD>
+      </TR>
+    </TABLE>
+
+    <P>Неплохой вариант для создания mp3 файлов, включающий дату и время и
+    массу другой информации. Конечно надо потратить немного времени на это,
+    но опять же, приятно видеть что есть такая возможность!</P>
+
+
+
+
+
+<!-- 2pdaIgnoreStart -->
+<A NAME="talkback">&nbsp;</a>
+<h2>Страница отзывов</h2>
+У каждой заметки есть страница отзывов. На этой странице вы можете оставить
+свой комментарий или просмотреть комментарии других читателей.
+<center>
+<table border="0"  CELLSPACING="2" CELLPADDING="1">
+ <tr BGCOLOR="#C2C2C2"><td align=center>
+  <table border="3"  CELLSPACING="2" CELLPADDING="1">
+   <tr BGCOLOR="#C2C2C2"><td align=center>
+    <!--<A href="http://cgi.linuxfocus.org/cgi-bin/lftalkback?anum=204&lang=ru">--><b>&nbsp;talkback page&nbsp;</b><!--</a>-->
+   </td></tr></table>
+</td></tr></table>
+</center>
+
+<HR size="2" noshade>
+<!-- ARTICLE FOOT -->
+<CENTER><TABLE WIDTH="95%">
+<TR><TD ALIGN=CENTER BGCOLOR="#9999AA">
+<A HREF="https://www.linuxlib.ru/common/lfteam.html">Webpages maintained by the LinuxFocus Editor team</A>
+<BR><FONT COLOR="#FFFFFF">&copy; Philip de Groot, <a href="https://www.linuxlib.ru/common/copy.html">FDL</a> <BR><!--<a href="http://www.linuxfocus.org">-->LinuxFocus.org<!--</a>--></FONT>
+<BR><!--<a href="http://cgi.linuxfocus.org/cgi-bin/lfcomment?lang=ru&article=article204.shtml.htm" target="_TOP">-->Click here to report a fault or send a comment to LinuxFocus<!--</A>--><BR></TD>
+<TD BGCOLOR="#9999AA"><!-- TRANSLATION INFO -->
+<font size=2>Translation information:</font><TABLE>
+<tr><td><font size=2>nl</font></td>
+    <td><font size=2>-&gt;</font></td>
+    <td><font size=2>--</font></td>
+    <td><font size=2><a href="../cdn-cgi/l/email-protection.html#c6b6aeafaaafb6a186a7b3b2aea9b4b5e8aaafa8b3bea0a9a5b3b5e8a9b4a1"><FONT COLOR="#FFFFFF">Philip de Groot</FONT></a></font></td>
+</tr>
+<tr><td><font size=2>nl</font></td>
+    <td><font size=2>-&gt;</font></td>
+    <td><font size=2>en</font></td>
+    <td><font size=2><a href="../cdn-cgi/l/email-protection.html#a8d8c0c1c4c1d8cfe8c9dddcc0c7dadb86c4c1c6ddd0cec7cbdddb86c7dacf"><FONT COLOR="#FFFFFF">Philip de Groot</FONT></a></font></td>
+</tr>
+<tr><td><font size=2>en</font></td>
+    <td><font size=2>-&gt;</font></td>
+    <td><font size=2>ru</font></td>
+    <td><font size=2><a href="../cdn-cgi/l/email-protection.html#bbd0d2c9d2d7d7fbd7d2d5cec3ddd4d8cec895d4c9dc"><FONT COLOR="#FFFFFF">Kirill Poukhliakov</FONT></a></font></td>
+</tr>
+</TABLE></TD>
+</TR></TABLE></CENTER>
+<p><font size=1>2001-05-13, generated by lfparser version 2.8</font></p>
+<!-- 2pdaIgnoreStop -->
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

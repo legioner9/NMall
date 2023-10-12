@@ -1,0 +1,748 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>&#13;      Appendix A - Creating initrd.img file — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>The Linux Kernel HOWTO</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="other_formats.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="liloconf.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="create_initrd"
+></A
+>13. Appendix A - Creating initrd.img file</H1
+><P
+>&#13;      The
+      <EM
+>&#13;        initrd
+      </EM
+>
+      is the "initial ramdisk". It is enough files stored in a ramdisk to
+      store needed drivers . You need the drivers so that the kernel can mount
+      / and kick off init.
+    </P
+><P
+>&#13;      You can avoid this file 'initrd.img' and eliminate the need of
+      'initrd.img', if you build your scsi drivers right into the kernel,
+      instead of into modules. (Many persons recommend this).
+    </P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN910"
+></A
+>13.1. Using mkinitrd</H2
+><P
+>&#13;        The mkinitrd utility creates an initrd image in a single command. This
+        is command is peculiar to RedHat. There may be equivalent command of
+        mkinitrd in other distributions of Linux. This is very convenient
+        utility.
+      </P
+><P
+>&#13;        You can read the mkinitrd man page.
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	/sbin/mkinitrd --help   # Or simply type 'mkinitrd --help'
+	usage: mkinitrd [--version] [-v] [-f] [--preload &#60;module&#62;]
+	       [--omit-scsi-modules] [--omit-raid-modules] [--omit-lvm-modules]
+	       [--with=&#60;module&#62;] [--image-version] [--fstab=&#60;fstab&#62;] [--nocompress]
+	       [--builtin=&#60;module&#62;] [--nopivot] &#60;initrd-image&#62; &#60;kernel-version&#62;
+	       (example: mkinitrd /boot/initrd-2.2.5-15.img 2.2.5-15)
+	# Read the online manual page with .....
+	man mkinitrd
+	su - root
+	# The command below creates the initrd image file
+	mkinitrd  ./initrd-2.4.18-19.8.0custom.img   2.4.18-19.8.0custom
+	ls -l initrd-2.4.18-19.8.0custom.img
+	-rw-r--r--    1 root     root       127314 Mar 19 21:54 initrd-2.4.18-19.8.0custom.img
+	cp  ./initrd-2.4.18-19.8.0custom.img   /boot
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        See the following sections for the manual method of creating an initrd
+        image.
+      </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN917"
+></A
+>13.2. Kernel Docs</H2
+><P
+>&#13;        To create /boot/initrd.img see the documentation at
+        /usr/src/linux/Documentation/initrd.txt and see also
+        <!--<A
+HREF="http://www.tldp.org/HOWTO/mini/Loopback-Root-FS-3.html#ss3.3"
+TARGET="_top"
+>-->&#13;          Loopback-Root-mini-HOWTO
+        <!--</A
+>-->
+        .
+      </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN921"
+></A
+>13.3. Linuxman Book</H2
+><P
+>&#13;        A cut from
+        <!--<A
+HREF="http://www.linuxman.com.cy/rute/node1.html"
+TARGET="_top"
+>-->&#13;          "http://www.linuxman.com.cy/rute/node1.html"
+        <!--</A
+>-->
+        chapter 31.7.
+      </P
+><P
+>&#13;        SCSI Installation Complications and initrd
+      </P
+><P
+>&#13;        Some of the following descriptions may be difficult to understand
+        without knowledge of kernel modules explained in Chapter 42. You may
+        want to come back to it later.
+      </P
+><P
+>&#13;        Consider a system with zero IDE disks and one SCSI disk containing a
+        LINUX installation. There are BIOS interrupts to read the SCSI disk,
+        just as there were for the IDE, so LILO can happily access a kernel
+        image somewhere inside the SCSI partition. However, the kernel is
+        going to be lost without a kernel module [lsqb ]See Chapter 42. The
+        kernel doesn't support every possible kind of hardware out there all
+        by itself. It is actually divided into a main part (the kernel image
+        discussed in this chapter) and hundreds of modules (loadable parts
+        that reside in /lib/modules/) that support the many type of SCSI,
+        network, sound etc., peripheral devices.] that understands the
+        particular SCSI driver. So although the kernel can load and execute,
+        it won't be able to mount its root file system without loading a SCSI
+        module first. But the module itself resides in the root file system in
+        /lib/modules/. This is a tricky situation to solve and is done in one
+        of two ways: either (a) using a kernel with preenabled SCSI support or
+        (b) using what is known as an initrd preliminary root file system
+        image.
+      </P
+><P
+>&#13;        The first method is what I recommend. It's a straightforward (though
+        time-consuming) procedure to create a kernel with SCSI support for
+        your SCSI card built-in (and not in a separate module). Built-in SCSI
+        and network drivers will also autodetect cards most of the time,
+        allowing immediate access to the device--they will work without being
+        given any options [lsqb ]Discussed in Chapter 42.] and, most
+        importantly, without your having to read up on how to configure them.
+        This setup is known as compiled-in support for a hardware driver (as
+        opposed to module support for the driver). The resulting kernel image
+        will be larger by an amount equal to the size of module. Chapter 42
+        discusses such kernel compiles.
+      </P
+><P
+>&#13;        The second method is faster but trickier. LINUX supports what is known
+        as an initrd image ( initial rAM disk image). This is a small, +1.5
+        megabyte file system that is loaded by LILO and mounted by the kernel
+        instead of the real file system. The kernel mounts this file system as
+        a RAM disk, executes the file /linuxrc, and then only mounts the real
+        file system.
+      </P
+><P
+>&#13;        31.6 Creating an initrd Image
+      </P
+><P
+>&#13;        Start by creating a small file system. Make a directory [nbsp ]/initrd
+        and copy the following files into it.
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	drwxr-xr-x    7 root     root         1024 Sep 14 20:12 initrd/
+	drwxr-xr-x    2 root     root         1024 Sep 14 20:12 initrd/bin/
+	-rwxr-xr-x    1 root     root       436328 Sep 14 20:12 initrd/bin/insmod
+	-rwxr-xr-x    1 root     root       424680 Sep 14 20:12 initrd/bin/sash
+	drwxr-xr-x    2 root     root         1024 Sep 14 20:12 initrd/dev/
+	crw-r--r--    1 root     root       5,   1 Sep 14 20:12 initrd/dev/console
+	crw-r--r--    1 root     root       1,   3 Sep 14 20:12 initrd/dev/null
+	brw-r--r--    1 root     root       1,   1 Sep 14 20:12 initrd/dev/ram
+	crw-r--r--    1 root     root       4,   0 Sep 14 20:12 initrd/dev/systty
+	crw-r--r--    1 root     root       4,   1 Sep 14 20:12 initrd/dev/tty1
+	crw-r--r--    1 root     root       4,   1 Sep 14 20:12 initrd/dev/tty2
+	crw-r--r--    1 root     root       4,   1 Sep 14 20:12 initrd/dev/tty3
+	crw-r--r--    1 root     root       4,   1 Sep 14 20:12 initrd/dev/tty4
+	drwxr-xr-x    2 root     root         1024 Sep 14 20:12 initrd/etc/
+	drwxr-xr-x    2 root     root         1024 Sep 14 20:12 initrd/lib/
+	-rwxr-xr-x    1 root     root           76 Sep 14 20:12 initrd/linuxrc
+	drwxr-xr-x    2 root     root         1024 Sep 14 20:12 initrd/loopfs/
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        On my system, the file initrd/bin/insmod is the statically linked
+        [lsqb ]meaning it does not require shared libraries.] version copied
+        from /sbin/insmod.static--a member of the modutils-2.3.13 package.
+        initrd/bin/sash is a statically linked shell from the sash-3.4
+        package. You can recompile insmod from source if you don't have a
+        statically linked version. Alternatively, copy the needed DLLs from
+        /lib/ to initrd/lib/. (You can get the list of required DLLs by
+        running ldd /sbin/insmod. Don't forget to also copy symlinks and run
+        strip -s [lcub ]lib[rcub ] to reduce the size of the DLLs.)
+      </P
+><P
+>&#13;        Now copy into the initrd/lib/ directory the SCSI modules you require.
+        For example, if we have an Adaptec AIC-7850 SCSI adapter, we would
+        require the aic7xxx.o module from /lib/modules/[lcub ]version[rcub
+        ]/scsi/aic7xxx.o. Then, place it in the initrd/lib/ directory.
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	-rw-r--r--    1 root     root       129448 Sep 27  1999 initrd/lib/aic7xxx.o
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        The file initrd/linuxrc should contain a script to load all the
+        modules needed for the kernel to access the SCSI partition. In this
+        case, just the aic7xxx module [lsqb ] insmod can take options such as
+        the IRQ and IO-port for the device. See Chapter 42.]:
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	#!/bin/sash
+
+	aliasall
+
+	echo "Loading aic7xxx module"
+	insmod /lib/aic7xxx.o
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        Now double-check all your permissions and then chroot to the file
+        system for testing.
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	chroot ~/initrd /bin/sash
+	/linuxrc
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        Now, create a file system image similar to that in Section 19.9:
+        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	dd if=/dev/zero of=~/file-inird count=2500 bs=1024
+	losetup /dev/loop0 ~/file-inird
+	mke2fs /dev/loop0
+	mkdir ~/mnt
+	mount /dev/loop0 ~/mnt
+	cp -a initrd/* ~/mnt/
+	umount ~/mnt
+	losetup -d /dev/loop0
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        Finally, gzip the file system to an appropriately named file:
+        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	gzip -c ~/file-inird &#62; initrd-&#60;kernel-version&#62;
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        31.7 Modifying lilo.conf for initrd
+      </P
+><P
+>&#13;        Your lilo.conf file can be changed slightly to force use of an initrd
+        file system. Simply add the initrd option. For example:
+      </P
+><P
+>&#13;        <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>&#13;	boot=/dev/sda
+	prompt
+	timeout = 50
+	compact
+	vga = extended
+	linear
+	image = /boot/vmlinuz-2.2.17
+	        initrd = /boot/initrd-2.2.17
+	        label = linux
+	        root = /dev/sda1
+	        read-only
+        </PRE
+></FONT
+></TD
+></TR
+></TABLE
+>
+      </P
+><P
+>&#13;        Notice the use of the linear option. This is a BIOS trick that you can
+        read about in lilo(5). It is often necessary but can make SCSI disks
+        nonportable to different BIOSs (meaning that you will have to rerun
+        lilo if you move the disk to a different computer).
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="other_formats.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="https://www.linuxlib.ru/en/kern/index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="liloconf.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Other Formats of this Document</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Appendix B - Sample lilo.conf</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

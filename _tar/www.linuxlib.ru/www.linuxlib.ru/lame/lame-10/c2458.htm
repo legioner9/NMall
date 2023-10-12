@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Strategies for Keeping a Secure Server — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV CLASS="NAVHEADER">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TH COLSPAN="3" ALIGN="center">Linux Administration Made Easy</TH></TR>
+<TR><TD WIDTH="10%" ALIGN="left" VALIGN="bottom"><A HREF="x2373.htm">Назад</A>
+</TD>
+<TD WIDTH="80%" ALIGN="center" VALIGN="bottom"></TD>
+<TD WIDTH="10%" ALIGN="right" VALIGN="bottom"><A HREF="c2583.htm">Вперед</A>
+</TD></TR></TABLE><HR ALIGN="LEFT" WIDTH="100%"></DIV>
+
+<DIV CLASS="CHAPTER"><H1><A NAME="SECURITY">Глава 12. Стратегия безопасности
+сервера</A></H1>
+<P>Linux может считаться более безопасной, чем другие версии UNIX. Дело в
+том, что по мере роста популярности Linux она становится все более интересной
+для хакеров, что приводит к выявлению дырок в защите и их ликвидации.
+Открытость системы также весьма способствует процессу устранения ошибок.</P>
+
+<P>Я не специалист по защите системы, но я имел дело с большинством проблем с
+ней и я дам советы по обходу наиболее распространенных проблем. Хотя
+обновление регулярное обновление системы не дает гарантию, что защиту не
+обойдут, все же шансы хакеров сильно уменьшатся.</P>
+
+<P>Хотя есть немало способов ворваться в систему (например, IMAP daemon
+exploit), основная угроза исходит все же <I CLASS="EMPHASIS">изнутри</I>.
+Связей с внешним миром не так и много, а вот в системе есть
+<I CLASS="EMPHASIS">множество</I> команд и утилит, в которых могут быть
+ошибки, которые могут использоваться хакером.</P>
+
+<P>По этой причине я избегаю открывать пользователям доступ к оболочке, если
+он не абсолютно необходим. Даже если Вы рассматриваете ваших пользователей
+как полностью заслуживающих доверия, для взлома системы требуется только,
+чтобы один из этих пользователей имел слабый пароль. Получив в систему хакер
+непременно будет искать в ней еще дырки (замечание переводчика: точно, я сам
+так делаю).</P>
+
+<P>Однако, можно успешно противостоять таким атакам. Детальное рассмотрение
+проблем защиты выходит за рамки данного руководства, так что здесь
+перечислено только то, что необходимо делать для уменьшения риска:</P>
+
+<P></P><UL><LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Обновляйте системные утилиты, программы и ядро:</FONT>
+При обновлении Вы будете уверены, что в системе нет старых программ, дырки в
+которых широко известны (замечание переводчика: в свое время был сервер в
+нашем университете, на котором стояла система, минимум трехлетней давности.
+Я делал с этим сервером много интересных вещей, а еще больше мог бы сделать,
+если бы хотел. Потом систему обновили, и 90% моих люков закрылись.).
+Подробности по поводу обновления системы см. <A HREF="x491.htm">в разделе
+<I>Скачивание и установка обновлений для Red Hat</I> главы 4</A> и
+<A HREF="x1880.htm">в разделе <I>Стратегии обновления и поддержки системы</I>
+главы 10</A>.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Shadow passwords:</FONT>
+Лучше всего их использовать, благо переход к ним <I CLASS="EMPHASIS">прост
+</I>! Подробности <A HREF="x822.htm">в разделе <I>Пароли в Linux &amp; формат
+файла Shadow</I> главы 6</A>.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Умное управление паролями:</FONT>
+Следите, чтобы пароли менялись регулярно и были надежными. Если используется
+несколькосерверов, не ставьте одинаковые пароли. Иначе хакеру понадобится
+вычислить пароль только один раз (замечание переводчика: если пользуетесь
+Windows, не ставьте в качестве пароля пользователя для входа в сеть Microsoft
+свой пароль для Linux: в Windows пароли пользователей вскрыть не проблема).
+</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Используйте secure shell (ssh):</FONT>
+Поставьте ``ssh'' вместо ``telnet''. Telnet передает все данные (и пароли
+тоже) открытым текстом и открытый порт для telnet будет первым местом, куда
+попробует залезть хакер (замечание переводчика: если на вашей рабочей
+станции кто-то поставил троян, перехватывающий ввод с клавиатуры, никакой
+``ssh'' не поможет.).</P>
+
+<P>Ssh предоставляет зашифрованный и сжатый обмен данными, что куда лучше
+telnet-связи. Можно запустить сервер ssh (для беззопасных входящих соединений)
+и клиент (для исходящих безопасных соединений) под Linux. Двоичный пакет RPM
+можно взять на
+<!--<A HREF="ftp://ftp.replay.com/pub/replay/redhat/i386" TARGET="_top">-->
+ftp://ftp.replay.com/pub/replay/redhat/i386<!--</A>-->. Новые версии постоянно
+выходят, так что следите за ними! Вам нужны следующие файлы:</P>
+
+<P></P><UL COMPACT="COMPACT"><LI STYLE="list-style-type: Bullet">
+<P><!--<A HREF="ftp://ftp.replay.com/pub/replay/redhat/i386/ssh-1.2.27-5i.i386.rpm" TARGET="_top">-->
+ssh-1.2.27-5i.i386.rpm<!--</A>-->. Основной пакет.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><!--<A HREF="ftp://ftp.replay.com/pub/replay/redhat/i386/ssh-clients-1.2.27-5i.i386.rpm" TARGET="_top">-->
+ssh-clients-1.2.27-5i.i386.rpm<!--</A>-->. Клиенты для исходящих соединений.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><!--<A HREF="ftp://ftp.replay.com/pub/replay/redhat/i386/ssh-extras-1.2.27-5i.i386.rpm" TARGET="_top">-->
+ssh-extras-1.2.27-5i.i386.rpm<!--</A>--> Некоторые удобные perl-скрипты.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><!--<A HREF="ftp://ftp.replay.com/pub/replay/redhat/i386/ssh-server-1.2.27-5i.i386.rpm" TARGET="_top">-->
+ssh-server-1.2.27-5i.i386.rpm<!--</A>--> Сервер для входящих соединений.</P></LI>
+</UL>
+
+<DIV CLASS="NOTE"><P></P>
+<TABLE CLASS="NOTE" WIDTH="90%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP">
+<IMG SRC="../images/note.gif" HSPACE="5" ALT="Note"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Замечание: RPM-файлы для SSH, перечисленные выше, международные версии.
+Если Вы проживаете в США или Канаде, Вы можете загрузить американские пакеты
+(которые могут иметь более сильные алгоритмы шифрования); эти пакеты имеют
+суффикс ``us'' вместо ``i'' после номера версии. Согласно американскому
+закону, <I CLASS="EMPHASIS">запрещено</I> экспортировать сильные
+crypto-программы вне США или Канады. Когда-нибудь Министерство юстиции США
+увидит, к чему привела такая ситуация и удалит это глупое ограничение.
+(Red Hat не включает SSH из-за этого, и <I CLASS="EMPHASIS">все</I> мы
+страдаем). Замечание переводчика: на сегодняшний день ограничения на экспорт
+криптосистем из США уже сняты.</P></TD></TR></TABLE></DIV>
+
+<P>Есть клиенты ssh и под Windows, что дает пользователям данной системы
+возможность соединиться по защищенному протоколу с сервером. Клиенты:</P>
+
+<P></P><DL><DT>&#8220;TeraTerm Pro&#8221; клиент</DT>
+<DD><P><!--<A HREF="http://hp.vector.co.jp/authors/VA002416/teraterm.html" TARGET="_top">-->
+http://hp.vector.co.jp/authors/VA002416/teraterm.html<!--</A>--></P></DD>
+
+<DT>&#8220;TTSSH&#8221; клиент</DT>
+<DD><P><!--<A HREF="http://www.zip.com.au/roca/download.html" TARGET="_top">-->
+http://www.zip.com.au/roca/download.html<!--</A>--></P></DD>
+
+<DT>&#8220;Cryptlib&#8221; клиент</DT>
+<DD><P><!--<A HREF="http://www.doc.ic.ac.uk/ci2/ssh" TARGET="_top">-->
+http://www.doc.ic.ac.uk/ci2/ssh<!--</A>--></P></DD>
+
+<DT>&#8220;Putty&#8221; клиент</DT>
+<DD><P><!--<A HREF="http://www.chiark.greenend.org.uk/sgtatham/putty.html" TARGET="_top">-->
+http://www.chiark.greenend.org.uk/sgtatham/putty.html<!--</A>--></P></DD></DL>
+
+<DIV CLASS="NOTE"><P></P>
+<TABLE CLASS="NOTE" WIDTH="90%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP">
+<IMG SRC="../images/note.gif" HSPACE="5" ALT="Note"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Замечание: Если вы перешли на использование ssh, позаботьтесь о его
+установке на <I CLASS="EMPHASIS">всех</I> ваших серверах. Наличие пяти
+защищенных и одного незащищенного сервера ничего хорошего не принесет,
+особенно если вы используете <I CLASS="EMPHASIS">один и тот же</I> пароль на
+нескольких серверах.</P></TD></TR></TABLE></DIV></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Ограничьте доступ к внешним сервисам:</FONT>
+Отредактируейте файлы ``<TT CLASS="LITERAL">/etc/hosts.allow</TT>'' и
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/hosts.deny</TT></TT>'' и
+ограничьте доступ с удаленных систем. В приведенном ниже примере
+ограничивается доступ к telnet и ftp. Сначала правим файл
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/hosts.allow</TT></TT>'':</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="PROGRAMLISTING">
+# hosts.allow
+in.telnetd: 123.12.41., 126.27.18., .mydomain.name, .another.name
+in.ftpd: 123.12.41., 126.27.18., .mydomain.name, .another.name
+</PRE></TD></TR></TABLE>
+
+<P>Теперь доступ по telnet и ftp разрешен для всех машин в подсетях IP класса
+C 123.12.41.* и 126.27.18.*, и всех машин внутри доменов mydomain.name и
+another.name.</P>
+
+<P>Теперь поправим файл ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">
+/etc/hosts.deny</TT></TT>'':</P>
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="PROGRAMLISTING">
+# hosts.deny
+in.telnetd: ALL
+in.ftpd: ALL
+</PRE></TD></TR></TABLE></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Запретите все лишние сервисы:</FONT>
+Подправьте файл ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/inetd.conf
+</TT></TT>'', и запретите (используйте символ комментария
+``<TT CLASS="LITERAL">#</TT>'') все сервисы, в которых нет необходимости
+(если используете ssh, можно закрыть даже сервис ``telnet''). После правки
+файла наберите от имени root: ``<TT CLASS="LITERAL">
+/etc/rc.d/init.d/inet restart</TT>'' для перезапуска демона inetd с новыми
+параметрами сервисов.</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Поставьте систему проверки безопасности:</FONT>
+Попробуйте пакет ``Tripwire'' (см. <!--<A HREF="http://www.tripwiresecurity.com"
+TARGET="_top">-->http://www.tripwiresecurity.com<!--</A>-->) который может обнаруживать
+попытки атаки, и пакет ``Abacus Sentry'' (см.
+<!--<A HREF="http://www.psionic.com/abacus" TARGET="_top">-->
+http://www.psionic.com/abacus<!--</A>-->), который может помочь в их отражении.</P>
+</LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><FONT COLOR="RED">Будьте внимательны:</FONT>
+Время от времени перетрясайте систему на предмет всяких несоответствий
+(записи в файле паролей, странности в системных журналах, подозрительные
+процессы в системе, странные настройки программ). Не пренебрегайте
+сообщениями пользователей о странных явлениях в системе (замечание
+переводчика: известный мне администратор пренебрег моим предупреждением о
+том, что в сети университета работает какой-то хакер, за что был быстро и
+строго наказан тем самым хакером...).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P>Устанавливайте и обновляйте системные утилиты, используя
+``<TT CLASS="LITERAL">RPM</TT>'', вы можете хотя бы проверить целостность
+пакета командой:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>
+rpm --verify -a &#62; /tmp/rpm-audit.txt
+</B></TT></PRE></TD></TR></TABLE>
+<P>Данная команда проверит базу данных RPM вашей системы и покажет какие
+файлы изменились. Например:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="SCREEN">
+S.5....T   /bin/ls
+S.5....T   /usr/bin/du
+......G.   /dev/tty5
+.....U..   /dev/vcs5
+.....U..   /dev/vcsa5
+S.5....T c /etc/lynx.cfg
+S.5....T c /etc/sendmail.cf
+
+</PRE></TD></TR></TABLE>
+<P>В данном примере есть список из семи файлов, четыре из которых изменились.
+Краткая проверка покажет законны ли изменения в файлах <TT CLASS="FILENAME">
+/etc/lynx.cfg</TT> и <TT CLASS="FILENAME">/etc/sendmail.cf</TT>.</P>
+
+<P>Однако, заметьте, что изменились два <I CLASS="EMPHASIS">исполняемых</I>
+файла. С чего бы вдруг? Причем, они очень часто используются: это же команды
+``ls'' и ``du''. Вероятней всего, это троянцы. Восстановление их из резервной
+копии или пакета RPM избавит от троянцев.</P>
+
+<P>(Подробно ``<TT CLASS="LITERAL">RPM</TT>'' рассмотрен
+<A HREF="c1795.htm#USING-RPM">в разделе <I>Использование Red Hat Package
+Manager (RPM)</I> главы 10</A>.)</P></LI></UL>
+
+<P>По поводу безопасности системы посмотрите хороший ресурс &#8220;Securing
+RedHat 5.x&#8221; доступный на
+<!--<A HREF="http://redhat-security.ens.utulsa.edu" TARGET="_top">-->
+http://redhat-security.ens.utulsa.edu<!--</A>-->. Еще один отличный сайт по Linux
+crypto и смежному софту находится на
+<!--<A HREF="http://replay.com/redhat" TARGET="_top">-->
+http://replay.com/redhat<!--</A>-->.</P></DIV>
+
+<DIV CLASS="NAVFOOTER"><HR ALIGN="LEFT" WIDTH="100%">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top"><A HREF="x2373.htm">Назад</A>
+</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="book1.htm">Оглавление
+</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top"><A HREF="c2583.htm">Вперед</A>
+</TD></TR>
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top">Server Migration and
+Scalability Issues</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top">&nbsp;</TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top">Help! Trouble in Paradise!</TD>
+</TR></TABLE></DIV>
+
+  </div>
+</div>
+</body>
+</html>

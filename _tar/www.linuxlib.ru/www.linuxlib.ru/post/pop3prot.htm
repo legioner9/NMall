@@ -1,0 +1,473 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Протокол POP3 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<A name=top></A>
+<h1>Протокол POP3</h1>
+
+<P>Post Office Protocol (POP) - протокол доставки почты
+пользователю из почтового ящика <I>почтового сервера РОР</I>.
+Многие концепции, принципы и понятия протокола POP выглядят и
+функционируют подобно SMTP. Команды POP практически идентичны
+командам SMTP, отличаясь в некоторых деталях. На рис.7
+изображена модель клиент-сервер по протоколу POP. Сервер POP
+находится между агентом пользователя и почтовыми ящиками.</P>
+<P><IMG src="pop3prot.files/mailfig7.gif" align=center></P>
+<P>В настоящее время существуют две версии протокола POP -
+РОР2 и РОРЗ, обладающими примерно одинаковыми возможностями,
+однако несовместимыми друг с другом. Дело в том, что у РОР2 и
+РОРЗ разные номера портов протокола. Между ними отсутствует
+связь, аналогичная связи между SMTP и ESMTP. Протокол РОРЗ не
+является расширением или модификацией РОР2 - это совершенно
+другой протокол. РОР2 определен в документе RFC 937 (Post
+Office Protocol-Version 2, Butler, et al, 1985), a РОРЗ - в
+RFC 1225 (Post Office Protocol-Version 3, Rose, 1991). Далее
+кратко рассмотрим POP вообще и более подробно - РОРЗ. PОРЗ
+разработан с учетом специфики доставки почты на персональные
+компьютеры и имеет соответствующие операции для этого.</P>
+<P align=center><B>&nbsp;Назначение протокола РОРЗ</B></P>
+<P>Ранее почтовые сообщения большинства сетей доставлялись
+непосредственно от одного компьютера к другому. И если
+пользователь часто менял рабочие компьютеры или один компьютер
+принадлежал нескольким пользователям, существовали
+определенные проблемы. В наши дни общепринята доставка
+сообщения не на компьютеры пользователя, а в специальные
+почтовые ящики <I>почтового сервера</I> организации, который
+круглосуточно работает (включен).</P>
+<P align=center><B>&nbsp;Описание протокола РОРЗ</B></P>
+<P>Конструкция протокола РОРЗ обеспечивает возможность
+пользователю обратиться к своему почтовому серверу и изъять
+накопившуюся для него почту. Пользователь может получить
+доступ к РОР-серверу из любой точки доступа к Интернет. При
+этом он должен запустить специальный почтовый агент (UA),
+работающий по протоколу РОРЗ, и настроить его для работы со
+своим почтовым сервером. Итак, во главе модели POP находится
+отдельный персональный компьютер, работающий исключительно в
+качестве клиента почтовой системы (сервера). Подчеркнем также,
+что сообщения доставляются клиенту по протоколу POP, а
+посылаются по-прежнему при помощи SMTP. То есть на компьютере
+пользователя существуют два отдельных агента-интерфейса к
+почтовой системе - доставки (POP) и отправки (SMTP).
+Разработчики протокола РОРЗ называет такую ситуацию
+<I>"раздельные агенты"</I> (split UA). Концепция раздельных
+агентов кратко обсуждается в спецификации РОРЗ.</P>
+<P>В протоколе РОРЗ оговорены три стадии процесса получения
+почты: авторизация, транзакция и обновление. После того как
+сервер и клиент РОРЗ установили соединение, начинается стадия
+авторизации. На стадии авторизации клиент идентифицирует себя
+для сервера. Если авторизация прошла успешно, сервер открывает
+почтовый ящик клиента и начинается стадия транзакции. В ней
+клиент либо запрашивает у сервера информацию (например, список
+почтовых сообщений), либо просит его совершить определенное
+действие (например, выдать почтовое сообщение). Наконец, на
+стадии обновления сеанс связи заканчивается. В табл.7
+перечислены команды протокола РОРЗ, обязательные для
+работающей в Интернет реализации минимальной конфигурации.</P>
+<P>Таблица 5. <I>Команды протокола POP версии 3 (для
+минимальной конфигурации)</I></P>
+<TABLE cellSpacing=1 cellPadding=7 width="90%" border=1>
+<TBODY>
+<TR>
+<TD vAlign=top width="18%"><B>Команда</B></TD>
+<TD vAlign=top width="82%"><B>
+<P align=center>Описание</B></P></TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>USER</B></TT></TD>
+<TD vAlign=top width="82%">Идентифицирует пользователя с
+указанным именем</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>PASS</B></TT></TD>
+<TD vAlign=top width="82%">Указывает пароль для пары
+клиент-сервер</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>QUIT</B></TT></TD>
+<TD vAlign=top width="82%">Закрывает
+TCP-соединение</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>STAT</B></TT></TD>
+<TD vAlign=top width="82%">Сервер возвращает количество
+сообщений в почтовом ящике плюс размер почтового
+ящика</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>LIST</B></TT></TD>
+<TD vAlign=top width="82%">Сервер возвращает
+идентификаторы сообщений вместе с размерами сообщений
+(параметром команды может быть идентификатор
+сообщения)</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>RETR</B></TT></TD>
+<TD vAlign=top width="82%">Извлекает сообщение из
+почтового ящика (требуется указывать
+аргумент-идентификатор сообщения)</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>DELE</B></TT></TD>
+<TD vAlign=top width="82%">Отмечает сообщение для
+удаления (требуется указывать аргумент - идентификатор
+сообщения)</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>NOOP</B></TT></TD>
+<TD vAlign=top width="82%">Сервер возвращает
+положительный ответ, но не совершает никаких
+действий</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>LAST</B></TT></TD>
+<TD vAlign=top width="82%">Сервер возвращает наибольший
+номер сообщения из тех, к которым ранее уже
+обращались</TD></TR>
+<TR>
+<TD vAlign=top width="18%"><TT><B>RSET</B></TT></TD>
+<TD vAlign=top width="82%">Отменяет удаление сообщения,
+отмеченного ранее командой DELE</TD></TR></TBODY></TABLE>
+<P>В протоколе РОРЗ определено несколько команд, но на них
+дается только два ответа: +ОК (позитивный, аналогичен
+сообщению-подтверждению АСK) и -ERR (негативный, аналогичен
+сообщению "не подтверждено" NAK). Оба ответа подтверждают, что
+обращение к серверу произошло и что он вообще отвечает на
+команды. Как правило, за каждым ответом следует его
+содержательное словесное описание. В RFC 1225 есть образцы
+нескольких типичных сеансов РОРЗ. Сейчас мы рассмотрим
+несколько из них, что даст возможность уловить
+последовательность команд в обмене между сервером и
+клиентом.</P>
+<P align=center><B>&nbsp;Авторизация пользователя</B></P>
+<P>После того как программа установила TCP-соединение с портом
+протокола РОРЗ (официальный номер 110), необходимо послать
+команду USER с именем пользователя в качестве параметра. Если
+ответ сервера будет +ОК, нужно послать команду
+<TT><B>PASS</B></TT> с паролем этого пользователя:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: USER kcope ERVER: +ОК CLIENT: PASS secret SERVER:
++ОК kcope's maildrop has 2 messages (320 octets) (В почтовом
+ящике kcope есть 2 сообщения (320 байтов) ...)</TT></P>
+<P align=center>&nbsp;<B>&nbsp;Транзакции РОРЗ</B></P>
+<P>&nbsp;После того как стадия авторизации окончена, обмен
+переходит на стадию транзакции. В следующих примерах
+демонстрируется возможный обмен сообщениями на этой
+стадии.</P>
+<P>Команда <TT><B>STAT </B></TT>возвращает количество
+сообщений и количество байтов в сообщениях:</P>
+<P><TT>CLIENT: STAT<BR>SERVER: +ОК 2 320</TT></P>
+<P>Команда <TT><B>LIST</B></TT> (без параметра) возвращает
+список сообщений в почтовом ящике и их размеры:</P>
+<P>&nbsp;</P><PRE><TT>CLIENT: LIST
+SERVER: +ОК 2 messages (320 octets)
+SERVER: 1 120
+SERVER: 2 200
+SERVER: . ...</TT></PRE>
+<P>&nbsp;</P>
+<P>Команда <TT><B>LIST</B></TT> с параметром возвращает
+информацию о заданном сообщении:</P>
+<P>&nbsp;</P><PRE><TT>CLIENT: LIST 2
+SERVER: +ОК 2 200 ...
+CLIENT: LIST 3
+SERVER: -ERR no such message, only 2 messages in maildrop</TT></PRE>
+<P>&nbsp;</P>
+<P>Команда <TT><B>TOP</B></TT> возвращает заголовок, пустую
+строку и первые десять строк тела сообщения:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: TOP 10 SERVER: +ОК SERVER: &lt;the POP3 server
+sends the headers of the message,a blank line, and the first
+10 lines of the message body&gt; (сервер POP высылает
+заголовки сообщений, пустую строку и первые десять строк тела
+сообщения) SERVER: . ... CLIENT: TOP 100 SERVER: -ERR no such
+message</TT></P>
+<P>Команда <TT><B>NOOP</B></TT> не возвращает никакой полезной
+информации, за исключением позитивного ответа сервера. Однако
+позитивный ответ означает, что сервер находится в соединении с
+клиентом и ждет запросов:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: NOOP<BR>SERVER: +ОК</TT></P>
+<P>Следующие примеры показывают, как сервер POP3 выполняет
+действия. Например, команда <TT><B>RETR</B></TT> извлекает
+сообщение с указанным номером и помещает его в буфер местного
+UA:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: RETR 1 SERVER: +OK 120 octets SERVER: &lt;the POPS
+server sends the entire message here&gt; (РОРЗ-сервер высылает
+сообщение целиком) SERVER: . . . . . .</TT></P>
+<P>&nbsp;</P>
+<P>Команда <TT><B>DELE </B></TT>отмечает сообщение, которое
+нужно удалить:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: DELE 1</P>
+<P>SERVER: +OK message 1 deleted ... (сообщение 1 удалено)
+CLIENT: DELE 2 SERVER: -ERR message 2 already deleted
+сообщение 2 уже удалено)</TT></P>
+<P>Команда <TT><B>RSET </B></TT>снимает метки удаления со всех
+отмеченных ранее сообщений:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: RSET<BR>SERVER: +OK maildrop has 2 messages (320
+octets)<BR>(в почтовом ящике 2 сообщения (320 байтов)
+)</TT></P>
+<P>Как и следовало ожидать, команда <TT><B>QUIT</B></TT>
+закрывает соединение с сервером:</P>
+<P><TT>&nbsp;</P>
+<P>CLIENT: QUIT SERVER: +OK dewey POP3 server signing off
+CLIENT: QUIT SERVER: +OK dewey POP3 server signing off
+(maildrop empty) CLIENT: QUIT SERVER: +OK dewey POP3 server
+signing off (2 messages left)</TT></P>
+<P>&nbsp;</P>
+<P>Обратите внимание на то, что отмеченные для удаления
+сообщения на самом деле не удаляются до тех пор, пока не
+выдана команда <TT><B>QUIT</B></TT> и не началась стадия
+обновления. В любой момент в течение сеанса клиент имеет
+возможность выдать команду <TT><B>RSET</B></TT>, и все
+отмеченные для удаления сообщения будут восстановлены.</P>
+<P>Источник: Исходники.ру</P>
+
+
+  </div>
+</div>
+</body>
+</html>

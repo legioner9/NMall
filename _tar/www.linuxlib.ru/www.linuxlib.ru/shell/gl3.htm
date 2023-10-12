@@ -1,0 +1,799 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Интерпретатор командного языка shell. Управляющие конструкции — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<p>A.noneline { font-family: Arial, Serif; text-decoration: none;
+} FONT.arial { font-family: Arial, Serif; } TD.arial {
+font-family: Arial, Serif; } TH.arial { font-family: Arial,
+Serif; } PRE { font-family: Monospace; color: navy; } SAMP {
+font-family: Monospace; color: navy; } TT { font-family:
+Monospace; color: navy; } VAR { font-family: Monospace; color:
+navy; } </style> </p>
+<div align="center"><center>
+
+<table border="0" cellpadding="0" width="100%">
+    <tr>
+        <th colspan="2" class="arial"><hr noshade>
+        </th>
+    </tr>
+</table>
+</center></div>
+
+<p><a name="3"></a></p>
+
+<h3 align="center">3. Управляющие
+конструкции </h3>
+
+<p>Простая команда - это
+последовательность слов,
+разделенная пробелами. Первое
+слово является именем команды,
+которая будет выполняться, а
+остальные будут переданы ей как
+аргументы. Имя команды передается
+ей как аргумент номер 0 (т.е. имя
+команды является значением $0).
+Значение, возвращаемое простой
+командой - это ее статус завершения,
+если она завершилась нормально, или
+(восьмеричное) 200+статус, если она
+завершилась аварийно. </p>
+
+<p>Список - это последовательность
+одного или нескольких конвейеров,
+разделенных символами ;, &amp;, &amp;&amp;
+или || и быть может заканчивающаяся
+символом ; или &amp;. Из четырех
+указанных операций ; и &amp; имеют
+равные приоритеты, меньшие, чем у
+&amp;&amp; и ||. Приоритеты последних
+также равны между собой. Символ ;
+означает, что конвейеры будут
+выполняться последовательно, а &amp; -
+параллельно. Операция &amp;&amp; (||)
+означает, что список, следующий за
+ней будет выполняться лишь в том
+случае, если код завершения
+предыдущего конвейера нулевой
+(ненулевой). </p>
+
+<p>Команда - это либо простая
+команда, либо одна из управляющих
+конструкций. Кодом завершения
+команды является код завершения ее
+последней простой команды. <a name="3_1"></a>
+</p>
+
+<h4>3.1. Цикл ДЛЯ</h4>
+
+<pre>
+        for &lt;переменная&gt; [ in &lt;набор&gt; ]
+        do
+        &lt;список&gt;
+        done
+</pre>
+
+<p>Если часть in &lt;набор&gt; опущена, то
+это означает in &quot;$@&quot; ( то есть in $1
+$2 ... $n). Пример. Вывести на экран все
+фортранные файлы текущей
+библиотеки: </p>
+
+<pre>
+        for f in *.for
+        do
+        cat $f
+        done
+</pre>
+
+<h4>3.2. Оператор выбора</h4>
+
+<pre>
+        case $&lt;переменная&gt; in
+                &lt;шаблон&gt; | &lt;шаблон&gt;... ) &lt;список&gt; ;;
+                . . .
+        esac
+</pre>
+
+<p>Оператор выбора выполняет
+&lt;список&gt;, соответствующий
+первому &lt;шаблону&gt;, которому
+удовлетворяет &lt;переменная&gt;.
+Форма шаблона та же, что и
+используемая для генерации имен
+файлов. Часть | шаблон... может
+отсутствовать. </p>
+
+<p>Пример. Определить флаги и
+откомпилировать все указанные
+файлы. </p>
+
+<pre>
+#       инициализировать флаг
+flag=
+#       повторять для каждого аргумента
+for a
+do
+        case $a in
+                # об(r)единить флаги, разделив их пробелами
+                -[ocSO]) flag=$flag' ' $a ;;
+                     -*) echo 'unknown flag $a' ;;
+                # компилировать каждый исходный файл и сбросить флаги
+                    *.c) cc $flag $a; flag= ;;
+                    *.s) as $flag $a; flag= ;;
+                    *.f) f77 $flag $a; flag= ;;
+                # неверный аргумент
+                      *) echo 'unexpected argument $a' ;;
+        esac
+done
+</pre>
+
+<h4>3.3. Условный оператор.</h4>
+
+<pre>
+        if &lt;список1&gt;
+        then
+        &lt;список2&gt;
+      [ elif &lt;список3&gt;
+        then
+        &lt;список4&gt; ]
+        . . .
+      [ else
+        &lt;список5&gt; ]
+        fi
+</pre>
+
+<p>Выполняется &lt;список1&gt; и, если
+код его завершения 0, то выполняется
+&lt;список2&gt;, иначе - &lt;список3&gt; и,
+если и его код завершения 0, то
+выполняется &lt;список4&gt;. Если же
+это не так, то выполняется
+&lt;список5&gt;. Части elif и else могут
+отсутствовать. <a name="3_4"></a> </p>
+
+<h4>3.4. Цикл ПОКА</h4>
+
+<pre>
+        while &lt;список1&gt;
+        do
+        &lt;список2&gt;
+        done
+</pre>
+
+<p>До тех пор, пока код завершения
+последней команды &lt;списка1&gt; есть
+0, выполняются команды &lt;списка2&gt;.
+При замене служебного слова while на
+until условие выхода из цикла
+меняется на противоположное. </p>
+
+<p>В качестве одной из команд
+&lt;списка1&gt; может быть команда true
+(false). По этой команде не выполняется
+никаких действий, а код завершения
+устанавливается 0 (-1). Эти команды
+применяются для организации
+бесконечных циклов. Выход из такого
+цикла можно осуществить лишь по
+команде break (см. Специальные
+команды). <a name="3_5"></a> </p>
+
+<h4>3.5. Функции</h4>
+
+<pre>
+        &lt;имя&gt; () {
+                  &lt;список&gt;;
+                 }
+</pre>
+
+<p>Определяется функция с именем
+&lt;имя&gt;. Тело функции - &lt;список&gt;,
+заключенный между { и }. <a name="3_6"></a> </p>
+
+<h4>3.6. Зарезервированные слова</h4>
+
+<p>Следующие слова являются
+зарезервированными: </p>
+
+<pre>
+   if      then    else    elif    fi
+   case    in      esac    { }
+   for     while   until   do      done
+</pre>
+
+<h4>3.7. Специальные команды</h4>
+
+<p>Как правило, для выполнения
+каждой команды shell порождает
+отдельный процесс. Специальные
+команды отличаются тем, что они
+встроены в shell и выполняются в
+рамках текущего процесса. </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">: </td>
+        <td valign="top" colspan="2">Пустая команда.
+        Возвращает нулевой код
+        завершения. </td>
+    </tr>
+    <tr>
+        <td valign="top">. file </td>
+        <td valign="top" colspan="2">Shell читает и
+        выполняет команды из файла file,
+        затем завершается; при поиске
+        file используется список поиска
+        $PATH. </td>
+    </tr>
+    <tr>
+        <td valign="top">break [n] </td>
+        <td valign="top" colspan="2">Выход из
+        внутреннего for или while цикла;
+        если указано n, то выход из n
+        внутренних циклов. </td>
+    </tr>
+    <tr>
+        <td valign="top">continue [n] </td>
+        <td valign="top" colspan="2">Перейти к
+        следующей итерации
+        внутреннего for или while цикла;
+        если указано n, то переход к
+        следующей итерации n-ого цикла. </td>
+    </tr>
+    <tr>
+        <td valign="top">cd [ &lt;аргумент&gt; ] </td>
+        <td valign="top" colspan="2">Сменить
+        текущую директорию на
+        директорию &lt;аргумент&gt;. По
+        умолчанию используется
+        значение HOME. </td>
+    </tr>
+    <tr>
+        <td valign="top">echo [ &lt;арг&gt; ... ] </td>
+        <td valign="top" colspan="2">Выводит свои
+        аргументы в стандартный вывод,
+        разделяя их пробелами. </td>
+    </tr>
+    <tr>
+        <td valign="top">eval [ &lt;арг&gt; ... ] </td>
+        <td valign="top" colspan="2">Аргументы
+        читаются, как если бы они
+        поступали из стандартного
+        ввода и рассматриваются как
+        команды, которые тут же и
+        выполняются. </td>
+    </tr>
+    <tr>
+        <td valign="top">exec [ &lt;арг&gt; ... ] </td>
+        <td valign="top" colspan="2">Аргументы
+        рассматриваются как команды
+        shell'а и тут же выполняются, но
+        при этом не создается нового
+        процесса. В качестве
+        аргументов могут быть указаны
+        направления ввода-вывода и,
+        если нет никаких других
+        аргументов, то будет изменено
+        лишь направление ввода-вывода
+        текущей программы. </td>
+    </tr>
+    <tr>
+        <td valign="top">exit [ n ] </td>
+        <td valign="top" colspan="2">Завершение
+        выполнения shell'а с кодом
+        завершения n. Если n опущено, то
+        кодом завершения будет код
+        завершения последней
+        выполненной команды (конец
+        файла также приводит к
+        завершению выполнения). </td>
+    </tr>
+    <tr>
+        <td valign="top">export [ &lt;переменная&gt;
+        ... ] </td>
+        <td valign="top" colspan="2">Данные
+        переменные отмечаются для
+        автоматического экспорта в
+        окружение (см. Окружение)
+        выполняемых команд. Если
+        аргументы не указаны, то
+        выводится список всех
+        экспортируемых переменных.
+        Имена функций не могут
+        экспортироваться. </td>
+    </tr>
+    <tr>
+        <td valign="top">hash [ -r ] [ &lt;команда&gt; ...
+        ] </td>
+        <td valign="top" colspan="2">Для каждой из
+        указанных команд определяется
+        и запоминается путь поиска.
+        Опция -r удаляет все
+        запомненные данные. Если не
+        указан ни один аргумент, то
+        выводится информация о
+        запомненных командах: hits -
+        количество обращений shell'а к
+        данной команде; cost - объем
+        работы для обнаружения команды
+        в списке поиска; command - полное
+        имя команды. В некоторых
+        ситуациях происходит
+        перевычисление запомненных
+        данных, что отмечается значком
+        * в поле hits. </td>
+    </tr>
+    <tr>
+        <td valign="top">pwd </td>
+        <td valign="top">Выводит имя текущей
+        директории. </td>
+    </tr>
+    <tr>
+        <td valign="top">read [ &lt;переменная&gt; ...
+        ] </td>
+        <td valign="top" colspan="2">Читается из
+        стандартного ввода одна
+        строка; первое ее слово
+        присваивается первой
+        переменной, второе - второй и
+        т.д., причем все оставшиеся
+        слова присваиваются последней
+        переменной. </td>
+    </tr>
+    <tr>
+        <td valign="top">readonly [ &lt;переменная&gt;
+        ... ] </td>
+        <td valign="top" colspan="2">Запрещается
+        изменение значений указанных
+        переменных. Если аргумент не
+        указан , то выводится
+        информация обо всех переменных
+        типа readonly. </td>
+    </tr>
+    <tr>
+        <td valign="top">return [ n ] </td>
+        <td valign="top">Выход из функции с
+        кодом завершения n. Если n
+        опущено, то кодом завершения
+        будет код завершения последней
+        выполненной команды. </td>
+    </tr>
+    <tr>
+        <td valign="top">set [ --aefkntuvx [ &lt;арг&gt; ... ]
+        ] </td>
+        <td valign="top" colspan="2">Команда
+        устанавливает следующие
+        режимы: </td>
+    </tr>
+    <tr>
+        <td valign="top">-a </td>
+        <td valign="top">отметить переменные,
+        которые были изменены или
+        созданы, как переменные
+        окружения (см. Окружение) </td>
+    </tr>
+    <tr>
+        <td valign="top">-e </td>
+        <td valign="top">если код завершения
+        команды ненулевой, то
+        немедленно завершить
+        выполнение shell'а </td>
+    </tr>
+    <tr>
+        <td valign="top">-f </td>
+        <td valign="top">запретить генерацию
+        имен файлов </td>
+    </tr>
+    <tr>
+        <td valign="top">-k </td>
+        <td valign="top">все переменные с
+        именем помещаются в окружение
+        команды, а не только те, что
+        предшествуют имени команды (см.
+        Окружение) </td>
+    </tr>
+    <tr>
+        <td valign="top">-n </td>
+        <td valign="top">читать команды, но не
+        выполнять их </td>
+    </tr>
+    <tr>
+        <td valign="top">-t </td>
+        <td valign="top">завершение shell'а после
+        ввода и выполнения одной
+        команды </td>
+    </tr>
+    <tr>
+        <td valign="top">-u </td>
+        <td valign="top">при подстановке
+        рассматривать неустановленные
+        переменные как ошибки </td>
+    </tr>
+    <tr>
+        <td valign="top">-v </td>
+        <td valign="top">вывести вводимые
+        строки сразу после их ввода </td>
+    </tr>
+    <tr>
+        <td valign="top">-x </td>
+        <td valign="top">вывести команды и их
+        аргументы перед их выполнением
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">-- </td>
+        <td valign="top">не изменяет флаги,
+        полезен для присваивания
+        позиционным переменным новых
+        значений. </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td colspan="2">При указании + вместо -
+        каждый из флагов устанавливает
+        противоположный режим. Набор
+        текущих флагов есть значение
+        переменной $-. &lt;арг&gt; - это
+        значения, которые будут
+        присвоены позиционным
+        переменным $1, $2 и т.д. Если все
+        аргументы опущены, выводятся
+        значения всех переменных. </td>
+    </tr>
+    <tr>
+        <td valign="top">shift [ n ] </td>
+        <td valign="top" colspan="2">Позиционные
+        переменные, начиная с $(n+1),
+        переименовываются в $1 и т.д. По
+        умолчанию n=1. </td>
+    </tr>
+    <tr>
+        <td valign="top">test </td>
+        <td valign="top" colspan="2">вычисляет
+        условные выражения (см.
+        Дополнительные сведения. Test ) </td>
+    </tr>
+    <tr>
+        <td valign="top">trap [ &lt;арг&gt; ] [ n ] ... </td>
+        <td valign="top" colspan="2">Команда
+        &lt;арг&gt; будет выполнена, когда
+        shell получит сигнал n (см.
+        Сигналы). (Надо заметить, что
+        &lt;арг&gt; проверяется при
+        установке прерывания и при
+        получении сигнала). Команды
+        выполняются по порядку номеров
+        сигналов. Любая попытка
+        установить сигнал,
+        игнорируемый данным процессом,
+        не обрабатывается. Попытка
+        прерывания по сигналу 11 (segmentation
+        violation) приводит к ошибке. Если
+        &lt;арг&gt; опущен, то все
+        прерывания устанавливаются в
+        их начальные значения. Если
+        &lt;арг&gt; есть пустая строка, то
+        этот сигнал игнорируется shell'ом
+        и вызываемыми им программами.
+        Если n=0, то &lt;арг&gt; выполняется
+        при выходе из shell'а. Trap без
+        аргументов выводит список
+        команд, связанных с каждым
+        сигналом. </td>
+    </tr>
+    <tr>
+        <td valign="top">type [ &lt;имя&gt; ... ] </td>
+        <td valign="top" colspan="2">Для каждого
+        имени показывает, как оно будет
+        интерпретироваться при
+        использовании в качестве имени
+        команды: как внутренняя
+        команда shell'а, как имя файла или
+        же такого файла нет вообще. </td>
+    </tr>
+    <tr>
+        <td valign="top">ulimit [ -f ] [ n ] </td>
+        <td valign="top" colspan="2">Устанавливает
+        размер файла в n блоков; -f -
+        устанавливает размер файла,
+        который может быть записан
+        процессом-потомком (читать
+        можно любые файлы). Без
+        аргументов - выводит текущий
+        размер. </td>
+    </tr>
+    <tr>
+        <td valign="top">umask [ nnn ] </td>
+        <td valign="top" colspan="2">Пользовательская
+        маска создания файлов
+        изменяется на nnn. Если nnn
+        опущено, то выводится текущее
+        значение маски. Пример: после
+        команды umask 755 будут
+        создаваться файлы, которые
+        владелец сможет читать, писать
+        и выполнять, а все остальные -
+        только читать и выполнять. </td>
+    </tr>
+    <tr>
+        <td valign="top">unset [ &lt;имя&gt; ... ] </td>
+        <td valign="top" colspan="2">Для каждого
+        имени удаляет соответствующую
+        переменную или функцию.
+        Переменные PATH, PS1, PS2 и IFS не
+        могут быть удалены. </td>
+    </tr>
+    <tr>
+        <td valign="top">wait [ n ] </td>
+        <td valign="top" colspan="2">Ждет
+        завершения указанного
+        процесса и выводит код его
+        завершения. Если n не указано,
+        то ожидается завершения всех
+        активных процессов-потомков и
+        возвращается код завершения 0. </td>
+    </tr>
+</table>
+
+<p align="center"><a href="gl2.htm"><font size="2">Назад</font></a><font
+size="2"> | </font><a href="index.htm"><font size="2">Содержание</font></a><font
+size="2"> | </font><a href="gl4.htm"><font size="2">Вперед</font></a></p>
+
+<hr noshade>
+
+  </div>
+</div>
+</body>
+</html>

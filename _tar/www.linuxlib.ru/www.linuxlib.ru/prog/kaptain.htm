@@ -1,0 +1,606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>[lg64]: Paul Evans - Система создания диалогов Kaptain — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="index.htm#gl">графические библиотеки</a> |
+    <A HREF="index.htm#tcl">Tcl</a> |
+    <A HREF="index.htm#perl">Perl</a> |
+    <A HREF="index.htm#php">PHP</a> |
+    <A HREF="index.htm#java">Java &amp; C#</a> |
+    <A HREF="index.htm#dbms">СУБД</a> |
+    <A HREF="index.htm#cvs">CVS</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+      <HR noShade SIZE=2>
+      <B>Система создания диалогов Kaptain </B><BR>
+      <P>&nbsp; Автор: © <A href="../cdn-cgi/l/email-protection.html#cbbbaebdaaa5b88ba8aabfa3a4a7a2a8e5a4b9ac">Paul Evans</A>
+      <BR>Перевод: © Александр Михайлов.
+      <HR noShade SIZE=2>
+
+      <P>
+      <P><I>``В чём действительно нуждается Линукс, так это в ...''</I> таково
+      начало довольно часто встречающейся фразы, которая обычно заканчивается
+      так <I>``графическом интерфейсе для старых приложений командной строки.''
+      </I>Цитируя одного редактора журнала: <I>``Конечно, Линукс нуждается не
+      просто в диалогах, но диалогах которые могут показывать вам опции
+      командной строки генерируемые ими, так, чтобы вы могли понять что делает
+      та или иная опция.''</I> От себя могу добавить, что было бы неплохо, если
+      бы такие диалоги было легко создавать, чтобы большее число людей захотело
+      сделать это. </P>
+      <H2>Что может сделать для вас Kaptain ?</H2>
+      <P><!--<A href="http://kaptain.sourceforge.net/" name=Kaptain>-->Kaptain<!--</A>-->
+      может смешивать различные типы элементов управления в современно
+      выглядящий диалог, который создаётся на основе текстового файла. Эта
+      программа возмёт на себя заботу о выборе типа элементов управления и их
+      размещении. Вы можете даже сводить виджеты в таблицы и создавать вложенные
+      диалоги. И, что самое важное, Kaptain может выводить генерируемые им
+      команды в консоль, это полезно обучающих целям (или чтобы
+      поэкспериментировать в своё удовольствие). Он также поддерживает
+      контекстные подсказки и имеет функцию WhatsThis (ЧтоЭто), чтобы помочь
+      вам. Вы даже можете использовать его как часть конвейера и создавать
+      необходимую команду на лету.
+      <P>Линукс полон мощных утилит командной строки, таких как <B>enscript</B>
+      и <B>mpage</B>, но, даже если бы вы были их активным пользователем, вы бы
+      никогда не смогли запомнить все их ключи и опции. <B>Kaptain</B> просто
+      идеален для создания диалогов содержащих множество флажков (checkboxes),
+      инкрементных регуляторов (spinners) или комбинированных списков (combos) и
+      т.д. Также с помощью него очень удобно создавать скрипты для
+      преобразования файлов. Я сконструировал множество, эээ... <I>интересно</I>
+      выглядивших конвейеров (pipe) для преобразования графических, звуковых и
+      текстовых форматов. Последнее требует совсем немного программирования на
+      bash, до тех пор пока вам не потребуется изменять какие либо опции для
+      команд. К тому времени как вы напишите скрипт поддерживающий все опции ...
+      вам скорее всего придётся писать man страницу для него. </P><A
+      href="kaptain.files/enscript1.gif"><IMG height=248
+      alt="изображение диалога для enscript, сведённого в таблицу" hspace=10
+      src="kaptain.files/enscript1.gif" width=250 align=right vspace=10></A>
+<BR>
+      <P>Я бы не начал писать это, если бы <!--<A
+      href="http://kaptain.sourceforge.net/" name=kaptain>-->Kaptain<!--</A>--> не мог
+      делать всё вышеописанное, но если бы я сказал что это было просто для
+      <I>меня</I>, я бы соврал. Я специально выделил "меня" в предыдущем
+      предложении: я никогда не писал ничего объектно-ориентированного раньше.
+      Если вы писали, то я уверен что ваше знакомство с <B>Kaptain</B> будет
+      легким. Но даже если вы не писали, не волнуйтесь. Я на своём опыте
+      доказал, что вы сможете начать писать скрипты для <B>Kaptain</B>, не
+      прилагая к этому особых усилий. </P>
+      <P>Если вы уже знакомы с объектно-ориентированным подходом, я предлагаю
+      вам просто загрузить программу и испытать её, я уверен что вы её полюбите.
+      На самом деле, это не ОО в обычном его понимании. Автор : <I>``взял идею
+      из Формальной Теории Языка (математика), где грамматические конструкции
+      образующие текст являются математическими объектами. Так что слова
+      терминал, нетерминал, хорошо известны в ФТЯ, но негде больше. Для тех кто
+      изучал подобные вещи, будет приятно увидеть то, с чем они хорошо знакомы,
+      для прочих это всего лишь несколько новых слов. BTW, YACC также используют
+      Контекстно-Независимые грамматические конструкции. </I>'' </P>
+      <P>Это изображение уменьшенная версия скриншота диалога для
+      <B>enscript</B>. Вы можете щелкнуть на нём, чтобы увеличить. </P>
+      <P>Даже если вы не собираетесь писать что либо, вам всё равно стоит
+      скачать <B>Kaptain</B>, т.к. в его дистрибутив (около 400Кб) входит
+      множество скриптов-примеров:
+      <UL>
+        <LI>arping
+        <LI>crypt
+        <LI>curl
+        <LI>enscript
+        <LI>find
+        <LI>finger
+        <LI>grep
+        <LI>indent
+        <LI>ls
+        <LI>nslookup
+        <LI>open
+        <LI>ping
+        <LI>procmail
+        <LI>tar
+        <LI>weblint
+        <LI>whois
+        <LI>zangband </LI></UL>После компиляции, бинарный файл занимает около
+      100Кб.
+      <P></P>
+      <P>Теперь я должен напомнить что никогда раньше не занимался написанием
+      скриптов с использованием '-&gt;', объектов или наследования. Конечно, я
+      копировал фрагменты Java (copy-&amp;-paste), как и многие другие, но
+      никогда по настоящему не <I>понимал</I> того, что при этом происходит.
+      Любые изменения, вносимые мной, обычно были тривиальными и ошибочными.
+      Если что-то и работало после моего вмешательства, то это происходило чисто
+      случайно. </P>
+      <P>Я думаю, что я просто не был правильно настроен на изучение. В конце
+      концов, единственный пример объектно-ориентированного программирования,
+      который я (и большинство других людей) видел - это Java. Мы опасаемся
+      Java, т.к. он превращает наши обычно быстрые браузеры в ленивых монстров.
+      Я не понимал этой нелюбви, до тех пор пока однажды не увидел ужасное
+      'loading java' или нечто похожее в Netscape. Очевидно, что <B>это не
+      должно быть так</B>. Это действительно прекрасный метод написания
+      программ, после того как вы однажды поймёте его. Я достаточно давно узнал,
+      что его можно применять даже на perl, но я никогда не мог забыть как одно
+      Java-приложение похоронило мой вечерний сеанс путешествия по Сети. А
+      недавно я еще раз убедился в правильности своей позиции по отношению к
+      Java. В январском выпуске (за 2001 год) "Software Development", на 26
+      странице автор пишет: ''<I>Я специализируюсь на Java-программировании ...
+      Мой план А, по разрешению ситуации с пожирающим память приложением ... это
+      взмахнуть моей рукой и прокричать 'Бах! Вот зачем нам нужна виртуальная
+      память.' 20 Гигабайтовый диск на этой системе вызывает у меня приступ
+      клаустрофобии</I>'' Я знал это ! Если быть честным, то это было вступление
+      к статье о встроенных приложених, так что я надеюсь, что это юмор :). </P>
+      <H2>Давайте создадим диалог</H2>
+      <P>Я не могу придумать ни одной причины, почему нельзя использовать мой
+      собственный диалог в качестве отправной точки, поэтому мы напишем простой
+      диалог, позволяющий прослушивать телефонные сообщения от vgetty. </P>
+      <H3>Что нам нужно сделать</H3>
+      <P>Мы хотим отображать и проигрывать голосовые сообщения из графического
+      интерфейса. Сообщения живут в директории /var/spool/voice/incoming. Мы
+      хотим отобразить список сообщений, выбрать одно из них и воспроизвести
+      его. Звучит довольно просто, а с <B>Kaptain</B> реализация не станет
+      сложнее задумки. </P>
+      <H3>Скрипт</H3>
+      <P>Я собираюсь описать как сделать скрипт исполнимым, т.к. я вспоминаю мою
+      озадаченность, когда я только начал работать с Линукс, таинственными
+      комментариями в начале некоторых скриптов и надеюсь, что это поможет
+      другим. Просто переходите к <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/rus-evans.html#goodstuff">-->Полезные
+      вещи<!--</A>-->, если не хотите читать это. </P>
+      <P>Во-первых, давайте создадим файл 'playmessage'. Итак, мы запускаем
+      shell и вводим "touch playmessage" или наш любимый текстовый редактор и
+      выбираем 'save as'. В любом случае вы должны начать редактировать
+      текстовый файл 'playmessage' или его аналог. Лучшее место для размещения
+      такого рода вещей это "/home/ваше-имя/bin", т.к. эта директория скорее
+      всего уже является частью вашего пути и у вас всё время есть необходимые
+      права для её использования. Если эта директория не существует, просто
+      создайте её при помощи mkdir. </P>
+      <P>Первой строкой вашего скрипта будет строка объявления исполнимой
+      программы. В Линукс любой файл считается исполнимым, если у него
+      установлен бит <I>x</I>. Даже если это на самом деле не программа, а
+      просто скрипт, первая строка подскажет операционной системе, как исполнить
+      его так, как если бы это была настоящая программа. Результатом этого
+      является то, что вы можете ввести имя файла и он будет исполнен. </P>
+      <P>Далее нам нужно знать, куда был установлен <B>kaptain</B>. Вызовите
+      xterm или консоль, введите "which kaptain" и нажмите enter. У меня
+      результатом было "/home/paul/bin/kaptain", но на вашей системе это скорее
+      всего будет "/usr/bin/kaptain" или "/usr/local/bin/kaptain". Теперь, когда
+      мы знаем, где находится kaptain, мы можем написать нашу первую строку:<BR><PRE>#!/usr/bin/kaptain
+</PRE><BR>и сохраните файл.
+      <P></P>
+      <P>Мы готовы написать наш скрипт. Последняя вещь, которую мы должны
+      сделать, перед запуском, это установить бит 'исполнимый' на нашей новой
+      "программе". Отправляйтесь назад в ваш shell и убедитесь, что вы в
+      директории, которая содержит 'playmessage'. Теперь введите "chmod +x
+      playmessage". Это установит все биты исполнения. Теперь просмотр
+      директории при помощи 'ls', должен выделить зелёным цветом 'playmessage' c
+      астериксом перед ним, показывающим что он исполнимый. </P>
+      <H3><A name=goodstuff>Полезные вещи</A></H3>
+      <P>В этом диалоге всего десять строчек и две из них только для
+      демонстрации. Единственная вещь, которую они делают, это отображение
+      заголовка и иконки. На самом деле мы могли обойтись и без кнопки
+      "Dismiss". Я хотел показать вам как немного строк нужно для создания
+      полнофункционального диалога. Текстовая версия для копирования находится
+      <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/playmessage.kaptain.txt"
+      name="link to plaintext">-->здесь.<!--</A>--> </P><PRE>#!/home/paul/bin/kaptain
+
+start "Play Message" -&gt; descr msglist;
+
+descr :horizontal -&gt; title pic;
+title -&gt; @text ("Phone Message player.");
+pic -&gt; @icon("/usr/share/icons/large/kvoice.xpm");
+
+msglist :framed :horizontal -&gt; msg buttons;
+msg -&gt; @list(`ls /var/spool/voice/incoming`);
+buttons -&gt; play close;
+play -&gt; @action(play_rmd)="Play";
+close -&gt; @close="Dismiss";
+
+play_rmd -&gt; "rmdtopvf /var/spool/voice/incoming/"msg" | pvftowav | play -t wav - ";
+</PRE><SPACER SIZE="20" TYPE="vertical"><IMG height=282
+      alt="снэпшот диалога playmessage" hspace=10
+      src="kaptain.files/playmessage.gif" width=543 vspace=10>
+      <P>Вот наша первая строка:</P><PRE>start "Play Message" -&gt; descr msglist;</PRE>
+      <P>Заметьте точку с запятой на конце строки. Это обязательно, так же как и
+      в perl. На самом деле Kaptain достаточно "перлообразен", с некоторыми
+      дополнениями. Главный контейнер называется 'start', это также встроенная в
+      Kaptain грамматическая конструкция и вы должны использовать это слово в
+      вашем первом выражении. Взятое в кавычки "Play Message" не обязательно и
+      используется только для установления заголовка окна диалога. </P>
+      <P>Справа, после "-&gt;", вы можете видеть слова "descr" и "msglist". В
+      грамматике Kaptain они являются "нетерминалами" ("nonterminals") и
+      ссылаются на некую область диалога. Они могу быть названы так, как вам
+      удобно, если название начинается с буквы. Вы также можете указать столько
+      областей, сколько вам угодно. </P>
+      <P>Итак, мы определили диалог с двумя зонами, названными "descr" и
+      "msglist". Если вы попытаетесь запустить это, не добавляя каких либо
+      других команд, оно завершится с ошибкой. Почему? Т.к. названные области ни
+      на что не ссылаются - мы ещё не определили их. Следующие несколько строк
+      определяют область "descr" диалога: </P><PRE>descr :horizontal -&gt; title pic;
+title -&gt; @text ("Phone Message player.");
+pic -&gt; @icon("/usr/share/icons/large/kvoice.xpm");
+</PRE>
+      <P>Первая строка "descr" очень похожа на первую строку нашего скрипта и
+      делает почти тоже самое. Она определяет две области диалога. Единственное
+      отличие - это опция ':horisontal'. Она заставляет Kaptain располагать их
+      горизонтально. Конечно теперь эти <I>новые</I> зоны должны быть
+      ограниченны (или указывать на другие зоны), это делается при помощи
+      следующих за ними двух строк. "title" теперь указывает на текстовый
+      виджет, а "pic" на иконку. Грамматика Kaptain называет их <I>_specials</I>
+      (специальные). Список доступных "_specials" можно увидеть <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/specials.html">-->здесь
+      (описания на англ. языке).<!--</A>--> Он включает инкрементные регуляторы,
+      комбинированные списки, файловые диалоги и т.д. </P>
+      <P>Эти последние строки завершают весь диалог, завершая область диалога
+      "msglist": </P><PRE>msglist :framed :horizontal -&gt; msg buttons;
+msg -&gt; @list(`ls /var/spool/voice/incoming`);
+
+buttons -&gt; play close;
+play -&gt; @action(play_rmd)="Play";
+close -&gt; @close="Dismiss";
+
+play_rmd -&gt; "rmdtopvf /var/spool/voice/incoming/"msg" | pvftowav | play -t wav - ";
+</PRE>
+      <P>И опять мы видим знакомую строку. "msglist" только что добавил к себе
+      две дочерних области. Теперь, когда вы знаете что означает опция
+      ":horizontal", я думаю вы догадаетесь что значит опция ":framed". </P>
+      <P>Следующая строка - для "msg" - довольна интересна. Она одновременно
+      проста и мощна. Я думаю вы поняли, что "@list" отвечает за список
+      отображаемый в диалоге, но посмотрите откуда он берёт своё содержимое:
+      строка shell скрипта! Всё что ограниченно обратными кавычками (клавиша
+      слева от "1" на вашей клавиатуре, обычная одинарная кавычка не подойдёт.)
+      будет исполнено и его стандартный вывод будет "скормлен" "special". Вы
+      можете разместить здесь всё что вам угодно, "perl -e" или что то еще, даже
+      многострочное. </P>
+      <P>Единственная оставшаяся область предназначена для кнопок. Эта область
+      содержит еще две дочерних, по одной на каждую кнопку. Кнопка "play" это
+      другой способ исполнения команды shell, в данном случае канала для
+      конвертации и проигрывания файлов записанных модемом. И опять, вы можете
+      взять текстовую версию скрипта <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/playmessage.kaptain.txt"
+      name="link to plaintext">-->здесь.<!--</A>--> Будет полезно посмотреть на всё
+      вместе, чтобы понять как это работает. Как видите, всё просто, вы можете
+      доработать его как вам нравиться: "скормить" списку вашу музыкальную
+      директорию и изменить команду проигрывания на ваш любимый mp3
+      проигрыватель, например. Обрабатывать текстовые файлы, конвертировать
+      изображения; он может быть основой для множества других вещей. </P>
+      <P>Всё настолько простое становиться почти что зависимостью, и я едва
+      удержался от искушения начать "приукрашивать" скрипт. Т.к. у меня был
+      только один способ справиться с искушением (я поддался ему), то результат
+      моих доработок вы можете увидеть <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/voxpak.gif">-->здесь<!--</A>-->
+      а сам скрипт <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/voxpak.kaptain.txt">-->здесь.<!--</A>-->
+      Этот пример был полезен по двум причинам: a) Я получил замену
+      <B>kvoice</B>, испорченному kde2 b) Я изучил ограничения <B>Kaptain</B>.
+      Вы не можете обновлять списки или изменять что либо после запуска (конечно
+      настройки элементов управления <I>оказывают</I> влияние). Команды
+      исполняются только во время запуска. Это нормально для диалоговой
+      программы, и я действительно достиг пределов с моим небольшим
+      экспериментом с kvoice. Давайте сделаем то, что я хотел изначально
+      показать. </P>
+      <H3>Диалог для <B>mpage</B></H3><IMG height=302
+      alt="снэпшот mpage диалога" hspace=10 src="kaptain.files/mpage.gif"
+      width=289 align=right vspace=10>
+      <P>Если вы видели опции командной строки для <B>mpage</B>, то сейчас вы
+      должно быть напуганы. Очень напуганы. Но не бойтесь. Мы используем только
+      небольшую часть опций <B>mpage</B>. И, так как мы уже взглянули на основы,
+      я не собираюсь расписывать его строка за строкой. Я включил его в основном
+      для того, чтобы продемонстрировать @echo special. </P>
+      <P>Для тех, кто не знаком с <B>mpage</B>, это утилита командной строки для
+      печати множества страниц на одной. Вы можете напечатать 2,4, или 8, но вам
+      лучше обладать исключительным зрением и хорошим принтером, для печати 8:1!
+      Другая важная вещь которую нужно знать об <B>mpage</B> это то, что у неё
+      есть около 50 различных опций - на самом деле настоящее число опций
+      перечисленное в разделе 'BUGS' man-страницы :-) Я уверен, что я однажды
+      доработаю и этот скрипт, но на данный момент, давайте ограничимся выбором
+      количества страниц и отступов. </P>
+      <P>Вот скрипт: </P><PRE>#!/home/paul/bin/kaptain -V
+
+start :framed "mpage Mini-Dialog" -&gt; file numpages margins buttons;
+
+file "Файл для печати" -&gt; @infile("*.txt");
+
+numpages :horizontal "Количество страниц на каждой странице" -&gt; p1 | ! p2 | p4 | p8;
+  p1 "1 pg" -&gt; "1";
+  p2 "2 pgs" -&gt; "2";
+  p4 "4 pgs" -&gt; "4";
+  p8 "8 pgs" -&gt; "8";
+
+margins :horizontal "Margins" -&gt; left right top bottom;
+  left "Left" -&gt; @integer(10,100)=40;
+  right "Right" -&gt; @integer(10,100)=50;
+  top "Top" -&gt; @integer(10,100)=20;
+  bottom "Bottom" -&gt; @integer(10,100)=30;
+
+buttons :horizontal -&gt; echo print dismiss;
+  echo -&gt; @echo(cmd)="Echo";
+  print -&gt; @action(cmd)="Print";
+  dismiss -&gt; @close()="Dismiss";
+
+cmd -&gt; "mpage -P -"numpages" -m" left "l" bottom "b" top "t" right" r "file;
+</PRE>
+      <P>Текстовая версия <!--<A
+      href="http://gazette.linux.ru.net/lg64/articles/misc/evans/mpage.kaptain.txt"
+      name="link to plaintext">-->здесь.<!--</A>--></P>
+      <P>Запустив его из xterm, вы можете делать изменения и щелкать на кнопке
+      "Echo", чтобы видеть, как изменяется командная строка, не тратя при этом
+      бумагу. Чтобы сохранить больше бумаги, уберите "-P" и всё будет выдаваться
+      на стандартный вывод, даже если вы нажмёте print. Чтобы действительно
+      получить удовольствие от экспериментов, измените командную строку на: </P><PRE>cmd -&gt; "mpage -" numpages " -m" left "l" bottom "b" top "t" right "r " file" &gt;test.ps";</PRE>
+      <P>затем вы можете просто просмотреть выданную страницу программой
+      просмотра. Или вы можете добавить ";viewername test.ps" к концу и убавить
+      количество действий - вообщем вы поняли идею. </P>
+      <P>Есть ещё одна статья о <B>Kaptain</B>, написанная <A href="../cdn-cgi/l/email-protection.html#1f6d7a717e765f6c6b7e6d6b317c7072317e6a">hawkeye</A>, она находится на <!--<A
+      href="http://www.linuxtoday.com.au/r/article/jsp/sid/131347">-->Linux Today
+      Australia.<!--</A>--> </P>
+      <P>Я не стал описывать всё подряд, т.к. <B>Kaptain</B> может сделать это
+      сам. Есть ещё горы вещей, о которых я даже не упоминал. <B>Kaptain</B>
+      поставляется с качественной документацией и множеством примеров. Автора
+      <B>Kaptain</B> зовут <B>TerИk Zsolt</B>. Он усердно работает над
+      <B>Kaptain</B> - который всё ещё в версии 0.51. Если он получит широкое
+      распространение, то сможет принести большую пользу при изучении консольных
+      приложений и сохранить нам "дисковое пространство" в наших головах :).
+      Плюс, это самый безопасный путь поэкспериментировать с выводом, который я
+      когда либо находил. Не ждите пока кто то напишет скрипт для вас - сделайте
+      это сами. Mr. TerИk будет рад разместить их на своём <!--<A
+      href="http://kaptain.sourceforge.net/">-->сайте.<!--</A>--> </P>
+      <P>Существуют и другие диалоговые программы для X : <B>gdialog</B>,
+      который скорее всего уже имеется на вашей системе, <B>Xdialog</B>, который
+      предоставляет довольно приятные диалоги для даты/времени и прочие вещи, и
+      который можно загрузить <!--<A href="http://xdialog.free.fr/">-->здесь.<!--</A>--> Если
+      одна из программ для создания диалогов не может сделать то что вам нужно,
+      всегда есть выбор. Я уверен, есть и другие, которые я просто до сих их не
+      опробовал. Смешивайте и соединяйте их внутри одного скрипта.
+      <P> </P>
+
+      <HR noShade SIZE=2>
+      Copyright © 2001, Paul Evans.<BR>Copying license <!--<A
+      href="http://www.linuxgazette.com/copying.html">-->http://www.linuxgazette.com/copying.html<!--</A>--><BR>Published
+      in Issue 64 of <!--<A href="http://www.linuxgazette.com/">-->Linux Gazette<!--</A>-->,
+      March 2001<BR>
+
+      <HR noShade SIZE=2>
+      <!--<A href="http://gazette.linux.ru.net/">-->Вернуться на главную страницу<!--</A>-->
+      <HR noShade SIZE=2>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

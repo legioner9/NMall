@@ -1,0 +1,683 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 22 Процедуры резервирования и восстановления данных — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch22_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#22">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/cha1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<H1>Часть V Рекомендации связанные с резервным копированием</H1>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 22 Процедуры резервирования и восстановления данных</H2><FONT
+      size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#1">-->Резервное
+      копирование и восстановление в Linux<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#2">-->Программа
+      резервного копирования tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#3">-->Создание
+      резервных копий с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#4">-->Автоматизация
+      задачи резервного копирования с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_1.html#5">-->Восстановление
+      файлов с tar<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#6">-->Программа
+      резервного копирования dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#7">-->Создание
+      резервных копий с dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#8">-->Восстановление
+      файлов с dump<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch22_2.html#9">-->Резервное
+      копирование и восстановление через сеть<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=120
+      src="ch22_2.files/55.jpg" width=264></TD></TR></TBODY></TABLE>
+<H3><A name=6>Программа резервного копирования dump</A></H3><B>Описание</B>
+<P align=justify>Dump полностью отличается от tar; эта программа предназначена
+для резервного копирования и восстановления файловой системы. Она создает
+резервные копии элементов файловой системы - не файлов. Dump проверяет файлы на
+файловой системе ext2, определяет резервные копии каких из них необходимо
+выполнить и копирует эти файлы на заданный диск, ленту, файл или другой
+носитель. Это позволяет получить дамп одной файловой системы быстро и
+эффективно. К сожалению, его нельзя применить к отдельным каталогам, поэтому
+архивы потребляют больше места на устройстве хранения. Dump был написан
+специально для резервного копирования. Команда restore выполняет функцию
+обратную dump; она восстанавливает полную резервную копию файловой системы.
+Последующие добавочные резервные копии могут быть наложены слоями на вершину
+полной копии. Отдельные файлы и каталоги могут быть также восстановлены из
+полной или частичной резервной копии. Вы можете использовать dump если
+нуждаетесь в процедуре резервного копирования и восстановления файловых систем.
+</P><B>Уровни Dump</B>
+<P align=justify>Dump имеет несколько уровней резервного копирования. Уровни
+входят в диапазон от 0 до 9, где уровень номер 0 это полная резервная копия
+системы, который гарантирует, что все элементы файловой системы будут
+скопированы. Уровни выше 0 - добавочные резервные копии, которые говорят dump
+копировать все файлы новее или модифицированные после последнего дампа из
+некоторых или более низкого уровня. Чтобы быть более точным, на каждом уровне
+добавочного резервного копирования вы сохраняете все изменения произошедшие
+после создания последней резервной копии на том же или предыдущем уровне. Каковы
+преимущества и причины использования многоуровневого резервного копирования? Я
+попробую объяснить это при помощи следующих схем:</P><PRE>0    3    2     5     4      7     6      9      8       9
+|    |    |     |     |      |     |      |      |       |
+0 полная резервная копия     |     |      |
+     |    |     |     |      |     |      |      |       |
+  3 копирует все новее или измененное после уровней 0 и 3.
+     |    |     |     |      |     |      |      |
+       2 копирует все новее или измененное после уровней 0 и 2.
+          |     |     |      |     |      |      |
+          5 копирует все новее или измененное после уровней 0, 3 и 5.
+                |     |      |     |      |      |
+              4 копирует все новее или измененное после уровней 0, 3 и 4.
+                |     |      |     |      |
+                   7 копирует все новее или измененное после уровней 0, 3, 4 и 7.
+                      |      |     |      |
+                      6 копирует все новее или измененное после уровней 0, 3, 4 и 6.
+                      |      |     |
+                         9 копирует все новее или измененное после уровней 0, 3, 4, 6 и 9.
+                             |     |
+                                8 копирует все новее или измененное после уровней 0, 3, 4, 6 и 8.
+                                   |
+                                   9 копирует все новее или измененное после уровней 0, 3, 4, 6, 8 и 9.
+
+</PRE>
+<P align=justify>Преимуществом этого метода является то, что более дешевым
+способом удается продлить хронологию резервных копий. Длинная хронология полезна
+тем, что часто в течении долгого времени не обнаруживается удаление или порча
+нужных файлов. Даже не самые новые версии файлов лучше, чем полная их потеря.
+Также, уровни резервирования используются, чтобы свести время выполнения
+резервных копий и восстановления к минимуму. Страницы руководства dump
+предлагает хорошую схему, чтобы использовать все преимущества уровней резервного
+копирования: 3, 2, 5, 4, 7, 6, 9, 8, 9 и так далее, как описано ниже в таблице.
+Число лент необходимых для восстановления зависит от количества времени между
+двумя полными резервными копиями.</P>
+<TABLE border=1 cellSpacing=1>
+  <TBODY>
+  <TR>
+    <TD>Лента</TD>
+    <TD>Уровень</TD>
+    <TD>Резервная копия (дней)</TD>
+    <TD>Ленты для восстановленья</TD></TR>
+  <TR>
+    <TD>1</TD>
+    <TD>0</TD>
+    <TD>Нет</TD>
+    <TD>1</TD></TR>
+  <TR>
+    <TD>2</TD>
+    <TD>3</TD>
+    <TD>1</TD>
+    <TD>1,2</TD></TR>
+  <TR>
+    <TD>3</TD>
+    <TD>2</TD>
+    <TD>2</TD>
+    <TD>1,3</TD></TR>
+  <TR>
+    <TD>4</TD>
+    <TD>5</TD>
+    <TD>1</TD>
+    <TD>1,2,4</TD></TR>
+  <TR>
+    <TD>5</TD>
+    <TD>4</TD>
+    <TD>2</TD>
+    <TD>1,2,5</TD></TR>
+  <TR>
+    <TD>6</TD>
+    <TD>7</TD>
+    <TD>1</TD>
+    <TD>1,2,3,6</TD></TR>
+  <TR>
+    <TD>7</TD>
+    <TD>6</TD>
+    <TD>2</TD>
+    <TD>1,2,5,7</TD></TR>
+  <TR>
+    <TD>8</TD>
+    <TD>9</TD>
+    <TD>1</TD>
+    <TD>1,2,5,7,8</TD></TR>
+  <TR>
+    <TD>9</TD>
+    <TD>8</TD>
+    <TD>2</TD>
+    <TD>1,2,5,7,9</TD></TR>
+  <TR>
+    <TD>10</TD>
+    <TD>9</TD>
+    <TD>1</TD>
+    <TD>1,2,5,7,9,10</TD></TR></TBODY></TABLE>
+<H3><A name=7>Создание резервных копий с dump</A></H3>
+<P align=justify>Если вы хотите использовать многоуровневую процедуру резервного
+копирования, то вас заинтересует как использовать программу dump. Ниже, я
+приведу процедуру, имеющую длинную историю резервного копирования, и
+поддерживающую время резервного копирования и восстановления данных на минимуме.
+В следующем примере, мы подразумеваем, что записываем резервную копию каталога
+(/home) на ленточное устройство (/dev/st0). Важно всегда начинать с 0 уровня
+резервного копирования, например:</P>
+<UL>
+  <LI>Пятница 1, (используется лента 1 для первой полной резервной
+  копии).<BR>[root@deep /]# dump -0u -f /dev/st0 /home<BR>DUMP: Date of this
+  level 0 dump: Fri Jan 28 21:25:12 2000<BR>DUMP: Date of last level 0 dump: the
+  epoch<BR>DUMP: Dumping /dev/sda6 (/home) to /dev/st0<BR>DUMP: mapping (Pass I)
+  [regular files]<BR>DUMP: mapping (Pass II) [directories]<BR>DUMP: estimated
+  18582 tape blocks on 0.48 tape(s).<BR>DUMP: Volume 1 started at: Fri Jan 28
+  21:25:14 2000<BR>DUMP: dumping (Pass III) [directories]<BR>DUMP: dumping (Pass
+  IV) [regular files]<BR>DUMP: DUMP: 18580 tape blocks on 1 volumes(s)<BR>DUMP:
+  finished in 4 seconds, throughput 4645 KBytes/sec<BR>DUMP: Volume 1 completed
+  at: Fri Jan 28 21:25:18 2000<BR>DUMP: Volume 1 took 0:00:04<BR>DUMP: Volume 1
+  transfer rate: 4645 KB/s<BR>DUMP: level 0 dump on Fri Jan 28 21:25:12
+  2000<BR>DUMP: DUMP: Date of this level 0 dump: Fri Jan 28 21:25:12
+  2000<BR>DUMP: DUMP: Date this dump completed: Fri Jan 28 21:25:18
+  2000<BR>DUMP: DUMP: Average transfer rate: 4645 KB/s<BR>DUMP: Closing
+  /dev/st0<BR>DUMP: DUMP IS DONE<BR>
+  <LI>Понедельник, (используется лента 2 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -3u -f /dev/st0 /home<BR>
+  <LI>Вторник, (используется лента 3 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -2u -f /dev/st0 /home<BR>
+  <LI>Среда, (используется лента 4 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -5u -f /dev/st0 /home<BR>
+  <LI>Четверг, (используется лента 5 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -4u -f /dev/st0 /home<BR>
+  <LI>Пятница 2, (используется лента 6 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -7u -f /dev/st0 /home<BR>
+  <LI>Понедельник, (используется лента 2 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -3u -f /dev/st0 /home<BR>
+  <LI>Вторник, (используется лента 3 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -2u -f /dev/st0 /home<BR>
+  <LI>Среда, (используется лента 4 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -5u -f /dev/st0 /home<BR>
+  <LI>Четверг, (используется лента 5 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -4u -f /dev/st0 /home<BR>
+  <LI>Пятница 3, (используется лента 7 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -6u -f /dev/st0 /home<BR>
+  <LI>Понедельник, (используется лента 2 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -3u -f /dev/st0 /home<BR>
+  <LI>Вторник, (используется лента 3 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -2u -f /dev/st0 /home<BR>
+  <LI>Среда, (используется лента 4 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -5u -f /dev/st0 /home<BR>
+  <LI>Четверг, (используется лента 5 для добавочной резервной
+  копии).<BR>[root@deep /]# dump -4u -f /dev/st0 /home<BR>
+  <LI>Пятница 4, (используется лента 8 для добавочной резервной копии, только
+  если в месяце пять пятниц).<BR>[root@deep /]# dump -9u -f /dev/st0 /home
+  <LI>Понедельник, (используется лента 2 для добавочной резервной копии, только
+  если в месяце пять пятниц).<BR>[root@deep /]# dump -3u -f /dev/st0 /home
+  <LI>Вторник, (используется лента 3 для добавочной резервной копии, только если
+  в месяце пять пятниц).<BR>[root@deep /]# dump -2u -f /dev/st0 /home
+  <LI>Среда, (используется лента 4 для добавочной резервной копии, только если в
+  месяце пять пятниц).<BR>[root@deep /]# dump -5u -f /dev/st0 /home
+  <LI>Четверг, (используется лента 5 для добавочной резервной копии, только если
+  в месяце пять пятниц).<BR>[root@deep /]# dump -4u -f /dev/st0 /home
+  <LI>Месяц, (используйте другую ленту для полной резервной копии, когда
+  изменяется месяц).<BR>[root@deep /]# dump -0u -f /dev/st0 /home</LI></UL>
+<P align=justify>где "-0 до -9" - уровни резервного копирования, которые вы
+хотите использовать, опция "u" говорит обновлять файл "/etc/dumpdates" после
+удачного дампа, опция "-f" указывает записывать резервную копию в файл; файл
+может быть специальным файлом устройства, например, "/dev/st0" (ленточное
+устройство), "/dev/rsd1c" (дисковое устройство), обычным файлом, или "-"
+(стандартным вывод). В заключение, вы должны определить, резервную копию чего,
+вы хотите сделать. В нашем примере это каталог "/home". Вы можете видеть, что мы
+используем одни и те же ленты со 2 по 5 для ежедневного резервного копирования
+(С понедельника по Четверг = 4 ленты), ленты 6, 7 и 8 для еженедельного
+резервного копирования (другие пятницы, 6 + 7 + 8 = 3 ленты; заметим, что может
+быть пять пятниц в месяце), и ленту 1 и любую новую ленту для ежемесячной
+резервной копии (первая пятница каждого месяца, 1 + любые следующие "11 месяцев"
+= 12 лент). Итого, если мы используем 8 лент (4 + 3 + 1 = 8), мы можем получить
+полную резервную копию в первом месяце и повторить процедуру с 8 лентами в
+следующие 11 месяцев, чтобы получить в итоге 1-годовую индивидуальную полную
+резервную копию. Полные резервные копии должны делаться в определенный интервал,
+скажем, один месяц, и на наборе чистых лент, на которые записывается навсегда.
+Для этого типа процедуры, вы должны иметь 12 лент на 12 месяцев, которые
+содержат хронологию и изменения вашей системы за год. Затем, вы можете
+скопировать 12 лент с резервными копиями на отдельный компьютер, предназначенный
+для долгого хранения всех годовых резервных копий, и использовать их (12 лент) в
+новом году.</P>
+<H3><A name=8>Восстановление файлов с dump</A></H3>
+<P align=justify>Команда restore выполняет функцию противоположную функции
+dump(8). Она восстанавливает файлы и каталоги из резервных копий полученный
+программой dump. Может быть восстановлена полная резервная копия файловой
+системы, а затем и уровни добавочных резервных копий поверх ее. Также может из
+полной резервной копии или частичной могут быть восстановлены отдельные файлы и
+каталоги. Вы имеете ряд возможных команд и опций для восстановления данных из
+резервных копий, полученных программой dump. Ниже мы покажем вам процедуру,
+которая использует все возможности программы restore с большинством возможных
+опций. Все это также сделано в диалоговом режиме. При диалоговом восстановлении
+файлов из дампа, программа restore предоставляет shell подобный интерфейс,
+который позволяет пользователю перемещаться по дереву каталогов, выбирая файлы
+для извлечения, после чтения информации о каталогах из дампа. Далее , мы
+покажем, что вы увидите, при восстановлении каталога "/home":</P>
+<P align=justify>Первое, мы должны перейти в раздел файловой системы, где мы
+хотим восстанавливать нашу резервную копию. Это требуется, так как в диалоговом
+режиме программа restore восстанавливает все файлы с раздела файловой ситемы, из
+которой она была запущена.</P>
+<P align=justify>Перейдите в раздел, который вы хотите восстановить (каталог
+"/home" в нашем случае) используя следующую команду:</P><FONT color=#008080
+size=-1>[root@deep /]# cd /home</FONT>
+<P align=justify>Для восстановления файлов из дампа в диалоговом режиме
+используйте команду:</P><FONT color=#008080 size=-1>[root@deep /home]# restore
+-i -f /dev/st0<BR>restore &gt;<BR></FONT>
+<P align=justify>На вашем терминале вы увидите командную строку, для получения
+списка файлов текущего или заданного каталога используйте команду "ls":</P><FONT
+color=#008080 size=-1>restore &gt; ls<BR>.:<BR>admin/ lost+found/ named/
+quota.group quota.user wahib/<BR><BR>restore &gt;<BR></FONT>
+<P align=justify>Для изменения текущего рабочего каталога в заданный используйте
+команду "cd" (в нашем примере, мы переходим в каталог wahib):</P><FONT
+color=#008080 size=-1>restore &gt; cd wahib<BR>restore &gt;
+ls<BR>./wahib:<BR>.Xdefaults .bash_logout .bashrc<BR>.bash_history .bash_profile
+Personal/<BR><BR>restore &gt;<BR><BR></FONT>
+<P align=justify>Для внесения текущего каталога или файла в список файлов для
+извлечения используйте команду "add" (если задан каталог, то в список вносится
+он и все его потомки):</P><FONT color=#008080 size=-1>restore &gt; add Personal/
+restore &gt;</FONT>
+<P align=justify>Файлы, которые входят в список для извлечения обозначаются
+символом "*", когда они выводятся командой "ls":</P><FONT color=#008080
+size=-1>restore &gt; ls<BR>./wahib:<BR>.Xdefaults .bash_logout
+.bashrc<BR>.bash_history .bash_profile *Personal/<BR></FONT>
+<P align=justify>Для удаления текущего каталога или заданного файла из списка
+файлов для извлечения используйте команду "delete" (если задан каталог, тогда
+вместе с ним будут удалены и все его элементы):</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B> Наиболее подходящий путь для извлечения
+большинства файлов из каталога это добавить каталог в список для извлечения, а
+затем удалить ненужные файлы.</P><FONT color=#008080 size=-1>restore &gt; cd
+Personal/<BR>restore &gt; ls<BR>./wahib/Personal:<BR>*Ad?le_Nakad.doc
+*Overview.doc<BR>*BIMCOR/ *Resume/<BR>*My Webs/ *SAMS/<BR>*Contents.doc
+*Templates/<BR>*Divers.doc *bruno universite.doc<BR>*Linux/ *My
+Pictures/<BR><BR>restore &gt; delete Resume/<BR>restore &gt;
+ls<BR>./wahib/Personal:<BR>*Ad?le_Nakad.doc *Overview.doc<BR>*BIMCOR/
+Resume/<BR>*My Webs/ *SAMS/<BR>*Contents.doc *Templates/<BR>*Divers.doc *bruno
+universite.doc<BR>*Linux/ *My Pictures/<BR></FONT>
+<P align=justify>Для восстановления всех файлов из списка для извлечения
+используйте команду "extract" (Restore спросит какой том пользователь хочет
+монтировать. Наиболее быстрый путь извлечь несколько файлов - это начать с
+последнего тома и закончить первым):</P><FONT color=#008080 size=-1>restore &gt;
+extract<BR>You have not read any tapes yet.<BR>Unless you know which volume your
+file(s) are on you should start<BR>with the last volume and work towards the
+first.<BR>Specify next volume #: 1<BR>set owner/mode for '.'? [yn] y<BR></FONT>
+<P align=justify>Для выхода из интерактивного режима программы restore после
+завершения восстановления файлов используйте команду "quit".</P><FONT
+color=#008080 size=-1>/sbin/restore &gt; quit</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> О других методах восстановления информации из
+резервных копий созданных программой dump читайте в страницах руководства
+(man).</P>
+<H3>Дополнительная документация</H3>
+<P align=justify>Для получения большей информации читайте следующие страницы
+руководства:</P>
+<P align=justify>$ man dump (8) - программа создание резервных копий файловой
+системы ext2<BR>$ man restore (8) - "восстановление файлов или файловых систем
+из резервных копий созданных программой dump"</P>
+<H3><A name=9>Создание резервных копий и восстановление через сеть</A></H3>
+<P align=justify>Резервное копирование позволяет вам восстановить доступность и
+целостность информационных ресурсов после нарушений безопасности и несчастных
+случаев. Без резервного копирования вы не сможете восстановить данные на
+компьютере после системных сбоев. Важно разработать план, который будет
+охватывать все ваши сервера. Мы должны определить, файлы какой категории нужно
+резервировать. Например, вы можете решить создавать резервные копии только
+файлов пользователей (/home), потому что поврежденная система должна быть
+восстановлена с оригинального дистрибутива.</P>
+<P align=justify>Здесь приводятся общие технологические подходя к резервному
+копированию файлов. Для сетевых серверов, авторитетная версия информационного
+наполнения создается и поддерживается на защищенной . Если сервер
+скомпрометирован и его содержимое повреждено, его можно перезагрузить с
+безопасной системы поддерживающей авторитетную версию. Этот подход обычно
+используется на публичных системах, таких как Веб сервера, потому что содержимое
+изменяется в предсказуемые интервалы.</P>
+<P align=justify>Важно гарантировать, что резервные копии выполнены безопасным
+способом и что их содержимое остается защищенным. Мы рекомендуем, чтобы в своем
+плане вы определили:</P>
+<UL>
+  <LI>Исходные данные шифруются перед отправкой их на устройство хранения.
+  <LI>Данные хранятся на устройстве хранения в зашифрованном виде.
+  <LI>Хранители информации находятся в физически безопасном устройстве, которое
+  защищено от искусственный и естественный бедствий. </LI></UL><B>Пересылка вашей
+резервной копии в безопасной манере через сеть</B>
+<P align=justify>В предыдущей секции, мы показали вам как сделать резервную
+копию с помощью утилит tar и dump на ленту или в файл на той же системе, где
+выполнялась процедура резервного копирования. Эти программы способны также
+делать резервное копирование через сеть. Чтобы осуществлять резервное
+копирование по сети надо убедиться, что у вас установлены пакеты "rmt" и "rsh".
+Утилита "rmt" предоставляет удаленный доступ к ленточному устройству программам
+подобным dump и tar. Пакет "rsh" содержит набор программ, которые позволяют
+пользователям выполнять команды на удаленной машине, подключаться к удаленным
+машинам и копировать файлы между машинами (rsh, rlogin и rcp).</P>
+<P align=justify>Так как "rsh" может быть легко взломана, а "rmt" зависит в
+своей работе от "rsh", мы не инсталлировали эти пакеты (смотрите главу 2,
+"Инсталляция вашего Linux сервера" для большей информации). Поэтому мы должны
+найти другой путь для осуществления резервного копирования через сеть.
+Технология SSH поможет решить эту проблему (смотрите главу 11, Программы
+обеспечения безопасности и сетевая безопасность), потому что она позволяет
+копировать данные через сеть командой "scp" с поддержкой шифрования. Следующий
+метод использует возможности программы SSH для пересылки наших резервных копий,
+сделанных командами tar или dump в безопасной манере, используя утилиту
+"scp".</P><B>Использование SSH команды "scp"для передачи резервных копий через
+сеть</B>
+<P align=justify>Команда "scp" копирует файлы между хостами в сети. Она
+использует SSH для пересылки данных, используя туже систему аутентификации и
+предоставляя тот же уровень безопасности, что и SSH. В отличии от утилиты "rcp"
+из пакета "rsh", "scp" запрашивает пароль или парольную фразу. В нашем примере,
+мы пересылаем файл резервной копии, созданный программой tar; процедура передачи
+файла, созданного командой dump аналогична.</P>
+<P align=justify>Для копирования файла на удаленную систему используйте
+команду:</P><FONT color=#008080 size=-1>[admin@deep /]# scp
+&lt;localdir/to/filelocation&gt; &lt;user@host:/dir/for/file&gt;</FONT>
+<P align=justify>где &lt;localdir/to/filelocation&gt; - это каталог находится
+резервная копия на локальном сервере, а &lt;user@host:/dir/for/file&gt;
+представляет, по порядку, имя пользователя (user) на удаленной машине, который
+будет владеть резервной копией, имя компьютера (host), куда вы хотите отправить
+файл, и каталог на этом компьютере.</P>
+<P align=justify>Реальный пример будет выглядеть так:</P><FONT color=#008080
+size=-1>[admin@deep /]# scp -Cp /backups/deep-01Feb.tar
+admin@backupserver:/archive/deep/deep-01Feb.tar<BR>admin@backupserver's
+password:<BR>deep-01Feb.tgz | 10479 KB | 154.1 kB/s | ETA: 00:00:00 |
+100%<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Опция "C" включает сжатие для более быстрой
+передачи файла, опция "p" говорит, что необходимо сохранить время модификации,
+время доступа и режимы доступа к файлу, что обычно неплохо. Важно заметить, что
+каталог "dir/for/file" на удаленном компьютере ("/archive/deep" в нашем примере)
+должен принадлежать "username", заданному в команде scp ("admin" в нашем
+примере) или вы получите следующее сообщение об ошибке:<BR><FONT color=#008080
+size=-1>scp: /archive/deep/deep-01Feb.tar: Permission denied.</FONT></P>
+<P align=justify>Для копирования файла с удаленной системы на локальную
+используйте команду:</P><FONT color=#008080 size=-1>[admin@deep /]# scp
+&lt;user@host:/dir/for/file&gt; &lt;localdir/to/filelocation&gt;</FONT>
+<P align=justify>где &lt;user@host:/dir/for/file&gt; представляет, по порядку,
+имя пользователя (user) на удаленной машине, который владеет резервной копией,
+имя компьютера (host), откуда вы хотите получить файл, и каталог на этом
+компьютере, в котором лежит файл, а &lt;localdir/to/filelocation&gt; - это
+локальный каталог в который вы хотите поместить файл, полученный с удаленного
+компьютера. Реальный пример выглядит примерно так:</P><FONT color=#008080
+size=-1>[admin@deep /]# scp -Cp admin@backupserver:/archive/deep/deep-01Feb.tar
+/backups<BR>admin@backupserver's password:<BR>deep-01Feb.tgz | 10479 KB | 154.1
+kB/s | ETA: 00:00:00 | 100%<BR></FONT>
+<H3>Альтернативы tar и dump</H3>
+<P align=justify><B>AMANDA</B><BR>Домашняя страница AMANDA: <!--<A
+href="http://www.cs.umd.edu/projects/amanda/"
+target=_blank>-->http://www.cs.umd.edu/projects/amanda/<!--</A>--> </P>
+<P align=justify><B>BRU</B><BR>Домашняя страница BRU: <!--<A
+href="http://www.bru.com/" target=_blank>-->http://www.bru.com/<!--</A>--></P>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch22_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#22">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/cha1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

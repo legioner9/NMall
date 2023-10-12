@@ -1,0 +1,2349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux Kernel 2.4 Internals: IPC mechanisms — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    Вперед <a
+     href="lki-4.html">Назад</a> <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc5">Содержание</a>
+    <hr>
+
+    <h2><a
+     name="s5">5. Механизмы IPC</a></h2>
+
+    <p>В этой главе описываются механизмы IPC (Inter Process
+    Communication) - семафоры, разделяемая память и очередь сообщений,
+    реализованные в ядре Linux 2.4. Данная глава разбита на 4 раздела.
+    В первых трех разделах рассматривается реализация <a
+     href="lki-5.html#semaphores">семафоров</a>, <a
+     href="lki-5.html#message">очереди сообщений</a>, и <a
+     href="lki-5.html#sharedmem">разделяемой памяти</a> соответственно. В <a
+     href="lki-5.html#ipc_primitives">последнем</a> разделе описывается набор
+    общих, для всех трех вышеуказанных механизмов, функций и структур
+    данных.</p>
+
+    <h2><a
+     name="semaphores"></a> <a
+     name="ss5.1">5.1 Семафоры</a></h2>
+
+    <p>Функции, описываемые в данном разделе, реализуют механизм
+    семафоров пользовательского уровня. Обратите внимание на то, что
+    реализация пользовательских семафоров основывается на использовании
+    блокировок и семафоров ядра. Во избежание неоднозначности в
+    толковании под термином &quot;семафор ядра&quot; будут пониматься
+    семафоры уровня ядра. Во всех других случаях под термином
+    &quot;семафор&quot; следует понимать семафоры пользовательского
+    уровня.</p>
+
+    <h3><a
+     name="sem_apis"></a> Семафоры. Интерфейс системных вызовов.</h3>
+
+    <h3><a
+     name="sys_semget"></a> sys_semget()</h3>
+
+    <p>Вызов sys_semget() защищен глобальным семафором ядра <a
+     href="lki-5.html#struct_ipc_ids">sem_ids.sem</a>.</p>
+
+    <p>Для создания и инициализации нового набора семафоров вызывается
+    функция <a
+     href="lki-5.html#newary">newary()</a>. В вызывающую программу возвращается
+    ID нового набора семафоров.</p>
+
+    <p>Если через аогумент key передается существующий набор семафоров,
+    вызывается функция поиска <a
+     href="lki-5.html#ipc_findkey">ipc_findkey()</a> заданного набора. Перед
+    возвратом ID проверяются права доступа вызывающей программы.</p>
+
+    <h3><a
+     name="sys_semctl"></a> sys_semctl()</h3>
+
+    <p>Для выполнения команд <a
+     href="lki-5.html#IPC_INFO_and_SEM_INFO">IPC_INFO</a>, <a
+     href="lki-5.html#IPC_INFO_and_SEM_INFO">SEM_INFO</a>, и <a
+     href="lki-5.html#SEM_STAT">SEM_STAT</a> вызывает функцию <a
+     href="lki-5.html#semctl_nolock">semctl_nolock()</a>.</p>
+
+    <p>Для выполнения команд <a
+     href="lki-5.html#GETALL">GETALL</a>, <a
+     href="lki-5.html#GETVAL">GETVAL</a>, <a
+     href="lki-5.html#GETPID">GETPID</a>, <a
+     href="lki-5.html#GETNCNT">GETNCNT</a>, <a
+     href="lki-5.html#GETZCNT">GETZCNT</a>, <a
+     href="lki-5.html#IPC_STAT">IPC_STAT</a>, <a
+     href="lki-5.html#SETVAL">SETVAL</a>, и <a
+     href="lki-5.html#SETALL">SETALL</a> вызывает функцию <a
+     href="lki-5.html#semctl_main">semctl_main()</a> .</p>
+
+    <p>Для выполнения команд <a
+     href="lki-5.html#semctl_ipc_rmid">IPC_RMID</a> и <a
+     href="lki-5.html#semctl_ipc_set">IPC_SET</a> вызывает функцию <a
+     href="lki-5.html#semctl_down">semctl_down()</a>. При этом выполняется захват
+    глобального семафора ядра <a
+     href="lki-5.html#struct_ipc_ids">sem_ids.sem</a>.</p>
+
+    <h3><a
+     name="sys_semop"></a> sys_semop()</h3>
+
+    <p>После проверки входных параметров данные копируются из
+    пространства пользователя во временный буфер. Если объем информации
+    невелик, то буфер размещается на стеке, в противном случае в памяти
+    размещается буфер большего размера. После копирования данных
+    выполняется глобальная блокировка семафоров, проверяется ID,
+    указанного пользователем набора семафоров и права доступа.</p>
+
+    <p>Производится разбор всех, указанных пользователем, операций. В
+    ходе разбора обслуживается счетчик для всех операций, для которых
+    установлен флаг SEM_UNDO. Устанавливается флаг
+    <code>decrease</code>, если какая либо операция выполняет
+    уменьшение значения семафора, и устанавливается флаг
+    <code>alter</code>, если значение любого из семафоров изменяется
+    (т.е. увеличивается или уменьшается). Так же проверяется и номер
+    каждого модифицируемого семафора.</p>
+
+    <p>Если установлен флаг SEM_UNDO для какой либо из операций, то в
+    списке отыскивается структура отката текущей задачи (процесса),
+    ассоциированной с данным набором семафоров. Если в ходе поиска в
+    списке обнаруживается структура отката для несуществующего набора
+    семафоров (<code>un-&gt;semid == -1</code>), то занимаемая память
+    освобождается и структура исключается из списка вызовом функции <a
+     href="lki-5.html#freeundos">freeundos()</a>. Если структура для заданного
+    набора семафоров не найдена, то вызовом <a
+     href="lki-5.html#alloc_undo">alloc_undo()</a> создается и инициализируется
+    новая.</p>
+
+    <p>Для выполнения последовательности операций вызывается функция <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> с входным
+    параметром <code>do_undo</code> равным нулю. Возвращаемое значение
+    свидетельствует о выполнении последовательности операций - либо
+    последовательность была выполнена, либо была ошибка при выполнении,
+    либо последовательность не была выполнена потому что один из
+    семафоров был заблокирован. Каждый из этих случаев описывается
+    ниже:</p>
+
+    <h3><a
+     name="Non-blocking_Semaphore_Operations"></a> Незаблокированные
+    операции над семафорами</h3>
+
+    <p>Функция <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> возвращает ноль,
+    если вся последовательность операций была успешно выполнена. В этом
+    случае вызывается <a
+     href="lki-5.html#update_queue">update_queue()</a>, которая проходит через
+    очередь операций, ожидающих выполнения, для данного набора
+    семафоров и активирует все ожидающие процессы, которые больше не
+    нужно блокировать. На этом исполнение системного вызова sys_semop()
+    завершается.</p>
+
+    <h3><a
+     name="Failing_Semaphore_Operations"></a> Ошибка при выполнении
+    операций над семафорами</h3>
+
+    <p>Отрицательное значение, возвращаемое функцией <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a>, свидетельствует о
+    возникновении ошибки. В этом случае ни одна из операций не
+    выполняется. Ошибка возникает когда операция приводит к
+    недопустимому значению семафора либо когда операция, помеченная как
+    IPC_NOWAIT, не может быть завершена. Код ошибки возвращается в
+    вызывающую программу.</p>
+
+    <p>Перед возвратом из sys_semop() вызывается <a
+     href="lki-5.html#update_queue">update_queue()</a>, которая проходит через
+    очередь операций, ожидающих выполнения, для данного набора
+    семафоров и активирует все ожидающие процессы, которые больше не
+    нужно блокировать.</p>
+
+    <h3><a
+     name="Blocking_Semaphore_Operations"></a> Заблокированные операции
+    над семафорами</h3>
+
+    <p>Возвращаемое значение из <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a>, равное 1
+    означает, что последовательность операций не была выполнена из-за
+    того, что один из семафоров был заблокирован. В этом случае
+    инициализируется новый элемент очереди <a
+     href="lki-5.html#struct_sem_queue">sem_queue</a> содержимым данной
+    последовательности операций. Если какая либо из операций изменяет
+    состояние семафора, то новый элемент добавляется в конец очереди, в
+    противном случае новый элемент добавляется в начало очереди.</p>
+
+    <p>В поле <code>semsleeping</code> текущей задачи заносится
+    указатель на очередь ожидания <a
+     href="lki-5.html#struct_sem_queue">sem_queue</a>. Задача переводится в
+    состояние TASK_INTERRUPTIBLE и поле <code>sleeper</code> структуры
+    <a
+     href="lki-5.html#struct_sem_queue">sem_queue</a> инициализируется указателем
+    на текущую задачу. Далее снимается глобальная блокировка семафора и
+    вызывается планировщик schedule(), чтобы перевести задачу в разряд
+    &quot;спящих&quot;.</p>
+
+    <p>После пробуждения задача повторно выполняет глобальную
+    блокировку семафора, определяет причину пробуждения и реагирует на
+    нее соответствующим образом:</p>
+
+    <ul>
+      <li>Если набор семафоров был удален, то в вызывающую программу
+      возвращается код ошибки EIDRM.</li>
+
+      <li>Если поле <code>status</code> в структуре <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> установлено в 1, то
+      задача была разбужена для повторной попытки выполнения операций
+      над семафорами. В этом случае повторно вызывается <a
+       href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> для выполнения
+      последовательности операций Если try_atomic_semop() вернула 1, то
+      задача снова блокируется, как описано выше. Иначе возвращается 0
+      либо соответствующий код ошибки. Перед выходом из sys_semop()
+      сбрасывается поле current-&gt;semsleeping и <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> удаляется из очереди.
+      Если какая либо из операций производила изменения (увеличение или
+      уменьшение), то вызывается <a
+       href="lki-5.html#update_queue">update_queue()</a>, которая проходит через
+      очередь операций, ожидающих выполнения, для данного набора
+      семафоров и активирует все ожидающие процессы, которые больше не
+      нужно блокировать.</li>
+
+      <li>Если поле <code>status</code> в структуре <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> <strong>НЕ</strong>
+      установлено в 1 и <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> не была удалена из
+      очереди, то это означает, что задача была разбужена по
+      прерыванию. В этом случае в вызывающую программу возвращается код
+      ошибки EINTR. Перед возвратом сбрасывается поле
+      current-&gt;semsleeping и <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> удаляется из очереди. А
+      так же вызывается <a
+       href="lki-5.html#update_queue">update_queue()</a>, если какая либо из
+      операций производила изменения.</li>
+
+      <li>Если поле <code>status</code> в структуре <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> <strong>НЕ</strong>
+      установлено в 1, а <a
+       href="lki-5.html#struct_sem_queue">sem_queue</a> была удалена из очереди,
+      то это означает, что заданная последовательность операций уже
+      была выполнена в <a
+       href="lki-5.html#update_queue">update_queue()</a>. Поле
+      <code>status</code> содержит либо 0, либо код ошибки, это
+      значение и возвращается в вызывающую программу.</li>
+    </ul>
+
+    <h3><a
+     name="sem_structures"></a> Структуры даных поддержки механизма
+    семафоров</h3>
+
+    <p>Следующие структуры данных используются исключительно для
+    поддержки семафоров:</p>
+
+    <h3><a
+     name="struct_sem_array"></a> struct sem_array</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* По одной структуре данных для каждого набора семафоров в системе. */
+struct sem_array {
+    struct kern_ipc_perm sem_perm; /* права доступа .. см. ipc.h */
+    time_t sem_otime;              /* время последнего обращения */
+    time_t sem_ctime;              /* время последнего изменения */
+    struct sem *sem_base;          /* указатель на первый семафор в массиве */
+    struct sem_queue *sem_pending; /* операции, ожидающие исполнения */
+    struct sem_queue **sem_pending_last; /* последняя ожидающая операция */
+    struct sem_undo *undo;         /* список отката для данного массива * /
+    unsigned long sem_nsems;       /* кол-во семафоров в массиве */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_sem"></a> struct sem</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* По одной структуре для каждого семафора в системе. */
+struct sem {
+        int     semval;         /* текущее значение */
+        int     sempid;         /* pid последней операции */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_seminfo"></a> struct seminfo</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct  seminfo {
+        int semmap;
+        int semmni;
+        int semmns;
+        int semmnu;
+        int semmsl;
+        int semopm;
+        int semume;
+        int semusz;
+        int semvmx;
+        int semaem;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_semid64_ds"></a> struct semid64_ds</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct semid64_ds {
+        struct ipc64_perm sem_perm; /* права доступа .. см. ipc.h */
+        __kernel_time_t sem_otime;  /* время последнего обращения */
+        unsigned long   __unused1;
+        __kernel_time_t sem_ctime;  /* время последнего изменения */
+        unsigned long   __unused2;
+        unsigned long   sem_nsems;  /* кол-во семафоров в массиве */
+        unsigned long   __unused3;
+        unsigned long   __unused4;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_sem_queue"></a> struct sem_queue</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* По одной очереди на каждый ожидающий процесс в системе. */
+struct sem_queue {
+        struct sem_queue *      next;    /* следующий элемент очереди */
+        struct sem_queue **     prev;    /* предыдующий элемент очереди, *(q-&gt;prev) == q */
+        struct task_struct*     sleeper; /* этот процесс */
+        struct sem_undo *       undo;    /* структура откатов */
+        int                     pid;     /* pid процесса */
+        int                     status;  /* результат выполнения операции */
+        struct sem_array *      sma;     /* массив семафоров для выполнения операций */
+        int                     id;      /* внутренний sem id */
+        struct sembuf *         sops;    /* массив ожидающих операций */
+        int                     nsops;   /* кол-во операций */
+        int                     alter;   /* признак изменения семафора */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_sembuf"></a> struct sembuf</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* системный вызов semop берет массив отсюда. */
+struct sembuf {
+        unsigned short  sem_num;        /* индекс семафора в массиве */
+        short           sem_op;         /* операция */
+        short           sem_flg;        /* флаги */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_sem_undo"></a> struct sem_undo</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* Каждая задача имеет список откатов. Откаты выполняются автоматически
+ * по завершении процесса.
+ */
+struct sem_undo {
+        struct sem_undo *       proc_next;      /* следующий элемент списка для данного процесса */
+        struct sem_undo *       id_next;        /* следующий элемент в данном наборе семафоров */
+        int                     semid;          /* ID набора семафоров */
+        short *                 semadj;         /* массив изменений, по одному на семафор */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="sem_primitives"></a> Функции для работы с семафорами</h3>
+
+    <p>Следующие функции используются исключительно для поддержки
+    механизма семафоров:</p>
+
+    <h3><a
+     name="newary"></a> newary()</h3>
+
+    <p>newary() обращается к <a
+     href="lki-5.html#ipc_alloc">ipc_alloc()</a> для распределения памяти под
+    новый набор семафоров. Она распределяет объем памяти достаточный
+    для размещения дескриптора набора и всего набора семафоров.
+    Распределенная память очищается и адрес первого элемента набора
+    семафоров передается в <a
+     href="lki-5.html#ipc_addid">ipc_addid()</a>. Функция <a
+     href="lki-5.html#ipc_addid">ipc_addid()</a> резервирует память под массив
+    элементов нового набора семафоров и инициализирует ( <a
+     href="lki-5.html#struct_kern_ipc_perm">struct kern_ipc_perm</a>) набор.
+    Глобальная переменная <code>used_sems</code> увеличивается на
+    количество семафоров в новом наборе и на этом инициализация данных
+    ( <a
+     href="lki-5.html#struct_kern_ipc_perm">struct kern_ipc_perm</a>) для нового
+    набора завершается. Дополнительно выполняются следующие
+    действия:</p>
+
+    <ul>
+      <li>В поле <code>sem_base</code> заносится адрес первого семафора
+      в наборе.</li>
+
+      <li>Очередь <code>sem_pending</code> объявляетяс пустой.</li>
+    </ul>
+
+    <p>Все операции, следующие за вызовом <a
+     href="lki-5.html#ipc_addid">ipc_addid()</a>, выполняются под глобальной
+    блокировкой семафоров. После снятия блокировки вызывается <a
+     href="lki-5.html#ipc_buildid">ipc_buildid()</a> (через sem_buildid()). Эта
+    функция создает уникальный ID (используя индекс дескриптора набора
+    семафоров), который и возвращается в вызывающую программу.</p>
+
+    <h3><a
+     name="freeary"></a> freeary()</h3>
+
+    <p>Функция freeary() вызывается из <a
+     href="lki-5.html#semctl_down">semctl_down()</a> для выполнения действий,
+    перечисленных ниже. Вызов функции осуществляется под глобальной
+    блокировкой семафоров, возврат управления происходит со снятой
+    блокировкой.</p>
+
+    <ul>
+      <li>Вызывается <a
+       href="lki-5.html#func_ipc_rmid">ipc_rmid()</a> (через &quot;обертку&quot;
+      sem_rmid()), чтобы удалить ID набора семафоров и получить
+      указатель на набор семафоров.</li>
+
+      <li>Аннулируется список откатов для данного набора семафоров</li>
+
+      <li>Все ожидающие процессы пробуждаются, чтобы получить код
+      ошибки EIDRM.</li>
+
+      <li>Общее количество семафоров уменьшается на количество
+      семафоров в удаляемом наборе.</li>
+
+      <li>Память, занимаемая набором семафоров, освобождается.</li>
+    </ul>
+
+    <h3><a
+     name="semctl_down"></a> semctl_down()</h3>
+
+    <p>Функция semctl_down() предназначена для выполнения операций <a
+     href="lki-5.html#semctl_ipc_rmid">IPC_RMID</a> и <a
+     href="lki-5.html#semctl_ipc_set">IPC_SET</a> системного вызова semctl().
+    Перед выполнением этих операций проверяется ID набора семафоров и
+    права доступа. Обе эти операции выполняются под глобальной
+    блокировкой семафоров.</p>
+
+    <h3><a
+     name="semctl_ipc_rmid"></a> IPC_RMID</h3>
+
+    <p>Операция IPC_RMID вызывает <a
+     href="lki-5.html#freeary">freeary()</a> для удаления набора семафоров.</p>
+
+    <h3><a
+     name="semctl_ipc_set"></a> IPC_SET</h3>
+
+    <p>Операция IPC_SET изменяет элементы <code>uid</code>,
+    <code>gid</code>, <code>mode</code> и <code>ctime</code> в наборе
+    семафоров.</p>
+
+    <h3><a
+     name="semctl_nolock"></a> semctl_nolock()</h3>
+
+    <p>Функция semctl_nolock() вызывается из <a
+     href="lki-5.html#sys_semctl">sys_semctl()</a> для выполнения операций
+    IPC_INFO, SEM_INFO и SEM_STAT.</p>
+
+    <h3><a
+     name="IPC_INFO_and_SEM_INFO"></a> IPC_INFO и SEM_INFO</h3>
+
+    <p>Операции IPC_INFO и SEM_INFO заполняют временный буфер <a
+     href="lki-5.html#struct_seminfo">seminfo</a> статическими данными. Затем под
+    глобальной блокировкой семафора ядра <code>sem_ids.sem</code>
+    заполняются элементы <code>semusz</code> и <code>semaem</code>
+    структуры <a
+     href="lki-5.html#struct_seminfo">seminfo</a> в соответствии с требуемой
+    операцией (IPC_INFO или SEM_INFO) и в качестве результата
+    возвращается максимальный ID.</p>
+
+    <h3><a
+     name="SEM_STAT"></a> SEM_STAT</h3>
+
+    <p>Операция SEM_STAT инициализирует временный буфер <a
+     href="lki-5.html#struct_semid64_ds">semid64_ds</a>. На время копирования
+    значений <code>sem_otime</code>, <code>sem_ctime</code>, и
+    <code>sem_nsems</code> в буфер выполняется глобальная блокировка
+    семафора. И затем данные копируются в пространство
+    пользователя.</p>
+
+    <h3><a
+     name="semctl_main"></a> semctl_main()</h3>
+
+    <p>Функция semctl_main() вызывается из <a
+     href="lki-5.html#sys_semctl">sys_semctl()</a> для выполнения ряда операций,
+    которые описаны ниже. Перед выполнением операций, semctl_main()
+    блокирует семафор и проверяет ID набора семафоров и права доступа.
+    Перед возвратом блокировка снимается.</p>
+
+    <h3><a
+     name="GETALL"></a> GETALL</h3>
+
+    <p>Операция GETALL загружает текущие значения семафора во временный
+    буфер ядра и затем копирует его в пространство пользователя. При
+    небольшом объеме данных, временный буфер размещается на стеке,
+    иначе блокировка временно сбрасывается, чтобы распределить в памяти
+    буфер большего размера. Копирование во временный буфер производится
+    под блокировкой.</p>
+
+    <h3><a
+     name="SETALL"></a> SETALL</h3>
+
+    <p>Операция SETALL копирует значения семафора из пользовательского
+    пространства во временный буфер и затем в набор семафоров. На время
+    копирования из пользовательского пространства во временный буфер и
+    на время проверки значений блокировка сбрасывается. При небольшом
+    объеме данных, временный буфер размещается на стеке, иначе в памяти
+    размещается буфер большего размера. На время выполнения следующих
+    действий блокировка восстанавливается:</p>
+
+    <ul>
+      <li>Информация копируется в набор семафоров.</li>
+
+      <li>Очищается очередь откатов для заданного набора
+      семафоров.</li>
+
+      <li>Устанавливается значение <code>sem_ctime</code> для набора
+      семафоров.</li>
+
+      <li>Вызывается функция <a
+       href="lki-5.html#update_queue">update_queue()</a> , которая проходит по
+      списку ожидающих операций в поисках задач, которые могут быть
+      завершены в результате выполнения операции SETALL. Будятся любые
+      ожидающие задачи, которые больше не нужно блокировать.</li>
+    </ul>
+
+    <h3><a
+     name="IPC_STAT"></a> IPC_STAT</h3>
+
+    <p>Операция IPC_STAT копирует значения <code>sem_otime</code>,
+    <code>sem_ctime</code> и <code>sem_nsems</code> во временный буфер
+    на стеке. После снятия блокировки данные копируются в
+    пользовательское пространство.</p>
+
+    <h3><a
+     name="GETVAL"></a> GETVAL</h3>
+
+    <p>Операция GETVAL возвращает значение заданного семафора.</p>
+
+    <h3><a
+     name="GETPID"></a> GETPID</h3>
+
+    <p>Операция GETPID возвращает <code>pid</code> последней операции,
+    выполненной над семафором.</p>
+
+    <h3><a
+     name="GETNCNT"></a> GETNCNT</h3>
+
+    <p>Операция GETNCNT возвращает число процессов, ожидающих на
+    семафоре, когда тот станет меньше нуля. Это число подсчитывается
+    функцией <a
+     href="lki-5.html#count_semncnt">count_semncnt()</a>.</p>
+
+    <h3><a
+     name="GETZCNT"></a> GETZCNT</h3>
+
+    <p>Операция GETZCNT возвращает число процессов, ожидающих на
+    семафоре, когда тот станет равным нулю. Это число подсчитывается
+    функцией <a
+     href="lki-5.html#count_semzcnt">count_semzcnt()</a>.</p>
+
+    <h3><a
+     name="SETVAL"></a> SETVAL</h3>
+
+    <p>Проверяет новое значение семафора и выполняет следующие
+    действия:</p>
+
+    <ul>
+      <li>В очереди отката отыскиваются любые корректировки данного
+      семафора и эти корректировки сбрасываются в ноль.</li>
+
+      <li>Значение семафора устанавливается в заданное.</li>
+
+      <li>Корректируется значение <code>sem_ctime</code> .</li>
+
+      <li>Вызывается функция <a
+       href="lki-5.html#update_queue">update_queue()</a>, которая проходит по
+      очереди ожидающих операций в поисках тех из них, которые могут
+      быть завершены в результате выполнения операции <a
+       href="lki-5.html#SETVAL">SETVAL</a>. Все задачи которые оказываются больше
+      незаблокированными - пробуждаются.</li>
+    </ul>
+
+    <h3><a
+     name="count_semncnt"></a> count_semncnt()</h3>
+
+    <p>count_semncnt() возвращает число процессов, ожидающих на
+    семафоре, когда тот станет меньше нуля.</p>
+
+    <h3><a
+     name="count_semzcnt"></a> count_semzcnt()</h3>
+
+    <p>count_semzcnt() возвращает число процессов, ожидающих на
+    семафоре, когда тот станет равным нулю.</p>
+
+    <h3><a
+     name="update_queue"></a> update_queue()</h3>
+
+    <p>update_queue() проходит по очереди ожидающих операций заданного
+    набора семафоров и вызывает <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> для каждой
+    последовательности операций. Если статус элемента очереди
+    показывает, что заблокированная задача уже была разбужена, то такой
+    элемент пропускается. В качестве аргумента do_undo в функцию <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> передается флаг
+    <code>q-alter</code>, который указывает на то, что любые изменяющие
+    операции необходимо &quot;откатить&quot; перед возвратом
+    управления.</p>
+
+    <p>Если последовательность операций заблокирована, то
+    update_queue() возвращает управление без внесения каких-либо
+    изменений.</p>
+
+    <p>Последовательность операций может потерпеть неудачу, если в
+    результате какой либо из них семафор примет недопустимое значение
+    или если операция имеющая флаг IPC_NOWAIT не может быть завершена.
+    В таком случае задача, ожидающая выполнения заданной
+    последовательности операций, активируется а в поле статуса очереди
+    заносится соответствующий код ошибки и элемент удаляется из
+    очереди.</p>
+
+    <p>Если последовательность операций не предполагает внесения
+    изменений, то в качестве аргумента do_undo в функцию <a
+     href="lki-5.html#try_atomic_semop">try_atomic_semop()</a> передается ноль.
+    Если выполнение этих операций увенчалось успехом, то они считаются
+    выполненными и удаляются из очереди. Ожидающая задача активируется,
+    а в поле <code>status</code> ей передается признак успешного
+    завершения операций.</p>
+
+    <p>Если последовательность операций, которая предполагает внесение
+    изменений в значение семафоров, признана успешной, то статус
+    очереди принимает значение 1, чтобы активировать задачу.
+    Последовательность операций не выполняется и не удаляется из
+    очереди, она будет выполняться разбуженной задачей.</p>
+
+    <h3><a
+     name="try_atomic_semop"></a> try_atomic_semop()</h3>
+
+    <p>Функция try_atomic_semop() вызывается из <a
+     href="lki-5.html#sys_semop">sys_semop()</a> и <a
+     href="lki-5.html#update_queue">update_queue()</a> и пытается выполнить
+    каждую из операций в последовательности.</p>
+
+    <p>Если была встречена заблокированная операция, то процесс
+    исполнения последовательности прерывается и все операции
+    &quot;откатываются&quot;. Если последовательность имела флаг
+    IPC_NOWAIT, то возвращается код ошибки -EAGAIN. Иначе возвращается
+    1 для индикации того, что последовательность операций
+    заблокирована.</p>
+
+    <p>Если значение семафора вышло за рамки системных ограничений, то
+    выполняется &quot;откат&quot; всех операций и возвращается код
+    ошибки -ERANGE.</p>
+
+    <p>Если последовательность операций была успешно выполнена и при
+    этом аргумент <code>do_undo</code> не равен нулю, то выполняется
+    &quot;откат&quot; всех операций и возвращается 0. Если аргумент
+    <code>do_undo</code> равен нулю, то результат операций остается в
+    силе и обновляется поле <code>sem_otime</code>.</p>
+
+    <h3><a
+     name="sem_revalidate"></a> sem_revalidate()</h3>
+
+    <p>Функция sem_revalidate() вызывается, когда глобальная блокировка
+    семафора временно была снята и необходимо снова ее получить.
+    Вызывается из <a
+     href="lki-5.html#semctl_main">semctl_main()</a> и <a
+     href="lki-5.html#alloc_undo">alloc_undo()</a>. Производит проверку ID
+    семафора и права доступа, в случае успеха выполняет глобальную
+    блокировку семафора.</p>
+
+    <h3><a
+     name="freeundos"></a> freeundos()</h3>
+
+    <p>Функция freeundos() проходит по списку &quot;откатов&quot;
+    процесса в поисках заданной структуры. Если таковая найдена, то она
+    изымается из списка и память, занимаемая ею, освобождается. В
+    качестве результата возвращается указатель на следующую структуру
+    &quot;отката&quot;в списке.</p>
+
+    <h3><a
+     name="alloc_undo"></a> alloc_undo()</h3>
+
+    <p>Вызов функции alloc_undo() должен производиться под
+    установленной глобальной блокировкой семафора. В случае
+    возникновения ошибки - функция завершает работу со снятой
+    блокировкой.</p>
+
+    <p>Перед тем как вызовом kmalloc() распределить память под
+    структуру <a
+     href="lki-5.html#struct_sem_undo">sem_undo</a> и массив корректировок,
+    блокировка снимается. Если память была успешно выделена, то она
+    восстанавливается вызовом <a
+     href="lki-5.html#sem_revalidate">sem_revalidate()</a>.</p>
+
+    <p>Далее новая структура инициализируется, указатель на структуру
+    размещается по адресу, указанному вызывающей программой, после чего
+    структура вставляется в начало списка &quot;откатов&quot; текущего
+    процесса.</p>
+
+    <h3><a
+     name="sem_exit"></a> sem_exit()</h3>
+
+    <p>Функция sem_exit() вызывается из do_exit() и отвечает за
+    выполнение всех &quot;откатов&quot; по завершении процесса.</p>
+
+    <p>Если процесс находится в состоянии ожидания на семафоре, то он
+    удаляется из списка <a
+     href="lki-5.html#struct_sem_queue">sem_queue</a> при заблокированном
+    семафоре.</p>
+
+    <p>Производится просмотр списка &quot;откатов&quot; текущего
+    процесса и для каждого элемента списка выполняются следующие
+    действия:</p>
+
+    <ul>
+      <li>Проверяется структура &quot;отката&quot; и ID набора
+      семафоров.</li>
+
+      <li>В списке &quot;откатов&quot; соответствующего набора
+      семафоров отыскиваются ссылки на структуры, которые удаляются из
+      списка.</li>
+
+      <li>К набору семафоров применяются корректировки из структуры
+      &quot;отката&quot;.</li>
+
+      <li>Обновляется поле <code>sem_otime</code> в наборе
+      семафоров.</li>
+
+      <li>Вызывается <a
+       href="lki-5.html#update_queue">update_queue()</a>, которая просматривает
+      список отложенных операций и активирует задачи, которые могут
+      быть разблокированы в результате &quot;отката&quot;.</li>
+
+      <li>Память, занимаемая структурой, освобождается.</li>
+    </ul>
+
+    <p>По окончании обработки списка очищается поле
+    current-&gt;semundo.</p>
+
+    <h2><a
+     name="message"></a> <a
+     name="ss5.2">5.2 Очереди сообщений</a></h2>
+
+    <h3><a
+     name="Message_System_Call_Interfaces"></a> Интерфейс системных
+    вызовов</h3>
+
+    <h3><a
+     name="sys_msgget"></a> sys_msgget()</h3>
+
+    <p>На входе в sys_msgget() захватывается глобальный семафор очереди
+    сообщений ( <a
+     href="lki-5.html#struct_ipc_ids">msg_ids.sem</a>).</p>
+
+    <p>Для создания новой очереди сообщений вызывается функция <a
+     href="lki-5.html#newque">newque()</a>, которая создает и инициализирует
+    новую очередь и возвращает ID новой очереди.</p>
+
+    <p>Если значение параметра key представляет существующую очередь,
+    то вызывается <a
+     href="lki-5.html#ipc_findkey">ipc_findkey()</a> для поиска соответствующего
+    индекса в глобальном массиве дескрипторов очередей сообщений
+    (msg_ids.entries). перед возвратом ID очереди производится проверка
+    параметров и прав доступа. И поиск и проверки выполняются под
+    блокировкой (msg_ids.ary).</p>
+
+    <h3><a
+     name="sys_msgctl"></a> sys_msgctl()</h3>
+
+    <p>Функции sys_msgctl() передаются следующие параметры: ID очереди
+    сообщений (<code>msqid</code>), код операции (<code>cmd</code>) и
+    указатель на буфер в пользовательском пространстве типа <a
+     href="lki-5.html#struct_msqid_ds">msgid_ds</a> (<code>buf</code>). Функция
+    принимает шесть кодов операций: IPC_INFO, MSG_INFO,IPC_STAT,
+    MSG_STAT, IPC_SET и IPC_RMID. После проверки ID очереди и кода
+    операции выполняются следующие действия:</p>
+
+    <h3><a
+     name="msgctl_IPCINFO"></a> IPC_INFO ( или MSG_INFO)</h3>
+
+    <p>Глобальная информация очереди сообщений копируется в
+    пользовательское пространство.</p>
+
+    <h3><a
+     name="msgctl_IPCSTAT"></a> IPC_STAT ( или MSG_STAT)</h3>
+
+    <p>Инициализируется временный буфер типа <a
+     href="lki-5.html#struct_msqid64_ds">struct msqid64_ds</a> и выполняется
+    глобальная блокировка очереди сообщений. После проверки прав
+    доступа вызывающего процесса во временный буфер записывается
+    информация о заданной очереди и глобальная блокировка очереди
+    сообщений освобождается. Содержимое буфера копируется в
+    пользовательское пространство вызовом <a
+     href="lki-5.html#copy_msqid_to_user">copy_msqid_to_user()</a>.</p>
+
+    <h3><a
+     name="msgctl_IPCSET"></a> IPC_SET</h3>
+
+    <p>Пользовательские данные копируются через вызов <a
+     href="lki-5.html#copy_msqid_to_user">copy_msqid_to_user()</a>. Производится
+    захват глобального семафора очереди сообщений и устанавливается
+    блокировка очереди, которые в конце отпускаются. После проверки ID
+    очереди и прав доступа текущего процесса, производится обновление
+    информации. Далее, вызовом <a
+     href="lki-5.html#expunge_all">expunge_all()</a> и <a
+     href="lki-5.html#ss_wakeup">ss_wakeup()</a> активируются все
+    процессы-получатели и процессы-отправители, находящиеся в очередях
+    ожидания msq-&gt;q_receivers и msq-&gt;q_senders соответственно.
+    <!--
+            This is because some receivers may now be excluded
+            by stricter access permissions and some senders may now be able to
+            send the message due to an increased queue size.
+        --></p>
+
+    <h3><a
+     name="msgctl_IPCRMID"></a> IPC_RMID</h3>
+
+    <p>Захватывается глобальный семафор очереди сообщений и
+    устанавливается глобальная блокировка очереди сообщений. После
+    проверки ID очереди и прав доступа текущего процесса вызывается
+    функция <a
+     href="lki-5.html#freeque">freeque()</a>, которая освобождает ресурсы,
+    занятые очередью. После этого глобальный семафор и глобальная
+    блокировка отпускаются.</p>
+
+    <h3><a
+     name="sys_msgsnd"></a> sys_msgsnd()</h3>
+
+    <p>Функция sys_msgsnd() принимает через входные параметры ID
+    очереди сообщений (<code>msqid</code>), указатель на буфер типа <a
+     href="lki-5.html#struct_msg_msg">struct msg_msg</a> (<code>msgp</code>),
+    размер передаваемого сообщения (<code>msgsz</code>) и флаг -
+    признак разрешения перехода процесса в режим ожидания
+    (<code>msgflg</code>). Каждая очередь сообщений имеет две очереди
+    ожидания для процессов и одну очередь ожидающих сообщений. Если в
+    очереди ожидания имеется процесс, ожидающий данное сообщение
+    (<code>msgp</code>), то это сообщение передается непосредственно
+    ожидающему процессу, после чего процесс-получатель
+    &quot;пробуждается&quot;. В противном случае производится проверка
+    - достаточно ли места в очереди ожидающих сообщений и если
+    достаточно, то сообщение сохраняется в этой очереди. Если же места
+    недостаточно, то процесс-отправитель ставится в очередь ожидания.
+    Более подробное освещение этих действий приводится ниже:</p>
+
+    <ol>
+      <li>Производится проверка адреса пользовательского буфера и типа
+      сообщения, после чего содержимое буфера копируется вызовом <a
+       href="lki-5.html#load_msg">load_msg()</a> во временный буфер <code><a
+       name="msg"></a> msg</code> типа <a
+       href="lki-5.html#struct_msg_msg">struct msg_msg</a>. Инициализируются поле
+      типа сообщения и поле размера сообщения.</li>
+
+      <li>Выполняется глобальная блокировка очереди сообщений и по ID
+      очереди отыскивается ее дескриптор. Если такой очереди не было
+      найдено, то в вызывающую программу возвращается код ошибки
+      EINVAL.</li>
+
+      <li><a
+       name="sndretry"></a> В функции <a
+       href="lki-5.html#ipc_checkid">ipc_checkid()</a> (вызывается из
+      msg_checkid()) проверяется ID очереди сообщений и права доступа
+      процесса вызовом <a
+       href="lki-5.html#ipcperms">ipcperms()</a>.</li>
+
+      <li>
+        Производится проверка - достаточно ли места в очереди ожидающих
+        сообщений для помещения туда данного сообщения. Если места
+        недостаточно, то выполняются следующие действия:
+
+        <ol>
+          <li>Если установлен флаг IPC_NOWAIT (в <code>msgflg</code>)
+          то глобальная блокировка очереди сообщений снимается, память,
+          занимаемая сообщением, освобождается и возвращается код
+          ошибки EAGAIN.</li>
+
+          <li>Вызовом <a
+           href="lki-5.html#ss_add">ss_add()</a> текущий процесс помещается в
+          очередь ожидания для процессов-отправителей. Так же снимается
+          блокировкаи вызывается планировщик schedule() который
+          переведет процесс в состояние &quot;сна&quot;.</li>
+
+          <li>После &quot;пробуждения&quot; снова выполняется
+          глобальная блокировка очереди сообщений и проверяется ID
+          очереди сообщений. Если во время &quot;сна&quot; очередь была
+          удалена, то процессу возвращается признак ERMID.</li>
+
+          <li>Если для данного процесса имеются какие либо сигналы,
+          ожидающие обработки, то вызовом <a
+           href="lki-5.html#ss_del">ss_del()</a> процесс изымается из очереди
+          ожидания для процессов-отправителей, блокировка снимается,
+          вызывается <a
+           href="lki-5.html#free_msg">free_msg()</a> для освобождения буфера
+          сообщения и процессу возвращается код EINTR. Иначе
+          осуществляется переход <a
+           href="lki-5.html#sndretry">обратно (к п.3)</a> на выполнение
+          необходимых проверок.</li>
+        </ol>
+      </li>
+
+      <li>Для передачи сообщения напрямую процессу-получателю
+      вызывается <a
+       href="lki-5.html#pipelined_send">pipelined_send()</a> .</li>
+
+      <li>Если процессов-получателей, ожидающих данное сообщение, не
+      было обнаружено, то сообщение <code>msg</code> помещается в
+      очередь ожидающих сообщений (msq-&gt;q_messages). Обновляются
+      поля <code>q_cbytes</code> и <code>q_qnum</code> в дескрипторе
+      очереди сообщений, а так же глобальные переменные
+      <code>msg_bytes</code> и <code>msg_hdrs</code>, содержащие в себе
+      общий объем сообщений в байтах и общее количество сообщений.</li>
+
+      <li>Если сообщение было благополучно передано процессу-получателю
+      либо поставлено в очередь, то обновляются поля
+      <code>q_lspid</code> и <code>q_stime</code> в дескрипторе очереди
+      и освобождается глобальная блокировка.</li>
+    </ol>
+
+    <h3><a
+     name="sys_msgrcv"></a> sys_msgrcv()</h3>
+
+    <p>На вход функции sys_msgrcv() передаются ID очереди
+    (<code>msqid</code>), указатель на буфер типа <a
+     href="lki-5.html#struct_msg_msg">msg_msg</a> (<code>msgp</code>),
+    предполагаемый размер сообщения (<code>msgsz</code>), тип сообщения
+    (<code>msgtyp</code>) и флаги (<code>msgflg</code>). Функция, по
+    очереди ожидающих сообщений, ищет сообщение с заданным типом и
+    первое же найденное сообщение копирует в пользовательский буфер.
+    Если сообщения с заданным типом не обнаружено, то
+    процесс-получатель заносится в очередь ожидания для
+    процессов-получателей и остается там до тех пор, пока не будет
+    получено ожидаемое сообщение. Более подробное описание действий
+    функции sys_msgrcv() приводится ниже:</p>
+
+    <ol>
+      <li>В первую очередь вызывается функция <a
+       href="lki-5.html#convert_mode">convert_mode()</a>, которая устанавливает
+      режим поиска, исходя из значения <code>msgtyp</code>. Далее
+      выполняется глобальная блокировка очереди сообщений и находится
+      дескриптор очереди по заданному ID. Если искомая очередь
+      сообщений не найдена, то возвращается код ошибки EINVAL.</li>
+
+      <li>Проверяются права доступа текущего процесса.</li>
+
+      <li><a
+       name="rcvretry"></a> Для каждого сообщения, начиная с первого, в
+      очереди ожидающих сообщений вызывается <a
+       href="lki-5.html#testmsg">testmsg()</a>, которая проверяет тип сообщения
+      на соответствие заданному. Поиск продолжается до тех пор пока
+      искомое сообщение не будет найдено либо пока не будет встречен
+      конец очереди. Если режим поиска задан как SEARCH_LESSEQUAL, то
+      результатом поиска будет первое же встретившееся сообщение с
+      типом равным или меньшим <code>msgtyp</code>.</li>
+
+      <li>
+        Если сообщение, удовлетворяющее критериям поиска, было найдено,
+        то далее выполняются следующие действия:
+
+        <ol>
+          <li>Если размер сообщения больше чем ожидаемый и установлен
+          флаг MSG_NOERROR, то глобальная блокировка снимается и в
+          вызывающий процесс передается код E2BIG.</li>
+
+          <li>Сообщение удаляется из очереди ожидающих сообщений и
+          обновляются статистики очереди сообщений.</li>
+
+          <li>Активируются процессы, находящиеся в очереди ожидания для
+          процессов-отправителей. Удаление сообщения из очереди на
+          предыдущем шаге делает возможным продолжить работу одному из
+          процессов-отправителей. Переход к выполнению <a
+           href="lki-5.html#laststep">заключительных</a> операций (к п. 10)</li>
+        </ol>
+      </li>
+
+      <li>
+        Если сообщение не было найдено, то проверяется
+        <code>msgflg</code>. Если установлен флаг IPC_NOWAIT, то
+        глобальная блокировка снимается и вызывающему процессу
+        возвращается код ENOMSG. В противном случае процесс помещается
+        в очередь ожидания для процессов-получателей:
+
+        <ol>
+          <li>В памяти размещается новая структура <a
+           href="lki-5.html#struct_msg_receiver">msg_receiver</a>
+          <code>msr</code> и добавляется в начало очереди
+          ожидания.</li>
+
+          <li>В поле <code>r_tsk</code> в <code>msr</code> заносится
+          указатель на текущий процесс.</li>
+
+          <li>В поле <code>r_msgtype</code> и <code>r_mode</code>
+          заносятся ожидаемый тип сообщения и режим поиска
+          соответственно.</li>
+
+          <li>Если установлен флаг MSG_NOERROR, то в поле r_maxsize
+          заносится значение из <code>msgsz</code>, в противном случае
+          - значение INT_MAX.</li>
+
+          <li>В поле <code>r_msg</code> заносится признак того, что
+          сообщение не найдено.</li>
+
+          <li>После завершения инициализации, процесс приобретает
+          статус TASK_INTERRUPTIBLE, глобальная блокировка очереди
+          сообщений снимается и вызывается планировщик schedule().</li>
+        </ol>
+      </li>
+
+      <li>После активизации ожидающего процесса сразу же проверяется
+      поле <code>r_msg</code>. Это поле содержит либо сообщение
+      переданное напрямую, либо код ошибки. Если поле содержит
+      сообщение то далее переходим к <a
+       href="lki-5.html#laststep">заключительным</a> операциям (к п. 10). В
+      противном случае - опять выполняется глобальная блокировка.</li>
+
+      <li>После того как блокировка установлена, поле
+      <code>r_msg</code> проверяется еще раз. Если в процессе установки
+      блокировки было получено сообщение, то производится переход к <a
+       href="lki-5.html#laststep">заключительным</a> операциям (к п. 10).</li>
+
+      <li>Если поле <code>r_msg</code> осталось без изменений, то,
+      следовательно, процесс был активирован для выполнения повторной
+      попытки получить сообщение. Проверяется наличие необработанных
+      сигналов для данного процесса и если таковые имеются, то
+      глобальная блокировка снимается и процессу возвращается код
+      EINTR. Иначе - производится <a
+       href="lki-5.html#rcvretry">повторная</a> попытка получить сообщение.</li>
+
+      <li>Если поле <code>r_msg</code> содержит код ошибки, то
+      снимается глобальная блокировка и процессу передается
+      ошибка.</li>
+
+      <li><a
+       name="laststep"></a> После проверки адреса пользовательского
+      буфера <code>msp</code>, тип сообщения записывается в
+      <code>mtype</code> и содержимое сообщения копируется в поле
+      <code>mtext</code> функцией <a
+       href="lki-5.html#store_msg">store_msg()</a>. И в заключение освобождается
+      память вызовом функции <a
+       href="lki-5.html#free_msg">free_msg()</a>.</li>
+    </ol>
+
+    <h3><a
+     name="datastructs"></a> Структуры очередей сообщений</h3>
+
+    <p>Структуры данных механизма очередей сообщений определены в
+    msg.c.</p>
+
+    <h3><a
+     name="struct_msg_queue"></a> struct msg_queue</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* по одной структуре msq_queue на каждую очередь сообщений в системе */
+struct msg_queue {
+        struct kern_ipc_perm q_perm;
+        time_t q_stime;                 /* время последнего вызова msgsnd */
+        time_t q_rtime;                 /* время последнего вызова msgrcv */
+        time_t q_ctime;                 /* время последнего изменения */
+        unsigned long q_cbytes;         /* текущий размер очереди в байтах */
+        unsigned long q_qnum;           /* количество сообщений в очереди */
+        unsigned long q_qbytes;         /* максимальный размер очереди в байтах */
+        pid_t q_lspid;                  /* pid последнего процесса вызвавшего msgsnd */
+        pid_t q_lrpid;                  /* pid последнего процесса-получателя */
+
+        struct list_head q_messages;
+        struct list_head q_receivers;
+        struct list_head q_senders;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msg_msg"></a> struct msg_msg</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* по одной структуре на каждое сообщение */
+struct msg_msg {
+        struct list_head m_list;
+        long  m_type;
+        int m_ts;           /* размер сообщения */
+        struct msg_msgseg* next;
+        /* Далее следует само сообщение */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msg_msgseg"></a> struct msg_msgseg</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* сегмент сообщения на каждое сообщение */
+struct msg_msgseg {
+        struct msg_msgseg* next;
+        /* Далее следует остальная часть сообщения */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msg_sender"></a> struct msg_sender</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* по одной структуре msg_sender на каждый ожидающий процесс-отправитель */
+struct msg_sender {
+        struct list_head list;
+        struct task_struct* tsk;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msg_receiver"></a> struct msg_receiver</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* по одной структуре msg_receiver на каждый ожидающий процесс-получатель */
+struct msg_receiver {
+        struct list_head r_list;
+        struct task_struct* r_tsk;
+
+        int r_mode;
+        long r_msgtype;
+        long r_maxsize;
+
+        struct msg_msg* volatile r_msg;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msqid64_ds"></a> struct msqid64_ds</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct msqid64_ds {
+        struct ipc64_perm msg_perm;
+        __kernel_time_t msg_stime;      /* время последнего вызова msgsnd */
+        unsigned long   __unused1;
+        __kernel_time_t msg_rtime;      /* время последнего вызова msgrcv */
+        unsigned long   __unused2;
+        __kernel_time_t msg_ctime;      /* время последнего изменения */
+        unsigned long   __unused3;
+        unsigned long  msg_cbytes;      /* текущий размер очереди в байтах */
+        unsigned long  msg_qnum;        /* количество сообщений в очереди */
+        unsigned long  msg_qbytes;      /* максимальный размер очереди в байтах */
+        __kernel_pid_t msg_lspid;       /* pid процесса последним вызвавшего msgsnd */
+        __kernel_pid_t msg_lrpid;       /* pid последнего процесса-получателя */
+        unsigned long  __unused4;
+        unsigned long  __unused5;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_msqid_ds"></a> struct msqid_ds</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct msqid_ds {
+        struct ipc_perm msg_perm;
+        struct msg *msg_first;          /* первое сообщение в очереди, не используется  */
+        struct msg *msg_last;           /* последнее сообщение в очереди, не используется*/
+        __kernel_time_t msg_stime;      /* время последнего вызова msgsnd */
+        __kernel_time_t msg_rtime;      /* время последнего вызова msgrcv */
+        __kernel_time_t msg_ctime;      /* время последнего изменения */
+        unsigned long  msg_lcbytes;     /* Используется для временного хранения 32 бит */
+        unsigned long  msg_lqbytes;     /* то же */
+        unsigned short msg_cbytes;      /* текущий размер очереди в байтах */
+        unsigned short msg_qnum;        /* количество сообщений в очереди */
+        unsigned short msg_qbytes;      /* максимальный размер очереди в байтах */
+        __kernel_ipc_pid_t msg_lspid;   /* pid процесса последним вызвавшего msgsnd */
+        __kernel_ipc_pid_t msg_lrpid;   /* pid последнего процесса-получателя */
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="msg_setbuf"></a> msg_setbuf</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct msq_setbuf {
+        unsigned long   qbytes;
+        uid_t           uid;
+        gid_t           gid;
+        mode_t          mode;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="msgfuncs"></a> Функции поддержки механизма очередей
+    сообщений</h3>
+
+    <h3><a
+     name="newque"></a> newque()</h3>
+
+    <p>Функция newque() размещает в памяти новый дескриптор очереди
+    сообщений (<a
+     href="lki-5.html#struct_msg_queue">struct msg_queue</a>) и вызывает <a
+     href="lki-5.html#ipc_addid">ipc_addid()</a>, которая резервирует элемент
+    массива очередей сообщений за новым дескриптором. Дескриптор
+    очереди сообщений инициализируется следующим образом:</p>
+
+    <ul>
+      <li>Инициализируется структура <a
+       href="lki-5.html#struct_kern_ipc_perm">kern_ipc_perm</a>.</li>
+
+      <li>В поля <code>q_stime</code> и <code>q_rtime</code>
+      дескриптора заносится число 0. В поле <code>q_ctime</code>
+      заносится CURRENT_TIME.</li>
+
+      <li>Максимальный размер очереди в байтах (<code>q_qbytes</code>)
+      устанавливается равным MSGMNB, текущий размер очереди в байтах
+      (<code>q_cbytes</code>) устанавливается равным нулю.</li>
+
+      <li>Очередь ожидающих сообщений (<code>q_messages</code>),
+      очередь ожидания процессов-получателей (<code>q_receivers</code>)
+      и очередь ожидания процессов-отправителей
+      (<code>q_senders</code>) объявляются пустыми.</li>
+    </ul>
+
+    <p>Все действия, следующие за вызовом <a
+     href="lki-5.html#ipc_addid">ipc_addid()</a>, выполняются под глобальной
+    блокировкой очереди сообщений. После снятия блокировки вызывается
+    msg_buildid(), которая является отображением <a
+     href="lki-5.html#ipc_buildid">ipc_buildid()</a>. Функция <a
+     href="lki-5.html#ipc_buildid">ipc_buildid()</a> возвращает уникальный ID
+    очереди сообщений, построенный на основе индекса дескриптора.
+    Результатом работы newque() является ID очереди.</p>
+
+    <h3><a
+     name="freeque"></a> freeque()</h3>
+
+    <p>Функция freeque() предназначена для удаления очереди сообщений.
+    Функция полагает, что блокировка очереди сообщений уже выполнена.
+    Она освобождает все ресурсы, связанные с данной очередью. Сначала
+    вызывается <a
+     href="lki-5.html#func_ipc_rmid">ipc_rmid()</a> (через msg_rmid()) для
+    удаления дескриптора очереди из массива дескрипторов. Затем
+    вызывается <a
+     href="lki-5.html#expunge_all">expunge_all</a> для активизации
+    процессов-получателей и <a
+     href="lki-5.html#ss_wakeup">ss_wakeup()</a> для активизации
+    процессов-отправителей, находящихся в очередях ожидания. Снимается
+    блокировка очереди. Все сообщения из очереди удаляются и
+    освобождается память, занимаемая дескриптором очереди.</p>
+
+    <h3><a
+     name="ss_wakeup"></a> ss_wakeup()</h3>
+
+    <p>Функция ss_wakeup() активизирует все процессы-отправители,
+    стоящие в заданной очереди ожидания. Если функция вызывается из <a
+     href="lki-5.html#freeque">freeque()</a>, то процессы исключаются из очереди
+    ожидания.</p>
+
+    <h3><a
+     name="ss_add"></a> ss_add()</h3>
+
+    <p>Функция ss_add() принимает в качестве входных параметров
+    указатель на дескриптор очереди сообщений и указатель на структуру
+    msg_sender. Она заносит в поле <code>tsk</code> указатель на
+    текущий процесс, изменяет статус процесса на TASK_INTERRUPTIBLE
+    после чего вставляет структуру msg_sender в начало очереди ожидания
+    процессов-отправителей заданной очереди сообщений.</p>
+
+    <h3><a
+     name="ss_del"></a> ss_del()</h3>
+
+    <p>Удаляет процесс-отправитель из очереди ожидания.</p>
+
+    <h3><a
+     name="expunge_all"></a> expunge_all()</h3>
+
+    <p>В функцию expunge_all() передаются дескриптор очереди сообщений
+    (<code>msq</code>) и целочисленное значение (<code>res</code>)
+    которое определяет причину активизации процесса-получателя. Для
+    каждого процесса-получателя из соответствующей очереди ожидания в
+    поле <code>r_msg</code> заносится число <code>res</code>, после
+    чего процесс активируется. Эта функция вызывается в случае
+    ликвидации очереди сообщений или в случае выполнения операций
+    управления очередью сообщений.</p>
+
+    <h3><a
+     name="load_msg"></a> load_msg()</h3>
+
+    <p>Всякий раз, когда процесс передает сообщение, из функции <a
+     href="lki-5.html#sys_msgsnd">sys_msgsnd()</a>, вызывается load_msg(),
+    которая копирует сообщение из пользовательского пространства в
+    пространство ядра. В пространстве ядра сообщение представляется как
+    связный список блоков данных. В первом блоке размещается структура
+    <a
+     href="lki-5.html#struct_msg_msg">msg_msg</a>. Размер блока данных,
+    ассоциированного со структурой msg_msg, ограничен числом
+    DATA_MSG_LEN. Блок данных и структура размещаются в непрерывном
+    куске памяти, который не может быть больше одной страницы памяти.
+    Если все сообщение не умещается в первый блок, то в памяти
+    размещаются дополнительные блоки и связываются в список. Размер
+    дополнительных блоков ограничен числом DATA_SEG_LEN и каждый из низ
+    включает в себя структуру <a
+     href="lki-5.html#struct_msg_msgseg">msg_msgseg)</a> и связанный блок данных.
+    Блок данных и структура msg_msgseg размещаются в непрерывном куске
+    памяти, который не может быть больше одной страницы памяти. В
+    случае успеха функция возвращает адрес новой структуры <a
+     href="lki-5.html#struct_msg_msg">msg_msg</a>.</p>
+
+    <h3><a
+     name="store_msg"></a> store_msg()</h3>
+
+    <p>Функция store_msg() вызывается при передаче сообщения в
+    пользовательское пространство. Данные, описываемые структурами <a
+     href="lki-5.html#struct_msg_msg">msg_msg</a> и <a
+     href="lki-5.html#struct_msg_msgseg">msg_msgseg</a> последовательно
+    копируются в пользовательский буфер.</p>
+
+    <h3><a
+     name="free_msg"></a> free_msg()</h3>
+
+    <p>Функция free_msg() освобождает память, занятую сообщением
+    (структурой <a
+     href="lki-5.html#struct_msg_msg">msg_msg</a> и сегментами сообщения).</p>
+
+    <h3><a
+     name="convert_mode"></a> convert_mode()</h3>
+
+    <p>convert_mode() вызывается из <a
+     href="lki-5.html#sys_msgrcv">sys_msgrcv()</a>. В качестве входных параметров
+    получает указатель на тип сообщения (<code>msgtyp</code>) и флаг
+    (<code>msgflg</code>). Возвращает режим поиска отталкиваясь от
+    значения <code>msgtyp</code> и <code>msgflg</code>. Если в качестве
+    <code>msgtyp</code> передан NULL, то возвращается SEARCH_ANY. Если
+    <code>msgtyp</code> меньше нуля, то в <code>msgtyp</code> заносится
+    абсолютное значение <code>msgtyp</code> и возвращается
+    SEARCH_LESSEQUAL. Если в <code>msgflg</code> установлен флаг
+    MSG_EXCEPT, то возвращается SEARCH_NOTEQUAL, иначе -
+    SEARCH_EQUAL.</p>
+
+    <h3><a
+     name="testmsg"></a> testmsg()</h3>
+
+    <p>Функция testmsg() проверяет сообщение на соответсвтвие заданным
+    критериям. Возвращает 1, если следующие условия соблюдены:</p>
+
+    <ul>
+      <li>Режим поиска - SEARCH_ANY.</li>
+
+      <li>Режим поиска - SEARCH_LESSEQUAL и сообщение имеет тип меньший
+      либо равный требуемому.</li>
+
+      <li>Ркжим поиска - SEARCH_EQUAL и тип сообщения равен
+      требуемому.</li>
+
+      <li>Режим поиска - SEARCH_NOTEQUAL и тип сообщения не равен
+      требуемому.</li>
+    </ul>
+
+    <h3><a
+     name="pipelined_send"></a> pipelined_send()</h3>
+
+    <p>pipelined_send() позволяет процессам передать сообщение напрямую
+    процессам-получателям минуя очередь ожидания. Вызывает <a
+     href="lki-5.html#testmsg">testmsg()</a> в процессе помска
+    процесса-получателя, ожидающего данное сообщение. Если таковой
+    найден, то он удаляется из очереди ожидания для
+    процессов-получателей и активируется. Сообщение передается процессу
+    через поле <code>r_msg</code> получателя. Если сообщение было
+    передано получателю, то функция &gt;pipelined_send() возвращает 1.
+    Если процесса-получателя для данного сообщения не нашлось, то
+    возвращается 0.</p>
+
+    <p>Если в процессе поиска обнаруживаются получатели, заявившие
+    размер ожидаемого сообщения меньше имеющегося, то такие процессы
+    изымаются из очереди, активируются и им передается код E2BIG через
+    поле <code>r_msg</code>. Поиск продолжается до тех пор пока не
+    будет найден процесс-получатель, соответствующий всем требованиям,
+    либо пока не будет достигнут конец очереди ожидания.</p>
+
+    <h3><a
+     name="copy_msqid_to_user"></a> copy_msqid_to_user()</h3>
+
+    <p>copy_msqid_to_user() копирует содержимое буфера ядра в
+    пользовательский буфер. На входе получает пользовательский буфер,
+    буфер ядра типа <a
+     href="lki-5.html#struct_msqid64_ds">msqid64_ds</a> и флаг версии IPC. Если
+    флаг имеет значение IPC_64 то копирование из буфера ядра в
+    пользовательский буфер производится напрямую, в противном случае
+    инициализируется временный буфер типа msqid_ds и данные из буфера
+    ядра переносятся во временный буфер, после чего содержимое
+    временного буфера копируется в буфер пользователя.</p>
+
+    <h3><a
+     name="copy_msqid_from_user"></a> copy_msqid_from_user()</h3>
+
+    <p>Функция copy_msqid_from_user() получает на входе буфер ядра для
+    сообщения типа struct msq_setbuf, пользовательский буфер и флаг
+    версии IPC. В случае IPC_64, copy_from_user() производит
+    копирование данных из пользовательского буфера во временный буфер
+    типа <a
+     href="lki-5.html#struct_msqid64_ds">msqid64_ds</a>, после этого заполняются
+    поля <code>qbytes</code>,<code>uid</code>, <code>gid</code> и
+    <code>mode</code> в буфере ядра в соответствии со значениями в
+    промежуточном буфере. В противном случае, в качестве временного
+    буфера используется struct <a
+     href="lki-5.html#struct_msqid_ds">msqid_ds</a>.</p>
+
+    <h2><a
+     name="sharedmem"></a> <a
+     name="ss5.3">5.3 Разделяемая память</a></h2>
+
+    <h3><a
+     name="Shared_Memory_System_Call_Interfaces"></a> Интерфейс
+    системных вызовов</h3>
+
+    <h3><a
+     name="sys_shmget"></a> sys_shmget()</h3>
+
+    <p>Вызов sys_shmget() регулируется глобальным семаформ разделяемой
+    памяти.</p>
+
+    <p>В случае необходимости создания нового сегмента разделяемой
+    памяти, вызывается функция <a
+     href="lki-5.html#newseg">newseg()</a>, которая создает и инициализирует
+    новый сегмент. ID нового сегмента передается в вызывающую
+    программу.</p>
+
+    <p>В случае, когда значение входного параметра key соответствует
+    существующему сегменту, то отыскивается соответствующий индекс в
+    массиве дескрипторов и перед возвратом ID сегмента разделяемой
+    памяти производится проверка входных параметров и прав доступа
+    вызывающего процесса. Поиск и проверка производятся под глобальной
+    блокировкой разделяемой памяти.</p>
+
+    <h3><a
+     name="sys_shmctl"></a> sys_shmctl()</h3>
+
+    <h3><a
+     name="IPC_INFO"></a> IPC_INFO</h3>
+
+    <p>Временный буфер <a
+     href="lki-5.html#struct_shminfo64">shminfo64</a> заполняется
+    соответствующими значениями и затем копируется в пользовательское
+    пространство вызвавшего приложения.</p>
+
+    <h3><a
+     name="SHM_INFO"></a> SHM_INFO</h3>
+
+    <p>На время сбора статистической информации по разделяемой памяти,
+    производится захват глобального семафора и глобальной блокировки
+    разделяемой памяти. Для подсчета количества страниц, резмещенных
+    резидентно в памяти и количества страниц на устройстве свопинга,
+    вызывается <a
+     href="lki-5.html#shm_get_stat">shm_get_stat()</a>. Дополнительно
+    подсчитываются общее количество страниц разделяемой памяти и
+    количество используемых сегментов. Количество
+    <code>swap_attempts</code> и <code>swap_successes</code> жестко
+    зашито в 0. Эти статистики заносятся во временный буфер <a
+     href="lki-5.html#struct_shm_info">shm_info</a> и затем копируются в
+    пользовательское пространство вызывающего приложения.</p>
+
+    <h3><a
+     name="SHM_STAT_IPC_STAT"></a> SHM_STAT, IPC_STAT</h3>
+
+    <p>Для выполнения SHM_STAT и IPC_STAT инициализируется временный
+    буфер типа <a
+     href="lki-5.html#struct_shmid64_ds">struct shmid64_ds</a> и выполняется
+    глобальная блокировка разделяемой памяти.</p>
+
+    <p>Для случая SHM_STAT, параметр ID сегмента разделяемой памяти
+    трактуется как простой индекс (т.е. как число в диапазоне от 0 до
+    N, где N - количество зарегистрированных ID в системе). После
+    проверки индекса вызывается <a
+     href="lki-5.html#ipc_buildid">ipc_buildid()</a> (через shm_buildid()) для
+    преобразования индекса в ID разделяемой памяти, который в данном
+    случае и будет возвращаемым значением. Примечательно, что это
+    обстоятельство не документировано, но используется для поддержки
+    программы ipcs(8).</p>
+
+    <p>Для случая IPC_STAT, параметр ID сегмента разделяемой памяти
+    трактуется как нормальный ID, сгенерированный вызовом <a
+     href="lki-5.html#sys_shmget">shmget()</a>. Перед продолжением работы ID
+    проверяется на корректность. В данном случае в качестве результата
+    будет возвращен 0.</p>
+
+    <p>Для обоих случаев SHM_STAT и IPC_STAT, проверяются права доступа
+    вызывающей программы. Требуемые статистики загружаются во временный
+    буфер и затем передаются в вызывающую программу.</p>
+
+    <h3><a
+     name="SHM_LOCK_SHM_UNLOCK"></a> SHM_LOCK, SHM_UNLOCK</h3>
+
+    <p>После проверки прав доступа выполняется глобальная блокировка
+    разделяемой памяти и проверяется ID сегмента разделяемой памяти.
+    Для выполнения обеих операций вызывается <a
+     href="lki-5.html#shmem_lock">shmem_lock()</a>. Параметры, передаваемые
+    функции <a
+     href="lki-5.html#shmem_lock">shmem_lock()</a> однозначно определяют
+    выполняемую операцию.</p>
+
+    <h3><a
+     name="IPC_RMID"></a> IPC_RMID</h3>
+
+    <p>В ходе выполнения этой операции, глобальный семафор разделяемой
+    памяти и глобальная блокировка удерживаются постоянно. Проверяется
+    ID и затем, если в настоящий момент нет соединений с разделяемой
+    памятью - вызывается <a
+     href="lki-5.html#shm_destroy">shm_destroy()</a> для ликвидации сегмента.
+    Иначе - устанавливается флаг SHM_DEST, чтобы пометить сегмент как
+    предназначенный к уничтожению и флаг IPC_PRIVATE, чтобы исключить
+    возможность получения ссылки на ID из других процессов.</p>
+
+    <h3><a
+     name="IPC_SET"></a> IPC_SET</h3>
+
+    <p>После проверки ID сегмента разделяемой памяти и прав доступа,
+    <code>uid</code>, <code>gid</code> и флаги <code>mode</code>
+    сегмента модифицируются данными пользователя. Так же обновляется и
+    поле <code>shm_ctime</code>. Все изменения производятся после
+    захвата глобального семафора разделяемой памяти и при установленной
+    блокировке.</p>
+
+    <h3><a
+     name="sys_shmat"></a> sys_shmat()</h3>
+
+    <p>Функция sys_shmat() принимает в качестве параметров ID сегмента
+    разделяемой памяти, адрес по которому должен быть присоединен
+    сегмент (<code>shmaddr</code>) и флаги, котроые описаны ниже.</p>
+
+    <p>Если параметр <code>shmaddr</code> не нулевой и установлен флаг
+    SHM_RND, то <code>shmaddr</code> округляется &quot;вниз&quot; до
+    ближайшего кратного SHMLBA. Если <code>shmaddr</code> не кратен
+    SHMLBA и флаг SHM_RND не установлен, то возвращается код ошибки
+    EINVAL.</p>
+
+    <p>Производится проверка прав доступа вызывающего процесса, после
+    чего поле <code>shm_nattch</code> сегмента разделяемой памяти
+    увеличивается на 1. Увеличение этого поля гарантирует сегмент
+    разделяемой памяти от ликвидации, пока он присоединен к сегменту
+    памяти процесса. Эти операции выполняются после установки
+    глобальной блокировки разделяемой памяти.</p>
+
+    <p>Вызывается функция do_mmap(), которая отображает страницы
+    сегмента разделяемой памяти на виртуальное адресное пространство.
+    Делается это под семафором <code>mmap_sem</code> текущего процесса.
+    В функцию do_mmap() передается флаг MAP_SHARED, а если вызывающий
+    процесс передал ненулевое значение <code>shmaddr</code>, то
+    передается и флаг MAP_FIXED. В противном случае do_mmap()
+    самостоятельно выберет виртуальный адрес для сегмента разделяемой
+    памяти.</p>
+
+    <p>ВАЖНО Из do_mmap() будет вызвана функция <a
+     href="lki-5.html#shm_inc">shm_inc()</a> через структуру
+    <code>shm_file_operations</code>. Эта функция вызывается для
+    установки PID, текущего времени и увеличения счетчика присоединений
+    данного сегмента разделяемой памяти.</p>
+
+    <p>После вызова do_mmap() приобретается глобальный семафор и
+    глобальная блокировка разделяемой памяти. Счетчик присоединений
+    затем уменьшается на 1, уменьшение производится потому, что в
+    вызове <a
+     href="lki-5.html#shm_inc">shm_inc()</a> счетчик был увеличен на 1. Если
+    после уменьшения счетчик стал равен нулю и если сегмент имеет метку
+    SHM_DEST, то вызывается <a
+     href="lki-5.html#shm_destroy">shm_destroy()</a> для ликвидации сегмента
+    разделяемой памяти.</p>
+
+    <p>В заключение в вызывающую программу возвращается виртуальный
+    адрес разделяемой памяти. Если функция do_mmap() вернула код
+    ошибки, то этот код будет передан как возвращаемое значение
+    системного вызова.</p>
+
+    <h3><a
+     name="sys_shmdt"></a> sys_shmdt()</h3>
+
+    <p>На время исполнения функции sys_shmdt() приобретается глобальный
+    семафор разделяемой памяти. В структуре <code>mm_struct</code>
+    текущего процесса отыскивается <code>vm_area_struct</code>,
+    ассоциированная с заданным адресом разделяемой памяти. Если таковая
+    найдена, то вызывается do_munmap(), чтобы отменить отображение
+    сегмента разделяемой памяти в виртуальные адреса.</p>
+
+    <p>Важно так же то, что do_munmap() вызывает <a
+     href="lki-5.html#shm_close">shm_close()</a>, которая освобождает ресурсы,
+    занятые сегментом разделяемой памяти, если не было выполнено других
+    присоединений.</p>
+
+    <p>sys_shmdt() всегда возвращает 0.</p>
+
+    <h3><a
+     name="shm_structures"></a> Структуры данных механизма разделяемой
+    памяти</h3>
+
+    <h3><a
+     name="struct_shminfo64"></a> struct shminfo64</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct shminfo64 {
+        unsigned long   shmmax;
+        unsigned long   shmmin;
+        unsigned long   shmmni;
+        unsigned long   shmseg;
+        unsigned long   shmall;
+        unsigned long   __unused1;
+        unsigned long   __unused2;
+        unsigned long   __unused3;
+        unsigned long   __unused4;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_shm_info"></a> struct shm_info</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct shm_info {
+        int used_ids;
+        unsigned long shm_tot;  /* общее количество сегментов */
+        unsigned long shm_rss;  /* общее количество резидентных сегментов */
+        unsigned long shm_swp;  /* общее количество сегментов на свопинге */
+        unsigned long swap_attempts;
+        unsigned long swap_successes;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_shmid_kernel"></a> struct shmid_kernel</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct shmid_kernel /* private to the kernel */
+{
+        struct kern_ipc_perm    shm_perm;
+        struct file *           shm_file;
+        int                     id;
+        unsigned long           shm_nattch;
+        unsigned long           shm_segsz;
+        time_t                  shm_atim;
+        time_t                  shm_dtim;
+        time_t                  shm_ctim;
+        pid_t                   shm_cprid;
+        pid_t                   shm_lprid;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_shmid64_ds"></a> struct shmid64_ds</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct shmid64_ds {
+        struct ipc64_perm       shm_perm;       /* права доступа */
+        size_t                  shm_segsz;      /* размер сегмента в байтах */
+        __kernel_time_t         shm_atime;      /* время последнего присоединения */
+        unsigned long           __unused1;
+        __kernel_time_t         shm_dtime;      /* время последнего отсоединения */
+        unsigned long           __unused2;
+        __kernel_time_t         shm_ctime;      /* время последнего изменения */
+        unsigned long           __unused3;
+        __kernel_pid_t          shm_cpid;       /* pid процесса-создателя */
+        __kernel_pid_t          shm_lpid;       /* pid последней операции */
+        unsigned long           shm_nattch;     /* количество присоединений */
+        unsigned long           __unused4;
+        unsigned long           __unused5;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_shmem_inode_info"></a> struct shmem_inode_info</h3>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct shmem_inode_info {
+        spinlock_t      lock;
+        unsigned long   max_index;
+        swp_entry_t     i_direct[SHMEM_NR_DIRECT]; /* для первых блоков */
+        swp_entry_t   **i_indirect; /* doubly indirect blocks */
+        unsigned long   swapped;
+        int             locked;     /* into memory */
+        struct list_head        list;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="shm_primitives"></a> Функции поддержки разделяемой
+    памяти</h3>
+
+    <h3><a
+     name="newseg"></a> newseg()</h3>
+
+    <p>Функция newseg() вызывается, когда возникает необходимость в
+    создании нового сегмента разделяемой памяти. В функцию передаются
+    три параметра - ключ (key), набор флагов (shmflg) и требуемый
+    размер сегмента (size). После выполнения проверок (чтобы
+    запрошенный размер лежал в диапазоне от SHMMIN до SHMMAX и чтобы
+    общее количество сегментов разделяемой памяти не превысило SHMALL)
+    размещает новый дескриптор сегмента. Далее вызывается <a
+     href="lki-5.html#shmem_file_setup">shmem_file_setup()</a> для создания файла
+    типа tmpfs. Возвращаемый ею указатель записывается в поле
+    <code>shm_file</code> дескриптора сегмента разделяемой памяти.
+    Размер файла устанавливается равным запрошенному размеру сегмента
+    памяти. Дескриптор инициализируется и вставляется в глобальный
+    массив дескрипторов разделяемой памяти. Вызовом shm_buildid()
+    (точнее <a
+     href="lki-5.html#ipc_buildid">ipc_buildid()</a>) создается ID сегмента. Этот
+    ID сохраняется в поле <code>id</code> дескриптора сегмента, а так
+    же и в поле <code>i_ino</code> соответствующего inode. Адрес
+    таблицы файловых операций над разделяемой памятью записывается в
+    поле <code>f_op</code> только что созданного файла. Увеличивается
+    значение глобальной переменной <code>shm_tot</code>, которая
+    содержит общее количество сегментов разделяемой памяти в системе.
+    Если в процессе выполнения этих действий ошибок не было, то в
+    вызывающую программу передается ID сегмента.</p>
+
+    <h3><a
+     name="shm_get_stat"></a> shm_get_stat()</h3>
+
+    <p>shm_get_stat() в цикле просматривает все дескрипторы сегментов
+    разделяемой памяти и подсчитывает общее количество страниц, занятых
+    разделяемой памятью и общее количество страниц разделяемой памяти,
+    вытесненных на устройство свопинга. Так как получение данных
+    связано с обращением к inode, то перед обращением к каждому inode
+    выполняется блокировка, которая затем, после получения данных из
+    inode, сразу же снимается.</p>
+
+    <h3><a
+     name="shmem_lock"></a> shmem_lock()</h3>
+
+    <p>shmem_lock() принимает в качестве параметров указатель на
+    дескриптор сегмента разделяемой памяти и флаг требуемой операции -
+    блокирование или разблокирование. Состояние блокировки запоминается
+    в соответствующем inode. Если предыдущее состояние блокировки
+    совпадает с требуемым, то shmem_lock() просто возвращает управление
+    не производя дополнительных действий.</p>
+
+    <p>Состояние блокировки изменяется только после получения семафора
+    на доступ к inode. Ниже описана последовательность действий,
+    выполняемых над каждой страницей памяти в сегменте:</p>
+
+    <ul>
+      <li>Функция find_lock_page() блокирует страницу (устанавливает
+      бит PG_locked) и увеличивает счетчик ссылок на страницу.
+      Увеличение счетчика ссылок служит гарантией того, что страница
+      останется в памяти на все время выполнения операции.</li>
+
+      <li>Если страницу требуется заблокировать, то бит PG_locked
+      сбрасывается, но счетчик ччылок не уменьшается.</li>
+
+      <li>Если страницу требуется разблокировать, то счетчик ссылок
+      уменьшается дважды, первый раз аннулируется увеличение счетчика,
+      выполненное функцией find_lock_page() и второй раз для ссылки,
+      которая заблокировала страницу в памяти. После этого бит
+      PG_locked сбрасывается.</li>
+    </ul>
+
+    <h3><a
+     name="shm_destroy"></a> shm_destroy()</h3>
+
+    <p>В результате исполнения shm_destroy() общее количество страниц,
+    занятых разделяемой памятью, уменьшается на количество страниц,
+    занятых удаляемым сегментом. Затем вызывается <a
+     href="lki-5.html#func_ipc_rmid">ipc_rmid()</a> (через shm_rmid()) для
+    удаления ID сегмента Страницы памяти в сегменте разблокируются
+    функцией <a
+     href="lki-5.html#shmem_lock">shmem_lock</a>. Счетчик ссылок каждой страницы
+    устанавливается в 0. Вызывается fput(), чтобы уменьшить счетчик
+    <code>f_count</code> соответствующего файла. И в заключение
+    вызывается kfree() для освобождения памяти под дескриптором
+    сегмента.</p>
+
+    <h3><a
+     name="shm_inc"></a> shm_inc()</h3>
+
+    <p>shm_inc() устанавливает PID, текущее время и увеличивает счетчик
+    подключений для заданного сегмента разделяемой памяти. Эти действия
+    выполняются после выполнения глобальной блокировки разделяемой
+    памяти.</p>
+
+    <h3><a
+     name="shm_close"></a> shm_close()</h3>
+
+    <p>Функция shm_close() обновляет содержимое полей
+    <code>shm_lprid</code> и <code>shm_dtim</code> и уменьшает счетчик
+    подключений. Если счетчик обнулился, то вызывается <a
+     href="lki-5.html#shm_destroy">shm_destroy()</a> для освобождения ресурсов,
+    занятых сегментом разделяемой памяти. Эти действия выполняются
+    после выполнения глобальной блокировки и получения глобального
+    семафора разделяемой памяти.</p>
+
+    <h3><a
+     name="shmem_file_setup"></a> shmem_file_setup()</h3>
+
+    <p>shmem_file_setup() создает файл в файловой системе tmpfs с
+    требуемым именем и размером. Если в системе достаточно ресурсов для
+    размещения файла в памяти, то создается новый dentry в корне tmpfs
+    и размещается новый файловый дескриптор и новый inode типа tmpfs.
+    Затем связывает dentry и inode вызовом d_instantiate() и сохраняет
+    адрес dentry в файловом дескрипторе. Поле <code>i_size</code> inode
+    устанавливается равным размеру файла, а в поле <code>i_nlink</code>
+    заносится 0. Также shmem_file_setup() записывает адрес таблицы
+    файловых операций <code>shmem_file_operations</code> в поле
+    <code>f_op</code> и инициализирует поля <code>f_mode</code> и
+    <code>f_vfsmnt</code> файлового дескриптора. Для завершения
+    инициализации inode вызывается shmem_truncate(). И в случае
+    успешного выполнения всех операций возвращает новый файловый
+    дескриптор.</p>
+
+    <h2><a
+     name="ipc_primitives"></a> <a
+     name="ss5.4">5.4 Примитивы IPC в Linux</a></h2>
+
+    <h3><a
+     name=
+    "Generic_Linux_IPC_Primitives_used_with_Semaphores_Messages_and_Shared_Memory">
+    </a> Универсальные примитивы, используемые всеми тремя механизмами
+    IPC</h3>
+
+    <p>Механизмы семафоров, очередей сообщений и разделяемой памяти в
+    Linux основаны на наборе общих примитивов. Этот раздел посвящен их
+    описанию.</p>
+
+    <h3><a
+     name="ipc_alloc"></a> ipc_alloc()</h3>
+
+    <p>Если запрошен размер памяти больше чем PAGE_SIZE, то вызывает
+    vmalloc(), иначе - kmalloc() с флагом GFP_KERNEL.</p>
+
+    <h3><a
+     name="ipc_addid"></a> ipc_addid()</h3>
+
+    <p>Когда создается новый набор семафоров, очередь сообщений или
+    сегмент разделяемой памяти, ipc_addid() сначала вызывает <a
+     href="lki-5.html#grow_ary">grow_ary()</a>, чтобы расширить соответствующий
+    массив дескрипторов, если это необходимо. Затем в массиве
+    дескрипторов первый неиспользуемый элемент. Если таковой найден, то
+    увеличивается счетчик используемых дескрипторов. Затем
+    инициализирует структуру <a
+     href="lki-5.html#struct_kern_ipc_perm">kern_ipc_perm</a> и возвращает индекс
+    нового дескриптора. В случае успеха возврат производится под
+    глобальной блокировкой заданного типа IPC.</p>
+
+    <h3><a
+     name="func_ipc_rmid"></a> ipc_rmid()</h3>
+
+    <p>ipc_rmid() удаляет дескриптор из массива дескрипторов заданного
+    типа, уменьшает счетчик используемых ID и, в случае необходимости,
+    корректирует значение максимального ID. Возвращает указатель на
+    дескриптор, соответствующий заданному ID.</p>
+
+    <h3><a
+     name="ipc_buildid"></a> ipc_buildid()</h3>
+
+    <p>ipc_buildid() создает уникальный ID для дескриптора заданного
+    типа. ID создается в момент добавления нового элемента IPC
+    (например нового сегмента разделяемой памяти или нового набора
+    семафоров). ID достаточно просто преобразуется в индекс массива
+    дескрипторов. Каждый тип IPC имеет свой порядковый номер, который
+    увеличивается каждый раз, когда добавляется новый дескрипторо. ID
+    создается путем умножения порядкового номера на SEQ_MULTIPLIER и
+    добавления к результату индекса дескриптора в массиве. Этот
+    порядковый номер запоминается в соответствующем дескрипторе.</p>
+
+    <h3><a
+     name="ipc_checkid"></a> ipc_checkid()</h3>
+
+    <p>ipc_checkid() делит заданный ID на SEQ_MULTIPLIER и сравнивает
+    со значением seq в дескрипторе. Если они равны, то ID признается
+    достоверным и функция возвращает 1, в противном случае возвращается
+    0.</p>
+
+    <h3><a
+     name="grow_ary"></a> grow_ary()</h3>
+
+    <p>grow_ary() предоставляет возможность динамического изменения
+    максимального числа идентификаторов (ID) для заданного типа IPC.
+    Однако текущее значение максимального числа идентификаторовне может
+    превышать системного ограничения (IPCMNI). Если настоящий размер
+    массива дескрипторов достаточно велик, то просто возвращает его
+    текущий размер, иначе создает новый массив большего размера,
+    копирует в него данные из старого массива, после чего память под
+    старым массивом освобождается. На время переназначения массива
+    дескрипторов выполняется глобальная блокировка для заданного типа
+    IPC.</p>
+
+    <h3><a
+     name="ipc_findkey"></a> ipc_findkey()</h3>
+
+    <p>ipc_findkey() ищет в массиве дескрипторов объекта <a
+     href="lki-5.html#struct_ipc_ids">ipc_ids</a> заданный ключ. В случае успеха
+    возвращает индекс соответствующего дескриптора, в противном случае
+    возвращает -1.</p>
+
+    <h3><a
+     name="ipcperms"></a> ipcperms()</h3>
+
+    <p>ipcperms() проверяет uid, gid и другие права доступа к ресурсу
+    IPC. Возвращает 0 если доступ разрешен и -1 - в противном
+    случае.</p>
+
+    <h3><a
+     name="ipc_lock"></a> ipc_lock()</h3>
+
+    <p>ipc_lock() выполняет глобальную блокировку заданного типа IPC и
+    возвращает указатель на дескриптор, соответствующий заданному
+    ID.</p>
+
+    <h3><a
+     name="ipc_unlock"></a> ipc_unlock()</h3>
+
+    <p>ipc_unlock() разблокирует заданный тип IPC.</p>
+
+    <h3><a
+     name="ipc_lockall"></a> ipc_lockall()</h3>
+
+    <p>ipc_lockall() выполняет глобальную блокировку требуемого
+    механизма IPC (т.е. разделяемой памяти, семафоров и очередей
+    сообщений).</p>
+
+    <h3><a
+     name="ipc_unlockall"></a> ipc_unlockall()</h3>
+
+    <p>ipc_unlockall() снимает глобальную блокировку с требуемого
+    механизма IPC (т.е. разделяемой памяти, семафоров и очередей
+    сообщений).</p>
+
+    <h3><a
+     name="ipc_get"></a> ipc_get()</h3>
+
+    <p>ipc_get() по заданному указателю на механизм IPC (т.е.
+    разделяемая память, очереди сообщений или семафоры) и ID возвращает
+    укзатель на соответствующий дескриптор IPC. Обратите внимание, что
+    хотя различные механизмы IPC используют различные типы данных, тем
+    не менее в каждом из них первым элементом указана общая для всех
+    структура <a
+     href="lki-5.html#struct_kern_ipc_perm">kern_ipc_perm</a>. Возвращаемое
+    функцией ipc_get() значение имеет именно этот общий тип данных. Как
+    правило ipc_get() вызывается через функции-обертки (например
+    shm_get()), которые выполняют приведение типов.</p>
+
+    <h3><a
+     name="ipc_parse_version"></a> ipc_parse_version()</h3>
+
+    <p>ipc_parse_version() сбрасывает флаг IPC_64 во входном параметре,
+    если он был установлен, и возвращает либо IPC_64, либо IPC_OLD.</p>
+
+    <h3><a
+     name="ipc_structures"></a> Структуры IPC, используемые механизмами
+    семафоров, очередей сообщений и разделяемой памяти</h3>
+
+    <h3><a
+     name="struct_kern_ipc_perm"></a> struct kern_ipc_perm</h3>
+
+    <p>Каждый из дескрипторов IPC имеет в качестве первого элемент
+    этого типа данных, что делает возможным обращение к любому
+    дескриптору из универсальных функций IPC.</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>/* используется в структурах данных ядра */
+struct kern_ipc_perm {
+    key_t key;
+    uid_t uid;
+    gid_t gid;
+    uid_t cuid;
+    gid_t cgid;
+    mode_t mode;
+    unsigned long seq;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_ipc_ids"></a> struct ipc_ids</h3>
+
+    <p>Структура ipc_ids описывает данные, одинаковые для семафоров,
+    очередей сообщений и разделяемой памяти. Существует три глобальных
+    экземпляра этого типа -- <code>semid_ds</code>,
+    <code>msgid_ds</code> и <code>shmid_ds</code> -- для семафоров,
+    очередей сообщений и разделяемой памяти соответственно. Каждый
+    экземпляр содержит семафор <code>sem</code>, предназначенный для
+    разграничения доступа к нему. Поле <code>entries</code> указывает
+    на массив дескрипторов и поле <code>ary</code> - блокировку доступа
+    к этому массиву. Поле <code>seq</code> хранит порядковый номер,
+    который увеличивается всякий раз при создании нового ресурса
+    IPC.</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct ipc_ids {
+    int size;
+    int in_use;
+    int max_id;
+    unsigned short seq;
+    unsigned short seq_max;
+    struct semaphore sem;
+    spinlock_t ary;
+    struct ipc_id* entries;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+
+    <h3><a
+     name="struct_ipc_id"></a> struct ipc_id</h3>
+
+    <p>Массив структур ipc_id имеется в каждом экземпляре <a
+     href="lki-5.html#struct_ipc_ids">ipc_ids</a>. Массив размещается динамически
+    и размер его может быть изменен функцией <a
+     href="lki-5.html#grow_ary">grow_ary()</a>. Иногда этот массив упоминается
+    как массив дескрипторов, так как тип данных <a
+     href="lki-5.html#struct_kern_ipc_perm">kern_ipc_perm</a> используется
+    универсальным функциями IPC для доступа к дескрипторам.</p>
+
+    <blockquote>
+      <hr>
+<pre>
+<code>struct ipc_id {
+    struct kern_ipc_perm* p;
+};
+</code>
+</pre>
+      <hr>
+    </blockquote>
+    <hr>
+    Вперед <a
+     href="lki-4.html">Назад</a> <a
+     href="https://www.linuxlib.ru/kern/kern24/lki.html#toc5">Содержание</a>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Долгая дорога в Linux / Дневник
+	 / Быстрый поиск файла по имени - утилита locate — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#loading">установка, загрузчики</A> |
+    <A HREF="index.htm#setting">настройка Linux</A> |
+    <A HREF="index.htm#console">консоль</A> |
+    <A HREF="index.htm#filesys">файловые системы</A> |
+    <A HREF="index.htm#proc">процессы</A> |
+    <A HREF="index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://hsu.systems/products/electronic-hotel-locks/" target="_blank">Электронные замки для гостиниц бесконтактные</a> в наличии на складе, доставка в регионы<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+	<H1 CLASS="my">Быстрый поиск файла по имени - утилита locate</H1>
+	<p>
+	Как было сказано ранее <a href="https://www.linuxlib.ru/everyday/find1/"><strong><code><nobr>find</nobr></code></strong></a>
+	решает практически все задачи которые могут возникнуть у пользователя
+	в связи с поиском и последующей обработкой нужных файлов или каталогов.
+	Однако, довольно часто, возникают ситуации когда вам с одной стороны не нужна
+	вся мощь <strong><code><nobr>find</nobr></code></strong>, а с другой хотелось чтобы
+	поиск происходил побыстрее, и без значительной загрузки системы.
+	Ведь запустив find с каким нибудь хитрым условием, да еще вызывающий
+	внешние команды, да указав начать поиск с корневой директории, можно
+	добиться того что система будет настолько загружена, что ваш
+	системный администратор грешным делом подумает о визите	кул хацкеров,
+	но мы конечно не звери и нашего администратора пугать не будем.
+	Поэтому для глобального поиска воспользуемся утилитой <a href="https://www.linuxlib.ru/man/sectdef/locate/">locate</a>.
+	</p>
+	<h2>Использование locate</h2>
+	<p>Данная утилита просто незаменима в случае если вам хотя бы
+	приблизительно известно имя файла, который нужно найти.
+	Отличительная особенность данной команды, скажем от того же
+	<a href="https://www.linuxlib.ru/man/sectdef/find/">find</a>, в том что при работе она не сканирует по настоящему
+	файловую систему, поиск идет в предварительно построенной базе,
+	в которой хранится как-бы слепок с файловой системы.
+	Такой слепок выполняется
+	с помощью команды <strong><code><nobr>locate -u</nobr></code></strong> или <a href="https://www.linuxlib.ru/man/sectdef/updatedb/">updatedb</a>, которая
+	по настоящему перелопачивает ваши жесткие или сетевые диски,  а
+	имена всех 	найденных файлов записывает в базу. Естественно что
+	данная процедура довольно ресурсоемкая, и может занимать довольно
+	длительное время. Ее запуск обычно поручают <a href="https://www.linuxlib.ru/man/sect5/crontab/">crontab</a>,
+	который запускает <strong><code><nobr>updatedb</nobr></code></strong> с требуемой частотой. Частота обновления
+	базы зависит от того насколько часто обновляется содержимое файловой системы,
+	а также насколько важна актуальность данных. Так обычно обновление
+	базы выполняется автоматически раз в неделю, или вручную,  после того как вы или
+	системный администратор установили новую партию свежего ПО. Отмечу,
+	для того чтобы обновить базу, нужно иметь права суперпользователя.
+	</p>
+	<p>Приведу простейший пример использования:
+	</p>
+	<pre class="my-normal">
+
+	$ locate traceroute
+	/usr/man/man8/traceroute.8.gz
+	/usr/sbin/traceroute6
+	/usr/sbin/traceroute
+
+	$ locate mpg123
+	/usr/doc/mpg123-0.59r
+	/usr/doc/mpg123-0.59r/BUGS
+	/usr/doc/mpg123-0.59r/CHANGES
+	/usr/doc/mpg123-0.59r/COPYING
+	/usr/doc/mpg123-0.59r/INSTALL
+	/usr/doc/mpg123-0.59r/JUKEBOX
+	/usr/doc/mpg123-0.59r/README
+	/usr/doc/mpg123-0.59r/TODO
+	/usr/doc/mpg123-0.59r/mp3license
+	/usr/man/man1/mpg123.1.gz
+	/usr/bin/mpg123
+	$
+
+</pre>
+	<p>Из приведенных примеров видно три существенных момента, касающихся
+	поведения <strong><code><nobr>locate</nobr></code></strong>. Во-первых ищутся все файлы и каталоги в именах
+	которых встречается подстрока заданная в качестве аргумента. Во-вторых
+	файлы выводятся включая полный путь к ним. В-третьих
+	заданная подстрока вообще может не входить в имя самого файла,
+	а встречаться в его пути. Так во втором примере в список найденных
+	файлов было полностью включено содержимое каталога <strong>mpg123-0.59r</strong>.
+	</p>
+	<p>
+	Иногда требуется более точный поиск, когда нужно ограничить
+	то место куда может входить заданная подстрока. Скажем
+	если нам нужно найти только файлы и каталоги в название
+	которых входит <strong>mpg123</strong>. В данном случае можно использовать
+	шаблоны &#132;аля <a href="https://www.linuxlib.ru/man/sectdef/bash/">bash</a>&#147; (помните
+	<strong>*</strong>, <strong>?</strong>, <strong>[...]</strong>) или более продвинутый вариант
+	использующий <a href="https://www.linuxlib.ru/man/sect7/regex/">регулярные выражения</a>. Я
+	предпочитаю последний, как более мощный и продвинутый.
+	</p>
+	<p>
+	Для того чтобы сообщить <strong>locate</strong> что вы хотите использовать
+	регулярные выражения, нужно указать форму <strong><code><nobr>locate -r</nobr></code></strong>.
+	Так в нашем случае запрос будет выглядеть следующим образом:
+	</p>
+	<pre class="my-normal">
+
+	$ locate -r &quot;mpg123[^/]*$&quot;
+	/usr/doc/mpg123-0.59r
+	/usr/man/man1/mpg123.1.gz
+	/usr/bin/mpg123
+	$
+
+</pre>
+	<p>Строка <strong>mpg123[^/]*$</strong> - просит <strong><code><nobr>locate</nobr></code></strong> найти
+	те файлы в которых после подстроки <strong>mpg123</strong> могут быть
+	ноль или более символов, кроме символа <strong>/</strong>, после чего
+	идет конец строки. Таким образом из результата поиска исключаются
+	строки <nobr>вида <strong>/usr/doc/mpg123-0.59r/BUGS</strong></nobr>.
+	</p>
+	<p>
+	Еще одна полезная возможность - это форма вызова <strong><code><nobr>locate -i</nobr></code></strong>.
+	Параметр <strong><code><nobr>-i</nobr></code></strong> говорит о том что нужно произвести нечувствительный
+	к регистру поиск:
+	</p>
+	<pre class="my-normal">
+
+	$ locate  &quot;/etc/dir&quot;
+	/usr/local/share/emacs/21.1/etc/dired-ref.ps
+	/usr/local/share/emacs/21.1/etc/dired-ref.tex
+	$ locate -i &quot;/etc/dir&quot;
+	/usr/local/share/emacs/21.1/etc/dired-ref.ps
+	/usr/local/share/emacs/21.1/etc/dired-ref.tex
+	/etc/DIR_COLORS
+	$
+
+</pre>
+	<h2>Использование совместно с другими командами</h2>
+	<p>Сам по себе <strong><code><nobr>locate</nobr></code></strong> не  выполняет
+	ничего кроме вывода имен нужных файлов. Однако вы не всегда можете удовлетворится
+	лишь созерцанием имен и месторасположения найденных файлов.
+	Здесь вам на помощь приходят любимые трубопроводы, конвейеры и
+	прочие радости командной строки.
+	</p>
+	<p>
+	К примеру хотим получить кроме самих файлов еще и информацию
+	о атрибутах этих файлов. В данном случае нам на помощь приходит
+	подстановка команд:
+	</p>
+	<pre class="my-normal">
+
+$ locate crontab
+/usr/man/man1/crontab.1.gz
+/usr/man/man5/anacrontab.5.gz
+/usr/man/man5/crontab.5.gz
+/usr/bin/crontab
+/etc/anacrontab
+/etc/crontab
+$ ls -ld `!!`
+ls -ld `locate crontab`
+-rw-r--r--  1 root root     370 Mar  3  2000 /etc/anacrontab
+-rw-r--r--  1 root root     255 Aug 27  1999 /etc/crontab
+-rwsr-xr-x  1 root root   21816 Feb  3  2000 /usr/bin/crontab
+-rw-r--r--  1 root root    1584 Feb  3  2000 /usr/man/man1/crontab.1.gz
+-rw-r--r--  1 root root     669 Mar  3  2000 /usr/man/man5/anacrontab.5.gz
+-rw-r--r--  1 root root    3495 Feb  3  2000 /usr/man/man5/crontab.5.gz
+$
+
+</pre>
+
+	<p>В данном примере
+	первой командой мы получили список интересующих нас файлов, а второй передали
+	этот список команде <strong><code><nobr>ls -ld</nobr></code></strong>, в результате чего получили чудный
+	список с требуемой информацией. Кто забыл чего делает <strong><code><nobr>`!!`</nobr></code></strong> читать тут
+	<a href="https://www.linuxlib.ru/history/">Работаем с историей команд</a>. Параметр <strong><code><nobr>-d</nobr></code></strong>
+	сообщает <strong><code><nobr>ls</nobr></code></strong> что вместо содержимого каталогов, выводить
+	их атрибуты.
+	</p>
+	<p>Способ с подстановкой подходит в том случае если у нас не много файлов.
+	В противном случае мы можем столкнутся с ограничением на длину
+	строки параметров передаваемых <strong><code><nobr>ls -l</nobr></code></strong>. К примеру:
+	</p>
+	<pre class="my-normal">
+
+	$ locate / | wc -l   # &lt;--- locate - выводит все файлы в системе
+	                     #      wc     - подсчитывает их количество
+	70968
+	$ ls -ld `locate /` | wc -l
+	bash: /bin/ls: Argument list too long
+	0
+	$
+
+</pre>
+	<p>Как видим вариант не прошел. Поэтому если
+	ожидается большое количество файлов на выходе, более предпочтительнее
+	будет воспользоваться утилитой <a href="https://www.linuxlib.ru/man/sectdef/xargs/">xargs</a> которая просто читает
+	свой входной поток, разбивает его на строки, а потом эти строки
+	небольшими порциями скармливает программе переданной ей в
+	качестве параметра. Чтобы было более понятно приведу простой пример
+	в котором видно что делает <strong><code><nobr>xargs</nobr></code></strong>:
+	</p>
+	<pre class="my-normal">
+
+	$ ls /usr/
+	X11R6    etc                info      man
+	bin      games              kerberos  sbin
+	cvsroot  i386-redhat-linux  lib       share
+	dict     i486-linux-libc5   libexec   src
+	doc      include            local     tmp
+
+	$ ls /usr/ | xargs -n 5 echo
+	X11R6 bin cvsroot dict doc
+	etc games i386-redhat-linux i486-linux-libc5 include
+	info kerberos lib libexec local
+	man sbin share src tmp
+	$
+
+</pre>
+	<p>Здесь результат выполнения <strong><code><nobr>ls /usr/ </nobr></code></strong> направляется
+	на вход <strong><code><nobr>xargs -n 5</nobr></code></strong>, который разбивает полученные строки
+	по пять штук и передает их в качестве аргумента команде <strong><code><nobr>echo</nobr></code></strong>,
+	как нетрудно догадаться число параметров задается с помощью
+	параметра <strong><code><nobr>-n</nobr></code></strong>.
+	</p>
+	<p>
+	В нашем случае указывать количество параметров не требуется,
+	так как оно в данном случае несущественно, главное чтобы ограничение
+	на размер аргумента не было превышено, а эту задачу <strong><code><nobr>xargs</nobr></code></strong>
+	решает без посторонней помощи:
+	</p>
+	<pre class="my-normal">
+
+	$ locate / | xargs ls -ld | wc -l
+	  70968
+	$
+
+</pre>
+	<p>
+	Как видим такой вариант в отличие от предыдущего сработал.
+	</p>
+	<h2>Когда locate не катит.</h2>
+	<p>Как всегда, отрицательные стороны <strong><code><nobr>locate</nobr></code></strong> вытекают
+	прямиком из его положительных сторон. Так информация о файлах
+	в базе может устареть с момента последнего обновления, и не
+	соответствовать текущему состоянию файловой системы, некоторые файлы
+	могут быть удалены, некоторые переименованы, другие добавлены.
+	И если с удалением проблем вобщем не возникает, потому что
+	<strong><code><nobr>locate</nobr></code></strong> после поиска в своей базе проверяет наличие
+	найденных файлов в системе, то с новыми или переименованными
+	файлами <strong><code><nobr>locate</nobr></code></strong> не дружит, они результатах
+	будут отсутствовать:
+	</p>
+	<pre class="my-normal">
+
+	$ locate somefile.txt        &lt;-- ищем файл somefile.txt которого нет
+	$ touch /tmp/somefile.txt    &lt;-- создаем его
+	$ locate /tmp/simefile.txt   &lt;-- пытаемся его найти, он не находится
+	$ su                         &lt;-- тогда логинимся под root,
+	Password:
+	# updatedb                    -- и обновляем базу locate
+	# exit                        -- после чего возвращаемся
+	exit
+	$ locate somefile.txt        &lt;-- теперь поиск успешен
+	/tmp/somefile.txt
+	$ mv /tmp/somefile.{txt,old} &lt;-- переименовываем
+	$ locate /tmp/somefile.txt   &lt;-- под старым именем не находим
+	$ locate /tmp/somefile.old   &lt;-- под новым тоже не находим
+	$ su                         &lt;-- еще раз обновляем базу под root-ом
+	Password:
+	# updatedb
+	# exit
+	$ locate /tmp/somefile.old   &lt;-- теперь все OK под новым именем находится
+	/tmp/somefile.old
+	$ locate /tmp/somefile.txt    -- под старым нет
+	$
+
+</pre>
+	<p>В случае если вы и пользователь или root в одном лице, то проблема
+	решается обновлением базы руками, иначе придется пользоваться чемто
+	более мощным, типа <a href="https://www.linuxlib.ru/find1/">find</a>.
+	</p>
+	<p>Еще один момент, на который стоит обратить внимание, это то
+	что <strong><code><nobr>locate</nobr></code></strong> хранит имя самого файла и путь к нему как строку,
+	в связи с чем в общем случае узнать является ли найденная строка
+	файлом, символической ссылкой, или каталогом непосредственно с помощью
+	<strong><code><nobr>locate</nobr></code></strong> нельзя.</p>
+	<p>
+	Иногда использование <strong><code><nobr>locate</nobr></code></strong> не эффективно, так
+	был приведен немного исскуственный пример, когда мы находили все
+	файлы в системе, а потом выводили их атрибуты с помощью <strong><code><nobr>ls -ld</nobr></code></strong>.
+	В данном случае более правильное решение есть использовать тотже
+	find, дело в том что в вышеприведенном случае сканирование системы
+	происходит все равно, только делает это не <strong><code><nobr>locate</nobr></code></strong>, а
+	<strong><code><nobr>ls</nobr></code></strong>, добавте сюда накладные расходы на трубопровод,
+	<strong><code><nobr>xargs</nobr></code></strong>, в результате получаем:
+	</p>
+	<pre class="my-normal">
+
+$ cat /tmp/l
+locate -f proc / |  xargs -n 1000 ls -ld
+
+$ cat /tmp/f
+find / -ls 2&gt;/dev/null
+
+$ time /tmp/f &gt;/dev/null
+3.83user 2.80system <strong>0:06.99elapsed</strong> 94%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (358major+147minor)pagefaults 0swaps
+
+$ time /tmp/l &gt;/dev/null
+5.41user 5.92system <strong>0:11.62elapsed</strong> 97%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (28176major+11719minor)pagefaults 0swaps
+
+</pre>
+	<p>Как видно в данном случае <strong><code><nobr>locate</nobr></code></strong> с компанией сел в лужу,
+	выполняя поставленную задачу в два раза медленнее чем <strong><code><nobr>find</nobr></code></strong>.
+	Конечно пример надуманный, но иллюстрирует тот факт что перед решением
+	любой задачи не мешает пораскинуть мозгами!
+	</p>
+
+	<p>На этом разрешите откланяться. До новых встреч.</p>
+	<h2>Приборы и материалы</h2>
+	Смотри также:
+	<ul>
+	<li><a href="https://www.linuxlib.ru/man/sectdef/locate/">man locate[en]</a>;</li>
+	<li><!--<a href="http://www.inp.nsk.su/~bolkhov/teach/inpunix/typ_find.ru.html">-->Поиск файлов на диске[ru]<!--</a>-->;</li>
+	<li>Мои труды <a href="https://www.linuxlib.ru/find/">Среди океана команд</a>, а также <a href="https://www.linuxlib.ru/find1/">&quot;find ушами&quot; или Шерлок Холмс GNU-того уезда</a> для ознакомления
+	с другими методами поиска.</li>
+	</ul>
+Если вы еще не являетесь счастливым обладателем locate, том
+его можно взять с сайта GNU в составе <!--<a href="http://ftp.gnu.org/gnu/findutils/findutils-4.1.tar.gz">-->Findutils 4.1.<!--</a>-->
+
+  </div>
+</div>
+</body>
+</html>

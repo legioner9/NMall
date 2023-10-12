@@ -1,0 +1,546 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 7 Сетевой брандмауэр — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A href="http://linux.webclub.ru/books/linuxsos/ch6.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#7">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 7 Сетевой брандмауэр (Часть 1)</H2><FONT size=+2>В этой
+      главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_1.html#1">-->Linux
+      IPCHAINS<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_1.html#2">-->Создание ядра с
+      поддержкой IPCHAINS<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_1.html#3">-->Разъяснения
+      некоторых правил используемых в скриптах настройки брандмауэра<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_1.html#4">-->Скрипт для
+      настройки брандмауэра<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_2.html#5">-->Конфигурация
+      скрипта "/etc/rc.d/init.d/firewall" для Веб сервера<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_3.html#6">-->Конфигурация
+      скрипта "/etc/rc.d/init.d/firewall" для Почтового
+сервера<!--</A>--><BR></FONT></TD>
+    <TD><IMG alt="" border=0 height=114 src="ch7_1.files/12.jpg"
+  width=200></TD></TR></TBODY></TABLE>
+<H3><A name=1>Linux IPCHAINS</A></H3><B>Краткое описание</B>
+<P align=justify>Кто-нибудь может мне сказать, почему я должен использовать
+коммерческий брандмауэр, а не простой в использовании Ipchains? Что я теряю
+используя Ipchains? Ipchains хорош и становится все лучше и лучше, чем
+коммерческие продукты с точки зрения поддержки и функциональных возможностей.
+Вы, скорее всего, будете лучше понимать процессы происходящие в вашей сети, если
+будете использовать Ipchains, а не его коммерческий аналоги.</P><B>Что такое
+политика безопасности сетевого брандмауэра.</B>
+<P align=justify>Политика безопасности сетевого брандмауэра определяет те
+сервисы, которые будут явно разрешены или запрещены, как они будут
+использоваться и какие исключения будут из этих правил. Полная политика защиты
+организации должна быть определена согласно анализу безопасности и деловой
+необходимости. Брандмауэр имеет небольшое значение, если полная политика защиты
+не определена должным образом. Каждое правило определенное в политика
+безопасности сетевого брандмауэра должно быть реализовано на брандмауэре. В
+общем все брандмауэры используют следующие методы:</P>
+<P align=justify><I>Все, что специально не разрешено - запрещено.</I><BR>Этот
+метод блокирует весь трафик между двумя сетями, за исключением тех сервисов и
+приложений которым выдано разрешение. Поэтому каждую необходимую службу и
+приложение нужно разрешать. Никогда нельзя разрешать работу тем службам и
+приложениям, которые могут быть использованы для атаки на вашу систему. Это
+наиболее безопасный метод - отвергать все, что явно не разрешено. С другой
+стороны, со стороны пользователя, этот метод более ограничительный и менее
+удобный. Именно его мы будем использовать для построения брандмауэра в этой
+книге.</P>
+<P align=justify><I>Все, что не запрещено, то разрешено.</I><BR>Этот метод
+позволяет весь трафик между сетями, за исключением определенных сервисов и
+приложений. Поэтому каждую ненужную службу надо явно запрещать. Это очень
+удобный и гибкий метод для пользователей, но несущий в себе серьезные
+потенциальные проблемы в безопасности. </P><B>Что такое пакетный фильтр?</B>
+<P align=justify>Пакетный фильтр - это тип брандмауэра созданного на основе ядра
+Linux. Он работает на сетевом уровне. Данным позволяется остаться в системе,
+если это разрешено правилами. Проходящие пакеты фильтруются по типу, адресу
+источника, адресу получателя и по порту. В большинстве случаев фильтрация
+пакетов осуществляется на маршрутизаторе, который перенаправляет пакеты согласны
+правилам фильтрации. Когда пакет приходит на фильтрующий маршрутизатор, тот
+извлекает информацию из заголовка пакета и принимает решение согласно правилам
+фильтрации об пересылке или уничтожении пакета. Из заголовка пакета может
+извлекаться следующая информация:</P>
+<OL>
+  <LI>IP адрес источника
+  <LI>IP адрес получателя
+  <LI>TCP/UDP порт источника
+  <LI>TCP/UDP порт получателя
+  <LI>Тип ICMP сообщения
+  <LI>Информация об инкапсулированном протоколе (TCP, UDP, ICMP или IP tunnel).
+  </LI></OL>
+<P align=justify>Так как для анализа и регистрации используется небольшое
+количество данных, фильтрующий брандмауэр создает меньшую нагрузку на CPU и
+меньшие задержки в сети. Существует много путей структурирования вашей сети для
+защиты ее брандмауэром.</P><B>Топология.</B>
+<P align=justify>Все сервера должны быть настроены так, чтобы блокировать все
+неиспользуемые порты. Это необходимо для большей безопасности. Представьте себе,
+что кто-то сумел проникнуть на ваш брандмауэр: если соседние сервера не
+настроены на блокирование неиспользуемых портов, то это может привести к
+серьезным проблемам в безопасности. То же истинно и для локальных соединений:
+неправомочные служащие могут получить доступ на ваши сервера из внутренней
+части.</P>
+<P align=justify>В нашей конфигурации мы дадим вам три различных примера,
+которые помогут вам настроить ваши правила брандмауэра в зависимости от типа
+сервера и его размещения в вашей сети. Первый пример будет для Веб сервера,
+второй для почтового сервера и третий для Шлюза, который действует как сервер-
+посредник (proxy server) для внутренних Wins машин, рабочих станций и
+серверов.</P><IMG alt="" border=0 height=327 src="ch7_1.files/13.jpg"
+width=519><BR><BR>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV align=center>www.openna.com<BR>Кэширующий
+    DNS<BR>208.164.186.3</DIV></TD>
+    <TD>
+      <DIV align=center>deep.openna.com<BR>Мастер DNS
+      сервер<BR>208.164.186.1</DIV></TD>
+    <TD>
+      <DIV align=center>mail.openna.com<BR>Slave DNS
+      сервер<BR>208.164.186.2</DIV></TD></TR>
+  <TR vAlign=top>
+    <TD vAlign=top>
+      <OL>
+        <LI>Разрешен неограниченный трафик на интерфейсе loopback
+        <LI>Разрешен ICMP трафик
+        <LI>Разрешен DNS сервер и клиент на порту 53
+        <LI>Разрешен SSH сервер на порту 22
+        <LI>Разрешен HTTP сервер на 80 порту
+        <LI>Разрешен HTTPS сервер на порту 443
+        <LI>Разрешен SMTP клиент на порт 25
+        <LI>Разрешен FTP сервер на 20, 21 портах
+        <LI>Разрешены исходящие traceroute запросы </LI></OL></TD>
+    <TD vAlign=top>
+      <OL>
+        <LI>Разрешен неограниченный трафик на интерфейсе loopback
+        <LI>Разрешен ICMP трафик
+        <LI>Разрешен DNS сервер и клиент на порт 53
+        <LI>Разрешен SSH сервер и клиент на порт 22
+        <LI>Разрешен HTTP сервер и клиент на порт 80
+        <LI>Разрешен HTTPS сервер и клиент на порт 443
+        <LI>Разрешен WWW-CACHE клиент на порт 8080
+        <LI>Разрешен внешний POP клиент на порт 110
+        <LI>Разрешен внешний NNTP NEWS клиент на порт 119
+        <LI>Разрешен SMTP сервер и клиент на порт 25
+        <LI>Разрешен IMAP сервер на порт 143
+        <LI>Разрешен IRC клиент на порт 6667
+        <LI>Разрешен ICQ клиент на порт 4000
+        <LI>Разрешен FTP клиент на порты 20, 21
+        <LI>Разрешен RealAudio/QuickTime клиент
+        <LI>Разрешены исходящие traceroute запросы </LI></OL></TD>
+    <TD vAlign=top>
+      <OL>
+        <LI>Разрешен неограниченный трафик на интерфейсе loopback
+        <LI>Разрешен ICMP трафик
+        <LI>Разрешен DNS сервер и клиент на порт 53
+        <LI>Разрешен SSH сервер на порт 22
+        <LI>Разрешен SMTP сервер и клиент на порт 25
+        <LI>Разрешен IMAP сервер на порт 143
+        <LI>Разрешены исходящие traceroute запросы </LI></OL></TD></TR></TBODY></TABLE>
+<P align=justify>Эта таблица показывает, какие порты я должен открыть на
+различных серверах. В зависимости от того, какой сервис должен быть доступен на
+сервере, вы должны настроить скрипт брандмауэра на разрешение трафика к
+определенному порту. www.openna.com - наш Веб сервер, mail.openna.com - это наш
+почтовый сервер для всех внутренних сетей и deep.openna.com - это шлюз в всех
+примеров объясненных в этой главе.</P>
+<H3><A name=2>Создание ядра с поддержкой брандмауэра Ipchains.</A></H3>Первое о
+чем вы должны подумать, это чтобы ваше ядро было создано с поддержкой сетевого
+Firewall и Firewalling. Помните, что все сервера должны быть настроены на
+блокирование неиспользуемых портов, даже если они не выступают в роли
+брандмауэра. В ядре 2.2.14 вам нужно ответить Yes на следующие вопросы: <FONT
+color=#008080 size=-1>Networking options:<BR>Network firewalls (CONFIG_FIREFALL)
+[N] Y<BR>IP:Firewalling (CONFIG_IP_FIREWALL) [N] Y<BR>IP:TCP syncookie support
+(CONFIG_SYN_COOKIES) [N] Y</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Если при создание ядра вы использовали
+материалы из главы 3 книги, то все необходимые опции ("Network firewalls,
+IP:Firewalling, and IP:TCP syncookie support") были отмечены.</P>
+<H3><A name=3>Некоторые пояснения к правилам, используемым в скриптах настройки
+брандмауэра.</A></H3>
+<P align=justify>Ниже приводятся пояснения к некоторым правилам, которые мы
+используем в примере firewall. Они приводятся только как рекомендации, потому
+что скрипты хорошо комментированы и легко модифицируются.</P>
+<P align=justify>Константы, используемые в примере скрипта firewall-а.</P>
+<P align=justify><B>EXTERNAL_INTERFACE</B><BR>Это имя внешнего сетевого
+интерфейса, обращенного в Интернет. В нашем примере это
+eth0.<BR><B>LOCAL_INTERFACE_1</B><BR>Это имя интерфейса подключенного к
+внутренней сети LAN. В нашем примере это
+eth1.<BR><B>LOOPBACK_INTERFACE</B><BR>Это имя loopback интерфейса. В нашем
+примере это lo.<BR><B>IPADDR</B><BR>Это IP адрес вашего внешнего интерфейса. Это
+или статический адрес зарегистрированный в InterNIC, или динамический адрес
+присвоенный вашим ISP (обычно, через DHCP).<BR><B>LOCALNET_1</B><BR>Это адрес
+вашей локальной сети (LAN), если любой - полный диапазон IP адресов,
+используемых машинами в вашей сети. Они могут быть статически присвоенными, или
+могут назначаться локальным DHCP сервером. В нашем примере, диапазон адресов
+представляет собой часть сети класса C -
+192.168.1.0/24.<BR><B>ANYWHERE</B><BR>Это обозначение адреса, который ipchains
+воспринимает как любая машина (не широковещательный адрес). Обе программы
+предоставляют метку any/0 для подобного адреса, который равен
+0.0.0.0/0.<BR><B>NAMESERVER_1</B><BR>Это IP адрес Primary DNS сервера из вашей
+сети или вашего ISP.<BR>N<B>AMESERVER_2</B><BR>Это IP адрес Secondary DNS
+сервера из вашей сети или вашего ISP.<BR><B>MY_ISP</B><BR>Это диапазон адресов
+вашего ISP &amp; NOC. Это значение используется firewall-ом для разрешения
+запросов ICMP ping и traceroute. Если вы не определите это диапазон, то будет
+запрещено посылать ping в Интернет из вашей локальной
+сети.<BR><B>LOOPBACK</B><BR>Диапазон адресов loopback равен 127.0.0.0/8.
+Интерфейс непосредственно адресован как 127.0.0.1 (в файле
+/etc/hosts).<BR><B>PRIVPORTS</B><BR>Привилегированные порты, обычно, с 0 по
+1023.<BR><B>UNPRIVPORTS</B><BR>Непривилегированные порты, обычно, с 1024 по
+65535. Они определяются на динамически на стороне клиента
+соединения.<BR><I>Default Policy</I><BR>Брандмауэр имеет предопределенную линию
+поведения и собирает действия, которые нужно предпринять в ответ на определенные
+типы сообщений. Это означает, что если пакет не попал ни под одно из правил, то
+к нему применяется правило по умолчанию.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ. </B>Люди, которые динамически получают адреса от
+ISP могут включить следующие две строки в описания firewall-а. Эти строки
+определяют IP адрес интерфейса ppp0 и адрес сети удаленного ppp
+сервера.</P><FONT color=#008080 size=-1>IPADDR=`/sbin/ifconfig | grep -A 4 ppp0
+| awk '/inet/ { print $2 } ' | sed -e s/addr://`<BR>MY_ISP=`/sbin/ifconfig |
+grep -A 4 ppp0 | awk '/P-t-P/ { print $3 } ' | sed -e s/P-t-P:// | cut -d '.' -f
+1-3`.0/24 </FONT>
+<H3>Разрешение локального трафика.</H3>
+<P align=justify>Так как политика по умолчанию в нашем примере запрещать все,
+что не разрешено, то некоторые установки должны быть возвращены в исходное
+состояние. Локальные сетевые сервисы не проходят через внешний интерфейс, они
+идут через специальный приватный интерфейс, называемый loopback. Ни одна из
+ваших локальных сетевых программ не будет работать, пока не будет разрешен
+полный трафик через loopback интерфейс.</P><FONT color=#008080 size=-1>#
+Неограниченный трафик через loopback интерфейс.<BR>ipchains -A input -i
+$LOOPBACK_INTERFACE -j ACCEPT<BR>ipchains -A output -i $LOOPBACK_INTERFACE -j
+ACCEPT<BR></FONT>
+<H3>Фильтрация адреса источника.</H3>
+<P align=justify>Все IP пакеты содержат в своих заголовках IP адреса источника и
+получателя и тип IP протокола помещенного в пакет (TCP, UDP, ICMP). Единственным
+средством идентификации согласно протоколу IP является адрес источника
+сообщений. Это приводит к возможности подмены адреса (spoofing), когда
+злоумышленник заменят адрес источника на несуществующий адрес или на адрес
+другого сервера.</P><FONT color=#008080 size=-1># Отбрасывание spoof-пакетов, с
+адресом источника совпадающим с вашим внешним адресом.<BR>ipchains -A input -i
+$EXTERNAL_INTERFACE -s $IPADDR -l -j DENY<BR></FONT>
+<P align=justify>Существует по крайней мере семь адресов на внешнем интерфейсе
+от которых необходимо отказаться. К ним относятся:</P>
+<UL>
+  <LI>вашего внешнего IP адреса
+  <LI>от приватных IP адресов класса A
+  <LI>от приватных IP адресов класса B
+  <LI>от приватных IP адресов класса C
+  <LI>от широковещательного адреса класса D
+  <LI>от зарезервированных адресов класса E
+  <LI>от loopback интерфейса </LI></UL>
+<P align=justify>Блокировка исходящих пакетов, содержащих подобные исходные
+адреса, за исключением вашего IP адреса, защищает от ошибок конфигурации с вашей
+стороны.</P>
+<P align=justify><B>Замечание.</B> Не забудьте исключить ваш собственный IP
+адрес из списка исходящих блокируемых пакетов. По умолчанию, я исключаю
+приватные адреса класса C, так как они наиболее часто используются большинством
+людей сегодня. Если вы использовали другой класс вместо C, то вы должны
+раскомментировать соответствующие строки в секции "SPOOFING &amp; BAD ADDRESSES"
+файла конфигурации файрвола.</P>
+<H3>Остальная часть правил.</H3>
+<P align=justify>Другие правила используемые в скрипте брандмауэра
+описывают:</P>
+<UL>
+  <LI>доступ к сервисам из внешнего мира
+  <LI>доступ к сервисам во внешнем миру
+  <LI>Маскарадинг внутренних машин </LI></UL>
+<H3><A name=4>Скрипт для настройки брандмауэра.</A></H3>
+<P align=justify>Утилита ipchains позволяет вам установить брандмауэр, IP
+маскарадинг и т.д. Ipchains общается с ядром и говорит какие пакеты необходимо
+отфильтровать. Теоретически, все установки вашего брандмауэра запоминаются в
+ядре и теряются при перезагрузке сервера. Для борьбы с этим, чтобы сделать
+правила постоянными, мы рекомендуем использовать инициализационные скрипты
+System V. Для этого создайте файл, содержащий скрипт файрвола подобный
+описанному ниже, в каталоге "/etc/rc.d/init.d/" на каждом сервере. Конечно,
+каждый сервер имеет различные сервисы и будет иметь разные скрипты. По этим
+причинам, мы предоставляем три различных набора правил, с которыми вы можете
+поиграть и подогнать под ваши нужды. Также, я подразумеваю, что вы имеете хотя
+бы минимальные знания о том, как фильтрует firewall, и как работают его
+правила.</P>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A href="http://linux.webclub.ru/books/linuxsos/ch6.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#7">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch7_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

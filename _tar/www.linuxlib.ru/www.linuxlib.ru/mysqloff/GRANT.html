@@ -1,0 +1,906 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.3.1  Синтаксис команд GRANT и REVOKE — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/GRANT.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/GRANT.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.3 Управление учетными записями пользователей MySQL
+</a><ul class="immediate"><li class="self">4.3.1 Синтаксис команд <code>GRANT</code> и <code>REVOKE</code>
+</li><li><a href="User_names.html">4.3.2 Имена пользователей MySQL и пароли
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Privilege_changes.html">4.3.3 Когда изменения в привилегиях вступают в силу
+</a></li><li><a href="Default_privileges.html">4.3.4 Задание изначальных привилегий MySQL
+</a></li><li><a href="Adding_users.html">4.3.5 Добавление новых пользователей в MySQL
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/User_resources.html">4.3.6 Ограничение ресурсов пользователя
+</a></li><li><a href="Passwords.html">4.3.7 Задание паролей
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Password_security.html">4.3.8 Обеспечение безопасности своего пароля
+</a></li><li><a href="Secure_connections.html">4.3.9 Использование безопасных соединений
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Previous</a> / <a rel="next" href="User_names.html" title="4.3.2  Имена пользователей MySQL и пароли">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.3.1  Синтаксис команд <code>GRANT</code> и <code>REVOKE</code></H3>
+
+<P>
+<A NAME="IDX498"></A>
+<A NAME="IDX499"></A>
+
+</P>
+<P>
+<A NAME="IDX500"></A>
+<A NAME="IDX501"></A>
+<A NAME="IDX502"></A>
+<A NAME="IDX503"></A>
+<A NAME="IDX504"></A>
+
+</P>
+
+<pre>
+GRANT priv_type [(column_list)] [, priv_type [(column_list)] ...]
+    ON {tbl_name | * | *.* | db_name.*}
+    TO user_name [IDENTIFIED BY [PASSWORD] 'password']
+        [, user_name [IDENTIFIED BY 'password'] ...]
+    [REQUIRE
+        [{SSL| X509}]
+        [CIPHER cipher [AND]]
+        [ISSUER issuer [AND]]
+        [SUBJECT subject]]
+    [WITH [GRANT OPTION | MAX_QUERIES_PER_HOUR # |
+                          MAX_UPDATES_PER_HOUR # |
+                          MAX_CONNECTIONS_PER_HOUR #]]
+
+REVOKE priv_type [(column_list)] [, priv_type [(column_list)] ...]
+    ON {tbl_name | * | *.* | db_name.*}
+    FROM user_name [, user_name ...]
+</pre>
+
+<P>
+<code>GRANT</code> включен в MySQL начиная с версии 3.22.11 и выше. В более ранних
+версиях MySQL оператор <code>GRANT</code> ничего не выполняет.
+
+</P>
+<P>
+Команды <code>GRANT</code> и <code>REVOKE</code> позволяют системным администраторам создавать
+пользователей MySQL, а также предоставлять права пользователям или лишать
+их прав на четырех уровнях привилегий:
+
+</P>
+<DL COMPACT>
+
+<DT><strong>Глобальный уровень</strong>
+<DD>
+Глобальные привилегии применяются ко всем базам данных на указанном
+сервере. Эти привилегии хранятся в таблице <code>mysql.user</code>.
+
+<DT><strong>Уровень базы данных</strong>
+<DD>
+Привилегии базы данных применяются ко всем таблицам указанной базы данных.
+Эти привилегии хранятся в таблицах <code>mysql.db</code> и <code>mysql.host</code>.
+
+<DT><strong>Уровень таблицы</strong>
+<DD>
+Привилегии таблицы применяются ко всем столбцам указанной таблицы. Эти
+привилегии хранятся в таблице <code>mysql.tables_priv</code>.
+
+<DT><strong>Уровень столбца</strong>
+<DD>
+Привилегии столбца применяются к отдельным столбцам указанной таблицы. Эти
+привилегии хранятся в таблице <code>mysql.columns_priv</code>.
+</DL>
+
+<P>
+Если привилегии предоставляются пользователю, которого не существует, то
+этот пользователь создается. Чтобы просмотреть примеры работы команды
+<code>GRANT</code>, см. раздел section <A HREF="Adding_users.html">4.3.5  Добавление новых пользователей в MySQL</A>.
+
+</P>
+<P>
+В таблице приведен список возможных значений параметра <code>priv_type</code> для
+операторов <code>GRANT</code> и <code>REVOKE</code>:
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><code>ALL [PRIVILEGES]</code> </TD><TD> Задает все простые привилегии, кроме <code>WITH GRANT OPTION</code>
+</TD></TR>
+<TR><TD><code>ALTER</code> </TD><TD> Разрешает использование <code>ALTER TABLE</code>
+</TD></TR>
+<TR><TD><code>CREATE</code> </TD><TD> Разрешает использование <code>CREATE TABLE</code>
+</TD></TR>
+<TR><TD><code>CREATE TEMPORARY TABLES</code> </TD><TD> Разрешает использование <code>CREATE TEMPORARY TABLE</code>
+</TD></TR>
+<TR><TD><code>DELETE</code> </TD><TD> Разрешает использование <code>DELETE</code>
+</TD></TR>
+<TR><TD><code>DROP</code> </TD><TD> Разрешает использование <code>DROP TABLE</code>.
+</TD></TR>
+<TR><TD><code>EXECUTE</code> </TD><TD> Разрешает пользователю запускать хранимые процедуры (для MySQL 5.0)
+</TD></TR>
+<TR><TD><code>FILE</code> </TD><TD> Разрешает использование <code>SELECT ... INTO OUTFILE</code> и <code>LOAD DATA INFILE</code>.
+</TD></TR>
+<TR><TD><code>INDEX</code> </TD><TD> Разрешает использование <code>CREATE INDEX</code> and <code>DROP INDEX</code>
+</TD></TR>
+<TR><TD><code>INSERT</code> </TD><TD> Разрешает использование <code>INSERT</code>
+</TD></TR>
+<TR><TD><code>LOCK TABLES</code> </TD><TD> Разрешает использование <code>LOCK TABLES</code> на таблицах, для которых есть привилегия <code>SELECT</code>.
+</TD></TR>
+<TR><TD><code>PROCESS</code> </TD><TD> Разрешает использование <code>SHOW FULL PROCESSLIST</code>
+</TD></TR>
+<TR><TD><code>REFERENCES</code> </TD><TD> Зарезервировано для использования в будущем
+</TD></TR>
+<TR><TD><code>RELOAD</code> </TD><TD> Разрешает использование <code>FLUSH</code>
+</TD></TR>
+<TR><TD><code>REPLICATION CLIENT</code> </TD><TD> Предоставляет пользователю право запрашивать местонахождение головного и подчиненных серверов.
+</TD></TR>
+<TR><TD><code>REPLICATION SLAVE</code> </TD><TD> Необходимо для подчиненных серверов при репликации (для чтения информации из бинарных журналов головного сервера).
+</TD></TR>
+<TR><TD><code>SELECT</code> </TD><TD> Разрешает использование <code>SELECT</code>
+</TD></TR>
+<TR><TD><code>SHOW DATABASES</code> </TD><TD> <code>SHOW DATABASES</code> выводит все базы данных.
+</TD></TR>
+<TR><TD><code>SHUTDOWN</code> </TD><TD> Разрешает использование <code>mysqladmin shutdown</code>
+</TD></TR>
+<TR><TD><code>SUPER</code> </TD><TD> Позволяет установить одно соединение (один раз), даже если достигнуто значение max_connections, и запускать команды <code>CHANGE MASTER</code>, <code>KILL thread</code>, <code>mysqladmin debug</code>, <code>PURGE MASTER LOGS</code> и <code>SET GLOBAL</code>
+</TD></TR>
+<TR><TD><code>UPDATE</code> </TD><TD> Разрешает использование <code>UPDATE</code>
+</TD></TR>
+<TR><TD><code>USAGE</code> </TD><TD> Синоним для ``без привилегий''.
+</TD></TR>
+</TABLE>
+
+<P>
+Значение <code>USAGE</code> можно задавать, если необходимо создать пользователя без
+привилегий.
+
+</P>
+<P>
+Привилегии <code>CREATE TEMPORARY TABLES</code>, <code>EXECUTE</code>, <code>LOCK TABLES</code>, <code>REPLICATION ...</code>,
+<code>SHOW DATABASES</code> и <code>SUPER</code> являются новыми для версии 4.0.2. Чтобы
+воспользоваться этими новыми привилегиями после обновления до версии
+4.0.2, необходимо запустить скрипт <code>mysql_fix_privilege_tables</code>.
+
+</P>
+<P>
+В боле старых версиях MySQL привилегия <code>PROCESS</code> предоставляет такие же
+права, как и новая привилегия <code>SUPER</code>.
+
+</P>
+<P>
+Чтобы лишить пользователя привилегий, предоставленных командой <code>GRANT</code>,
+воспользуйтесь значением <code>priv_type</code> в <code>GRANT OPTION</code>:
+
+</P>
+
+<pre>
+mysql&#62; REVOKE GRANT OPTION ON ... FROM ...;
+</pre>
+
+<P>
+Для таблицы можно указать только следующие значения <code>priv_type</code>: <code>SELECT</code>,
+<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>CREATE</code>, <code>DROP</code>, <code>GRANT</code>, I<code>NDEX</code> и <code>ALTER</code>.
+
+</P>
+<P>
+Для столбца можно указать только следующие значения <code>priv_type</code> (при
+использовании оператора <code>column_list</code>): <code>SELECT</code>, <code>INSERT</code> и <code>UPDATE</code>.
+
+</P>
+<P>
+Глобальные привилегии можно задать, воспользовавшись синтаксисом <code>ON *.*</code>, а
+привилегии базы данных - при помощи синтаксиса <code>ON db_name.*</code>. Если указать
+<code>ON *</code> при открытой текущей базе данных, то привилегии будут заданы для этой
+базы данных. (<strong>Предупреждение</strong>: если указать <code>ON *</code> при <strong>отсутствии</strong> открытой
+текущей базы данных, это повлияет на глобальные привилегии!)
+
+</P>
+<P>
+С тем, чтобы можно было определять права пользователям с конкретных
+компьютеров, в MySQL обеспечивается возможность указывать имя пользователя
+(<code>user_name</code>) в форме <code>user@host</code>. Если необходимо указать строку <code>user</code>, в
+которой содержатся специальные символы (такие как <samp>`-'</samp>) или строку <code>host</code>, в
+которой содержатся специальные или групповые символы (такие как <samp>`%'</samp>),
+можно заключить имя удаленного компьютера или пользователя в кавычки
+(например, <code>'test-user'@'test-hostname'</code>).
+
+</P>
+<P>
+В имени удаленного компьютера также можно указывать групповые символы.
+Например, <code>user@"%.loc.gov"</code> относится к <code>user</code> всех удаленных компьютеров
+домена <code>loc.gov</code>, а <code>user@"144.155.166.%"</code> относится к <code>user</code> всех удаленных
+компьютеров подсети <code>144.155.166</code> класс C.
+
+</P>
+<P>
+Простая форма user является синонимом для <code>user@"%"</code>.
+
+</P>
+<P>
+В MySQL не поддерживаются групповые символы в именах пользователей.
+Анонимные пользователи определяются вставкой записей <code>User=''</code> в таблицу
+<code>mysql.user</code> или созданием пользователя с пустым именем при помощи команды
+<code>GRANT</code>.
+
+</P>
+<P>
+<strong>Примечание</strong>: если анонимным пользователям разрешается подсоединяться к
+серверу MySQL, необходимо также предоставить привилегии всем локальным
+пользователям как <code>user@localhost</code>, поскольку в противном случае при попытке
+пользователя зайти в MySQL с локального компьютера в таблице <code>mysql.user</code>
+будет использоваться вход для анонимного пользователя!
+
+</P>
+<P>
+Чтобы проверить, происходит ли подобное на вашем компьютере, выполните
+следующий запрос:
+
+</P>
+
+<pre>
+mysql&#62; SELECT Host,User FROM mysql.user WHERE User='';
+</pre>
+
+<P>
+На данный момент команда <code>GRANT</code> поддерживает имена удаленных компьютеров,
+таблиц, баз данных и столбцов длиной не более 60 символов. Имя
+пользователя должно содержать не более 16 символов.
+
+</P>
+<P>
+Привилегии для таблицы или столбца формируются при помощи логического
+оператора OR из привилегий каждого из четырех уровней. Например, если в
+таблице <code>mysql.user</code> указано, что у пользователя есть глобальная привилегия
+<code>SELECT</code>, эта привилегия не отменяется на уровне базы данных, таблицы или
+столбца.
+
+</P>
+<P>
+Привилегии для столбца могут быть вычислены следующим образом:
+
+</P>
+
+<pre>
+глобальные привилегии
+OR (привилегии базы данных AND привилегии удаленного компьютера)
+OR привилегии таблицы
+OR привилегии столбца
+</pre>
+
+<P>
+В большинстве случаев права пользователя определяются только на одном
+уровне привилегий, поэтому обычно эта процедура не настолько сложна, как
+описано выше. Подробная информация о последовательности действий проверки
+привилегий представлена в разделе section <A HREF="Privilege_system.html">4.2  Общие проблемы безопасности и система привилегий доступа MySQL</A>.
+
+</P>
+<P>
+Если привилегии предоставляются сочетанию пользователь/удаленный
+компьютер, которое отсутствует в таблице <code>mysql.user</code>, то в последнюю
+добавляется запись, которая остается в таблице до тех пор, пока не будет
+удалена при помощи команды <code>DELETE</code>. Иначе говоря, команда <code>GRANT</code> может
+создавать записи <code>user</code> в таблице, но команда <code>REVOKE</code> не может их удалить.
+Это необходимо делать при помощи команды <code>DELETE</code>.
+
+</P>
+<P>
+<A NAME="IDX505"></A>
+Если в MySQL версий 3.22.12 и выше создан новый пользователь или
+предоставлены глобальные привилегии, пароль пользователя будет назначаться
+оператором <code>IDENTIFIED BY</code>, если он указан. Если у пользователя уже есть
+пароль, то этот пароль будет заменен новым.
+
+</P>
+<P>
+Если вы не хотите отправлять пароль открытым текстом, можно
+воспользоваться параметром <code>PASSWORD</code> с зашифрованным паролем, полученным
+при помощи функции SQL <code>PASSWORD()</code> или функции C API
+<code>make_scrambled_password(char *to, const char *password)</code>.
+
+</P>
+<P>
+<strong>Предупреждение</strong>: если при создании нового пользователя не указать оператор
+<code>IDENTIFIED BY</code>, будет создан пользователь без пароля. Это ненадежно с точки
+зрения безопасности.
+
+</P>
+<P>
+Пароли также можно задавать при помощи команды <code>SET PASSWORD</code>. See section <A HREF="SET_OPTION.html">5.5.6  Синтаксис команды <code>SET</code></A>.
+
+</P>
+<P>
+Если у вас привилегии для базы данных, то при необходимости в таблице
+<code>mysql.db</code> создается запись. Данная запись удаляется после удаления всех
+привилегий для этой базы данных командой <code>REVOKE</code>.
+
+</P>
+<P>
+Если у пользователя нет никаких привилегий для таблицы, то таблица не
+отображается, когда пользователь запрашивает список таблиц (например, при
+помощи оператора <code>SHOW TABLES</code>).
+
+</P>
+<P>
+Оператор <code>WITH GRANT OPTION</code> предоставляет пользователю возможность наделять
+других пользователей любыми привилегиями, которые он сам имеет на
+указанном уровне привилегий. При предоставлении привилегии <code>GRANT</code>
+необходимо проявлять осмотрительность, так как два пользователя с разными
+привилегиями могут объединить свои привилегии!
+
+</P>
+<P>
+Параметры <code>MAX_QUERIES_PER_HOUR #</code>, <code>MAX_UPDATES_PER_HOUR #</code> и
+<code>MAX_CONNECTIONS_PER_HOUR #</code> являются новыми в MySQL версии 4.0.2. Эти
+параметры ограничивают количество запросов, обновлений и входов, которые
+пользователь может осуществить в течение одного часа. Если установлено
+значение 0 (принято по умолчанию), то это означает, что для данного
+пользователя нет ограничений. See section <A HREF="https://www.linuxlib.ru/mysqloff/User_resources.html">4.3.6  Ограничение ресурсов пользователя</A>.
+
+</P>
+<P>
+Нельзя предоставить другому пользователю привилегию, которой нет у вас
+самого. Привилегия <code>GRANT</code> позволяет предоставлять только те привилегии,
+которыми вы обладаете.
+
+</P>
+<P>
+Учтите, что если пользователю назначена привилегия <code>GRANT</code> на определенном
+уровне привилегий, то все привилегии, которыми этот пользователь уже
+обладает (или которые будут ему назначены в будущем!) на этом уровне,
+также могут назначаться этим пользователем. Предположим, пользователю
+назначена привилегия <code>INSERT</code> в базе данных. Если потом в базе данных
+назначить привилегию <code>SELECT</code> и указать <code>WITH GRANT OPTION</code>, пользователь
+сможет назначать не только привилегию <code>SELECT</code>, но также и <code>INSERT</code>. Если
+затем в базе данных предоставить пользователю привилегию <code>UPDATE</code>,
+пользователь сможет после этого назначать <code>INSERT</code>, <code>SELECT</code> и <code>UPDATE</code>.
+
+</P>
+<P>
+Не следует назначать привилегии <code>ALTER</code> обычным пользователям. Это дает
+пользователю возможность разрушить систему привилегий путем переименования
+таблиц!
+
+</P>
+<P>
+Обратите внимание на то, что если используются привилегии для таблицы или
+столбца даже для одного пользователя, сервер проверяет привилегии таблиц и
+столбцов для всех пользователей, и это несколько замедляет работу MySQL.
+
+</P>
+<P>
+При запуске <code>mysqld</code> все привилегии считываются в память. Привилегии базы
+данных, таблицы и столбца вступают в силу немедленно, а привилегии уровня
+пользователя - при следующем подсоединении пользователя. Изменения в
+таблицах назначения привилегий, которые осуществляются при помощи команд
+<code>GRANT</code> и <code>REVOKE</code>, обрабатываются сервером немедленно. Если изменять таблицы
+назначения привилегий вручную (используя команды <code>INSERT</code>, <code>UPDATE</code> и т.д.),
+необходимо запустить оператор <code>FLUSH PRIVILEGES</code> или <code>mysqladmin
+flush-privilege</code>s, чтобы указать серверу на необходимость перезагрузки
+таблиц назначения привилегий. See section <A HREF="https://www.linuxlib.ru/mysqloff/Privilege_changes.html">4.3.3  Когда изменения в привилегиях вступают в силу</A>.
+
+</P>
+<P>
+Наиболее значительные отличия команды <code>GRANT</code> версий ANSI SQL и MySQL
+следующие:
+
+</P>
+
+<ul>
+<LI>
+
+В MySQL привилегии назначаются для сочетания имя пользователя +
+удаленный компьютер, а не только для имени пользователя.
+
+<LI>
+
+В ANSI SQL отсутствуют глобальные привилегии и привилегии уровня базы
+данных, и ANSI SQL поддерживает не все типы привилегий MySQL. В свою
+очередь, в MySQL отсутствует поддержка привилегий ANSI SQL <code>TRIGGER</code>,
+<code>EXECUTE</code> или <code>UNDER</code>.
+
+<LI>
+
+Структура привилегий ANSI SQL является иерархической. Если удалить
+пользователя, то все назначенные этому пользователелю привилегии будут
+отменены. В MySQL назначенные привилегии не отменяются автоматически,
+их при необходимости требуется удалять самостоятельно.
+
+<LI>
+
+В MySQL пользователь может применять к таблице оператор <code>INSERT</code> при
+наличии у него привилегии <code>INSERT</code> только для нескольких столбцов в этой
+таблице. Столбцы, для которых отсутствует привилегия <code>INSERT</code>, будут
+установлены в свои значения, принятые по умолчанию. В ANSI SQL
+требуется наличие привилегии <code>INSERT</code> для всех столбцов.
+
+<LI>
+
+При удалении таблицы в ANSI SQL все привилегии для этой таблицы будут
+отменены. Если отменить привилегию в ANSI SQL, то все привилегии,
+которые были назначены на основе этой привилегии, также будут
+отменены. В MySQL привилегии могут удаляться только при помощи команды
+<code>REVOKE</code> или путем изменения таблиц назначения привилегий MySQL.
+</ul>
+
+<P>
+Чтобы ознакомиться с описанием использования <code>REQUIRE</code>, см. раздел See section <A HREF="Secure_connections.html">4.3.9  Использование безопасных соединений</A>.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c7" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#85e3f7e4ebeec5e7eaebe1ebe0f1abe6eae8">Frank Wortner</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=7&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=7">Edit</a>]</td></tr></table><p class="commenttext">I had no problems with ld.  DEC (Compaq) might<br />
+have fixed ld in a patch kit.  You might want to<br />
+install the latest patch kit for your Digital Unix<br />
+(Tru64 Unix) before building MySQL.  Patch kits<br />
+are available at<br />
+&lt;a<br />
+href=<!--<a href="http://ftp.support.compaq.com/public/unix/">-->http://ftp.support.compaq.com/public/unix/<!--</a>-->&gt;<br />
+<!--<a href="http://ftp.support.compaq.com/public/unix/&lt;/a">-->http://ftp.support.compaq.com/public/unix/&lt;/a<!--</a>-->&gt;</p><table id="c29" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#61130e02090d080f21090e150c00080d4f020e0c"><span class="__cf_email__" data-cfemail="bcced3dfd4d0d5d2fcd4d3c8d1ddd5d092dfd3d1">[email&#160;protected]</span></a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=29&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=29">Edit</a>]</td></tr></table><p class="commenttext">For source installations, these instructions refer to the directory structure presuming &quot;usr/local&quot; was used (default) with configure.   But the preceding page's instructions (for compilation/installation) suggest you use:<br />
+<br />
+./configure --prefix=/usr/local/mysql<br />
+<br />
+To be consistent (and this is causing me some hassles with Perl, so it's not purely semantic), the instructions on this page should presume /usr/local/mysql was specified as the installation directory with configure.<br />
+</p><table id="c30" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#b3c4c1dad4dbc7dff3d0dcded0d6dd9dd0dcde9dd2c6">Linda Wright</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=30&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=30">Edit</a>]</td></tr></table><p class="commenttext">This is probably the most important and least <br />
+appreciated sections of all of the mySQL <br />
+documentation for first time mySQL users.  IMHO, <br />
+reading this page in conjunction with <br />
+<!--<a href="http://www.mysql.com/doc/P/r/Privileges.html">-->http://www.mysql.com/doc/P/r/Privileges.html<!--</a>--> is a <br />
+must for anyone planning secure database systems <br />
+of any real sophistication.</p><table id="c31" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#d6b5bea4bfa5a2b9a6beb3a496b9b7a5bfa5b8b3a2a1b9a4bda5f8b5b9bb">Christopher Raymond</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=31&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=31">Edit</a>]</td></tr></table><p class="commenttext">I am trying to install MySQL under OS X Public Beta. When I run the mysql_install_db script, I get an error message:<br />
+<br />
+dyld: ./bin/mysqld can't open library: /usr/lib/libpthread.A.dylib (No such file or directory, errno = 2)<br />
+Installation of grant tables failed!<br />
+<br />
+I am assuming that the script is looking for a directory that doesn't exist because Apple has a little bit different directory naming structure. Maybe this script needs to be modified for the OS X distribution.<br />
+<br />
+Can anyone help?</p><table id="c75" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#670a06150c271d0e02004904080a">Mark Zieg</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=75&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=75">Edit</a>]</td></tr></table><p class="commenttext">It would be nice if there was an option to log connections, but not queries.</p><table id="c86" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#cba9aea5a5aebfbf8bbbaeaaa8aeada2b9aee5a4b9ac">Bennett Haselton</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=86&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=86">Edit</a>]</td></tr></table><p class="commenttext">If you're logged on as the mysql root user, without a current database selected, and you try to <br />
+grant all privileges to a user with the command:<br />
+<br />
+GRANT ALL PRIVILEGES ON * TO bhaselto<br />
+<br />
+then the RELOAD, SHUTDOWN, PROCESS, FILE and GRANT will not be granted, as can be <br />
+verified by checking the &quot;user&quot; table of the &quot;mysql&quot; database. (This is presumably by design, <br />
+since these privileges can make a user &quot;too powerful&quot;.)</p><table id="c171" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#aecacdc6c7c2c2eec8c7cccbdcdddecfc0dd80cdc1c3">DC Hill</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=171&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=171">Edit</a>]</td></tr></table><p class="commenttext">NOTE: If you have granted privileges to a user on a particular database, or at any lower level than that, invoking &quot;REVOKE ALL ON *.* FROM user@host;&quot; will NOT revoke privileges at those levels. The *.* in the above statement means 'global', not 'all (individual) tables on all (individual) databases. That statment will ONLY revoke global privileges, as stored in the mysql.user table. You MUST revoke any more specific privileges in the same manner as they were granted, if you wish them to be removed from the privilege tables. (i.e. - GRANT ALL ON foo.* TO user@host; =&gt; REVOKE ALL ON foo.* FROM user@host;) I hope this saves some of you a little time and frustration.</p><table id="c215" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Cris Perdue on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=215&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=215">Edit</a>]</td></tr></table><p class="commenttext">REVOKE ALL on  *.* from user@localhost does not revoke the privilege to connect to the database <br />
+server.  To prohibit connections altogether it appears you have to use an SQL delete statement <br />
+then &quot;flush privileges&quot;.  This situation includes connection rights for the anonymous user <br />
+(&quot;&quot;@localhost) automatically granted by some RPM distributions of MySQL.  This usage of REVOKE <br />
+does remove all global privileges to do operations such as SELECT, INSERT, etc., leaving only the <br />
+privilege to connect.</p><table id="c287" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#0f646a614f626e7a7f6661217f607d7b636e616b21607d217a7c">Ken Maupin</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=287&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=287">Edit</a>]</td></tr></table><p class="commenttext">The documentation doesn't emphasize this point,<br />
+but it appears tables_priv doesn't allow CIDR<br />
+notation in the Host column.  If you use CIDR<br />
+notation in the other privilege tables, you need<br />
+to use wildcard notation in tables_priv.  This<br />
+also affects the way GRANT and REVOKE work: if you<br />
+grant table-specific privileges to a user using<br />
+CIDR notation, you'll need to manually adjust the<br />
+Host column in tables_priv.</p><table id="c291" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Antonius Jacobs on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=291&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=291">Edit</a>]</td></tr></table><p class="commenttext">I just chanced my password in mysql now I can't <br />
+login anymore. I have used the mysql usermanuel. <br />
+I hope someone can help my with this problem.</p><table id="c309" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#fe8d9f90979fbe9c979993978cd0909b8a">Sania Prokopyuk</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=309&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=309">Edit</a>]</td></tr></table><p class="commenttext">To enable REPLACE command you have to set the <br />
+user DELETE privilegy!</p><table id="c349" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by William Janoch on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=349&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=349">Edit</a>]</td></tr></table><p class="commenttext">For detailed exples of how to use GRANT, check out the GRANT OPTIONS section of the documentation.<br />
+<br />
+Here's a pretty standard GRANT to give a use control of a whole (single) database:<br />
+GRANT ALL ON database.* TO user IDENTIFIED BY &quot;password&quot;</p><table id="c350" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by William Janoch on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=350&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=350">Edit</a>]</td></tr></table><p class="commenttext">Common General GRANT examples to give &quot;user&quot; total control of a single database:<br /><br />
+from localhost:GRANT ALL ON database.* TO user@localhost IDENTIFIED BY &quot;password&quot;<br />
+from remote host: GRANT ALL ON database.* TO <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="cebbbdabbc8eabb6afa3bea2abe0ada1a3">[email&#160;protected]</a> IDENTIFIED BY &quot;password&quot;</p><table id="c478" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#62080d070e220a1710060f030c0b14104c010d0f">Joel Dare</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=478&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=478">Edit</a>]</td></tr></table><p class="commenttext">Don't forget to &quot;flush privileges&quot;!  I just spent <br />
+a couple hours trying to figure out why I <br />
+couldn't load a file after granting the <br />
+appropriate permissions...</p><table id="c541" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#c0b5b4a5eea4a9a5b3b4a5ac80b7a5a2eea4a5"><span class="__cf_email__" data-cfemail="631617064d070a061017060f231406014d0706">[email&#160;protected]</span></a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=541&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=541">Edit</a>]</td></tr></table><p class="commenttext"> !!! Process_priv=N  does not generally mean NOT, <br />
+<br />
+also:<br />
+<br />
+4.5.6.6 SHOW PROCESSLIST<br />
+<!--<a href="http://www.mysql.com/doc/S/H/SHOW_PROCESSLIST.html">-->http://www.mysql.com/doc/S/H/SHOW_PROCESSLIST.html<!--</a>--><br />
+<br />
+&quot;If you have the process privilege, you can see <br />
+all threads. <br />
+Otherwise, you can see only your own threads.&quot;</p><table id="c623" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#bcd5d2dad3fcdaced9d9decfd8dad3cec9d1cf92d3cedb">FreeBSD Forums</a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=623&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=623">Edit</a>]</td></tr></table><p class="commenttext">You can use phpMyAdmin web based tool to do a lot <br />
+of mySQL admin functions. &lt;a <br />
+href=&quot;<!--<a href="http://www.freebsdforums.org&quot;">-->http://www.freebsdforums.org&quot;<!--</a>--><br />
+&gt;FreeBSD forums&lt;/a&gt;</p><table id="c654" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Monday February 25 2002, @6:03am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=654&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=654">Edit</a>]</td></tr></table><p class="commenttext">Verified on MySQL 3.23.36 on Red Hat Linux 7.1: <br />
+Note that if you type<br />
+  use a_c;<br />
+  grant select on * to user@host;<br />
+you will have given user@host access to any <br />
+database matching 'a_c' where the underscore is a <br />
+wildcard.  (Rarely a problem, I suppose).<br />
+Rectify with<br />
+  update mysql.db set db='a\_c' where db='a_c';</p><table id="c743" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by jan behrens on Tuesday July 9 2002, @1:31am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=743&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=743">Edit</a>]</td></tr></table><p class="commenttext">the aformentioned bug from DAN ELIN in x.x.41 is <br />
+apperently still valid in x.x.51,i cannot logon to a <br />
+database after GRANTing privileges and given a <br />
+password to a new user(yes, i flushed <br />
+privileges)...................only root access is possible</p><table id="c767" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Dan Egli on Thursday April 4 2002, @8:33pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=767&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=767">Edit</a>]</td></tr></table><p class="commenttext">There seems to be a bug in 3.23.41 using Grant. <br />
+Only root can access the mysql database, even <br />
+after using Grant to grant privs on whatever <br />
+database/table/column/ect..  you always get <br />
+permission denied, regardless.</p><table id="c899" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Lars Aronsson on Saturday June 8 2002, @11:16am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=899&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=899">Edit</a>]</td></tr></table><p class="commenttext">The normal response from a grant or revoke<br />
+statement is &quot;Query OK, 0 rows affected&quot;. The<br />
+message that zero rows were affected is a common<br />
+source of confusion, but should just be ignored by<br />
+the user. Trying to revoke grants that were never<br />
+granted yields an &quot;ERROR 1147: There is no such<br />
+grant defined for user...&quot;.</p><table id="c903" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#ec8181ac9f999e8ac28f8381c28e9e">Marcio Merlone</a> on Monday June 10 2002, @2:08pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=903&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=903">Edit</a>]</td></tr></table><p class="commenttext">Where can I find information on how to revoke the<br />
+rights to 'show databases' command for ordinary<br />
+users? I donЄt want my users to know wich<br />
+databases exists on server...</p><table id="c907" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Eric Anderson on Tuesday June 11 2002, @9:40am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=907&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=907">Edit</a>]</td></tr></table><p class="commenttext">I'm attempting to delete two users, one called <br />
+webmaster@&quot;localhost&quot; and the other <br />
+webmaster@&quot;%&quot;. When I try to delete them I'm told <br />
+error: 1066: not unique table/alias and when I <br />
+try to specify by their ip mask I get a syntax <br />
+error. Any suggestions?<br />
+</p><table id="c936" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#0878656963486969696661656d26666d7c">Philip Mak</a> on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=936&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=936">Edit</a>]</td></tr></table><p class="commenttext">Eric Anderson wrote:<br />
+&amp;gt; I'm attempting to delete two users, one called webmaster@&quot;localhost&quot; and the other webmaster@&quot;%&quot;.<br />
+<br />
+Try this:<br />
+&lt;tt&gt;DELETE FROM user WHERE user='webmaster' AND host='localhost';<br />
+DELETE FROM user WHERE user='webmaster' AND host='%';<br />
+FLUSH PRIVILEGES;</p><table id="c963" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Melvyn Sopacua on Monday August 19 2002, @5:15am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=963&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=963">Edit</a>]</td></tr></table><p class="commenttext">For 4.0.2, the privilege system has changed with<br />
+some backwards compatibility concerns, even when<br />
+the mysql_fix_privileges script has been run.<br />
+<br />
+If you have a user, with all privileges for a<br />
+certian database, but no global privileges, the<br />
+CREATE TEMPORARY TABLE privilege on that database<br />
+is denied.<br />
+<br />
+You have to give global CREATE __and__ global<br />
+CREATE TEMPORARY TABLES to the user. IOW:<br />
+GRANT CREATE, CREATE TEMPORARY TABLES ON *.* TO<br />
+user@host;<br />
+<br />
+Needless to say, this affects security grately.</p><table id="c994" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Sunday August 25 2002, @9:17am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=994&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=994">Edit</a>]</td></tr></table><p class="commenttext">Temporary files are a great idea but even with<br />
+Create and Create Temproary File rights in the<br />
+user (global rights) file it still doesn't work. <br />
+This appears to be badly designed.</p><table id="c1031" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#fb8f9a8f9e89bb8b948f9a8f949ed5989496">Brad Bulger</a> on Monday September 2 2002, @4:09am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1031&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1031">Edit</a>]</td></tr></table><p class="commenttext">It should be noted that WITH GRANT OPTION only<br />
+allows the user to pass on privileges to users who<br />
+already exist. The automagical creation of user<br />
+records does not apply - you get an error saying<br />
+that the user with the GRANT OPTION privilege does<br />
+not have access to the 'mysql' database. This is<br />
+probably a good thing, but it needs to be documented.</p><table id="c1347" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#cfa2adaeadaca0aca4e2a2b6bcbea38fa9a6adbdaabcbfaaaaabe1a1aabb">Michael Babcock</a> on Friday November 8 2002, @1:00pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1347&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1347">Edit</a>]</td></tr></table><p class="commenttext">SHOW MASTER STATUS requires PROCESS privileges. <br />
+Other such odd combinations should be documented.</p><table id="c1421" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Dee Kintaudi on Thursday November 21 2002, @12:42pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1421&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1421">Edit</a>]</td></tr></table><p class="commenttext">Okay I got a question and a problem with Mysql and <br />
+passwords:). I tried to use several of the options <br />
+and most of them have not worked. However one <br />
+soloution did work and I tested it out twice and it <br />
+was solid. Of course I lost the little piece of paper I <br />
+wrote it out on and I can't seem to find this <br />
+soloution anywhere, as if it did not exist or maybe I <br />
+imagined it. The soloution that worked for me, <br />
+before I lost the little slip of paper I wrote it down on <br />
+goes something like this..... Insert into user root <br />
+Password &quot;my password&quot; and then something <br />
+with 'Y', 'Y', 'Y', (about a dozen or 15 times or so) <br />
+However, I can not find this soloution anywhere can <br />
+someone help me out here?<br />
+<br />
+I think it would be so nice if they just put this <br />
+throughout their documentation instead of trying to <br />
+hide it.  I think this would solve many problems.  Just <br />
+put password = 'Y', 'Y', 'Y', its like their ashamed of it <br />
+or something.  </p><table id="c1430" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by AJIT DIXIT on Monday November 25 2002, @6:56am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1430&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1430">Edit</a>]</td></tr></table><p class="commenttext">When I work on multi-table update with root user<br />
+it works fine<br />
+<br />
+When I work with non-root user I get error <br />
+<br />
+Sql :  update Stockists, areas set a_nm = aname<br />
+where acd = area <br />
+<br />
+Error : update command denied to user:<br />
+'aldixit@localhost' for table 'areas'<br />
+<br />
+What previledges are required for multi-table update ?<br />
+</p><table id="c1855" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#d7bab6a5a3beb997b4bbb6a4a4b6afb2f9b4b8ba">Martin Francis</a> on Friday February 21 2003, @5:21am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1855&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1855">Edit</a>]</td></tr></table><p class="commenttext">Version 3.23.38 for Windows: Hyphens in database names<br />
+<br />
+If the database you are granting access to has a hyphen in the name, substitute the _ wildcard instead, for example:<br />
+if database name is called test-1:<br />
+<br />
+GRANT Select, Insert, Update, Delete, Index, Alter, Create, Drop, References<br />
+	ON  test_1.*<br />
+	TO 'user-1'@'%'<br />
+	IDENTIFIED BY 'secret'</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=GRANT">Add your own comment.</a></p><div id="docnav"><a href="GRANT.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Previous</a> / <a rel="next" href="User_names.html" title="4.3.2  Имена пользователей MySQL и пароли">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/User_Account_Management.html" title="4.3  Управление учетными записями пользователей MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

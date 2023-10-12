@@ -1,0 +1,845 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини-HOWTO: Защита информации в протоколе POP при помощи SSH — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Мини-HOWTO: Защита информации в протоколе POP при помощи SSH</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Manish Singh</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="8ff6e0fce7cfe8e6e2ffa1e0fde8">[email&#160;protected]</a></P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+> Перевод: <A HREF="../cdn-cgi/l/email-protection.html#1c6f7d715c7d6f6c317075726964327f7371" TARGET="_top">Станислав Рогин</A
+>,
+ <!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>-->
+ </H3
+></DIV
+><P
+CLASS="PUBDATE"
+>версия 1.0, 30 сентября 1998<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN15"
+></A
+><P
+></P
+><P
+>В этом документе описывается возможность защиты информации в протоколе POP при помощи ssh.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Secure-POP+SSH.html#AEN17"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="Secure-POP+SSH.html#AEN24"
+>Способ решения</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="Secure-POP+SSH.html#AEN32"
+>Настройка переназначения портов</A
+></DT
+><DT
+>2.2. <A
+HREF="Secure-POP+SSH.html#AEN76"
+>Проверка результата</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="Secure-POP+SSH.html#AEN96"
+>Использование ваших почтовых программ</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="Secure-POP+SSH.html#AEN100"
+>Настройка fetchmail</A
+></DT
+><DT
+>3.2. <A
+HREF="Secure-POP+SSH.html#AEN112"
+>Автоматизация</A
+></DT
+><DT
+>3.3. <A
+HREF="Secure-POP+SSH.html#AEN127"
+>Если не использовать fetchmail</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="Secure-POP+SSH.html#AEN133"
+>Разное</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="Secure-POP+SSH.html#AEN135"
+>Ответственность</A
+></DT
+><DT
+>4.2. <A
+HREF="Secure-POP+SSH.html#AEN140"
+>Copyright</A
+></DT
+><DT
+>4.3. <A
+HREF="Secure-POP+SSH.html#AEN149"
+>Авторские права</A
+></DT
+><DT
+>4.4. <A
+HREF="Secure-POP+SSH.html#AEN158"
+>Благодарности</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN17"
+>1. Введение</A
+></H1
+><P
+>Обычные почтовые связи, производимые при помощи протокола POP, по своей природе абсолютно не защищены. Пароль передается по сети в открытом виде, и каждый находящийся в сети может его увидеть. Конечно, это не является проблемой в полностью надежной сети или сети, защищенной от внешнего мира, при помощи firewall. Но в открытой сети, например, сети университета, или просто при подключении к вашему внешнему провайдеру, любой человек, взяв обычный сетевой перехватчик (sniffer - программа, позволяющая просматривать содержимое пакетов в сети) может узнать ваш пароль без какой-либо расшифровки. Это, к тому же, складывается с тем фактом, что многие настраивают свои компьютеры на регулярную доставку почты, и в результате этого, пароль достаточно часто появляется в незащищенном виде в сети, и его очень просто перехватить.</P
+><P
+>Имея ваш пароль, хакер может получить доступ к вашему почтовому входу, в котором может находится важная личная информация. А если пароль совпадает с общим паролем входа в систему (что, к сожалению, достаточно часто происходит), последствия могут быть значительно серьезнее.</P
+><P
+>Если весь трафик протокола POP пустить по шифрованному каналу, <I
+CLASS="EMPHASIS"
+>ничего</I
+> не будет идти по сети в незашифрованном виде. Мы также можем использовать защищенные методы авторизации ssh, вместо простого незащищенного пароля. Это один из главных плюсов этого метода - мы получаем не только защищенное содержимое протокола (что не так критично: скорее всего эта почта шла до вас по многим системам в незащищенном виде; защита этих данных - скорее работа PGP, чем ssh), но и защищенную шифрованную авторизацию.</P
+><P
+>Существуют, правда, другие способы достичь защищенной авторизации, такие как APOP, KPOP, или IMAP. Однако, использование ssh имеет одно преимущество - оно работает с обычными конфигурациями протокола POP, без необходимости устанавливать специального почтового клиента (не все почтовые клиенты поддерживают дополнительные протоколы) или дополнять сервер (кроме запуска на нем sshd). К тому же, ваш провайдер может не иметь желания или возможности установить более защищенный почтовый протокол. В дополнение к этому, при использовании ssh данные еще и компрессуются при передаче по сети, что может помочь на медленных сетях.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN24"
+>2. Способ решения</A
+></H1
+><P
+>Решение проблемы основывается на одном из основных свойств ssh: <I
+CLASS="EMPHASIS"
+>переназначение портов</I
+></P
+><P
+>Существует много различных вариаций на эту тему, зависящих от необходимой вам настройки почты. Все они требуют ssh, который можно найти по адресу
+<!--<A
+HREF="http://www.ssh.fi/"
+TARGET="_top"
+>-->http://www.ssh.fi/<!--</A
+>--> и его зеркалах. RPM-вариант находится по адресу
+<!--<A
+HREF="ftp://ftp.replay.com/pub/crypto/"
+TARGET="_top"
+>-->ftp://ftp.replay.com/pub/crypto/<!--</A
+>-->
+, а Debian-пакеты находятся по адресу
+<!--<A
+HREF="ftp://non-us.debian.org/debian-non-US/"
+TARGET="_top"
+>-->ftp://non-us.debian.org/debian-non-US/<!--</A
+>-->
+(и его глубоко уважаемых зеркалах).</P
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN32"
+>2.1. Настройка переназначения портов</A
+></H2
+><P
+>Чтобы включить переназначение портов, запустите следующую команду:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>ssh -C -f popserver -L 11110:popserver:110 sleep 5</PRE
+>&#13;</P
+><P
+>Давайте подробнее разберем содержимое этой команды:</P
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>ssh</TT
+></DT
+><DD
+><P
+>Собственно программа ssh - та самая волшебная программа, которая все и делает.</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>-C</TT
+></DT
+><DD
+><P
+>Опция, включающая компрессию потока данных. Это необязательный параметр, но достаточно полезный, особенно для пользователей, соединяющихся по телефонным линиям.</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>-f</TT
+></DT
+><DD
+><P
+>После того, как ssh выполнит авторизацию и настроит переназначение портов, указываем ему режим работы - фоновый, чтобы иметь возможность запускать другие программы. Так как мы используем лишь функцию переназначения портов ssh, то нам абсолютно не нужен выделенный ему терминал.</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>popserver</TT
+></DT
+><DD
+><P
+>Адрес POP-сервера, к которому мы подключаемся.</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>-L 11110:popserver:110</TT
+></DT
+><DD
+><P
+>Переназначить локальный порт 11110 на порт 110 на удаленном сервере <TT
+CLASS="LITERAL"
+>popserver</TT
+>. Мы используем большое число (11110), чтобы любой пользователь мог использовать переназначение.</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>sleep 5</TT
+></DT
+><DD
+><P
+>После того, как ssh перейдет в фоновый режим, он запускает команду. Мы используем
+<TT
+CLASS="LITERAL"
+>sleep</TT
+>, чтобы соединение поддерживалось достаточное для установки почтового соединения время. 5 секунд обычно бывает достаточно.</P
+></DD
+></DL
+></DIV
+></P
+><P
+>Вы также можете использовать другие опции ssh, если это необходимо. Обычно бывает нужно еще имя пользователя, так как оно может различаться на разных POP-серверах.</P
+><P
+>Для этого <I
+CLASS="EMPHASIS"
+>обязательно</I
+> на сервере <TT
+CLASS="LITERAL"
+>popserver</TT
+> должен быть запущен sshd. Однако, вам не обязательно на нем иметь стандартный вход в оболочку. Времени, за которое выводится сообщение "Вы не можете использовать команду telnet на этот сервер" обычно бывает достаточно для установки почтового соединения.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN76"
+>2.2. Проверка результата</A
+></H2
+><P
+>После того как вы полностью определитесь с параметрами команды, запускающей переназначение портов, вы можете ее испытать. Например:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>$ ssh -C -f msingh@popserver -L 11110:popserver:110 sleep 1000</PRE
+>&#13;</P
+><P
+><TT
+CLASS="LITERAL"
+>popserver</TT
+> - это наш POP-сервер. На моей локальной машине имя пользователя -
+<TT
+CLASS="LITERAL"
+>manish</TT
+>, поэтому я должен отдельно указывать имя <TT
+CLASS="LITERAL"
+>msingh</TT
+>, то есть то, которое имею на сервере. (Если ваше локальное имя и имя на сервере совпадают, то часть вида <TT
+CLASS="LITERAL"
+>msingh@</TT
+> необязательна).</P
+><P
+>Затем эта команда выводит:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>msingh@popserver's password:</PRE
+>&#13;</P
+><P
+>Я набираю свой пароль для POP (ваши пароли для системы и POP могут различаться, поэтому используйте системный пароль). Теперь у нас все настроено! Испытаем нашу систему:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>$ telnet localhost 11110</PRE
+>&#13;</P
+><P
+>и мы должны увидеть примерно следующее:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>QUALCOMM POP v3.33 ready.</PRE
+>&#13;</P
+><P
+>Ура! Все работает! Данные, передаваемые по сети, шифруются, и единственное место, где присутствует нешифрованный текст - это внутри сервера и моей машины.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN96"
+>3. Использование ваших почтовых программ</A
+></H1
+><P
+>В этом разделе описывается настройка вашего почтового клиента на использование зашифрованного соединения при помощи ssh. В основном мы остановимся на fetchmail (прекрасная утилита приема и передачи почты от ESR), потому что это, пожалуй, самая гибкая почтовая программа, работающая в POP. fetchmail можно найти по адресу
+<!--<A
+HREF="http://www.tuxedo.org/~esr/fetchmail/"
+TARGET="_top"
+>-->http://www.tuxedo.org/~esr/fetchmail/<!--</A
+>-->.
+Вы сделаете очень полезное дело, прочитав великолепную документацию, поставляемую вместе с fetchmail.</P
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN100"
+>3.1. Настройка fetchmail</A
+></H2
+><P
+>Ниже приведен мой файл <TT
+CLASS="LITERAL"
+>.fetchmailrc</TT
+></P
+><P
+>&#13;<PRE
+CLASS="PROGRAMLISTING"
+>defaults
+        user msingh is manish
+        no rewrite
+
+poll localhost with protocol pop3 and port 11110:
+        preconnect "ssh -C -f msingh@popserver -L 11110:popserver:110 sleep 5"
+        password foobar;</PRE
+>&#13;</P
+><P
+>Достаточно просто, не так ли? fetchmail богат на команды, но ключевыми здесь являются <TT
+CLASS="LITERAL"
+>preconnect</TT
+> и опция <TT
+CLASS="LITERAL"
+>poll</TT
+>.</P
+><P
+>Мы соединяемся не напрямую с POP-сервером, а с нашей локальной машиной и портом 11110. Команда <TT
+CLASS="LITERAL"
+>preconnect</TT
+> запускает переназначение ssh каждый раз при запуске fetchmail, оставляя соединение в работе на 5 секунд, за которые fetchmail должен установить свое собственное соединение. Остальное делает сам fetchmail.</P
+><P
+>Таким образом, при каждом запуске fetchmail будет запрашиваться ssh-пароль, необходимый для авторизации. Это не очень удобно, если вы запускаете fetchmail в фоновом режиме (как это делаю я). Это нас приводит к следующей главе.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN112"
+>3.2. Автоматизация</A
+></H2
+><P
+>В ssh встроено много различных методов авторизации. Одним из них является использование пары открытых/закрытых ключей RSA. Вы можете сгенерировать авторизационный ключ, используя команду
+<TT
+CLASS="LITERAL"
+>ssh-keygen</TT
+>. К этому ключу может быть привязана ключевая фраза, или она может быть пустой. Использовать или нет эту фразу зависит от того, насколько защищенной вы считаете вашу локальную систему.</P
+><P
+>Если вы считаете, что машина достаточно защищена, не вводите ключевую фразу. Тогда выше приведенный <TT
+CLASS="LITERAL"
+>.fetchmailrc</TT
+> будет работать при обычном запуске fetchmail. Таким образом, вы сможете запускать fetchmail в фоновом режиме, и почта будет доставляться автоматически. У вас все готово.</P
+><P
+>Однако, если вам все-таки требуется ключевая фраза, то все немного усложняется. ssh может запускаться под управлением <I
+CLASS="EMPHASIS"
+>агента</I
+>, который может регистрировать ключи и авторизовать все ssh-соединения, производимые под его управлением. Поэтому у меня имеется скрипт <TT
+CLASS="LITERAL"
+>getmail.sh</TT
+>:</P
+><P
+>&#13;<PRE
+CLASS="PROGRAMLISTING"
+>#!/bin/sh
+ssh-add
+while true; do fetchmail --syslog --invisible; sleep 5m; done</PRE
+>&#13;</P
+><P
+>Я запускаю следующее каждый раз, когда я дозваниваюсь до провайдера:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>$ ssh-agent getmail.sh</PRE
+>&#13;</P
+><P
+>При таком варианте, моя ключевая фраза запрашивается один раз, затем почта проверяется каждые 5 минут. После того, как я закрываю соединение, отключаю и ssh-agent. (Это автоматизировано в моих скриптах ip-up и ip-down)</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN127"
+>3.3. Если не использовать fetchmail</A
+></H2
+><P
+>Что делать, если у вас нет возможности/желания использовать fetchmail? Pine, Netscape и некоторые другие клиенты имеют свои встроенные POP-механизмы. Во-первых, я все-таки советую использовать fetchmail! Он значительно более гибок, и многие почтовые клиенты вообще не могут делать то, что может fetchmail. И Pine, и Netscape можно настроить на использование локальной почты.</P
+><P
+>Но вам придется, если только в ваш клиент не встроена функция, аналогичная preconnect fetchmail-а, поддерживать переназначение портов ssh в течение всего времени подключения. Это означает примерно следующую команду: <TT
+CLASS="LITERAL"
+>sleep 100000000</TT
+> для того, чтобы ssh продолжал поддерживать соединение. С этим, правда, могут не согласиться администраторы вашей сети.</P
+><P
+>Второй проблемой является то, что в некоторые клиенты (например в Netscape) жестко вписан номер порта 110. Поэтому вам придется быть root-ом, для того чтобы переназначать привилегированные порты. Это, конечно, не совсем правильно. Но должно работать.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN133"
+>4. Разное</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN135"
+>4.1. Ответственность</A
+></H2
+><P
+>Нет никаких гарантий, что этот документ существует для тех целей, которые в нем описываются. Он является обычным бесплатным и свободным к распространению источником информации. В результате этого, автор, предоставивший эту информацию, не дает никаких гарантий, включая гарантии достоверности информации. Вы используете этот документ на свой страх и риск.</P
+><P
+>Криптографические программы, такие как ssh, могут быть использованы с ограничениями - это зависит от места вашего проживания. В некоторых странах такие программы подлежат лицензированию. Если вы не уверены в положениях ваших местных законов, проконсультируйтесь с тем, кто более осведомлен в этой области.</P
+><P
+>Ваш провайдер, вряд ли ожидает, что вы будете использовать способы, описанные в этом документе. Автор не несет ответственности за любые формы неверного или запрещенного использования сетевых сервисов, и предоставляет этот документ исключительно как источник информации. Если вы не знаете, попадает ли использование подобных механизмов под условия соглашения между вами и провайдером, проясните этот вопрос ДО начала использования приведенных здесь советов.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN140"
+>4.2. Copyright</A
+></H2
+><P
+>This document is copyright &copy; 1998 Manish Singh
+<A HREF="../cdn-cgi/l/email-protection.html#641d0b170c24030d09144a0b1603" TARGET="_top">&#60;<span class="__cf_email__" data-cfemail="f0899f8398b097999d80de9f8297">[email&#160;protected]</span>&#62;</A
+></P
+><P
+>Permission is granted to make and distribute verbatim copies of this manual
+provided the copyright notice and this permission notice are preserved on all
+copies.</P
+><P
+>Permission is granted to copy and distribute modified versions of this document
+under the conditions for verbatim copying, provided that this copyright notice
+is included exactly as in the original, and that the entire resulting derived
+work is distributed under the terms of a permission notice identical to this
+one.</P
+><P
+>Permission is granted to copy and distribute translations of this document into
+another language, under the above conditions for modified versions.</P
+><P
+>Commercial redistribution is allowed and encouraged; however, the author would
+like to be notified of any such distributions.</P
+><P
+>All trademarks used in this document are acknowledged as being owned by their
+respective owners.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN149"
+>4.3. Авторские права</A
+></H2
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#395550574c411451564e4d5679545c4d5855585b174c575a175c5d4c"><span class="__cf_email__" data-cfemail="c9a5a0a7bcb1e4a1a6bebda689a4acbda8a5a8abe7bca7aae7acadbc">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#cba7a2a5beb3e6a3a4bcbfa48baab8bba7a2a5beb3e5b9be"><span class="__cf_email__" data-cfemail="7d11141308055015120a09123d1c0e0d1114130805530f08">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN158"
+>4.4. Благодарности</A
+></H2
+><P
+>Огромное спасибо Seth David Schoen за консультации по вопросу переназначения портов при помощи ssh
+<A HREF="../cdn-cgi/l/email-protection.html#e695858e898388a693858a8f888dd2c88483948d838a839fc8838293" TARGET="_top">&#60;<span class="__cf_email__" data-cfemail="fb889893949e95bb8e9897929590cfd5999e89909e979e82d59e9f8e">[email&#160;protected]</span>&#62;</A
+>.</P
+></DIV
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

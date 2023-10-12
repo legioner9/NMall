@@ -1,0 +1,558 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Несколько слов о том, как работают роботы (spiders) поисковых машин — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Несколько слов о том, как работают роботы (spiders) поисковых машин</h1>
+
+<P><A href="spiders.htm#0">Введение</A> </P>
+<UL>
+  <LI><A href="spiders.htm#1">Формат файла /robots.txt</A>
+  <LI><A href="spiders.htm#2">Записи (records) файла /robots.txt</A>
+  <LI><A href="spiders.htm#3">Параметры</A>
+  <LI><A href="spiders.htm#4">Расширенные комментарии формата</A>
+  <LI><A href="spiders.htm#5">Примеры</A>
+  <LI><A href="spiders.htm#6">Некоторые проблемы, связанные с поисковыми роботами</A>
+  <LI><A href="spiders.htm#7">Использование мета-тагов HTML</A> </LI></UL>
+<UL>
+  <LI><A href="spiders.htm#8">ROBOTS мета-таги</A>
+  <UL>
+    <LI><A href="spiders.htm#9">KEYWORDS мета-таг</A>
+    <LI><A href="spiders.htm#10">DESCRIPTION мета-таг</A>
+    <LI><A href="spiders.htm#11">Предполагаемые варианты исключения повторных посещений с
+    помощью мета-тагов HTML</A>
+    <LI><A href="spiders.htm#12">Индексировать документ один раз или делать это
+    регулярно?</A>
+    <LI><A href="spiders.htm#13">Как исключить индексирование генерируемых страниц или
+    дублирование документов, если есть зеркала сервера?</A>
+    <LI><A href="spiders.htm#14">Источники</A> </LI></UL></LI></UL>
+<P><A name=0></A></P>
+<P align=center><B>Введение</B> </P>
+<P>Эта статья вовсе не является попыткой объяснить, как работают поисковые
+машины вообще (это know-how их производителей). Однако, по моему мнению, она
+поможет понять как можно управлять поведением поисковых роботов (wanderers,
+spiders, robots - программы, с помощью которых та или иная поисковая система
+обшаривает сеть и индексирует встречающиеся документы) и как правильно построить
+структуру сервера и содержащихся на нем документов, чтобы Ваш сервер легко и
+хорошо индексировался. </P>
+<P>Первой причиной того, что я решился написать эту статью, явился случай, когда
+я исследовал файл логов доступа к моему серверу и обнаружил там следующие две
+строки: </P>
+<P>lycosidae.lycos.com - - [01/Mar/1997:21:27:32 -0500] "GET /robots.txt
+HTTP/1.0" 404 -<BR>lycosidae.lycos.com - - [01/Mar/1997:21:27:39 -0500] "GET /
+HTTP/1.0" 200 3270 </P>
+<P>то есть Lycos обратился к моему серверу, на первый запрос получил, что файла
+/robots.txt нет, обнюхал первую страницу, и отвалил. Естественно, мне это не
+понравилось, и я начал выяснять что к чему. </P>
+<P>Оказывается, все "умные" поисковые машины сначала обращаются к этому файлу,
+который должен присутствовать на каждом сервере. Этот файл описывает права
+доступа для поисковых роботов, причем существует возможность указать для
+различных роботов разные права. Для него существует стандарт под названием <A
+href="https://www.linuxlib.ru/internet/rbtspec.shtml.htm"
+tppabs="http://www.citforum.kuban.net/internet/search/rbtspec.shtml">Standart
+for Robot Exclusion</A>. </P>
+<P>По мнению Луиса Монье (Louis Monier, Altavista), только 5% всех сайтов в
+настоящее время имеет не пустые файлы /robots.txt если вообще они (эти файлы)
+там существуют. Это подтверждается информацией, собранной при недавнем
+исследовании логов работы робота Lycos. Шарль Коллар (Charles P.Kollar, Lycos)
+пишет, что только 6% от всех запросов на предмет /robots.txt имеют код
+результата 200. Вот несколько причин, по которым это происходит: </P>
+<UL>
+  <LI>люди, которые устанавливают Веб-сервера, просто не знают ни об этом
+  стандарте, ни о необходимости существования файла /robots.txt.
+  <LI>не обязательно человек, инсталлировавший Веб-сервер, занимается его
+  наполнением, а тот, кто является вебмастером, не имеет должного контакта с
+  администратором самой "железяки".
+  <LI>это число отражает число сайтов, которые действительно нуждаются в
+  исключении лишних запросов роботов, поскольку не на всех серверах имеется
+  такой существенный трафик, при котором посещение сервера поисковым роботом,
+  становится заметным для простых пользователей. </LI></UL>
+<P><A name=1></A><B>Формат файла /robots.txt.</B> </P>
+<P>Файл /robots.txt предназначен для указания всем поисковым роботам (spiders)
+индексировать информационные сервера так, как определено в этом файле, т.е.
+только те директории и файлы сервера, которые НЕ описаны в /robots.txt. Это файл
+должен содержать 0 или более записей, которые связаны с тем или иным роботом
+(что определяется значением поля agent_id), и указывают для каждого робота или
+для всех сразу что именно им НЕ НАДО индексировать. Тот, кто пишет файл
+/robots.txt, должен указать подстроку Product Token поля User-Agent, которую
+каждый робот выдает на HTTP-запрос индексируемого сервера. Например, нынешний
+робот Lycos на такой запрос выдает в качестве поля User-Agent: </P><PRE>
+	Lycos_Spider_(Rex)/1.0 libwww/3.1
+
+</PRE>
+<P>Если робот Lycos не нашел своего описания в /robots.txt - он поступает так,
+как считает нужным. Как только робот Lycos "увидел" в файле /robots.txt описание
+для себя - он поступает так, как ему предписано. </P>
+<P>При создании файла /robots.txt следует учитывать еще один фактор - размер
+файла. Поскольку описывается каждый файл, который не следует индексировать, да
+еще для многих типов роботов отдельно, при большом количестве не подлежащих
+индексированию файлов размер /robots.txt становится слишком большим. В этом
+случае следует применять один или несколько следующих способов сокращения
+размера /robots.txt: </P>
+<UL>
+  <LI>указывать директорию, которую не следует индексировать, и, соответственно,
+  не подлежащие индексированию файлы располагать именно в ней
+  <LI>создавать структуру сервера с учетом упрощения описания исключений в
+  /robots.txt
+  <LI>указывать один способ индексирования для всех agent_id
+  <LI>указывать маски для директорий и файлов </LI></UL>
+<P><A name=2></A><B>Записи (records) файла /robots.txt</B> </P>
+<P>Общее описание формата записи. </P>
+<P><TT>[ # comment string NL ]*</TT> </P>
+<P><TT>User-Agent: [ [ WS ]+ agent_id ]+ [ [ WS ]* # comment string ]? NL</TT>
+</P>
+<P><TT>[ # comment string NL ]*</TT> </P>
+<P><TT>Disallow: [ [ WS ]+ path_root ]* [ [ WS ]* # comment string ]? NL</TT>
+</P>
+<P><TT>[</TT> </P>
+<P><TT># comment string NL</TT> </P>
+<P><TT>|</TT> </P>
+<P><TT>Disallow: [ [ WS ]+ path_root ]* [ [ WS ]* # comment string ]? NL</TT>
+</P>
+<P><TT>]*</TT> </P>
+<P><TT>[ NL ]+</TT> </P>
+<P><A name=3></A><B>Параметры</B> </P>
+<P>Описание параметров, применяемых в записях /robots.txt </P>
+<P>[...]+ Квадратные скобки со следующим за ними знаком + означают, что в
+качестве параметров должны быть указаны один или несколько терминов. </P>
+<P>Например, после "User-Agent:" через пробел могут быть указаны один или
+несколько agent_id. </P>
+<P>[...]* Квадратные скобки со следующим за ними знаком * означают, что в
+качестве параметров могут быть указаны ноль или несколько терминов. </P>
+<P>Например, Вы можете писать или не писать комментарии. </P>
+<P>[...]? Квадратные скобки со следующим за ними знаком ? означают, что в
+качестве параметров могут быть указаны ноль или один термин. </P>
+<P>Например, после "User-Agent: agent_id" может быть написан комментарий. </P>
+<P>..|.. означает или то, что до черты, или то, что после. </P>
+<P>WS один из символов - пробел (011) или табуляция (040) </P>
+<P>NL один из символов - конец строки (015) , возврат каретки (012) или оба этих
+символа (Enter) </P>
+<P>User-Agent: ключевое слово (заглавные и прописные буквы роли не играют). </P>
+<P>Параметрами являются agent_id поисковых роботов. </P>
+<P>Disallow: ключевое слово (заглавные и прописные буквы роли не играют). </P>
+<P>Параметрами являются полные пути к неиндексируемым файлам или директориям
+</P>
+<P># начало строки комментариев, comment string - собственно тело комментария.
+</P>
+<P>agent_id любое количество символов, не включающих WS и NL, которые определяют
+agent_id различных поисковых роботов. Знак * определяет всех роботов сразу. </P>
+<P>path_root любое количество символов, не включающих WS и NL, которые
+определяют файлы и директории, не подлежащие индексированию. </P>
+<P><A name=4></A><B>Расширенные комментарии формата.</B> </P>
+<P>Каждая запись начинается со строки User-Agent, в которой описывается каким
+или какому поисковому роботу эта запись предназначается. Следующая строка:
+Disallow. Здесь описываются не подлежащие индексации пути и файлы. КАЖДАЯ запись
+ДОЛЖНА иметь как минимум эти две строки (lines). Все остальные строки являются
+опциями. Запись может содержать любое количество строк комментариев. Каждая
+строка комментария должна начинаться с символа # . Строки комментариев могут
+быть помещены в конец строк User-Agent и Disallow. Символ # в конце этих строк
+иногда добавляется для того, чтобы указать поисковому роботу, что длинная строка
+agent_id или path_root закончена. Если в строке User-Agent указано несколько
+agent_id, то условие path_root в строке Disallow будет выполнено для всех
+одинаково. Ограничений на длину строк User-Agent и Disallow нет. Если поисковый
+робот не обнаружил в файле /robots.txt своего agent_id, то он игнорирует
+/robots.txt. </P>
+<P>Если не учитывать специфику работы каждого поискового робота, можно указать
+исключения для всех роботов сразу. Это достигается заданием строки </P><PRE>
+	User-Agent: *
+
+</PRE>
+<P>Если поисковый робот обнаружит в файле /robots.txt несколько записей с
+удовлетворяющим его значением agent_id, то робот волен выбирать любую из них.
+</P>
+<P>Каждый поисковый робот будет определять абсолютный URL для чтения с сервера с
+использованием записей /robots.txt. Заглавные и строчные символы в path_root
+ИМЕЮТ значение. </P>
+<P><A name=5></A><B>Примеры.</B> </P>
+<P><I>Пример 1:</I> </P>
+<P><TT>User-Agent: *</TT> </P>
+<P><TT>Disallow: /<BR></TT></P>
+<P><TT>User-Agent: Lycos</TT> </P>
+<P><TT>Disallow: /cgi-bin/ /tmp/ <BR></TT></P>
+<P>В примере 1 файл /robots.txt содержит две записи. Первая относится ко всем
+поисковым роботам и запрещает индексировать все файлы. Вторая относится к
+поисковому роботу Lycos и при индексировании им сервера запрещает директории
+/cgi-bin/ и /tmp/, а остальные - разрешает. Таким образом сервер будет
+проиндексирован только системой Lycos. </P>
+<P><I>Пример 2:</I> </P>
+<P><TT>User-Agent: Copernicus Fred</TT> </P>
+<P><TT>Disallow:<BR></TT></P>
+<P><TT>User-Agent: * Rex</TT> </P>
+<P><TT>Disallow: /t<BR></TT></P>
+<P>В примере 2 файл /robots.txt содержит две записи. Первая разрешает поисковым
+роботам Copernicus и Fred индексировать весь сервер. Вторая - запрещает всем и
+осебенно роботу Rex индексировать такие директории и файлы, как /tmp/,
+/tea-time/, /top-cat.txt, /traverse.this и т.д. Это как раз случай задания маски
+для директорий и файлов. </P>
+<P><I>Пример 3:</I> </P>
+<P><TT># This is for every spider!</TT> </P>
+<P><TT>User-Agent: *</TT> </P>
+<P><TT># stay away from this</TT> </P>
+<P><TT>Disallow: /spiders/not/here/ #and everything in it</TT> </P>
+<P><TT>Disallow: # a little nothing</TT> </P>
+<P><TT>Disallow: #This could be habit forming!</TT> </P>
+<P><TT># Don't comments make code much more readable!!!</TT> </P>
+<P>В примере 3 - одна запись. Здесь всем роботам запрещается индексировать
+директорию /spiders/not/here/, включая такие пути и файлы как
+/spiders/not/here/really/, /spiders/not/here/yes/even/me.html. Однако сюда не
+входят /spiders/not/ или /spiders/not/her (в директории '/spiders/not/'). </P>
+<P><A name=6></A><B>Некоторые проблемы, связанные с поисковыми роботами.</B>
+</P>
+<P><I>Незаконченность стандарта (</I>Standart for Robot Exclusion<I>).</I> </P>
+<P>К сожалению, поскольку поисковые системы появились не так давно, стандарт для
+роботов находится в стадии разработки, доработки, ну и т.д. Это означает, что в
+будущем совсем необязательно поисковые машины будут им руководствоваться. </P>
+<P><I>Увеличение трафика.</I> </P>
+<P>Эта проблема не слишком актуальна для российского сектора Internet, поскольку
+не так уж много в России серверов с таким серьезным трафиком, что посещение их
+поисковым роботом будет мешать обычным пользователям. Собственно, файл
+/robots.txt для того и предназначен, чтобы ограничивать действия роботов. </P>
+<P><I>Не все поисковые роботы используют /robots.txt.</I> </P>
+<P>На сегодняшний день этот файл обязательно запрашивается поисковыми роботами
+только таких систем как Altavista, Excite, Infoseek, Lycos, OpenText и
+WebCrawler. </P>
+<P><A name=7></A><B>Использование мета-тагов HTML.</B> </P>
+<P>Начальный проект, который был создан в результате соглашений между
+программистами некоторого числа коммерческих индексирующих организаций (Excite,
+Infoseek, Lycos, Opentext и WebCrawler) на недавнем собрании Distributing
+Indexing Workshop (W3C) , ниже. </P>
+<P>На этом собрании обсуждалось использование мета-тагов HTML для управления
+поведением поисковых роботов, но окончательного соглашения достигнуто не было.
+Были определены следующие проблемы для обсуждения в будущем: </P>
+<UL>
+  <LI>Неопределенности в спецификации файла /robots.txt
+  <LI>Точное определение использования мета-тагов HTML, или дополнительные поля
+  в файле /robots.txt
+  <LI>Информация "Please visit"
+  <LI>Текущий контроль информации: интервал или максимум открытых соединений с
+  сервером, при которых можно начинать индексировать сервер. </LI></UL>
+<HR width="90%">
+
+<P align=center><A name=8></A><B>ROBOTS мета-таги</B> </P>
+<P>Этот таг предназначен для пользователей, которые не могут контролировать файл
+/robots.txt на своих веб-сайтах. Таг позволяет задать поведение поискового
+робота для каждой HTML-страницы, однако при этом нельзя совсем избежать
+обращения робота к ней (как возможно указать в файле /robots.txt). </P>
+<P>&lt;META NAME="ROBOTS" CONTENT="robot_terms"&gt; </P>
+<P>robot_terms - это разделенный запятыми список следующих ключевых слов
+(заглавные или строчные символы роли не играют): ALL, NONE, INDEX, NOINDEX,
+FOLLOW, NOFOLLOW.<BR></P>
+<P>NONE - говорит всем роботам игнорировать эту страницу при индексации
+(эквивалентно одновременному использованию ключевых слов NOINDEX, NOFOLLOW).
+</P>
+<P>ALL - разрешает индексировать эту страницу и все ссылки из нее (эквивалентно
+одновременному использованию ключевых слов INDEX, FOLLOW). </P>
+<P>INDEX - разрешает индексировать эту страницу </P>
+<P>NOINDEX - неразрешает индексировать эту страницу </P>
+<P>FOLLOW - разрешает индексировать все ссылки из этой страницы </P>
+<P>NOFOLLOW - неразрешает индексировать ссылки из этой страницы </P>
+<P>Если этот мета-таг пропущен или не указаны robot_terms,
+то по умолчанию поисковый робот поступает как если бы были указаны robot_terms=
+         INDEX, FOLLOW
+(т.е. ALL). Если в CONTENT обнаружено ключевое слово ALL, то робот поступает
+соответственно, игнорируя возможно указанные другие ключевые слова.. Если в
+CONTENT имеются противоположные по смыслу ключевые слова, например, FOLLOW,
+NOFOLLOW, то робот поступает по своему усмотрению (в этом случае FOLLOW). </P>
+<P>Если robot_terms содержит только NOINDEX, то ссылки с этой страницы не
+индексируются. Если robot_terms содержит только NOFOLLOW, то страница
+индексируется, а ссылки, соответственно, игнорируются. </P>
+<P><A name=9></A><B>KEYWORDS мета-таг.</B> </P>
+<P>&lt;META NAME="KEYWORDS" CONTENT="phrases"&gt; </P>
+<P>phrases - разделенный запятыми список слов или словосочетаний (заглавные и
+строчные символы роли не играют), которые помогают индексировать страницу (т.е.
+отражают содержание страницы). Грубо говоря, это те слова, в ответ на которые
+поисковая система выдаст этот документ. </P>
+<P><A name=10></A><B>DESCRIPTION мета-таг.</B> </P>
+<P>&lt;META NAME="DESCRIPTION" CONTENT="text"&gt; </P>
+<P>text - тот текст, который будет выводиться в суммарном ответе на запрос
+пользователя к поисковой системе. Сей текст не должен содержать тагов разметки и
+логичнее всего вписать в него смысл данного документа на пару-тройку строк. </P>
+<P><A name=11></A><B>Предполагаемые варианты исключения повторных посещений с
+помощью мета-тагов HTML</B> </P>
+<P>Некоторые коммерческие поисковые роботы уже используют мета-таги, позволяющие
+осуществлять "связь" между роботом и вебмастером. Altavista использует KEYWORDS
+мета-таг, а Infoseek использует KEYWORDS и DESCRIPTION мета-таги. </P>
+<P><A name=12></A><B>Индексировать документ один раз или делать это
+регулярно?</B> </P>
+<P>Вебмастер может "сказать" поисковому роботу или файлу bookmark пользователя,
+что содержимое того или иного файла будет изменяться. В этом случае робот не
+будет сохранять URL, а броузер пользователя внесет или не внесет это файл в
+bookmark. Пока эта информация описывается только в файле /robots.txt,
+пользователь не будет знать о том, что эта страница будет изменяться. </P>
+<P>Мета-таг DOCUMENT-STATE может быть полезен для этого. По умолчанию, этот
+мета-таг принимается с CONTENT=STATIC. </P>
+<P>&lt;META NAME="DOCUMENT-STATE" CONTENT="STATIC"&gt; </P>
+<P>&lt;META NAME="DOCUMENT-STATE" CONTENT="DYNAMIC"&gt; </P>
+<P><A name=13></A><B>Как исключить индексирование генерируемых страниц или
+дублирование документов, если есть зеркала сервера?</B> </P>
+<P>Генерируемые страницы - страницы, порождаемые действием CGI-скриптов. Их
+наверняка не следует индексировать, поскольку если попробовать провалиться в них
+из поисковой системы, будет выдана ошибка. Что касается зеркал, то негоже, когда
+выдаются две разные ссылки на разные сервера, но с одним и тем же содержимым.
+Чтобы этого избежать, следует использовать мета-таг URL с указанием абсолютного
+URL этого документа (в случае зеркал - на соответствующую страницу главного
+сервера). </P>
+<P>&lt;META NAME="URL" CONTENT="absolute_url"&gt; </P>
+<P><A name=14></A><B>Источники</B> </P>
+<OL>
+  <LI>Charles P.Kollar, John R.R. Leavitt, Michael Mauldin, <B>Robot Exclusion
+  Standard Revisited, </B><!--<A
+  href="http://www.kollar.com/robots.html">-->www.kollar.com/robots.html<!--</A>-->
+  <LI>Martijn Koster, <B>Standard for robot exclusion</B>, <!--<A
+  href="http://info.webcrawler.com/mak/projects/robots/robots.html">-->info.webcrawler.com/mak/projects/robots/robots.html<!--</A>-->
+  </LI></OL>
+
+  </div>
+</div>
+</body>
+</html>

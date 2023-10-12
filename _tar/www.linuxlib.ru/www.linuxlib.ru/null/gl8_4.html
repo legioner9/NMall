@@ -1,0 +1,406 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Выполнение, останов и повторный запуск процессов — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h3>8.4.   Выполнение, останов и повторный запуск процессов</h3>
+<p>     В этом подразделе описывается:
+<ul><li> как запустить команду в определенное время с  помощью
+команд batch и at;
+<li> как получить информацию о состоянии процесса;
+<li> как завершить активный процесс;
+<li> как вновь запустить остановленный процесс;
+<li> как пренести процесс из оперативного в фоновый  режим
+и наоборот.</ul>
+
+<h4>8.4.1.   Запуск команд в заданное время</h4>
+
+<p align=justify>Команды batch  и  at  позволяют  вам  определять  время запуска команды или последовательности  команд.  При  помощи команды batch система определяет время запуска  команды,  вы это можете определить с  помощью  команды  at.  Обе  команды ожидают  ввод  со  стандартного  ввода  (терминала);  список команд, вводимых с терминала,  должен  завершаться  нажатием клавиши ^d (одновременное нажатие клавиши Ctrl и клавиши d).
+<p align=justify>Команда batch очень полезна, если вы запускаете процесс или программу, которые занимают  много  системного  времени. Команда  batch  представляет  системе  задание   (содержащее последовательность команд для выполнения). Задание  ставится в очередь и запускается  как  только  у  системы  появляется возможность.  Это  позволяет  системе  быстро  отвечать   на запросы других пользователей. Общий формат команды batch:
+<pre>
+        batch&lt;CR>
+        первая команда&lt;CR>
+        .
+        .
+        .
+        последняя команда&lt;CR>
+        &lt;^d></pre>
+<p align=justify>Если запускается  только  одна  команда,  то  ее  можно ввести в одной командной строке:
+<pre>
+	batch command_line&lt;CR></pre>
+<p align=justify>В следующем примере batch используется  для  выполнения команды   grep   в   согласованное   время.   Команда   grep осуществляет поиск  всех  файлов  в  текущем  справочнике  и перенаправляет вывод в файл dol.file.
+<pre>
+        $ batch&lt;CR>
+        grep dollar * > dol.file&lt;CR>
+        &lt;^d>
+        job 155223141.b at Sun Dec 11:14:54 1989
+        $</pre>
+<p align=justify>После того  как  вы  зададите  задание  batch,  система выдаст ответ, в котором даны номер задания,  дата  и  время. Номер задания не то же самое, что  номер  процесса,  который система генерирует, когда вы запускаете  команду  в  фоновом режиме.
+<p align=justify>Команда  at  позволяет  вам  указывать   точное   время выполнения команд. Общий фомат команды at:
+<pre>
+        at time&lt;CR>
+        первая команда&lt;CR>
+        .
+        .
+        .
+        последняя команда&lt;CR>
+        &lt;^d></pre>
+<p align=justify>Аргумент time состоит из времени дня и даты, если  дата не сегодняшняя.
+<p align=justify>В следующем примере показано, как использовать  команду at для  посылки  сообщения  happy  birthday  пользователю  с регистрационным именем emily:
+<pre>
+        $ at 8:15am Feb 27&lt;CR>
+        banner happy birthday | mail emily&lt;CR>
+        &lt;^d>
+        $</pre>
+<p align=justify>Обратите внимание, что команда at подобно команде batch выдает ответ с номером задания, датой и временем.
+<p align=justify>Если вы не хотите, чтобы команды, находящиеся в  данный момент в очереди заданий batch или  at  были  выполнены,  то можете удалить  их  из  очереди.  Для  этого  воспользуйтесь опцией -r в команде at, указав ее с номером  задания.  Общий формат такой команды:
+<pre>
+	at -r jobnumber&lt;CR></pre>
+     Например, чтобы удалить предыдущее задание at, введите:
+<pre>
+	at -r 453400603.a&lt;CR></pre>
+     Если вы забыли номер задания, то команда :
+<pre>
+	at -l </pre>
+распечатает вам список текущих заданий в очереди  batch  или
+at, как показано на следующем экране:
+<pre>
+        $ at -l&lt;CR>CW
+        user mylogin 168302040.a at Sat Nov 25 13:00:00 1989
+        user mylogin 453400603.a at Fri Feb 24 08:15:00 1989
+        $</pre>
+<p align=justify>Таким образом команда at выполняет команды в  указанное время. Вы  можете  использовать  от  одной  до  4-х  цифр  и буквосочетания "am"  и  "pm",  чтобы  указать  время.  Чтобы указать дату, задайте имя месяца и вслед за ним число.  Если задание должно быть выполнено сегодня, то  дату  вводить  не надо.
+<P>   Пример.
+<pre>
+        at 08:15am Feb 27
+        at 5:14pm Sept 24</pre>
+
+<h4>8.4.2.   Получить состояние запущенного процесса</H4>
+
+<p align=justify>Команда  ps  дает   вам   состояние   всех   процессов, запущенных   на   данный   момент.   Например,   вы   можете использовать команду ps, чтобы  просмотреть  состояние  всех процессов,  которые  запущены  в  фоновом  режиме,  применив символ &.
+<p align=justify>В следующем подпункте обсуждается вопрос, как применить номер  PID  (идентификатор   процесса),   чтобы   остановить выполнение команды. PID является уникальным номером, который система UNIX назначает каждому активному процессу.
+<p align=justify>В следующем примере команда grep запускается в  фоновом режиме и затем выдается команда ps. Система сообщает в ответ номер идентификации процесса (PID) и номер терминала  (TTY). Она также выдает время выполнения каждого процесса (TIME)  и имя команды, которая выполняется (COMMAND):
+<pre>
+        $ grep word * > temp &lt;CR>
+        28223
+        $
+        $ ps&lt;CR>
+        PID         TTY       TIME       COMD
+        28124       tty10     0:00       sh
+        28223       tty10     0:04       grep
+        28224       tty10     0:04       ps
+        $</pre>
+<p align=justify>Обратите внимание, что система  распечатала  номер  PID для команды grep так же, как и для  всех  других  запущенных процессов: для самой команды ps и команды sh,  которая  была запущена во время вашей регистрации.
+<p align=justify>Вы можете приостановить и  вновь  запустить  программу, если  в  вашей  системе  предусмотрена  функция   управления заданиями.  Команда  jobs  выдает  список  текущих   фоновых процессов, запущенных  или  приостановленных.  Команда  jobs дополнительно  к  PID  распечатывает  идентификатор  задания (JID) и имя задания. Чтобы вновь запустить  приостановленное задание, либо  возобновить  фоновый  процесс  в  оперативном режиме, вам необходимо знать  JID.  JID  распечатывается  на экране каждый раз, когда  вы  вводите  команду  запуска  или останова процесса. Если вы введете:
+<pre>
+	jobs&lt;CR></pre>
+то на экране появится следующая информация:
+<pre>
+	[JID] - Stopped (signal) &lt;имя задания></pre>
+        или
+<pre>
+	[JID] + Running      &lt;имя задания></pre>
+
+<h4>8.4.3.   Завершение активных процессов</h4>
+
+<p align=justify>Команда kill  завершает  активные  процессы  в  фоновом режиме и команда stop  приостанавливает  временно  процессы. Общий формат этих команд:
+<pre>
+	kill PID&lt;CR></pre>
+        или
+<pre>
+	stop JID&lt;CR></pre>
+Обратите  внимание,  что  вы  не  можете  завершать  фоновые задания нажатием клавиш  BREAK  или  DEL.  Следующий  пример показывает, как вы можете завершить  команду  grep,  которая выполняется в фоновом режиме.
+<p>  Пример.
+<pre>
+        $ kill 28223&lt;CR>
+        28223 Terminated
+        $</pre>
+<p align=justify>После того как  система  выдаст  ответ  на  запрос,  на экране  появится  подсказка  $,  означающая,   что   процесс завершен. Если система не найдет указанный PID, то  появится сообщение об ошибке:
+<pre>
+	kill:28223:No such process </pre>
+<p align=justify>Чтобы приостановить оперативный процесс  (если  активна функция управления заданиями), введите:
+<pre>
+	ctrl Z </pre>
+На экране появится следующее сообщение:
+<pre>
+	&lt;JID> Stopped(user)  &lt;имя задания></pre>
+
+<h4>8.4.4.   Запуск остановленного задания</h4>
+
+<p align=justify>Если функция управления заданиями активна, то вы можете вновь  запустить  приостановленный  процесс.   Чтобы   вновь запустить процесс, остановленный командой stop,  вы  сначала должны определить JID  с  помощью  команды  jobs.  Затем  вы можете использовать JID со следующими командами:
+<dl>
+<dt><tt>fg  &lt;JID> </tt>-<dd> возобновляет приостановленное задание
+                    или переводит задание из фонового режима в оперативный;
+<dt><tt>bg  &lt;JID> </tt>-<dd> вновь запускает приостановленное задание в фоновом режиме.</dl>
+
+<h4>8.4.5.   Использование команды nohup</h4>
+
+<p align=justify>Все процессы, за исключением at и  batch,  завершаются, когда вы выходите из системы. Если вы  хотите,  чтобы  после вашего выхода из системы процесс в фоновом режиме  продолжал выполняться, то вам необходимо использовать  команду  nohup. Команда nohup имеет следующий формат:
+<pre>
+	nohup command &&lt;CR></pre>
+<p align=justify>Предположим, вы хотите, чтобы команда grep  осуществила поиск во всех файлах  в  вашем  текущем  справочнике  строки "word" и перенаправила вывод в файл word.list, и  затем,  не ожидая завершения, вы хотите выйти из  системы,  то  введите следующую строку:
+<pre>
+	nohup grep word * > word.list & &lt;CR></pre>
+<p align=justify>Вы можете завершить команду  nohup  с  помощью  команды kill.
+
+<p><center><p>
+<font size=-1>
+<a href="gl8_3.html">Назад</a> | <a href="contents.html">Содержание</a> | <a href="gl9_1.html">Вперед</a></font></center></p>
+<font size="-2">
+<p align=center>
+Copyright &copy; <!--<a class="plain" href="http://www.citmgu.ru/">-->CIT<!--</a>--></font>
+
+  </div>
+</div>
+</body>
+</html>

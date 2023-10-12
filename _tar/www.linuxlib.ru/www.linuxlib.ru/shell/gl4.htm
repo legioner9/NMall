@@ -1,0 +1,912 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Интерпретатор командного языка shell. Выполнение shell-программ — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<p><a name="1"></a></p>
+
+<p>A.noneline { font-family: Arial, Serif; text-decoration: none;
+} FONT.arial { font-family: Arial, Serif; } TD.arial {
+font-family: Arial, Serif; } TH.arial { font-family: Arial,
+Serif; } PRE { font-family: Monospace; color: navy; } SAMP {
+font-family: Monospace; color: navy; } TT { font-family:
+Monospace; color: navy; } VAR { font-family: Monospace; color:
+navy; } </style> </p>
+<div align="center"><center>
+
+<table border="0" cellpadding="0" width="100%">
+    <tr>
+        <th colspan="2" class="arial"><hr noshade>
+        </th>
+    </tr>
+</table>
+</center></div>
+
+<p><a name="4"></a></p>
+
+<h3 align="center">4. Выполнение shell-программ
+<a name="4_1"></a></h3>
+
+<h4>4.1. Запуск shell'а</h4>
+
+<p>Программа, интерпретирующая
+shell-программы, находится в файле
+/bin/sh. При запуске ее первый аргумент
+является именем shell-программы,
+остальные передаются как
+позициональные параметры. Если
+файл, содержащий shell-программу,
+имеет право выполнения (x), то
+достаточно указания лишь его имени.
+Например, следующие две команды
+операционной системы эквивалентны
+(если файл ficofl обладает указанным
+правом и на самом деле содержит
+shell-программу): </p>
+
+<pre>
+        sh ficofl -d . g\*
+и
+        ficofl -d . g\*
+</pre>
+
+<h4>4.2. Выполнение</h4>
+
+<p>При выполнении shell-программ
+выполняются все подстановки. Если
+имя команды совпадает с именем
+специальной команды, то она
+выполнается в рамках текущего
+процесса. Так же выполняются и
+определенные пользователем
+функции. Если имя команды не
+совпадает ни с именем специальной
+команды, ни с именем функции, то
+порождается новый процесс и
+осуществляется попытка выполнить
+указанную команду. </p>
+
+<p>Переменная PATH определяет путь
+поиска директории, содержащей
+данную команду. По умолчанию это </p>
+
+<pre>
+        ::/bin:/usr/ bin:/util:/dss/rk
+</pre>
+
+<p>Директории поиска разделяются
+двоеточиями; :: означает текущую
+директорию. Если имя команды
+содержит символ /, значение $PATH не
+используется: имена, начинающиеся с
+/ ищутся от корня, остальные - от
+текущей директории. Положение
+найденной команды запоминается
+shellом и может быть опрошено
+командой hash. <a name="4_3"></a> </p>
+
+<h4>4.3. Окружение</h4>
+
+<p>Окружение - это набор пар
+имя-значение, которые передаются
+выполняемой программе. Shell
+взаимодействует с окружением
+несколькими способами. При запуске
+shell создает переменную для каждой
+указанной пары, придавая ей
+соответствующее значение. Если вы
+измените значение какой-либо из
+этих переменных или создадите
+новую переменную, то это не окажет
+никакого влияния на окружение, если
+не будет использована команда export
+для связи переменной shell'а с
+окружением (см. также set -a).
+Переменная может быть удалена из
+окружения командой unset (см.). Таким
+образом, окружение каждой из
+выполняемых shell'ом команд
+формируется из всех неизмененных
+пар имя-значение, первоначально
+полученных shell'ом, минус пары,
+удаленные командой unset, плюс все
+модифицированные и измененные
+пары, которые для этого должны быть
+указаны в команде export. </p>
+
+<p>Окружение простых команд может
+быть сформировано указанием перед
+ней одного или нескольких
+присваиваний переменным. Так, </p>
+
+<pre>
+        TERM=d460 &lt;команда&gt;
+и
+        (export TERM; TERM=d460; &lt;команда&gt;)
+</pre>
+
+<p>эквивалентны. Переменные,
+участвующие в таких присваиваниях,
+назовем ключевыми параметрами. </p>
+
+<p>Если установлен флаг -k (см. set), то
+все ключевые параметры помещаются
+в окружение команды, даже если они
+записаны после команды. <a name="4_4"></a> </p>
+
+<h4>4.4. Сигналы</h4>
+
+<p>UNIX'ом поддерживаются следующие
+сигналы: </p>
+
+<table border="0">
+    <tr>
+        <td valign="top">SIGHUP </td>
+        <td valign="top">- 1 - </td>
+        <td valign="top">отменить (hangup) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGINT </td>
+        <td valign="top">- 2 - </td>
+        <td valign="top">прерывание (interrupt) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGQUIT </td>
+        <td valign="top">- 3 - </td>
+        <td valign="top">нестандартный выход
+        (quit) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGILL </td>
+        <td valign="top">- 4 - </td>
+        <td valign="top">неверная команда (illegal
+        instruction) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGTRAP </td>
+        <td valign="top">- 5 - </td>
+        <td valign="top">ловушка (trace trap) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGFPE </td>
+        <td valign="top">- 8 - </td>
+        <td valign="top">исключительная
+        ситуация при выполнении
+        операций с плавающей запятой
+        (floating-point exception) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGKILL </td>
+        <td valign="top">- 9 - </td>
+        <td valign="top">уничтожение процесса
+        (kill) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGBUS </td>
+        <td valign="top">- 10 - </td>
+        <td valign="top">ошибка шины (bus error) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGSEGV </td>
+        <td valign="top">- 11 - </td>
+        <td valign="top">нарушение
+        сегментации (segmentation violation) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGSYS </td>
+        <td valign="top">- 12 - </td>
+        <td valign="top">неверный системный
+        вызов (bad argument to system call) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGPIPE </td>
+        <td valign="top">- 13 - </td>
+        <td valign="top">запись в канал без
+        чтения из него (write on a pipe with no one
+        to read it) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGALRM </td>
+        <td valign="top">- 14 - </td>
+        <td valign="top">будильник (alarm clock) </td>
+    </tr>
+    <tr>
+        <td valign="top">SIGTERM </td>
+        <td valign="top">- 15 - </td>
+        <td valign="top">программное
+        завершение процесса (software
+        termination signal) </td>
+    </tr>
+</table>
+
+<p>Сигналы SIGINT и SIGQUIT игнорируются,
+если команда была запущена
+асинхронно. Иначе сигналы
+обрабатываются так же, как в
+процессе-предке, за исключением
+сигнала SIGSEGV (см. также Специальные
+команды. Trap). <a name="4_5"></a> </p>
+
+<h4>4.5. Замечания</h4>
+
+<p>При выполнении команд
+запоминается их местонахождение.
+Поэтому при создании команды с тем
+же именем, но находящейся в другой
+директории, все равно будет
+выполняться старая команда (если
+вызов происходит по короткому
+имени). Для исправления ситуации
+воспользуйтесь командой hash с
+ключом -r (см. Специальные команды). </p>
+
+<p>Если вы переименовали текущую или
+вышележащую директорию, то команда
+pwd может давать неверную
+информацию. Для исправления
+ситуации воспользуйтесь командой cd
+с полным именем директории. <a name="5"></a>
+</p>
+
+<h3 align="center">5. Дополнительные
+сведения <a name="5_1"></a></h3>
+
+<h4>5.1. Команда test</h4>
+
+<p>Команда test применяется для
+проверки условия. Формат вызова: </p>
+
+<pre>
+        test &lt;выражение&gt;
+        или
+        [ &lt;выражение&gt; ]
+</pre>
+
+<p>Команда test вычисляет
+&lt;выражение&gt; и, если его значение -
+истина, возвращает код завершения 0
+(true); иначе - ненулевое значение (false).
+Ненулевой код завершения
+возвращается и если опущены
+аргументы. &lt;Выражение&gt; может
+состоять из следующих примитивов: </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">-r файл </td>
+        <td valign="top">- истина, если файл
+        существует и доступен для
+        чтения </td>
+    </tr>
+    <tr>
+        <td valign="top">-w файл </td>
+        <td valign="top">- истина, если файл
+        существует и доступен для
+        записи </td>
+    </tr>
+    <tr>
+        <td valign="top">-x файл </td>
+        <td valign="top">- истина, если файл
+        существует и является
+        выполняемым </td>
+    </tr>
+    <tr>
+        <td valign="top">-f файл </td>
+        <td valign="top">- истина, если файл
+        существует и является обычным
+        файлом </td>
+    </tr>
+    <tr>
+        <td valign="top">-d файл </td>
+        <td valign="top">- истина, если файл
+        существует и является
+        директорией </td>
+    </tr>
+    <tr>
+        <td valign="top">-c файл </td>
+        <td valign="top">- истина, если файл
+        существует и является
+        специальным
+        символьно-ориентированным
+        файлом </td>
+    </tr>
+    <tr>
+        <td valign="top">-b файл </td>
+        <td valign="top">- истина, если файл
+        существует и является
+        специальным
+        блок-ориентированным файлом </td>
+    </tr>
+    <tr>
+        <td valign="top">-p файл </td>
+        <td valign="top">- истина, если файл
+        существует и является
+        именованным каналом (pipe) </td>
+    </tr>
+    <tr>
+        <td valign="top">-s файл </td>
+        <td valign="top">- истина, если файл
+        существует и имеет ненулевую
+        длину </td>
+    </tr>
+    <tr>
+        <td valign="top">-t [ дескриптор файла ] </td>
+        <td valign="top">- истина, если
+        открытый файл с указанным
+        дескриптором (по умолчанию 1)
+        существует и ассоциирован с
+        терминалом </td>
+    </tr>
+    <tr>
+        <td valign="top">-z s1 </td>
+        <td valign="top">- истина, если длина
+        строки s1 нулевая </td>
+    </tr>
+    <tr>
+        <td valign="top">-n s1 </td>
+        <td valign="top">- истина, если длина
+        строки s1 ненулевая </td>
+    </tr>
+    <tr>
+        <td valign="top">s1 = s2 </td>
+        <td valign="top">- истина, если строки s1
+        и s2 совпадают </td>
+    </tr>
+    <tr>
+        <td valign="top">s1 != s2 </td>
+        <td valign="top">- истина, если строки s1
+        и s2 не совпадают </td>
+    </tr>
+    <tr>
+        <td valign="top">s1 </td>
+        <td valign="top">- истина, если s1
+        непустая строка </td>
+    </tr>
+    <tr>
+        <td valign="top">n1 -eq n2 </td>
+        <td valign="top">- истина, если целые n1
+        и n2 алгебраически совпадают .
+        На месте -eq могут быть также -ne,
+        -gt, -ge, -lt, -le </td>
+    </tr>
+</table>
+
+<p><a name="5_2"></a></p>
+
+<h4>5.2. Команда expr</h4>
+
+<p>Команда expr применяется для
+вычисления выражений. Результат
+выводится на стандартный вывод.
+Операнды выражения должны быть
+разделены пробелами. Метасимволы
+должны быть экранированы. Надо
+заметить, что 0 возвращается в
+качестве числа, а не для индикации
+пустой строки. Строки, содержащие
+пробелы или другие специальные
+символы, должны быть заключены в
+кавычки. Целые рассматриваются как
+32-битные числа. </p>
+
+<p>Ниже приведен список операторов в
+порядке возрастания приоритета,
+операции с равным приоритетом
+заключены в фигурные скобки. Перед
+символами, которые должны быть
+экранированы, стоит \. </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">&lt;выр&gt; \| &lt;выр&gt;</td>
+        <td valign="top">если первое &lt;выр&gt;
+        не пустое и не нулевое, то
+        возвращает его, иначе
+        возвращает второе &lt;выр&gt; </td>
+    </tr>
+    <tr>
+        <td valign="top">&lt;выр&gt; \&amp; &lt;выр&gt;</td>
+        <td valign="top">если оба &lt;выр&gt; не
+        пустые и не нулевые, то
+        возвращает первое &lt;выр&gt;,
+        иначе возвращает 0 </td>
+    </tr>
+    <tr>
+        <td valign="top">&lt;выр&gt; { =, \&gt;, \&gt;=,
+        \&lt;, \&lt;=, != } &lt;выр&gt;</td>
+        <td valign="top">возвращает результат
+        целочисленного сравнения если
+        оба &lt;выр&gt; - целые; иначе
+        возвращает результат
+        лексического сравнения </td>
+    </tr>
+    <tr>
+        <td valign="top">&lt;выр&gt; { +, - } &lt;выр&gt;</td>
+        <td valign="top">сложение и вычитание
+        целочисленных аргументов </td>
+    </tr>
+    <tr>
+        <td valign="top">&lt;выр&gt; { \*, /, % }
+        &lt;выр&gt;</td>
+        <td valign="top">умножение, деление и
+        получение остатка от деления
+        целочисленных аргументов </td>
+    </tr>
+    <tr>
+        <td valign="top">&lt;выр&gt; : &lt;выр&gt;</td>
+        <td valign="top">оператор
+        сопоставления : сопоставляет
+        первый аргумент со вторым,
+        который должен быть регулярным
+        выражением. Обычно оператор
+        сравнения возвращает число
+        символов, удовлетворяющих
+        образцу (0 при неудачном
+        сравнении). Однако символы \( и \)
+        могут применяться для
+        выделения части первого
+        аргумента. </td>
+    </tr>
+</table>
+
+<p>Регулярное выражение строится
+следующим образом: </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">. </td>
+        <td valign="top">- обозначает любой
+        символ </td>
+    </tr>
+    <tr>
+        <td valign="top">* </td>
+        <td valign="top">- обозначает
+        предыдущий символ, повторенный
+        несколько раз </td>
+    </tr>
+    <tr>
+        <td valign="top">[] </td>
+        <td valign="top">- обозначают любой
+        один из указанных между ними
+        символов; группа символов
+        может обозначаться с помощью
+        знака &quot;-&quot; (т.е. [0-9]
+        эквивалентно [0123456789]); если
+        после [ стоит ^, то это
+        эквивалентно любому символу,
+        кроме указанных в скобках и
+        &lt;возврата_каретки&gt;; для
+        указания ] в качестве образца,
+        надо поставить ее сразу за [
+        (т.е. []...]); . и * внутри квадратных
+        скобок обозначают самих себя </td>
+    </tr>
+</table>
+
+<p>Все остальные символы (и ^, если
+стоит не в квадратных скобках)
+обозначают самих себя. Для указания
+символов ., *,[ и ] надо экранировать
+их (т.е. писать \., \*, \[, \]). </p>
+
+<h4>Примеры.</h4>
+
+<p>1.</p>
+
+<pre>   a=`expr $a + 1`</pre>
+
+<p>- увеличение на 1 переменной a </p>
+
+<p>2.</p>
+
+<pre>   expr $a : '.*/\(.*\)' \| $a </pre>
+
+<p>- выделяет из имени файла короткое
+имя (т.е. из /usr/util/ena выделяется ena).
+Внимание, одиночный символ / будет
+воспринят как знак операции
+деления. </p>
+
+<p>3.</p>
+
+<pre>   expr $VAR : '.*' </pre>
+
+<p>- получение количества символов
+переменной VAR. </p>
+
+<p>В качестве побочного эффекта expr
+возвращает следующие коды
+завершения: </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">0 </td>
+        <td valign="top">- если выражение не
+        нуль и не пустая строка </td>
+    </tr>
+    <tr>
+        <td valign="top">1 </td>
+        <td valign="top">- если выражение нуль
+        или пустая строка </td>
+    </tr>
+    <tr>
+        <td valign="top">2 </td>
+        <td valign="top">- для некорректных
+        выражений </td>
+    </tr>
+</table>
+
+<p>Команда expr также выдает следующие
+сообщения об ошибках: </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">syntax error </td>
+        <td valign="top">- для ошибок в
+        операторах или операндах </td>
+    </tr>
+    <tr>
+        <td valign="top">non-numeric argument </td>
+        <td valign="top">- для попыток
+        применения арифметических
+        операций к нечисловым строкам </td>
+    </tr>
+</table>
+
+<h4>Замечание.</h4>
+
+<p>Допустим, что мы хотим сравнить
+значение переменной a с каким-либо
+символом, имеющим для expr особый
+смысл, например, со знаком
+равенства. Пусть $a на самом деле
+является знаком равенства. Так как
+аргументы предварительно
+обрабатываются shell'ом, то команда </p>
+
+<pre>
+        expr $a = '='
+</pre>
+
+<p>будет воспринята как </p>
+
+<pre>
+        expr = = =
+</pre>
+
+<p>что синтаксически некорректно. В
+подобных случаях надо пользоваться
+таким приемом: </p>
+
+<pre>
+        expr X$a = X=
+</pre>
+
+<p>т.е. добавлением некоторого
+символа к обеим строкам, что никак
+не влияет на результат сравнения,
+однако позволяет избежать
+синтаксической ошибки. <a name="5_3"></a> </p>
+
+<h4>5.3. Команда ena</h4>
+
+<p>Команда ena позволяет получить
+части полного имени файла. Первый
+аргумент - флаг, второй - имя файла.
+Команда различает следующие флаги: </p>
+
+<table border="0" width="100%">
+    <tr>
+        <td valign="top">-n </td>
+        <td valign="top">- имя файла без
+        расширения </td>
+    </tr>
+    <tr>
+        <td valign="top">-f </td>
+        <td valign="top">- имя файла с
+        расширением </td>
+    </tr>
+    <tr>
+        <td valign="top">-e </td>
+        <td valign="top">- расширение </td>
+    </tr>
+    <tr>
+        <td valign="top">-d </td>
+        <td valign="top">- имя директории </td>
+    </tr>
+    <tr>
+        <td valign="top">-p </td>
+        <td valign="top">- если имя файла
+        начинается с . или .. , то эти
+        символы выделяются из имени </td>
+    </tr>
+</table>
+
+<p>Ниже приводится текст программы
+ena, хранящийся в /util/ena. </p>
+
+<pre>
+   #       Get part of pathname
+   case    $1      in
+   -n )
+          expr $2 : '.*/\(.*\)[.].*' \| $2 : '\(.*\)[.].*' \| $2
+          ;;
+   -f )
+          expr $2 : '.*/\(.*\)' \| $2
+          ;;
+   -e )
+          expr $2 : '.*\([.][^./]*\)' \| ' '
+          ;;
+   -d )
+          expr $2 : '\(.*\)/.*' \| $2
+          ;;
+   -p )
+          expr $2 : '\([.]\)/.*' \| $2 : '\([.][.]\)/.*' \| ' '
+          ;;
+   *  )
+          echo &quot;error: unknown part of pathname $1&quot;
+          exit 2
+          ;;
+   esac
+</pre>
+
+<p align="center"><a href="gl3.htm"><font size="2">Назад</font></a><font
+size="2"> | </font><a href="index.htm"><font size="2">Содержание</font></a><font
+size="2"> </font></p>
+
+<hr noshade>
+
+  </div>
+</div>
+</body>
+</html>

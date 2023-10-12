@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Partitioning Hard Drive(s) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV CLASS="NAVHEADER">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TH COLSPAN="3" ALIGN="center">Linux Administration Made Easy</TH></TR>
+<TR><TD WIDTH="10%" ALIGN="left" VALIGN="bottom"><A HREF="x253.htm">Назад</A>
+</TD>
+<TD WIDTH="80%" ALIGN="center" VALIGN="bottom">Chapter 4. Installation and
+Hardware Configuration</TD>
+<TD WIDTH="10%" ALIGN="right" VALIGN="bottom"><A HREF="x403.htm">Вперед</A></TD>
+</TR></TABLE><HR ALIGN="LEFT" WIDTH="100%"></DIV>
+
+<DIV CLASS="SECT1"><H1 CLASS="SECT1"><A NAME="INSTALL-PARTITIONING">
+Разделение на разделы жесткого диска</A></H1>
+<P>Можно получить нормальную систему Linux на одном разделе. Кстати, такой
+подход проще, но иногда нужно все же несколько разделов.</P>
+
+<P>Диск имеет смысл поделить на четыре раздела для основных файловых систем
+(root, /usr, /home и swap).</P>
+
+<P>Во-первых, это может уменьшить время, требуемое, чтобы выполнить проверки
+файловой системы, потому что эти проверки могут быть выполнены параллельно.
+(Между прочим, <I CLASS="EMPHASIS">НИКОГДА</I> не выполняйте fsck на
+смонтированной файловой системе!!! Вы будете сожалеть о том, что случится с
+ней после такой проверки, но будет уже поздно. Исключительная ситуация:
+если файловая система смонтирована в режиме только для чтения, тогда
+безопасно делать такое.) К тому же, проверять несколько разделов проще: если
+известно о проблеме в разделе /home, я просто размонтирую его, проверю и
+смонтирую снова (а вот в случае с одним разделом придется грузиться с rescue
+diskette в однопользовательском режиме).</P>
+
+<P>Во-вторых, определенные разделы можно смонтировать только для чтения, что
+иногда полезно.</P>
+
+<P>Наконец, важным аргументом является защита файлов: падение одной системы
+не означает потери всех остальных.</P>
+
+<P>Этот небольшой факт может быть большым плюсом. Например, если корневой
+раздел так разрушен, что Вы не можете загружаться, Вы можете загружаться со
+спасательного набора дискет, смонтировать корневой раздел и скопировать с
+него все, что еще копируется, (или восстановить с копии; см.
+<A HREF="c1315.htm">главу 8</A> о резервировании и восстановлении), на другой
+раздел, например, /home, снова перезагрузится с emergency boot disk, ввести
+&#8220;<TT CLASS="LITERAL">mount root=/dev/hda3</TT>&#8221; (если Ваша
+временная корневая файловая система находится на третьем разделе hda) и
+загрузить полностью функциональный Linux. Затем Вы можете выполнить fsck для
+несмонтированного разрушенного корневого раздела (замечание переводчика: мне
+известен сисоп, который специально создает такой резервный корневой раздел
+именно на случай, когда система взорвется).</P>
+
+<P>Я <I CLASS="EMPHASIS">имею</I> личный опыт катастроф с файловыми системами
+и очень рад тому, что ущерб был минимален, благодаря правильному разделению
+на разделы.</P>
+
+<P>Наконец, Linux позволяет поставить в другие разделы другие ОС
+(например, Windows 95/98/NT, BeOS или что хотите), и создать dual- (или
+triple-, ...)  загрузку системы. Обычно, хотят иметь по крайней мере один
+отдельный раздел для каждой операционной системы. Linux включает приличный
+менеджер начальной загрузки (LILO на Intel-основанных системах, MILO на Alpha
+и SILO на Sparc), который позволяет Вам определять, которую операционную
+систему Вы хотите загружать при включении питания по умолчанию (вероятно,
+Linux, правильно?).</P>
+
+<P>Вы должны выделить разделы диска согласно Вашим потребностям. В моем опыте
+на платформах Intel, Альфа и Sparc, для довольно загруженной системы, я
+нашел, что следующая схема работает вполне нормально.</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN">
+Дано:
+
+Данный диск X Mb/Gb               (например, 2 Gb)
+(Или больше чем один диск с общей емкостью в X Mb/Gb)
+
+Посчитаем:
+
+(swap)   примерно двойная RAM     (например, 64 Mb RAM требует 128 Mb swap)
+/ (root) около 10% от доступного  (например, 200 Mb)
+/home    около 20% от доступного  (например, 400 Mb)
+/usr     все, что осталось        (например, 1272 Mb)
+
+/var     (опционально: см. ниже)
+/boot    (опционально: см. ниже)
+/archive (опционально: см. ниже)
+</PRE></TD></TR></TABLE>
+
+<P>Конечно, вышеупомянутые количества только приблизительные руководящие
+принципы. Все зависит от того, как планируется использовать систему.</P>
+
+<P>Ниже описаны разные файловые системы, что, возможно, даст Вам хорошие
+идеи по поводу того, чему сколько выделить:</P>
+
+<P></P><UL><LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/ (root)</I> используется для хранения временного
+каталога, образа ядра, загрузчика, важных системных программ и библиотек.
+Здесь же хранятся протоколы, почта пользователей, задания на печать и
+временные RPM-файлы. Тип раздела обязательно 83 (Linux native).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/usr</I> должен быть самым большым разделом, потому
+что большинство двоичных файлов, требуемых Linux, также как все локальное
+программное обеспечение, некоторые протоколы и все исходники будут здесь. К
+тому же, по умолчанию здесь хранятся web-страницы, Squid-кэш и ресурсы Samba,
+хотя все это можно переместить куда-нибудь еще. Тип раздела обязательно 83
+(Linux native).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/home</I> может быть небольшим, если пользователи не
+имеют shell-доступа. Если пользователи имеют web-страницы, раздел надо
+сделать побольше. Тип раздела обязательно 83 (Linux native).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">(swap)</I> Linux обеспечивает работу с виртуальной
+памятью, для создания большего количества памяти RAM, чем ее реально
+установлено в системе. Раздел свопа используется с RAM, чтобы выполнить это.
+Как правило, раздел свопа по крайней мере вдвое превосходит RAM.</P>
+
+<P>Если Вы имеете больше чем один физический жесткий диск в системе, Вы
+можете создавать много разделов свопа. Это может улучшить эффективность
+подкачки, пользуясь преимуществом параллельного дискового доступа.
+Например, с 256 Mb RAM и с четырьмя дисками, я вероятно создал бы четыре
+раздела свопа по 128 Mb каждый. Таким образом, получится для 256 Mb RAM
+512 Mb свопа (а всего 768 Mb доступной виртуальной памяти, что уже солидно).
+Тип раздела обязательно 82 (Linux swap).</P>
+
+<DIV CLASS="NOTE"><P></P>
+<TABLE CLASS="NOTE" WIDTH="90%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP">
+<IMG SRC="../images/note.gif" HSPACE="5" ALT="Note"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Замечание: Есть общее неправильное представление, что Linux имеет
+ограничение размера свопа в 128 МБ. Это было истинно в прошлом, но в
+современных версиях Linux размер зависит от архитектуры (например, Intel
+системы могут иметь размер свопа до 2 Gb). Подробности можно получить
+командой ``<TT CLASS="LITERAL">man mkswap</TT>''.</P></TD></TR></TABLE>
+</DIV></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/var</I> (опционально). Раздел / (root) может быть
+разделен и более глубоко. Каталог /var используется для хранения почты,
+заданий на печать протоколов, обработки блокировки и т.д. Проблема в том, что
+при поступлении большого количества почты (например), корневой раздел быстро
+заполнится, что может привести к проблемам (например, система рухнет?),
+особенно если временный каталог находится тоже на нем. Наличие /var на
+собственном разделе может помочь избежать таких проблем. Тип раздела
+обязательно 83 (Linux native).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/boot</I> (optional) В некоторых обстоятельства (типа
+системы, установленной в программной конфигурации RAID) может быть необходимо
+иметь отдельный раздел, чтобы загрузить Linux. Этот раздел позволит
+загрузиться и затем загрузить любые драйверы, которые требуются, чтобы читать
+другие файловые системы. Размер раздела может быть всего пара МБ; я
+рекомендую приблизительно 10 МБ (что должно дать Вам участок памяти, чтобы
+сохранить ядро, начальный образ RAMDISK, и, возможно, еще резервное ядро или
+два). Тип раздела обязательно 83 (Linux native).</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P><I CLASS="EMPHASIS">/archive</I> (optional) Если Вам некуда девать место,
+может пригодиться каталог для архивов /archive. Его можно использовать для
+хранения всяких архивов перед их сбросом на стриммер, пердоставления к ним
+доступа через samba file services, да мало ли для чего еще! Тип раздела
+можно задать 83 (Linux native), или какой угодно, если раздел должен быть
+доступен из других систем. Например, 6 (DOS 16-bit &#62;=32M) для доступа
+из систем Microsoft.</P></LI></UL>
+
+<P>Система точек монтирования позволяет добавлять диски по мере необходимости.
+Например, если кончилось место, и Вы добавили диск, скажем, sda6, то можно
+смонтировать его как /usr/local и передать на него все данные из каталога
+/usr/local. Но система и приложения как работали, так и будут работать: им
+совершенно все равно, где это /usr/local находится реально.</P>
+
+<P>Вот как созданы разделы у меня на Intel-системе (dual boot, Windows 95 и
+Linux):</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD>
+<PRE CLASS="SCREEN">
+Device    Boot   Begin    Start      End   Blocks   Id  System
+/dev/hda1  *         1        1      254  1024096+   6  DOS 16-bit &#62;=32M
+/dev/hda2          255      255      782  2128896    5  Extended
+/dev/hda5          255      255      331   310432+  83  Linux native
+/dev/hda6          332      332      636  1229728+  83  Linux native
+/dev/hda7          637      637      749   455584+  83  Linux native
+/dev/hda8          750      750      782   133024+  82  Linux swap
+
+</PRE></TD></TR></TABLE>
+<P>Первый раздел, <I CLASS="EMPHASIS">/dev/hda1</I>, файловая система DOS,
+используется для альтернативной системы (Windows 95). Занимает 1 Gb.</P>
+
+<P>Второй раздел, <I CLASS="EMPHASIS">/dev/hda2</I>, является физическим
+разделом (&#8220;extended&#8221;) который охватывает остальное место на
+диске. Это используется только для размещения оставшихся логических разделов.
+(может быть до 4 физических разделов на диске; в моем случае я требовал
+больше чем 4 раздела, следовательно я был должен использовать логическую
+схему для выделения остальных разделов).</P>
+
+<P>Разделы с третьего по пятый, <I CLASS="EMPHASIS">/dev/hda5</I>,
+<I CLASS="EMPHASIS">/dev/hda6</I> и <I CLASS="EMPHASIS">/dev/hda7</I>,
+отформатированы в файловой системе ext2fs, и использованы как файловые
+системы для / (root), /usr и /home соответственно.</P>
+
+<P>Наконец, шестой раздел, <I CLASS="EMPHASIS">/dev/hda8</I>, используется
+под своп.</P>
+
+<P>Другой пример: машина на Alpha с двумя жесткими дисками (sole boot,
+только Linux):</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN">
+Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1            1        1        1     2046    4  DOS 16-bit &#60;32M
+/dev/sda2            2        2      168   346859   83  Linux native
+/dev/sda3          169      169      231   130851   82  Linux swap
+/dev/sda4          232      232     1009  1615906    5  Extended
+/dev/sda5          232      232      398   346828   83  Linux native
+/dev/sda6          399      399     1009  1269016   83  Linux native
+/dev/sdb1            1        1      509  2114355   83  Linux native
+/dev/sdb2          510      510     1019  2118540   83  Linux native
+</PRE></TD></TR></TABLE>
+
+<P>Первый раздел, <I CLASS="EMPHASIS">/dev/sda1</I>, DOS-раздел, используется
+для хранения MILO boot loader. Платформа Alpha имеет немного другой метод
+загрузки, чем система Intel, следовательно Linux сохраняет информацию
+начальной загрузки в разделе FAT. Этот раздел только должен быть как можно
+меньше, в данном случае 2 Mb.</P>
+
+<P>Второй раздел, <I CLASS="EMPHASIS">/dev/sda2</I>, ext2, использован для
+раздела / (root).</P>
+
+<P>Третий раздел, <I CLASS="EMPHASIS">/dev/sda3</I>, использован для свопа.
+</P>
+
+<P>Четвертый раздел, <I CLASS="EMPHASIS">/dev/sda4</I>, является разделом
+&#8220;extended&#8221; (см. предыдущий пример).</P>
+
+<P>Пятый и шестой разделы, <I CLASS="EMPHASIS">/dev/sda5</I> и
+<I CLASS="EMPHASIS">/dev/sda6</I>, отформатированы в файловой системе ext2 и
+соответственно использованы для /home и /usr.</P>
+
+<P>Седьмой раздел, <I CLASS="EMPHASIS">/dev/sdb1</I>, тоже ext2fs,
+использован для /archive.</P>
+
+<P>Восьмой и последний раздел, <I CLASS="EMPHASIS">/dev/sdb2</I>, тоже
+ext2fs, использован для /archive2.</P>
+
+<P>После выделения разделов надо записать информацию о них на диск. После
+этого программа установки Red Hat обновит таблицу разделов в памяти и
+перейдет к следующему шагу процесса установки.</P></DIV>
+
+<DIV CLASS="NAVFOOTER"><HR ALIGN="LEFT" WIDTH="100%">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top"><A HREF="x253.htm">Назад</A></TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="book1.htm">Оглавление</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top"><A HREF="x403.htm">Вперед</A></TD>
+</TR>
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top">Booting Linux Installation
+Program</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="c204.htm">Локальное оглавление</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top">Setting up Swap Space</TD></TR>
+</TABLE></DIV>
+
+  </div>
+</div>
+</body>
+</html>

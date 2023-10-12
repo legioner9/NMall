@@ -1,0 +1,641 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 15 Серверное программное обеспечение (Почтовый сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 15 Серверное программное обеспечение (Почтовый сервис) -
+      Sendmail (часть 1)</H2><FONT size=+2>В этой главе</FONT><BR><FONT
+      size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#1">-->Linux Sendmail
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#3">-->Организация
+      защиты Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#4">-->Утилиты
+      администратора Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_2.html#5">-->Утилиты
+      пользователя Sendmail<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#6">-->Linux Imap и
+      Pop сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#7">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#8">-->Настройка Imap
+      и POP для использования с TCP-Wrappers inetd супер сервером<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch15_3.html#9">-->Организация
+      защиты IMAP/POP<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=200
+      src="ch15_3.files/22.jpg" width=139></TD></TR></TBODY></TABLE>
+<H3><A name=6>Linux Imap и Pop сервер</A></H3><B>Краткий обзор</B>
+<P align=justify>Если вы настроили Sendmail как Центральный Почтовый
+Концентратор, вы должны инсталлировать IMAP/POP программное обеспечение или вы
+не сможете воспользоваться преимуществами вашего почтового Linux сервера, так
+как Sendmail занимается только пересылкой почты с одной на другую машину.
+Почтовый сервер &#8211; это сервер на котором запущено одно или более из следующего:
+IMAP сервер, POP3 сервер, POP2 сервер или SMTP сервер. </P>
+<P align=justify>Примером SMTP сервера может служить Sendmail, который мы уже
+проинсталлировали на нашем Linux сервере, как Центральный Почтовый Концентратор.
+Далее мы попытаемся охватить инсталляцию IMAP4, POP3 и POP2, которые входят в
+один пакет.</P>
+<P align=justify>С IMAP &amp; POP программами, почтовая программа удаленного
+&#8220;клиента&#8221; может получить доступ к сообщению хранящемся на почтовом сервере, как
+будто он находится на этом сервере. Например, почта присылается и запоминается
+на IMAP сервере для пользователя, который может манипулировать ею из его/ее
+компьютера дома, в офисе и т.д., без необходимости пересылки сообщений или
+файлов между этими компьютерами.</P>
+<P align=justify>POP сокращение для &#8220;Post Office Protocol&#8221; и просто позволяет
+вам просматривать список сообщений, принимать и удалять их. IMAP - это POP на
+стероидах. Он позволяет вам легко манипулировать бюджетами, разрешать доступ
+нескольких людей к одному бюджету, оставлять сообщения на сервере, скачивая
+только их заголовки, тела, без присоединенных файлов или с ними. IMAP идеален
+для всех кому серьезно нужна почта. По умолчанию POP и IMAP сервера, которые
+поставляются с большинством дистрибутивов делают больше, чем нужно.</P><IMG
+alt="" border=0 height=176 src="ch15_3.files/24.jpg" width=451>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>IMAP версии
+4.7c<BR></P>
+<P align=justify>Пакеты.<BR>Домашняя страница IMAP/POP: <!--<A
+href="http://www.washington.edu/imap/"
+target=_blank>-->http://www.washington.edu/imap/<!--</A>--><BR>FTP сервер IMAP/POP: <!--<A
+href="ftp://140.142.3.227/" target=_blank>-->140.142.3.227<!--</A>--> или <!--<A
+href="ftp://140.142.4.227/" target=_blank>-->140.142.4.227<!--</A>--><BR>Вы должны
+скачать: imap.tar.Z<BR></P>
+<P align=justify><B>Предварительные условия.</B><BR>Sendmail сервер должен быть
+уже установлен на вашей системе.<BR></P><B>Тарболы.</B>
+<P align=justify>Хорошей идеей будет создать список файлов установленных в вашей
+системе до инсталляции Sendmail и после, в результате, с помощью утилиты diff вы
+сможете узнать какие файлы были установлены. Например,<BR>До
+инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt; Imap1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Imap2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Imap1 Imap2 &gt; Imap-Installed</FONT></P>
+<P align=justify>Раскроем тарбол (tar.Z).</P><FONT color=#008080
+size=-1>[root@deep /]# cp imap.tar.Z /var/tmp<BR>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# tar xzpf imap.tar.Z<BR></FONT>
+<H3>Компиляция и оптимизация.</H3>
+<P align=justify>Перейдите в новый IMAP/POP каталог и введите следующие команды
+на вашем терминале:</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл Makefile (vi +719 src/osdep/unix/Makefile) и
+измените следующую строку:</P><FONT color=#008080 size=-1>
+<P align=justify>sh -c '(test -f /usr/include/sys/statvfs.h -a $(OS) != sc5 -a
+$(OS) != sco) &amp;&amp; $(LN) flocksun.c flockbsd.c || $(LN) flocksv4.c
+flockbsd.c'</FONT><BR>Должна быть:<BR><FONT color=#008080 size=-1>sh -c '(test
+-f /usr/include/sys/statvfs.h -a $(OS) != sc5 -a $(OS) != sco -a $(OS) != lnx)
+&amp;&amp; $(LN) flocksun.c flockbsd.c || $(LN) flocksv4.c
+flockbsd.c'</FONT><BR></P>
+<P align=justify>Эта модификация изменит файл &#8220;sys/stavfs&#8221;. Этот файл, с новой
+glibc 2.1 из Linux отличается от доступной на Sun.</P>
+<P align=justify>Редактируйте файл Makefile (vi +354 src/osdep/unix/Makefile) и
+измените следующую строку:</P>
+<P align=justify><FONT color=#008080 size=-1>BASECFLAGS="-g
+-fno-omit-frame-pointer -O6 -DNFSKLUDGE" \</FONT><BR>Должна быть:<BR><FONT
+color=#008080 size=-1>BASECFLAGS="-g -fno-omit-frame-pointer -O9 -funroll-loops
+-ffast-math -malign-double -mcpu= pentiumpro -march=pentiumpro
+-fomit-frame-pointer -fno-exceptions -DNFSKLUDGE" \</FONT><BR></P>
+<P align=justify>Это наши оптимизационные флаги для компиляции программ IMAP/POP
+на сервере.</P>
+<P align=justify>Редактируйте файл Makefile (vi +61 src/osdep/unix/Makefile) и
+измените следующие строки:</P>
+<P align=justify><FONT color=#008080
+size=-1>ACTIVEFILE=/usr/lib/news/active</FONT><BR>Должна быть:<BR><FONT
+color=#008080 size=-1>ACTIVEFILE=/var/lib/news/active</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>SPOOLDIR=/usr/spool</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>SPOOLDIR=/var/spool</FONT><BR></P>
+<P align=justify><FONT color=#008080
+size=-1>RSHPATH=/usr/ucb/rsh</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>RSHPATH=/usr/bin/rsh</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>LOCKPGM=/etc/mlock</FONT><BR>Должна
+быть:<BR><FONT color=#008080 size=-1>#LOCKPGM=/etc/mlock</FONT><BR></P>
+<P align=justify>&#8220;ACTIVEFILE=&#8221;строка определяет путь &#8220;активного&#8221; каталога для
+IMAP/POP, &#8220;SPOOLDIR=&#8221;где вы разместите &#8220;spool&#8221; каталог Linux IMAP/POP,
+&#8220;RSHPATH=&#8221;определяет путь каталога &#8220;rsh&#8221; на вашей системе. Важно заметить, что
+мы не используем сервис rsh на нашем сервере, но даже в этом случае, мы должны
+определить правильный путь до &#8220;rsh&#8221;.</P>
+<P align=justify>Редактируйте файл Makefile (vi +89 src/osdep/unix/Makefile) и
+измените строку:</P>
+<P align=justify><FONT color=#008080 size=-1>CC=cc</FONT><BR>Должна
+быть:<BR><FONT color=#008080 size=-1>CC=egcs</FONT><BR></P>
+<P align=justify>Эта строка определяет имя нашего GCC компилятора, который мы
+будем использовать при компиляции программ IMAP/POP (в нашем случае
+egcs).</P><B>Шаг 2</B>
+<P align=justify>Сейчас мы должны компилировать и инсталлировать IMAP &amp; POP
+на почтовом сервере:</P><FONT color=#008080 size=-1>[root@deep imap-4.7c]# make
+lnp<BR>[root@deep imap-4.7c]# install -m 644 ./src/ipopd/ipopd.8c
+/usr/man/man8/ipopd.8c<BR>[root@deep imap-4.7c]# install -m 644
+./src/imapd/imapd.8c /usr/man/man8/imapd.8c<BR>[root@deep imap-4.7c]# install -s
+-m 755 ./ipopd/ipop2d /usr/sbin<BR>[root@deep imap-4.7c]# install -s -m 755
+./ipopd/ipop3d /usr/sbin<BR>[root@deep imap-4.7c]# install -s -m 755
+./imapd/imapd /usr/sbin<BR>[root@deep imap-4.7c]# install -m 644
+./c-client/c-client.a /usr/lib<BR>[root@deep imap-4.7c]# ln -fs
+/usr/lib/c-client.a /usr/lib/libimap.a<BR>[root@deep imap-4.7c]# mkdir -p
+/usr/include/imap<BR>[root@deep imap-4.7c]# install -m 644 ./c-client/*.h
+/usr/include/imap<BR>[root@deep imap-4.7c]# install -m 644
+./src/osdep/tops-20/shortsym.h /usr/include/imap<BR>[root@deep imap-4.7c]# chown
+root.mail /usr/sbin/ipop2d<BR>[root@deep imap-4.7c]# chown root.mail
+/usr/sbin/ipop3d<BR>[root@deep imap-4.7c]# chown root.mail
+/usr/sbin/imapd<BR></FONT>
+<P align=justify>Вышеприведенные команды будут конфигурировать программу,
+проверяя, что ваша система имеет необходимые библиотеки и способна выполнять
+необходимые функции, компилирует все исходные файлы в исполняемые двоичные, и
+затем, инсталлирует все двоичные и вспомогательные файлы в определенное
+место.</P>
+<P align=justify>Заметим, что команда &#8220;make lnp&#8221; будет настраивать программу под
+вашу Linux систему с поддержкой Pluggable Authentication Modules (PAM) для
+лучшей безопасности.</P>
+<P align=justify>Команда &#8220;mkdir&#8221; создаст новый каталог с именем &#8220;imap&#8221; в
+&#8220;/usr/include&#8221;. Этот новый каталог &#8220;imap&#8221; будет содержать все заголовочные файлы
+связанные с программой imapd файлы &#8220;c-client/*&#8221; и &#8220;shortsym.h&#8221;.</P>
+<P align=justify>Команда &#8220;chown&#8221; изменит владельца исполняемых программ
+&#8220;ipop2d&#8221;, &#8220;ipop3d&#8221; и &#8220;imapd&#8221; на пользователя &#8220;root&#8221; и группу &#8220;mail&#8221;.</P>
+<P align=justify>Команда &#8220;ln -fs&#8221; создаст символическую ссылку &#8220;libimap.a&#8221; к
+файлу &#8220;c-client.a&#8221;, которая может потребоваться для некоторых других программ,
+которые мы будем инсталлировать в будущем.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Из соображений безопасности, если вы
+используете только imapd сервис, удалите двоичные файлы ipop2d и ipop3d. Тоже
+верно и для ipopd; если вы используете только ipopd сервис, удалите исполняемый
+файл imapd. Если же вы используете оба сервиса (imapd и ipopd), то оставьте оба
+двоичных файла.</P>
+<H3>Очистка после работы</H3><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# rm -rf imap-version/ imap.tar.Z<BR></FONT>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции IMAP/POP. Также будет
+удален сжатый архив IMAP/POP из каталога &#8220;/var/tmp&#8221;.</P>
+<H3><A name=7>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файл связанные с IMAP/POP из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска IMAP/POP сервера следующие файлы должны быть
+созданы или скопированы в нужный каталог:</P>
+<P align=justify>Копируйте файл imap в каталог &#8220;/etc/pam.d/&#8221;, если вы планируете
+использовать imapd сервис.<BR>Копируйте файл pop в каталог &#8220;/etc/pam.d/&#8221;, если
+вы планируете использовать popd сервис.</P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Конфигурация файла &#8220;/etc/pam.d/imap&#8221;</H3>
+<P align=justify>Сконфигурируем ваш файл &#8220;/etc/pam.d/imap&#8221; для использования pam
+аутентификации.</P>
+<P align=justify>Создайте файл imap (touch /etc/pam.d/imap) и добавьте в
+него:</P><FONT color=#008080><PRE>#%PAM-1.0
+auth     required   /lib/security/pam_pwdb.so   shadow nullok
+account  required   /lib/security/pam_pwdb.so</PRE></FONT>
+<P align=justify>ЗАМЕЧАНИЕ. Этот файл нужен, если вы хотите использовать IMAP
+сервис.</P>
+<H3>Конфигурация файла &#8220;/etc/pam.d/pop&#8221;.</H3>
+<P align=justify>Сконфигурируем ваш файл &#8220;/etc/pam.d/pop&#8221; для использования pam
+аутентификации.</P>
+<P align=justify>Создайте файл pop (touch /etc/pam.d/pop) и добавьте в
+него:</P><FONT color=#008080><PRE>#%PAM-1.0
+auth     required   /lib/security/pam_pwdb.so   shadow nullok
+account  required   /lib/security/pam_pwdb.so</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Этот файл нужен, если вы хотите использовать
+POP сервис.</P>
+<H3><A name=8>Настройка Imap и POP для использования с TCP-Wrappers inetd супер
+сервером.</A></H3>
+<P align=justify>Tcp-wrappers берет на себя заботу о запуске и остановке IMAP
+или POP серверов. При запуске, inetd читает конфигурационную информацию из файла
+&#8220;/etc/inetd.conf&#8221;. Этот файл содержит поля разделяемые символами табуляции или
+пробелами.</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл inetd.conf (vi /etc/inetd.conf) и добавьте
+или раскомментируйте строки, связанные с сервисами, которые вы хотите включить.
+Если вы хотите использовать IMAP тогда раскомментируйте строку, связанную с ним,
+если же вы хотите использовать POP, тогда раскомментируйте его вместо IMAP. В
+нашем примере мы используем IMAP сервис.</P><FONT color=#008080><PRE>#pop-2  stream  tcp  nowait  root  /usr/sbin/tcpd  ipop2d
+#pop-3  stream  tcp  nowait  root  /usr/sbin/tcpd  ipop3d
+imap    stream  tcp  nowait  root  /usr/sbin/tcpd  imapd
+</PRE></FONT>
+<P align=justify>Не забудьте после обновления вашего файла &#8220;inetd.conf&#8221; послать
+процессу inetd сигнал SIGHUP (killall -HUP inetd).<BR>Чтобы изменения вступили в
+силу перезапустите процесс inetd, используя следующую команду:</P><FONT
+color=#008080 size=-1>[root@deep /root]# killall -HUP inetd</FONT><BR><BR><B>Шаг
+2</B>
+<P align=justify>Если вы хотите инсталлировать IMAP/POP сервер обслуживания
+ограниченного числа известных реальных IP адресов клиентов, то можно
+использовать возможности tcp-wrapper-а. Если вы планируете обслуживать dial-up
+клиентов или сервис Webmail, тогда вы не сможете использовать эти
+возможности.</P>
+<P align=justify>Редактируйте файл hosts.deny (vi /etc/hosts.deny) и добавьте
+следующую строку:</P><FONT color=#008080 size=-1>ALL: ALL@ALL, PARANOID</FONT>
+<P align=justify>Которая говорит, что все сервисы, все месторасположения
+клиентов будут заблокированы, пока не будет непосредственного разрешения в файле
+&#8220;hosts.allow&#8221;.</P>
+<P align=justify>Редактируйте файл hosts.allow (vi /etc/hosts.allow) и добавьте
+следующую строку:</P><FONT color=#008080 size=-1>imapd: 216.209.228.34
+my.domain.com</FONT>
+<P align=justify>Которая говорит, что только клиентам с IP адресом
+&#8220;216.209.228.34&#8221; и именем хоста &#8220;my.domain.com&#8221; будет разрешен доступ к IMAP
+сервису на сервере.</P>
+<H3><A name=9>Организация защиты IMAP/POP</A></H3><B>Действительно ли вам нужен
+IMAP/POP сервисы?</B>
+<P align=justify>Знайте, что IMAP/POP программы используют по умолчанию пароли в
+текстовом формате. Любой, кто запустит сниффер на вашей сети сможет перехватить
+имя/пароль и использовать их для подключения к серверу. Проверьте вашу
+конфигурацию, и если вы используете внешний/удаленный IMAP/POP сервер, то
+деинсталлируйте IMAP/POP с вашей системы.</P><IMG alt="" border=0 height=149
+src="ch15_3.files/25.jpg" width=479><BR><BR><B>Использование SSL с IMAP/POP</B>
+<P align=justify>К сожалению из-за экспортных ограничений правительства США,
+IMAP с поддержкой SSL сейчас не доступен. Существуют пакеты предоставляемые
+третьими производителями, которые позволяют использовать сессии IMAP и POP3
+через SSL. Одним из них является WebMail IMP, Веб интерфейс которого позволяет
+читать почту через Интернет, используя Веб броузер. WebMail IMP использует
+протокол SSL для шифрования трафика с IMAP/POP сервером. Смотрите главу 20 &#8220;<!--<A
+href="http://linux.webclub.ru/books/linuxsos/ch20_3.html">-->Опциональные
+компоненты устанавливаемые с веб-сервером Apache<!--</A>-->&#8221; для получения большей
+информации по этой теме.</P><IMG alt="" border=0 height=389
+src="ch15_3.files/26.jpg" width=491><BR><BR>
+<H3>Дополнительная документация.</H3>
+<P align=justify>Для получения более подробной информации вы можете прочитать
+следующие страницы руководства:</P>
+<P align=justify>$ man imapd (8C) &#8211; сервер Internet Message Access Protocol
+(IMAP)<BR>$ man ipopd (8C) &#8211; сервер Post Office Protocol (POP)<BR></P>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/pam.d/imap
+&gt; /etc/pam.d/pop
+&gt; /usr/include/imap
+&gt; /usr/include/imap/dummy.h
+&gt; /usr/include/imap/env.h
+&gt; /usr/include/imap/env_unix.h
+&gt; /usr/include/imap/fdstring.h
+&gt; /usr/include/imap/flstring.h
+&gt; /usr/include/imap/fs.h
+&gt; /usr/include/imap/ftl.h
+&gt; /usr/include/imap/imap4r1.h
+&gt; /usr/include/imap/linkage.h
+&gt; /usr/include/imap/lockfix.h
+&gt; /usr/include/imap/mail.h
+&gt; /usr/include/imap/mbox.h
+&gt; /usr/include/imap/mbx.h
+&gt; /usr/include/imap/mh.h
+&gt; /usr/include/imap/misc.h
+&gt; /usr/include/imap/mmdf.h
+&gt; /usr/include/imap/mtx.h
+&gt; /usr/include/imap/mx.h
+&gt; /usr/include/imap/netmsg.h
+&gt; /usr/include/imap/news.h
+&gt; /usr/include/imap/newsrc.h
+&gt; /usr/include/imap/nl.h
+&gt; /usr/include/imap/nntp.h
+&gt; /usr/include/imap/os_a32.h
+&gt; /usr/include/imap/os_a41.h
+&gt; /usr/include/imap/os_aix.h
+&gt; /usr/include/imap/os_aos.h
+&gt; /usr/include/imap/os_art.h
+&gt; /usr/include/imap/os_asv.h
+&gt; /usr/include/imap/os_aux.h
+&gt; /usr/include/imap/os_bsd.h
+&gt; /usr/include/imap/os_bsi.h
+&gt; /usr/include/imap/os_cvx.h
+&gt; /usr/include/imap/os_d-g.h
+&gt; /usr/include/imap/os_do4.h
+&gt; /usr/include/imap/os_drs.h
+&gt; /usr/include/imap/os_dyn.h
+&gt; /usr/include/imap/os_hpp.h
+&gt; /usr/include/imap/os_isc.h
+&gt; /usr/include/imap/os_lnx.h
+&gt; /usr/include/imap/os_lyn.h
+&gt; /usr/include/imap/os_mct.h
+&gt; /usr/include/imap/os_mnt.h
+&gt; /usr/include/imap/os_nxt.h
+&gt; /usr/include/imap/os_os4.h
+&gt; /usr/include/imap/os_osf.h
+&gt; /usr/include/imap/os_ptx.h
+&gt; /usr/include/imap/os_pyr.h
+&gt; /usr/include/imap/os_qnx.h
+&gt; /usr/include/imap/os_s40.h
+&gt; /usr/include/imap/os_sc5.h
+&gt; /usr/include/imap/os_sco.h
+&gt; /usr/include/imap/os_sgi.h
+&gt; /usr/include/imap/os_shp.h
+&gt; /usr/include/imap/os_slx.h
+&gt; /usr/include/imap/os_sol.h
+&gt; /usr/include/imap/os_sos.h
+&gt; /usr/include/imap/os_sun.h
+&gt; /usr/include/imap/os_sv2.h
+&gt; /usr/include/imap/os_sv4.h
+&gt; /usr/include/imap/os_ult.h
+&gt; /usr/include/imap/os_vu2.h
+&gt; /usr/include/imap/osdep.h
+&gt; /usr/include/imap/phile.h
+&gt; /usr/include/imap/pop3.h
+&gt; /usr/include/imap/pseudo.h
+&gt; /usr/include/imap/rfc822.h
+&gt; /usr/include/imap/smtp.h
+&gt; /usr/include/imap/tcp.h
+&gt; /usr/include/imap/tcp_unix.h
+&gt; /usr/include/imap/tenex.h
+&gt; /usr/include/imap/unix.h
+&gt; /usr/include/imap/utf8.h
+&gt; /usr/include/imap/shortsym.h
+&gt; /usr/lib/c-client.a
+&gt; /usr/lib/libimap.a
+&gt; /usr/man/man8/ipopd.8c
+&gt; /usr/man/man8/imapd.8c
+&gt; /usr/sbin/ipop2d
+&gt; /usr/sbin/ipop3d
+&gt; /usr/sbin/imapd</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch15_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#15">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

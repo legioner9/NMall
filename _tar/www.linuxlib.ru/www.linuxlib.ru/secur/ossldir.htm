@@ -1,0 +1,445 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>LinuxBegin.ru - Шифрование отдельных директорий с помощью OpenSSL — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <table border="0" align="center"><tr><td>
+
+    <table border="0" width="640" cellpadding="0" cellspacing="1" bgcolor="#000000"><tr><td>
+    <table border="0" width="640" cellpadding="20" cellspacing="1" bgcolor="#ffffff"><tr><td>
+
+    <font class="content">
+    <h2>Шифрование отдельных директорий с помощью OpenSSL</h2></font>
+    <a href="../cdn-cgi/l/email-protection.html#dbb3bab5b5b2b9bab7fee9ebbaaffee9ebb5b7b2b5befee9eba9ae">Денис Каледин</a>, 23.07.2003<br><br><font class="content">
+    <p>
+Рано или поздно перед многими из нас встает проблема конфидециальности данных. Причины и обстоятельства бывают самыми разными - одним домашним компьютером пользуются несколько человек, тогда хочется максимально
+обезопасить личные данные. Однако чаще всего о криптографической защите
+данных мы начинаем задумываться в том случае, когда сами эти данные
+представляют огромный интерес для ваших конкурентов или же
+правоохранительных органов. Как говорится, когда в ваш дом врывается ФСБ или
+ФАПСИ, уже можно пожалеть о том, что единственной защитой ваших данных были
+права доступа &quot;600&quot;. ;)<p>
+Однако это все лирика. Современные криптографические средства для *NIX
+платформ зачастую предлагают нам шифрование единичных файлов, либо партиций.
+В последнем случае все осложняется необходимостью пропатчивания и пересборки
+ядра, для поддержки всевозможных EFS/EVFS (Encrypted FileSystem / Encrypted
+Virtual FileSystem). Часто данные решения подходят только для определенной
+официальной версии исходников ядра, т.е. пропатчить ядро от Alan Cox,
+например, может не получиться. Шифрование единичных файлов не совсем удобно,
+однако, за основу я беру именно этот путь.<p>
+Я столкнулся с необходимостью шифрования отдельных директорий, к примеру
+/home/user/stuff, без значительных на это временных затрат, т.е. выполнение
+простенького скрипта, как для шифровки, так и для дешифровки данных. В
+идеале - шифрование директории /home/user, например, при выходе пользователя
+из системы, однако, об этом в следующий раз.
+<p>
+Убедитесь, что у вас установлен пакет OpenSSL, и можем начинать. Я пошел
+простым путем: для шифрования, пользователь вводит команду: sslenc
+&lt;директория&gt; &lt;шифр&gt;
+<p>ВНИМАНИЕ! Необходимо указывать путь к директории полностью, т.к.
+дальнейшая работа ведется в каталоге /tmp.Скрипт sslenc с помощью
+команды tar сжимает директорию, затем командой openssl шифрует полученный
+файл заданным шифром. Если все ОК, содержимое исходной директории очищается
+и туда помещается зашифрованный tarball. Незашифрованный tarball рекомендуется
+удалять вручную, однако, если вы уверены в своих действиях, эту команду
+можно включить в скрипт (в моем скрипте она включена). Помнить необходимо
+две вещи - использованный шифр и пароль, который попросит задать команда
+openssl.
+<p>Ниже приведен мой вариант скрипта sslenc:
+<p>
+&lt;--------start script---------&gt;<br>
+ <br>
+#!/bin/bash<br>
+# OpenSSL directory encryption script.<br>
+# 2003 Denis A. Kaledin, &lt;hannibal at nline dot ru&gt;<br>
+ <br>
+cd /tmp<br>
+ <br>
+if [ ! -e &quot;$1&quot; ]; then<br>
+    echo &quot;Directory not found!&quot;<br>
+    exit 1<br>
+else<br>
+    echo &quot;Preparing to encrypt directory &quot;$1&quot;...&quot;<br>
+fi<br>
+ <br>
+if [ &quot;$2&quot; = &quot;base64&quot; ] || [ &quot;$2&quot; = &quot;bf-cbc&quot; ] || [ &quot;$2&quot; = &quot;bf&quot; ] || <br>
+[ &quot;$2&quot; = &quot;bf-cfb&quot; ] || [ &quot;$2&quot; = &quot;bf-ecb&quot; ] || [ &quot;$2&quot; = &quot;bf-ofb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;cast-cbc&quot; ] || [ &quot;$2&quot; = &quot;cast&quot; ] || [ &quot;$2&quot; = &quot;cast5-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;cast5-cfb&quot; ] || [ &quot;$2&quot; = &quot;cast5-ecb&quot; ] || [ &quot;$2&quot; = &quot;cast5-ofb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-cbc&quot; ] || [ &quot;$2&quot; = &quot;des&quot; ] || [ &quot;$2&quot; = &quot;des-cfb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ofb&quot; ] || [ &quot;$2&quot; = &quot;des-ecb&quot; ] || [ &quot;$2&quot; = &quot;des-ede-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ede&quot; ] || [ &quot;$2&quot; = &quot;des-ede-cfb&quot; ] || [ &quot;$2&quot; = &quot;des-ede-ofb&quot; ] ||<br>
+<br>
+[ &quot;$2&quot; = &quot;des-ede3-cbc&quot; ] || [ &quot;$2&quot; = &quot;des-ede3&quot; ] || [ &quot;$2&quot; = &quot;des3&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ede3-cfb&quot; ] || [ &quot;$2&quot; = &quot;des-ede3-ofb&quot; ] || [ &quot;$2&quot; = &quot;desx&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-cbc&quot; ] || [ &quot;$2&quot; = &quot;rc2&quot; ] || [ &quot;$2&quot; = &quot;rc2-cfb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-ecb&quot; ] || [ &quot;$2&quot; = &quot;rc2-ofb&quot; ] || [ &quot;$2&quot; = &quot;rc2-64-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-40-cbc&quot; ] || [ &quot;$2&quot; = &quot;rc4&quot; ] || [ &quot;$2&quot; = &quot;rc4-40&quot; ] || <br>
+[ &quot;$2&quot; = &quot;aes-128-cbc&quot; ] || [ &quot;$2&quot; = &quot;aes-128-ecb&quot; ] || [ &quot;$2&quot; = &quot;aes-192-cbc&quot; ]<br>
+|| <br>
+[ &quot;$2&quot; = &quot;aes-192-ecb&quot; ] || [ &quot;$2&quot; = &quot;idea&quot; ] || [ &quot;$2&quot; = &quot;aes-256-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;aes-256-ecb&quot; ] || [ &quot;$2&quot; = &quot;rc5&quot; ]; then<br>
+    echo &quot;Good...loading &quot;$2&quot; algorithm&quot;<br>
+else<br>
+    echo &quot;Cipher &quot;$2&quot; is not supported by OpenSSL!&quot;<br>
+    exit 1<br>
+fi<br>
+ <br>
+echo &quot;Encrypting &quot;$1&quot; directory with &quot;$2&quot; cipher...&quot;<br>
+tar -cvvf encrypted.tar &quot;$1&quot;/ -P<br>
+/usr/bin/openssl &quot;$2&quot; -salt -in encrypted.tar -out encrypted.tar.sec<br>
+ <br>
+if [ ! -e encrypted.tar.sec ]; then<br>
+    echo &quot;Incorrect password!&quot;<br>
+    exit 1<br>
+else<br>
+    rm -Rf &quot;$1&quot;/<br>
+    mkdir &quot;$1&quot;<br>
+    mv encrypted.tar.sec &quot;$1&quot;/<br>
+    rm encrypted.tar<br>
+    echo &quot;Directory &quot;$1&quot; has been encrypted with &quot;$2&quot; cipher!&quot;<br>
+fi<br>
+ <br>
+&lt;-------end script--------&gt;
+<p>
+Итак, теперь в /home/user/stuff у нас лежит зашифрованный tarball. Для его
+расшифровки пользователь вводит команду: ssldec &lt;директория&gt; &lt;шифр&gt;, вводит
+пароль. Опять же, путь к директории должен быть полным! Программа openssl
+расшифрует файл, затем команда tar расворачивает его в исходной директории.
+Зашифрованный tarball, опять же, можно удалять руками, а можно с помощью
+скрипта.
+Вот мой вариант скрипта ssldec:
+<br>
+&lt;------start script-------&gt;<br>
+#!/bin/bash<br>
+# OpenSSL directory decryption.<br>
+# 2003 Denis A. Kaledin &lt;hannibal at nline dot ru&gt;<br>
+ <br>
+cd /tmp<br>
+ <br>
+if [ &quot;$2&quot; = &quot;base64&quot; ] || [ &quot;$2&quot; = &quot;bf-cbc&quot; ] || [ &quot;$2&quot; = &quot;bf&quot; ] || <br>
+[ &quot;$2&quot; = &quot;bf-cfb&quot; ] || [ &quot;$2&quot; = &quot;bf-ecb&quot; ] || [ &quot;$2&quot; = &quot;bf-ofb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;cast-cbc&quot; ] || [ &quot;$2&quot; = &quot;cast&quot; ] || [ &quot;$2&quot; = &quot;cast5-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;cast5-cfb&quot; ] || [ &quot;$2&quot; = &quot;cast5-ecb&quot; ] || [ &quot;$2&quot; = &quot;cast5-ofb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-cbc&quot; ] || [ &quot;$2&quot; = &quot;des&quot; ] || [ &quot;$2&quot; = &quot;des-cfb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ofb&quot; ] || [ &quot;$2&quot; = &quot;des-ecb&quot; ] || [ &quot;$2&quot; = &quot;des-ede-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ede&quot; ] || [ &quot;$2&quot; = &quot;des-ede-cfb&quot; ] || [ &quot;$2&quot; = &quot;des-ede-ofb&quot; ] ||<br>
+<br>
+[ &quot;$2&quot; = &quot;des-ede3-cbc&quot; ] || [ &quot;$2&quot; = &quot;des-ede3&quot; ] || [ &quot;$2&quot; = &quot;des3&quot; ] || <br>
+[ &quot;$2&quot; = &quot;des-ede3-cfb&quot; ] || [ &quot;$2&quot; = &quot;des-ede3-ofb&quot; ] || [ &quot;$2&quot; = &quot;desx&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-cbc&quot; ] || [ &quot;$2&quot; = &quot;rc2&quot; ] || [ &quot;$2&quot; = &quot;rc2-cfb&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-ecb&quot; ] || [ &quot;$2&quot; = &quot;rc2-ofb&quot; ] || [ &quot;$2&quot; = &quot;rc2-64-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;rc2-40-cbc&quot; ] || [ &quot;$2&quot; = &quot;rc4&quot; ] || [ &quot;$2&quot; = &quot;rc4-40&quot; ] || <br>
+[ &quot;$2&quot; = &quot;aes-128-cbc&quot; ] || [ &quot;$2&quot; = &quot;aes-128-ecb&quot; ] || [ &quot;$2&quot; = &quot;aes-192-cbc&quot; ]<br>
+|| <br>
+[ &quot;$2&quot; = &quot;aes-192-ecb&quot; ] || [ &quot;$2&quot; = &quot;idea&quot; ] || [ &quot;$2&quot; =  &quot;aes-256-cbc&quot; ] || <br>
+[ &quot;$2&quot; = &quot;aes-256-ecb&quot; ] || [ &quot;$2&quot; = &quot;rc5&quot; ]; then<br>
+    echo &quot;Muy bien....preparing to decrypt&quot;<br>
+else<br>
+    echo &quot;Cipher &quot;$2&quot; is not supported by OpenSSL!&quot;<br>
+    exit 1<br>
+fi<br>
+ <br>
+if [ ! -e &quot;$1&quot;/encrypted.tar.sec ]; then<br>
+    echo &quot;There is nothing to decrypt!&quot;<br>
+    exit 1<br>
+else<br>
+    echo &quot;Decrypting encrypted.tar.sec...&quot;<br>
+    cp &quot;$1&quot;/encrypted.tar.sec /tmp<br>
+    /usr/bin/openssl &quot;$2&quot; -d -salt -in &quot;$1&quot;/encrypted.tar.sec -out encrypted.tar<br>
+    rm -Rf &quot;$1&quot;/<br>
+    tar -xvvf encrypted.tar -P<br>
+    if [ ! -e &quot;$1&quot;/ ]; then<br>
+        echo &quot;Invalid password!&quot;<br>
+        mkdir &quot;$1&quot;<br>
+        cp encrypted.tar.sec &quot;$1&quot;/encrypted.tar.sec<br>
+        exit 1<br>
+    else<br>
+        rm encrypted.tar<br>
+        echo &quot;Directory &quot;$1&quot; has been successfully decrypted.&quot;<br>
+    fi<br>
+fi<br>
+ <br>
+&lt;------end script--------&gt;
+<p>
+Вот, собственно, и все. Скрипты можно положить в /usr/bin или /usr/local/bin
+и начинать экспериментировать.
+<p>P.S. Конфидециальную информацию имеет смысл хранить на партиции с
+журналируемой файловой системой, т.к. это сводит к нулю шансы злоумышленника
+воспользоваться утилитами типа undelete. ReiserFS в этом плане оптимальна,
+можно Ext3. По поводу XFS и JFS ничего сказать не могу, не в курсе. Параноики
+после процесса зашифровки могут произвести какие-либо действия на диске,
+например покопировать или постирать файлы, это сделает восстановление
+невозможным.
+<p>P.P.S. Список доступных алгоритмов шифрования - команда 'openssl help' . По
+умолчанию, бинарные пакеты OpenSSL не включают в себя достаточно мощные
+шифры - IDEA и RC5. Если вы не страдаете помешательством на почве соблюдения
+патентов, доставайте исходники с http://www.openssl.org/ и пересобирайте
+руками с теми алгоритмами, которые считаете необходимыми.
+<p>
+Хотелось бы получить feedback по поводу скриптов, экспериментируйте! =)<br><br>
+    </font>
+    </td></tr></table></td></tr></table>
+    <br><br><center>
+    <font class="content">
+    Источник -  LinuxBegin.ru<br>
+    <!--<a href="http://linuxbegin.ru">-->http://linuxbegin.ru<!--</a>--><br><br>
+    Адрес этой статьи:<br>
+    <!--<a href="http://linuxshop.ru/linuxbegin/article401.html">-->http://linuxshop.ru/linuxbegin/article401.html<!--</a>-->
+    </font>
+    </td></tr></table>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 2.4.2  Проблемы при запуске сервера MySQL — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Starting_server.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Starting_server.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Installing.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />2 Установка MySQL
+</a><ul><li class="p"><a href="Post-installation.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />2.4 Послеустановочные настройка и тестирование
+</a><ul class="immediate"><li><a href="mysql_install_db.html">2.4.1 Проблемы при запуске <code>mysql_install_db</code>
+</a></li><li class="self">2.4.2 Проблемы при запуске сервера MySQL
+</li><li><a href="Automatic_start.html">2.4.3 Автоматический запуск и остановка MySQL
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="mysql_install_db.html" title="2.4.1  Проблемы при запуске mysql_install_db">Previous</a> / <a rel="next" href="Automatic_start.html" title="2.4.3  Автоматический запуск и остановка MySQL">Next</a> / <a rel="up" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>2.4.2  Проблемы при запуске сервера MySQL</H3>
+
+<P>
+<A NAME="IDX294"></A>
+<A NAME="IDX295"></A>
+
+</P>
+<P>
+Если вы собираетесь использовать таблицы, поддерживающие транзакции
+(InnoDB, BDB), следует прежде всего создать файл <tt>`my.cnf'</tt> и установить опции
+запуска для тех типов таблиц, с которыми планируется работать.
+See section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>.
+
+</P>
+<P>
+В общем случае сервер <code>mysqld</code> запускается одним из следующих способов:
+
+</P>
+
+<ul>
+<LI>
+
+Вызовом <code>mysql.server</code>. Этот скрипт используется преимущественно для
+запуска и останова системы. Более подробно он описан в разделе
+See section <A HREF="Automatic_start.html">2.4.3  Автоматический запуск и остановка MySQL</A>.
+
+<LI>
+
+Вызовом команды <code>safe_mysqld</code>, которая определяет соответствующие опции
+для <code>mysqld</code> и затем запускает <code>mysqld</code> с этими опциями.
+See section <A HREF="safe_mysqld.html">4.7.2  <code>safe_mysqld</code>, оболочка <code>mysqld</code></A>.
+
+<LI>
+
+Относительно Windows NT/2000/XP просьба  обращаться  к  разделу
+See section <A HREF="https://www.linuxlib.ru/mysqloff/NT_start.html">2.6.2.2  Запуск MySQL на Windows NT, 2000 или XP</A>.
+
+<LI>
+
+Вызовом <code>mysqld</code> напрямую.
+</ul>
+
+<P>
+При своем запуске демон <code>mysqld</code> изменяет свой каталог на каталог данных
+(<code>datadir</code>). В нем он ожидает найти журнальные файлы, файлы pid (ID
+процессов) и собственно базы данных.
+
+</P>
+<P>
+Местоположение каталога данных жестко устанавливается при компиляции
+дистрибутива. Однако если <code>mysqld</code> ожидает найти каталог данных где-либо в
+другом месте, а не там, где он действительно расположен в вашей системе,
+то демон <code>mysqld</code> не будет работать правильно. Если есть проблемы с
+неправильными путями, то, вызывая <code>mysqld</code> с опцией <code>--help</code>, вы можете найти
+информацию о том, что разрешают опции <code>mysqld</code> и какие установки путей
+приняты по умолчанию. Можно переопределить установки по умолчанию
+указанием правильных имен путей как аргументов <code>mysqld</code> в командной строке
+(эти опции также можно использовать с <code>safe_mysqld</code>).
+
+</P>
+<P>
+Обычно требуется указывать <code>mysqld</code> только каталог, в котором
+устанавливается MySQL. Это можно сделать с помощью опции <code>--basedir</code>. Можно
+также использовать <code>--help</code> для проверки эффекта от изменения опций путей
+(учтите, что <code>--help</code> должна быть последней опцией в команде <code>mysqld</code>).
+Например:
+
+</P>
+
+<pre>
+shell&#62; EXECDIR/mysqld --basedir=/usr/local --help
+</pre>
+
+<P>
+После определения требуемых установок путей запускайте сервер без опции
+<code>--help</code>.
+
+</P>
+<P>
+Какой бы метод вы ни использовали для запуска сервера, если его неудачный
+запуск завершается корректно, то проверьте журнальный файл, чтобы узнать,
+почему запуск происходит неудачно. Журнальные файлы находятся в каталоге
+данных (обычно <tt>`/usr/local/mysql/data'</tt> для бинарного дистрибутива,
+<tt>`/usr/local/var'</tt> для дистрибутива исходного кода и <tt>`\mysql\data\mysql.err'</tt>
+под Windows). В каталоге данных следует искать файлы с именами в виде
+<tt>`host_name.err'</tt> и <tt>`host_name.log'</tt>, где <code>host_name</code> - имя вашего серверного
+хоста. Затем проверьте последние несколько строк этих файлов:
+
+</P>
+
+<pre>
+shell&#62; tail host_name.err
+shell&#62; tail host_name.log
+</pre>
+
+<P>
+В журнальном файле нужно искать что-нибудь похожее на следующее:
+
+</P>
+
+<pre>
+000729 14:50:10 bdb: Recovery function for LSN 1 27595 failed
+000729 14:50:10 bdb: warning: ./test/t1.db: No such file or directory
+000729 14:50:10 Can't init databases
+</pre>
+
+<P>
+Это означает, что вы не запустили <code>mysqld</code> с <code>--bdb-no-recover</code> и база данных
+Berkeley DB нашла что-то ошибочное в своих журнальных файлах при попытке
+восстановить ваши базы данных. Чтобы иметь возможность продолжить,
+необходимо переместить старый журнальный файл Berkeley DB из каталога баз
+данных в некоторое другое место, где позже можно будет изучить его.
+Журнальные файлы имеют имена <tt>`log.0000000001'</tt> и т.д.; номер возрастает
+при каждом запуске.
+
+</P>
+<P>
+Если вы запускаете <code>mysqld</code> работает с поддержкой таблиц BDB и <code>mysqld</code> при
+старте выводит дамп оперативной памяти (coredump), то причиной этого это
+могут быть какие-либо проблемы с журналом восстановления BDB. В этом
+случае можно попробовать запуск mysqld с <code>--bdb-no-recover</code>. Если это
+помогает, то следует удалить все файлы <tt>`log.*'</tt> из каталога данных и
+попробовать запустить <code>mysqld</code> опять.
+
+</P>
+<P>
+Если выдается приведенная ниже ошибка, то это означает, что некоторая
+другая программа (или другой сервер <code>mysqld</code>) уже использует данный TCP/IP
+порт или сокет, на которых <code>mysqld</code> пытается слушать:
+
+</P>
+
+<pre>
+Can't start server: Bind on TCP/IP port: Address already in use
+или
+Can't start server : Bind on unix socket...
+</pre>
+
+<P>
+Чтобы убедиться, что другого работающего сервера <code>mysqld</code> нет, используйте
+<code>ps</code>. Если другой работающий сервер не найден, то можно попробовать
+выполнить команду <code>telnet your-host-name tcp-ip-port-number</code> и нажать пару
+раз клавишу ``Enter''. Если вы не получаете сообщения об ошибке вроде
+следующего <code>telnet: Unable to connect to remote host: Connection refused</code>,
+значит, что порт TCP/IP порт, который <code>mysqld</code> пытается использовать, уже
+занят другой программой. section <A HREF="mysql_install_db.html">2.4.1  Проблемы при запуске <code>mysql_install_db</code></A> и
+раздел See section <A HREF="Multiple_servers.html">4.1.4  Запуск нескольких серверов MySQL на одном компьютере</A>.
+
+</P>
+<P>
+Если <code>mysqld</code> в настоящее время работает, то можно найти используемые им
+установки путей при помощи следующей команды:
+
+</P>
+
+<pre>
+shell&#62; mysqladmin variables
+или
+shell&#62; mysqladmin -h 'your-host-name' variables
+</pre>
+
+<P>
+Если при запуске <code>mysqld</code> вы получили ошибку <code>Errcode 13</code>, что значит
+<code>Permission denied</code>, это означает, что у вас не было прав читать/создавать
+файлы в базе данных MySQL или в журнальном каталоге. В таком случае вам
+следует либо запускать <code>mysqld</code> как пользователь <code>root</code>, либо изменить права
+доступа к упомянутым файлам и каталогам, чтобы иметь права использовать
+их.
+
+</P>
+<P>
+Если <code>safe_mysqld</code> запускает сервер, но вы не можете подключиться к нему, то
+следует убедиться, что в <tt>`/etc/hosts'</tt> есть запись, которая выглядит
+примерно так:
+
+</P>
+
+<pre>
+127.0.0.1 localhost
+</pre>
+
+<P>
+Эта проблема возникает только в системах, не имеющих рабочей библиотеки
+потоков, и для которых MySQL следует конфигурировать для использования
+потоков MIT-pthreads.
+
+</P>
+<P>
+Если вы не можете запустить <code>mysqld</code>, то можно попробовать создать
+трассировочный файл, чтобы обнаружить данную проблему.
+See section <A HREF="https://www.linuxlib.ru/mysqloff/Making_trace_files.html">E.1.2  Создание трассировочных файлов</A>.
+
+</P>
+<P>
+При использовании таблиц InnoDB следует указывать опции запуска,
+специфические для InnoDB. See section <A HREF="https://www.linuxlib.ru/mysqloff/InnoDB_start.html">7.5.2  Параметры запуска InnoDB</A>.
+
+</P>
+<P>
+При использовании таблиц BDB (Berkeley DB) необходимо хорошо знать
+различные специфические для BDB опции запуска. See section <A HREF="https://www.linuxlib.ru/mysqloff/BDB_start.html">7.6.3  Параметры запуска BDB</A>.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c15" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#344751426b0d01744d555c5b5b1a575b59">Scott Deardorff</a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=15&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=15">Edit</a>]</td></tr></table><p class="commenttext">When compiling with the patched Berkely DB 3.1.17 there is a compile error in hash.h  problem is that it is reading hash.h from the mysql directory instead of the proper hash.h in the Berkely DB directory.  To fix this add -I$(srcdir)/include IN FRONT OF -I/usr/local/src/mysql-3.23.24-beta/include in the ../db-3.1.17-patched/build_unix/Makefile on the CFLAGS and CXXFLAGS lines.  After this it compiles past this point.</p><table id="c28" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#d3a1bcb0bbbfbabd93bbbca7beb2babffdb0bcbe"><span class="__cf_email__" data-cfemail="f3819c909b9f9a9db39b9c879e929a9fdd909c9e">[email&#160;protected]</span></a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=28&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=28">Edit</a>]</td></tr></table><p class="commenttext">For FreeBSD (I'm using 4.1.1), startup scripts generally should go in /usr/local/etc/rc.d/<br />
+<br />
+man rc<br />
+indicates that &quot;Scripts are only executed if their basename matches the shell globbing pattern *.sh&quot;<br />
+<br />
+In other words, copy support-files/mysql.server to /usr/local/etc/rc.d/mysql.server.sh <br />
+to enable auto-starting for FreeBSD</p><table id="c56" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#0d7f78606c61684d746c656262236e6260">Rajeev Rumale</a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=56&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=56">Edit</a>]</td></tr></table><p class="commenttext">I am unable to update multiple records using a <br />
+single quiries or even by executing servral <br />
+update statement in a row.  <br />
+<br />
+The problem comes only when I try to execute the <br />
+update statement through PERL DBI(I am using <br />
+Active Perl on Windows).  It is effecting only <br />
+the only the first record not updating the other <br />
+records on the list.  The same statement works <br />
+fine when executed directly on MYSQL.<br />
+<br />
+The quireies I have used are <br />
+1. update ind_list set ind_stat=&quot;y&quot; where ind_id <br />
+in (001, 002, 003, 004, 005,006,007,008);<br />
+<br />
+2. update in_list set ind_stat=&quot;y&quot; where <br />
+(ind_id=001) or (ind_id=002) or (ind_id=003) or <br />
+(ind_id=004) or (ind_id=005) or (ind_id=006) or <br />
+(ind_id=007) or (ind_id=008) <br />
+<br />
+3. This in a loop changing the id values <br />
+update ind_list set ind_stat=&quot;y&quot; where <br />
+ind_id=&quot;001&quot;.</p><table id="c114" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#5532303027217b3130363930273624153c3b7839202d7b363a38">geert declercq</a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=114&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=114">Edit</a>]</td></tr></table><p class="commenttext">I wanted to give my SUN ELC/25 (16 MB memory - 32 MB swap)  a second life; installed red hat linux 6.2 on it and I'm now installing mysql from the source : it's been running for more then 14 hours (yes, hours) now ...  - when inspecting some of the compilation processes with top, it looks that the compilation process takes quite some naps every couple of seconds (sleep state).</p><table id="c115" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Matt Nicolls on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=115&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=115">Edit</a>]</td></tr></table><p class="commenttext">Let's say you have two tables with related <br />
+records.  Your application requires that you <br />
+update table 1, then update the related record in <br />
+table 2.  However, the rule also states that both <br />
+tables must be updated or the transaction should <br />
+be cancelled.<br />
+<br />
+I update table 1 successfully, then attempt to <br />
+update table 2 - but it fails...  What good is <br />
+table locking?<br />
+<br />
+This section states that the cost of supporting <br />
+ROLLBACKs is a huge performance hit.  It seems to <br />
+me that the performance hit (i.e. storing a copy <br />
+of the rows you are affecting in the case of a <br />
+rollback) would only be incurred if a BEGIN was <br />
+issued.  If that is the case, than only those who <br />
+issue BEGINs will experience the performance hit.<br />
+</p><table id="c127" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=127&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=127">Edit</a>]</td></tr></table><p class="commenttext">I think there is something missing around step 8.<br />
+When I run bin/safe_mysqld --user=mysql<br />
+I get a message &quot;Starting mysqld daemon with databases from /usr/local/mysql/var&quot;<br />
+but then I try to run <br />
+bin/mysqladmin -u root -p password<br />
+and I always get <br />
+bin/mysqladmin: connect to server at 'localhost' failed<br />
+error: 'Access denied for user: 'root@localhost' (Using password: YES)'<br />
+<br />
+<br />
+There must be a way to create an initial password<br />
+but it is not documented.<br />
+<br />
+</p><table id="c149" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#70021f1218300205045e1f0217">Robert C. Henney</a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=149&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=149">Edit</a>]</td></tr></table><p class="commenttext">On BSDI 4.0.1, I had to append a line containing just &quot;mi_test_all:&quot; to end of the myisam/Makefile file after the ./configure step.  Otherwise the make step would fail.  ALSO, on BSDI 4.2 using gcc 2.95.2 I had to add an explicit &quot;(size_t*)&quot; before the 5th argument to the getsockopt() call in sql/mini_client.cc on line 297 or gcc would abort with a &quot;changing signedness&quot; error.</p><table id="c161" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=161&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=161">Edit</a>]</td></tr></table><p class="commenttext">&lt;a <br />
+href=&quot;<!--<a href="http://www.devshed.com/Server_Side/PHP/Sooth">-->http://www.devshed.com/Server_Side/PHP/Sooth<!--</a>--><br />
+inglySeamless/&quot;&gt;The Soothingly Seamless Setup of <br />
+Apache, SSL, MySQL, and PHP&lt;/a&gt; -Jim</p><table id="c281" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Justin Clift on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=281&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=281">Edit</a>]</td></tr></table><p class="commenttext">Another Open Source benchmark tool/suite for benchmarking both MySQL and <br />
+PostgreSQL (and Informix, hopefully Interbase soon too) is the Open Source Database <br />
+Benchmark.<br />
+<br />
+&lt;a href=&quot;<!--<a href="http://osdb.sourceforge.net&quot;">-->http://osdb.sourceforge.net&quot;<!--</a>--> <br />
+target=&quot;_blank&quot;&gt;<!--<a href="http://osdb.sourceforge.net&lt;/a">-->http://osdb.sourceforge.net&lt;/a<!--</a>-->&gt;<br />
+<br />
+At the time of posting this (20th September 2001) the CVS code has been heavily <br />
+modified, so it's probably best to use that instead of the latest release.</p><table id="c379" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jerry zavala on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=379&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=379">Edit</a>]</td></tr></table><p class="commenttext">I followed the directions exactly how they are <br />
+posted and once I start mysql it automatically <br />
+ends. I don't have other mysql servers running. <br />
+Any suggestions? where can I find the `mysql-data-<br />
+directory/'hostname'.err'?</p><table id="c411" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#701411061914181a301d11191c5e131f1d"><span class="__cf_email__" data-cfemail="fc989d8a95989496bc919d9590d29f9391">[email&#160;protected]</span></a> on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=411&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=411">Edit</a>]</td></tr></table><p class="commenttext">If your error log file has something like:<br />
+<br />
+Can't find file: './mysql/host.frm' (errno: 13) <br />
+<br />
+, and you've tried setting <br />
+--datadir=/path/to/my/data/directory but you <br />
+still get the same error, it may be because the <br />
+databases installed in the mysql data directory <br />
+(usually /var/lib/mysql) are not owned by the <br />
+mysql daemon, but by the user who ran <br />
+mysql_install_db. chown them to mysql and chgrp <br />
+them to the appropriate group e.g.<br />
+<br />
+chown -R mysql /var/lib/mysql/mysql<br />
+chgrp -R daemons /var/lib/mysql/mysql<br />
+<br />
+<br />
+<br />
+</p><table id="c965" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#205345434f4e444441574e6041545442490e434f4d"><span class="__cf_email__" data-cfemail="a3d0c6c0cccdc7c7c2d4cde3c2d7d7c1ca8dc0ccce">[email&#160;protected]</span></a> on Monday August 19 2002, @11:47am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=965&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=965">Edit</a>]</td></tr></table><p class="commenttext">I seem to be having a problem geting mysql server <br />
+to start.. I go to where mysqld is ((because I <br />
+havnet' set the path yet)) when I try to get it to <br />
+start it gives me this:<br />
+<br />
+Initializing MySQL database:  Sorry, the host 'dimitri' <br />
+could not be looked up. Please configure <br />
+the 'hostname' command to return a correct <br />
+hostname. If you want to solve this at a later stage, <br />
+restart this script with the --force option<br />
+FAILED]<br />
+<br />
+dimitri is the servername I have on my server and I <br />
+can't figure out why it won't start up.  Any help <br />
+woudl be appreciated.  I ahve checked the entire <br />
+forums adn can't find anythign dealing with this.  <br />
+Please e-mail me or post it in here.  ok it isn't <br />
+showing my info.  So her ei smy e-mail.  <br />
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="11627c73707a74635170656573783f727e7c">[email&#160;protected]</a></p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Starting_server">Add your own comment.</a></p><div id="docnav"><a href="Starting_server.html#">Top</a> / <a rel="prev" href="mysql_install_db.html" title="2.4.1  Проблемы при запуске mysql_install_db">Previous</a> / <a rel="next" href="Automatic_start.html" title="2.4.3  Автоматический запуск и остановка MySQL">Next</a> / <a rel="up" href="Post-installation.html" title="2.4  Послеустановочные настройка и тестирование">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

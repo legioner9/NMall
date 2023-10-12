@@ -1,0 +1,583 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 1.9.4.3  Транзакции и атомарные операции — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/ANSI_diff_Transactions.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/ANSI_diff_Transactions.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Introduction.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1 Общая информация
+</a><ul><li class="gp"><a href="Compatibility.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9 Насколько MySQL соответствует стандартам?
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9.4 Отличия MySQL от ANSI SQL92
+</a><ul class="immediate"><li><a href="ANSI_diff_Sub-selects.html">1.9.4.1 Вложенные <code>SELECT</code>ы
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html">1.9.4.2 Оператор  <code>SELECT INTO TABLE</code>
+</a></li><li class="self">1.9.4.3 Транзакции и атомарные операции
+</li><li><a href="ANSI_diff_Triggers.html">1.9.4.4 Хранимые процедуры и триггеры
+</a></li><li><a href="ANSI_diff_Foreign_Keys.html">1.9.4.5 Внешние ключи
+</a></li><li><a href="ANSI_diff_Views.html">1.9.4.6 Представления
+</a></li><li><a href="ANSI_diff_comments.html">1.9.4.7 Символы `--' как начало комментария
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html" title="1.9.4.2  Оператор  SELECT INTO TABLE">Previous</a> / <a rel="next" href="ANSI_diff_Triggers.html" title="1.9.4.4  Хранимые процедуры и триггеры">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>1.9.4.3  Транзакции и атомарные операции</H4>
+
+<P>
+<A NAME="IDX126"></A>
+<A NAME="IDX127"></A>
+<A NAME="IDX128"></A>
+<A NAME="IDX129"></A>
+<A NAME="IDX130"></A>
+<A NAME="IDX131"></A>
+<A NAME="IDX132"></A>
+<A NAME="IDX133"></A>
+<A NAME="IDX134"></A>
+
+</P>
+
+<P>
+Поддержка транзакций в сервере MySQL реализуется при помощи обработчиков
+транзакционных таблиц типов <code>InnoDB</code> и <code>BDB</code> (see section <A HREF="Table_types.html">7  Типы  таблиц MySQL</A>).
+Таблицы <code>InnoDB</code> обеспечивают соответствие требованиям <code>ACID</code>.
+
+</P>
+<P>
+Однако для таблиц нетранзакционных типов, таких как <code>MyISAM</code>, в MySQL
+используется иная парадигма обеспечения целостности данных, получившая
+название ``<code>атомарные операции</code>''. Атомарные операции в сравнении с
+транзакциями часто обеспечивают такую же или даже лучшую целостность при
+более высокой производительности. Поскольку сервер MySQL поддерживает обе
+парадигмы, пользователь может выбирать между скоростью, которую
+обеспечивают атомарные операции, и транзакционными возможностями для своих
+приложений. Такой выбор может быть сделан для каждой таблицы отдельно.
+
+</P>
+<P>
+Рассмотрим, как используются возможности сервера MySQL для обеспечения
+строгой целостности и каковы эти возможности в сравнении с транзакционной
+парадигмой.
+
+</P>
+
+<ol>
+<LI>
+
+Транзакционная парадигма обеспечивает следующие возможности: если
+приложения написаны таким образом, что в критических ситуациях зависят
+от вызова <code>ROLLBACK</code> вместо <code>COMMIT</code>, то транзакции предпочтительней
+атомарных операций. Транзакции также обеспечивают гарантию того, что
+незаконченные обновления или искаженные действия не будут
+фиксироваться в базе данных; серверу предоставляется возможность
+выполнить автоматический откат, и база данных будет сохранена. Почти
+во всех случаях при работе с сервером MySQL решить возможные проблемы
+можно путем включения простых проверок перед обновлениями и запуска
+простых скриптов, которые выполняют проверку баз данных на нарушение
+целостности с автоматическим исправлением повреждений или выдачей
+предупреждения, если такое нарушение возникает. Отметим, что
+полноценное выявление и устранение ошибок в таблицах без потери
+целостности данных можно обеспечить, просто используя системный журнал
+MySQL или добавив еще один дополнительный журнал.
+
+<LI>
+
+Во многих случаях транзакционные обновления можно переписать как
+атомарные. В общем случае все проблемы, которые решаются с помощью
+транзакций, можно решить с помощью <code>LOCK TABLES</code> или атомарных <code>UPDATE</code>,
+при гарантии того, что в базе данных никогда не произойдет
+автоматического прерывания (что является часто встречающейся проблемой
+для транзакционных баз данных).
+
+<LI>
+
+Даже в транзакционной системе возможна потеря данных в случае
+внезапной остановки сервера (если сервер ``упадет''). Разница между
+различными системами состоит только в том, насколько мал промежуток
+времени, в течение которого данные могут быть потеряны. Ни одна
+система не является надежной на 100%, только ``достаточно надежной''.
+Даже для сервера Oracle (эта база данных считается наиболее надежной
+транзакционной базой данных), по сообщениям, в подобных ситуациях
+иногда возможна потеря данных. Что же касается использования сервера
+MySQL, то в любом случае, независимо от того, применяются или нет
+транзакционные таблицы, для обеспечения безопасности необходимо только
+иметь резервные копии и включенную регистрацию обновлений. Благодаря
+этим мерам в MySQL, так же как и в  других транзакционных базах
+данных, можно восстановить информацию в любой ситуации. Резервные
+копии вообще хорошо иметь всегда, независимо от того, какая база
+данных используется.
+</ol>
+
+<P>
+Транзакционная парадигма имеет свои достоинства и свои недостатки. Для
+многих пользователей и разработчиков приложений решающее значение имеет
+простота кодирования в проблемных ситуациях, в которых может произойти или
+неизбежно аварийное прерывание. Однако даже если парадигма атомарных
+операций для вас нова или вы привыкли к транзакциям, все же следует
+принимать во внимание выигрыш в скорости, который могут обеспечить
+нетранзакционные таблицы (порядка от трех до пяти раз по сравнению со
+скоростью наиболее быстрых и оптимально настроенных транзакционных
+таблиц).
+
+</P>
+<P>
+В ситуациях, где целостность данных чрезвычайно важна, сервер MySQL
+обеспечивает даже для нетранзакционных таблиц надежность и целостность
+данных уровня транзакций или лучше. При блокировании таблиц с помощью <code>LOCK
+TABLES</code> все обновления останавливаются до тех пор, пока не будут выполнены
+все проверки на целостность. При наличии только блокировки чтения (в
+противоположность блокировке записи) операции чтения и вставки, тем не
+менее, производятся. Новые внесенные записи не будут видны никому из
+имеющих блокировку чтения клиентов до освобождения этих блокировок. С
+iомощью <code>INSERT DELAYED</code> вставки становятся в очередь и находятся там до тех
+пор, пока не будут сняты все блокировки. При этом клиент не вынужден
+ждать, пока отработает <code>INSERT</code> (see section <A HREF="https://www.linuxlib.ru/mysqloff/INSERT_DELAYED.html">6.4.4  Синтаксис оператора <code>INSERT DELAYED</code></A>).
+
+</P>
+<P>
+То, что мы подразумеваем под термином ``атомарные'', не означает ничего
+сверхъестественного. Имеется в виду лишь следующее: гарантируется, что при
+выполнении каждого конкретного обновления никакой другой пользователь не
+может повлиять на него и никогда не произойдет автоматического отката
+(который возможен на транзакционных таблицах, если не приняты должные меры
+предосторожности). Сервер MySQL также гарантирует, что не случится
+грязного чтения (dirty read)".
+
+</P>
+<P>
+Ниже описаны некоторые технические приемы работы с нетранзакционными
+таблицами:
+
+</P>
+
+<ul>
+<LI>
+
+Циклы, для которых требуются транзакции, обычно могут кодироваться с
+помощью <code>LOCK TABLES</code>, причем нет необходимости в указателях при
+динамическом обновлении записей.
+
+<LI>
+
+Чтобы избежать применения <code>ROLLBACK</code>, можно использовать следующую
+стратегию:
+
+
+<ul>
+<LI>
+
+Применить <code>LOCK TABLES ...</code> для блокирования всех таблиц, к которым
+необходим доступ.
+
+<LI>
+
+Проверить условия.
+
+<LI>
+
+Обновить, если все в порядке.
+
+<LI>
+
+Использовать <code>UNLOCK TABLES</code> для освобождения произведенных
+блокировок.
+</ul>
+
+Обычно этот метод обеспечивает намного более высокую скорость, чем
+использование транзакций с возможными откатами, хотя и не всегда. Это
+решение не годится только для одной ситуации - когда кто-либо уничтожает
+потоки посреди обновления. В этом случае все блокировки будут сняты, но
+некоторые обновления могут не выполниться.
+
+<LI>
+
+Для обновления записей в рамках одиночной операции можно также
+использовать функции. Применяя приведенные ниже технические приемы, вы
+получите очень эффективное приложение:
+
+
+<ul>
+<LI>Поля модифицируются относительно их текущей величины.
+
+<LI>Обновляются только те поля, которые действительно изменились.
+
+</ul>
+
+Например, при выполнении обновлений информации некоторого заказчика мы
+обновляем только те данные этого заказчика, которые изменялись, и делаем
+проверку только на предмет того, модифицировались ли изменяемые данные или
+зависящие от них по сравнению с исходной строкой. Проверка на то,
+изменялись или нет данные, выполняется с помощью выражения <code>WHERE</code> в команде
+<code>UPDATE</code>. Если данную запись обновить не удалось, то клиент получает
+сообщение: "Некоторые данные, которые вы изменяли, были модифицированы
+другим пользователем". После этого в окне выводится старая версия, чтобы
+пользователь мог решить, какую версию записи заказчика он должен
+использовать. Такой алгоритм обеспечивает нечто похожее на блокирование
+столбцов, но реально он даже лучше, поскольку мы обновляем только часть
+столбцов, используя величины, соответствующие их текущим значениям. Это
+означает, что типичные команды <code>UPDATE</code> выглядят примерно как приведенные
+ниже:
+
+
+<pre>
+UPDATE tablename SET pay_back=pay_back+'relative change';
+UPDATE customer
+  SET
+    customer_date='current_date',
+    address='new address',
+    phone='new phone',
+    money_he_owes_us=money_he_owes_us+'new_money'
+  WHERE
+    customer_id=id AND address='old address' AND phone='old phone';
+</pre>
+
+Как можно видеть, этот способ очень эффективно и работает, даже если
+другой клиент изменит величины в столбцах <code>pay_back</code> или <code>money_he_owes_us</code>.
+
+<LI>
+
+<A NAME="IDX135"></A>
+<A NAME="IDX136"></A>
+Во многих случаях пользователи хотят применять <code>ROLLBACK</code> и/или <code>LOCK
+TABLES</code> для управления уникальными идентификаторами для разных таблиц.
+Того же результата можно добиться намного более эффективно, используя
+столбец <code>AUTO_INCREMENT</code> и либо SQL-функцию <code>LAST_INSERT_ID()</code>, либо
+функцию C API <code>mysql_insert_id()</code> (see section <A HREF="https://www.linuxlib.ru/mysqloff/mysql_insert_id.html">8.4.3.126  <code>mysql_insert_id()</code></A>).
+
+<A NAME="IDX137"></A>
+<A NAME="IDX138"></A>
+<A NAME="IDX139"></A>
+
+В общем случае можно написать код и для блокирования на уровне строк.  Для
+некоторых ситуаций это действительно необходимо, но таких случаев очень мало.
+Блокировка на уровне строк поддерживается в таблицах <code>InnoDB</code>. Для типа
+<code>MyISAM</code> можно использовать флаговые столбцы в таблице и выполнять
+запросы, подобные следующему:
+
+
+<pre>
+UPDATE tbl_name SET row_flag=1 WHERE id=ID;
+</pre>
+
+MySQL возвращает 1 в качестве количества подвергнутых воздействию строк,
+если данная строка была найдена, а <code>row_flag</code> в исходной строке не был уже
+равен 1. Это можно себе представить так, как будто сервер MySQL изменяет
+предшествующий запрос на:
+
+
+<pre>
+UPDATE tbl_name SET row_flag=1 WHERE id=ID AND row_flag &#60;&#62; 1;
+</pre>
+
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=ANSI_diff_Transactions">Add your own comment.</a></p><div id="docnav"><a href="ANSI_diff_Transactions.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html" title="1.9.4.2  Оператор  SELECT INTO TABLE">Previous</a> / <a rel="next" href="ANSI_diff_Triggers.html" title="1.9.4.4  Хранимые процедуры и триггеры">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | A.4.1  Что делать, если работа MySQL сопровождается постоянными сбоями — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Crashing.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Crashing.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Problems.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />A Проблемы и распространенные ошибки
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Administration_Issues.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />A.4 Вопросы, связанные с администрированием
+</a><ul class="immediate"><li class="self">A.4.1 Что делать, если работа MySQL сопровождается постоянными сбоями
+</li><li><a href="Resetting_permissions.html">A.4.2 Как переустановить забытый пароль пользователя <code>root</code>
+</a></li><li><a href="Full_disk.html">A.4.3 Как MySQL реагирует на переполнение диска
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Temporary_files.html">A.4.4 Где MySQL хранит временные файлы
+</a></li><li><a href="Problems_with_mysql.sock.html">A.4.5 Как защитить или изменить сокет-файл MySQL <tt>`/tmp/mysql.sock'</tt>
+</a></li><li><a href="Timezone_problems.html">A.4.6 Проблемы с часовыми поясами
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Administration_Issues.html" title="A.4  Вопросы, связанные с администрированием">Previous</a> / <a rel="next" href="Resetting_permissions.html" title="A.4.2  Как переустановить забытый пароль пользователя root">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Administration_Issues.html" title="A.4  Вопросы, связанные с администрированием">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>A.4.1  Что делать, если работа MySQL сопровождается постоянными сбоями</H3>
+
+<P>
+<A NAME="IDX1195"></A>
+
+</P>
+<P>
+Перед официальным выпуском все версии MySQL тестируются на многих
+платформах. Это не означает, что в MySQL совсем нет ошибок, но если они и
+есть, то мало, и их не так просто отыскать. В любом случае, столкнувшись с
+какой-либо проблемой, всегда полезно попытаться точно определить, что
+вызывает аварию системы, - тогда шансы, что проблема будет устранена в
+скором времени, станут значительно выше.
+
+</P>
+<P>
+Сначала надо попробовать локализовать проблему. Определите, что
+происходит: то ли демон <code>mysqld</code> прекращает работу, то ли проблема связана с
+клиентом. Узнать, сколько времени сервер <code>mysqld</code> уже работает, можно,
+выполнив <code>mysqladmin version</code>. Если <code>mysqld</code> прекратил выполнение, то для
+выяснения причин можно изучить файл  <tt>`mysql-data-directory/`hostname`.err'</tt>
+(see section <A HREF="https://www.linuxlib.ru/mysqloff/Error_log.html">4.9.1  Журнал ошибок</A>).
+
+</P>
+<P>
+Причиной многих аварий MySQL являются поврежденные индексные файлы или
+файлы данных. MySQL обновляет данные на диске, используя системный вызов
+<code>write()</code>, после каждой команды SQL и до того, как клиент будет уведомлен о
+результате (однако при выполнении с <code>delay_key_write</code> это не так:
+записываются только данные). Отсюда следует, что данные не пострадают даже
+в случае аварийного завершения <code>mysqld</code>, поскольку ОС позаботится о том,
+чтобы те данные, которые не сброшены, были записаны на диск. Можно
+заставить MySQL сбрасывать все на диск после каждой SQL-команды, запустив
+<code>mysqld</code> с <code>--flush</code>.
+
+</P>
+<P>
+Все это означает, что обычно таблицы не должны повреждаться; исключение
+составляют следующие случаи:
+
+</P>
+
+<ul>
+<LI>
+
+Кто-нибудь/что-нибудь убьет процесс <code>mysqld</code> или выключит машину посреди
+операции обновления.
+
+<LI>
+
+Проявила себя ошибка в <code>mysqld</code>, вызывающая прекращение его выполнения
+посреди операции обновления.
+
+<LI>
+
+Кто-нибудь работает с файлами данных или индексными файлами вне <code>mysqld</code> и
+при этом не делает блокировку таблиц как следует.
+
+<LI>
+
+Если работает несколько серверов <code>mysqld</code> с одними данными на системе без
+пристойной поддержки блокировок  файловой системы (обычно реализуется
+демоном <code>lockd</code>) или если выполняется несколько серверов со <code>--skip-locking</code>
+
+<LI>
+
+Существует поврежденный индексный файл или файл данных, содержащий очень
+неправильные данные, которые вводят в заблуждение <code>mysqld</code>.
+
+<LI>
+
+Проявила себя  в коде записи данных. Это маловероятно, но в общем случае
+возможно. В этом случае можно попробовать изменить формат файла на
+соответствующий другому обработчику баз данных, используя <code>ALTER TABLE</code> на
+исправленной копии таблицы!
+</ul>
+
+<P>
+Поскольку найти причину сбоя всегда непросто, сначала можно попробовать
+выяснить, что из того, что работает у других, вызывает аварии у вас.
+Попытайтесь выполнить следующие действия:
+
+</P>
+
+<ul>
+<LI>
+
+Избавьтесь от <code>NULL</code> в качестве значений по умолчанию (это можно увидеть в
+<code>DESCRIBE table_name</code>)
+
+<LI>
+
+Используйте <code>truncate()</code> для округления всех отрицательных значений к
+ближайшему целому.
+
+<LI>
+
+Остановите демон <code>mysqld</code> с помощью <code>mysqladmin shutdown</code>, выполните
+<code>myisamchk --silent --force */*.MYI</code> на всех таблицах и перезапустите
+демон <code>mysqld</code>. Этим гарантируется безошибочность исходного состояния
+(see section <A HREF="MySQL_Database_Administration.html">4  Администрирование баз данных</A>).
+
+<LI>
+
+Используйте <code>mysqld --log</code> и попытайтесь определить по информации в
+журналах, не вызвано ли прекращение работы сервера каким-либо
+специфическим запросом. Около 95% всех ошибок обусловлены конкретными
+запросами! Обычно это один из последних запросов в журнальном файле
+непосредственно до перезапуска MySQL (see section <A HREF="Query_log.html">4.9.2  Общий журнал запросов</A>). Если вы сумеете повторно вызвать  отказ MySQL при помощи одного
+из запросов, даже когда таблицы были проверены непосредственно перед
+выполнением запроса, то возможна локализация ошибки и подготовка
+отчета об ошибке! see section <A HREF="Bug_reports.html">1.8.1.3  Как отправлять отчеты об ошибках или проблемах</A>.
+
+<LI>
+
+Попробуйте сделать контрольный тест, который мы могли бы использовать,
+чтобы воспроизвести проблему (see section <A HREF="https://www.linuxlib.ru/mysqloff/Reproduceable_test_case.html">E.1.6  Создание контрольного примера при повреждении таблиц</A>).
+
+<LI>
+
+Попробуйте выполнить входящий в поставку тест <code>mysql-test</code> и тесты
+производительности MySQL (see section <A HREF="MySQL_test_suite.html">9.1.2  Пакет тестирования MySQL</A>). Эти тесты
+должны довольно хорошо протестировать MySQL. Вы можете также добавить
+в тесты производительности код для имитации своего приложения! Тесты
+производительности можно найти в каталоге bench в поставке с исходными
+кодами или, в случае бинарной поставки, в подкаталоге <code>sql-bench</code> своего
+каталога инсталляции MySQL.
+
+<LI>
+
+Попробуйте <code>fork_test.pl</code> и <code>fork2_test.pl</code>.
+
+<LI>
+
+Если что-то пойдет не так, то собирать информацию о возможных ошибках
+будет значительно проще, если MySQL сконфигурирован для отладки.
+Переконфигурируйте MySQL, применяя <code>configure</code> с опцией <code>--with-debug</code> или
+<code>--with-debug=full</code>, и затем перекомпилируйте (see section <A HREF="https://www.linuxlib.ru/mysqloff/Debugging_server.html">E.1  Отладка сервера MySQL</A>).
+
+<LI>
+
+Конфигурирование MySQL в отладочном режиме приводит к включению
+безопасного распределителя памяти, который может находить некоторые
+ошибки. Помимо этого, отладочная версия выдает большое количество
+информации о том, что происходит.
+
+<LI>
+
+Выясните, применены ли последние патчи для используемой операционной
+системы.
+
+<LI>
+
+Используйте опцию <code>--skip-locking</code> к <code>mysqld</code>. На некоторых системах
+менеджер блокировок <code>lockd</code> не работает как следует; опция
+<code>--skip-locking</code> указывает <code>mysqld</code> не применять внешнюю блокировку (это
+означает, что нельзя выполнять два сервера <code>mysqld</code> на одних данных и
+что необходимо быть осторожным при использовании <code>myisamchk</code>, однако
+применение этой опции может принести большую пользу для целей
+тестирования).
+
+<LI>
+
+Если возникнет ситуация, когда кажется, что <code>mysqld</code> запущен, но не
+отвечает, стоит попробовать выполнить <code>mysqladmin -u root processlist</code>.
+Иногда <code>mysqld</code> не является зависшим, даже если кажется, что это так.
+Проблема может быть в том, что все соединения используются, или,
+возможно, имеется некая внутренняя проблема с блокировками. <code>mysqladmin
+processlist</code> обычно способна установить соединение даже в таких случаях
+и выдать полезную информацию о текущем количестве соединений и их
+состоянии.
+
+<LI>
+
+Выполните команду в отдельном окне <code>mysqladmin -i 5 status</code> или
+<code>mysqladmin -i 5 -r</code> для вывода статистики, пока будут выполняться
+другие запросы.
+
+<LI>
+
+Попробуйте выполнить следующие действия:
+
+
+<ol>
+<LI>
+
+Запустите <code>mysqld</code> в <code>gdb</code> (или в другом отладчике).
+See section <A HREF="https://www.linuxlib.ru/mysqloff/Using_gdb_on_mysqld.html">E.1.3  Отладка mysqld при помощи gdb</A>.
+
+<LI>
+
+Запустите тестовые скрипты.
+
+<LI>
+
+Отобразите стек (<code>backtrace</code>) и локальные переменные на трех нижних
+уровнях. В <code>gdb</code> это можно сделать следующими командами после аварийного
+завершения <code>mysqld</code> внутри <code>gdb</code>:
+
+
+<pre>
+backtrace
+info local
+up
+info local
+up
+info local
+</pre>
+
+С помощью <code>gdb</code> можно также выяснить, какие имеются потоки (посредством <code>info
+threads</code>), и переключиться на определенный поток посредством <code>thread #</code>, где
+<code>#</code> - номер потока.
+</ol>
+
+<LI>
+
+Попробуйте имитировать работу своего приложения с помощью
+Perl-скрипта, который бы вызвал аварийное завершение или неправильное
+функционирование MySQL.
+
+<LI>
+
+Отправьте нам обычный отчет об ошибке (see section <A HREF="Bug_reports.html">1.8.1.3  Как отправлять отчеты об ошибках или проблемах</A>). Любые подробности будут нелишними. Поскольку MySQL
+нормально эксплуатируется в очень многих местах, то, возможно, авария
+вызвана причиной, которая свойственна только вашему компьютеру
+(например, ошибка, связанная с вашими особенными системными
+библиотеками).
+
+<LI>
+
+Если возникла проблема с таблицами, имеющими динамическую длину строк,
+и не используются столбцы типа <code>BLOB/TEXT</code> (а только столбцы типа
+<code>VARCHAR</code>), то можно попробовать изменить все <code>VARCHAR</code> на <code>CHAR</code> с помощью
+<code>ALTER TABLE</code>. Это заставит MySQL использовать строки фиксированного
+размера. Для строк фиксированного размера понадобится немного
+дополнительной памяти, однако они гораздо менее чувствительны к
+повреждениям! Сегодняшний код динамических строк без  каких бы то ни
+было проблем эксплуатируется в MySQL AB по крайней мере 3 года, но в
+принципе строки динамической длины более подвержены ошибкам, поэтому
+данный рецепт, возможно, сможет вам чем-то помочь!
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Crashing">Add your own comment.</a></p><div id="docnav"><a href="Crashing.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Administration_Issues.html" title="A.4  Вопросы, связанные с администрированием">Previous</a> / <a rel="next" href="Resetting_permissions.html" title="A.4.2  Как переустановить забытый пароль пользователя root">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Administration_Issues.html" title="A.4  Вопросы, связанные с администрированием">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

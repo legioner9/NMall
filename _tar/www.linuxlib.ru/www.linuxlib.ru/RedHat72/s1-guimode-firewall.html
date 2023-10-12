@@ -1,0 +1,763 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Настройка Firewall — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Linux 7.2:  Официальное руководство по установке Red Hat Linux x86</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-guimode-netconf.html"
+>Назад</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Глава 3. Установка Red Hat Linux</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-guimode-langsupport.html"
+>Вперед</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-GUIMODE-FIREWALL"
+>Настройка Firewall</A
+></H1
+><P
+>Для повышения безопасности системы Red Hat Linux предлагает настроить
+firewall (брандмауэр). Firewall находится между компьютером и сетью и определяет, к каким
+ресурсам вашего компьютера можно предоставить доступ удаленным пользователям
+в сети. Грамотно настроенный firewall может существенно увеличить
+безопасность системы.
+      </P
+><P
+>       Выберите требуемый уровень безопасности системы.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-GUIMODE-FIG-FIREWALL"
+></A
+><P
+><IMG
+SRC="https://www.linuxlib.ru/RedHat72/figs/guimode/firewall.gif"></P
+><P
+><B
+>Рисунок 3-12. Настройка Firewall</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Высокий (High)</B
+></DT
+><DD
+><P
+> Если выбрать <B
+CLASS="GUILABEL"
+>Высокий (High)</B
+>,то система не будет принимать соединения (кроме установленных по
+умолчанию), которые специально не указаны. По умолчанию разрешены
+только следующие соединения:
+ 	      <P
+></P
+><UL
+><LI
+><P
+>Ответы DNS (DNS replies)</P
+></LI
+><LI
+><P
+>DHCP &#8212; так все сетевые интерфейсы, использующие DHCP,
+могут быть настроены должным образом</P
+></LI
+></UL
+>
+	    </P
+><P
+>             Если вы выберете <B
+CLASS="GUILABEL"
+>Высокий (High)</B
+>, ваш firewall запретит следующие соединения:
+	      <P
+></P
+><UL
+><LI
+><P
+>Активный режим FTP (пассивный режим FTP, используемый по умолчанию для
+большинства клиентов, будет разрешен)</P
+></LI
+><LI
+><P
+>Передача файлов по IRC DCC</P
+></LI
+><LI
+><P
+>RealAudio<sup
+>TM</sup
+></P
+></LI
+><LI
+><P
+>Удаленные клиенты системы X Window</P
+></LI
+></UL
+></P
+><P
+>             Если вы подключены к интернету, но не собираетесь
+устанавливать сервер, этот уровень будет самым безопасным. Если вам нужны
+дополнительные сервисы, вы можете выбрать <B
+CLASS="GUIBUTTON"
+>Настроить вручную (Customize)</B
+>, чтобы определенные сервисы пропускались через firewall.</P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Средний (Medium)</B
+></DT
+><DD
+><P
+>             Если выбрать <B
+CLASS="GUILABEL"
+>Средний (Medium)</B
+>, то firewall запретит удаленным компьютерам доступ к определенным
+ресурсам вашей системы. По умолчанию запрещен доступ к следующим ресурсам:
+	      <P
+></P
+><UL
+><LI
+><P
+>Порты ниже 1023 &#8212; стандартные зарезервированные порты, используемые
+большинством системных служб, таких как
+                  <B
+CLASS="APPLICATION"
+>FTP</B
+>,
+                  <B
+CLASS="APPLICATION"
+>SSH</B
+>,
+		  <B
+CLASS="APPLICATION"
+>telnet</B
+> и
+		  <B
+CLASS="APPLICATION"
+>HTTP</B
+>
+		  </P
+></LI
+><LI
+><P
+>Порт NFS сервера (2049)</P
+></LI
+><LI
+><P
+>Дисплей локальной системы X Window для удаленных клиентов X</P
+></LI
+><LI
+><P
+>Порт X Font сервера (по умолчанию
+		  <B
+CLASS="APPLICATION"
+>xfs</B
+> не слушает сеть, т.к. отключен в  font сервере)</P
+></LI
+></UL
+>
+	    </P
+><P
+>             Если вы хотите разрешить такие ресурсы как
+	      <B
+CLASS="APPLICATION"
+>RealAudio<sup
+>TM</sup
+></B
+>, при этом закрывая доступ к обычным системным службам, выберите
+	      <B
+CLASS="GUILABEL"
+>Средний (Medium)</B
+>. Вы можете выбрать          <B
+CLASS="GUILABEL"
+>Настроить вручную (Customize)</B
+>, чтобы определенные сервисы пропускались через firewall.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Без брандмауэра (No Firewall)</B></DT
+><DD
+><P
+> Этот уровень предоставляет полный доступ к вашей системе и не
+производит проверку безопасности. Проверка безопасности &#8212; это
+отключение доступа к определенным службам. Этот уровень
+рекомендуется только в том случае, если вы находитесь в
+высоконадежной сети (не в интернете), или если вы собираетесь
+произвести более подробную настройку firewall несколько позже.
+	    </P
+></DD
+></DL
+></DIV
+><P
+>       Выберите <B
+CLASS="GUILABEL"
+>Настроить вручную (Customize)</B
+>, чтобы добавить в список доверенные устройства или разрешить доступ
+дополнительным входящим службам.
+      </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Доверенные устройства</B
+></DT
+><DD
+><P
+>             Выбор любого из <B
+CLASS="GUILABEL"
+>Доверенных устройств (Trusted Devices)</B
+> разрешает доступ к вашей системе всему траффику с этого устройства;
+этот траффик исключается из правил firewall. К примеру, если вы находитесь в
+локальной сети и подключаетесь к интернету через модемную связь по
+протоколу PPP, вы можете отметить <B
+CLASS="GUILABEL"
+>eth0</B
+>, и весь траффик по локальной сети будет разрешен. Выбор
+              <B
+CLASS="GUILABEL"
+>eth0</B
+> в качестве доверенного означает, что весь траффик по Ethernet
+разрешен, но интерфейс ppp0 по-прежнему находится за firewall.
+Если вы хотите запретить траффик по какому-либо интерфейсу, не отмечайте
+его.
+	    </P
+><P
+>             Не рекомендуется делать <B
+CLASS="GUILABEL"
+>Доверенным устройством</B
+> любое устройство, имеющее доступ в публичную сеть, такую как интернет.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Разрешить входящие (Allow Incoming)</B
+></DT
+><DD
+><P
+> Включение этой опции позволяет указанным службам проходить
+через firewall. Обратите внимание, что при установке типа рабочая станция
+большинство этих служб
+              <I
+CLASS="EMPHASIS"
+>не</I
+> устанавливается.
+	    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>DHCP</B
+></DT
+><DD
+><P
+>                   Если разрешить входящие DHCP запросы и ответы,
+то это позволит всем сетевым интерфейсам, использующим протокол DHCP,
+определить свой IP адрес. Обычно DHCP включен. Если DHCP отключен,
+ваш компьютер не сможет получить IP адрес.</P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>SSH</B
+></DT
+><DD
+><P
+>		    <I
+CLASS="EMPHASIS"
+>S</I
+>ecure <I
+CLASS="EMPHASIS"
+>SH</I
+>ell (безопасная оболочка) &#8212; это набор инструментов для входа на
+удаленный компьютер и выполнение команд на нем. Если вы собираетесь
+использовать SSH для доступа на ваш компьютер через firewall, включите
+эту опцию. Для удаленного доступа на ваш компьютер при помощи SSH
+необходимо установить пакет <TT
+CLASS="FILENAME"
+>openssh-server</TT
+>.
+		  </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Telnet</B
+></DT
+><DD
+><P
+> Telnet &#8212; это протокол для входа на удаленные компьютеры. Связь через
+Telnet не шифруется и, соответственно, безопасной не является. Не
+рекомендуется разрешать входящий Telnet доступ. Если вы все-таки хотите
+его разрешить, необходимо установить пакет
+                    <TT
+CLASS="FILENAME"
+>telnet-server</TT
+>.
+		  </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>WWW (HTTP)</B
+></DT
+><DD
+><P
+>  Протокол HTTP используется Apache (и другими web серверами) для
+обслуживания web страниц. Если вы собираетесь открыть публичный
+доступ на ваш web сервер, включите эту опцию. Эта опция не требуется
+для локального просмотра web страниц или для их разработки. Вам потребуется
+установить пакет
+                    <TT
+CLASS="FILENAME"
+>apache</TT
+>.
+		  </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Mail (SMTP)</B
+></DT
+><DD
+><P
+> Если вы хотите разрешить доставку входящей почты через firewall
+ так, чтобы удаленные компьютеры могли напрямую подключаться к вашему и
+доставлять почту, включите эту опцию. Если же вы забираете почту с сервера
+провайдера через протоколы POP3 или IMAP или же используете такой клиент,
+как
+                    <B
+CLASS="APPLICATION"
+>fetchmail</B
+>, вам не нужно включать эту опцию. Имейте в виду, что неправильно
+настроенный SMTP сервер может позволить злобным спамерам с удаленных
+компьютеров использовать ваш сервер в своих грязных целях. ;)
+</P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>FTP</B
+></DT
+><DD
+><P
+> Протокол FTP используется для передачи файлов между компьютерами в сети.
+Если вы хотите открыть доступ на ваш FTP сервер, включите эту опцию. Вам
+потребуется установить пакет
+                    <TT
+CLASS="FILENAME"
+>wu-ftpd</TT
+> (а возможно, еще и
+                    <TT
+CLASS="FILENAME"
+>anonftp</TT
+>).
+		  </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Другие порты (Other ports)</B
+></DT
+><DD
+><P
+>Вы можете открыть доступ к портам, которые не были перечислены выше, внеся
+их в поле
+<B
+CLASS="GUILABEL"
+>Другие порты (Other ports)</B
+. Используйте формат <TT
+CLASS="USERINPUT"
+><B
+>port:protocol</B
+></TT
+>.
+ Например, если вы хотите открыть доступ по IMAP через ваш firewall,
+укажите
+                    <TT
+CLASS="USERINPUT"
+><B
+>imap:tcp</B
+></TT
+>. Точно также можно явно указывать номера портов; чтобы открыть доступ
+через firewall для UDP пакетов на 1234 порт, введите <TT
+CLASS="USERINPUT"
+><B
+>1234:udp</B
+></TT
+>.
+ Если вы хотите указать несколько портов, вводите их через запятую.
+		  </P
+></DD
+></DL
+></DIV
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-guimode-netconf.html"
+>Назад</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="https://www.linuxlib.ru/RedHat72/index.html"
+>В начало</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-guimode-langsupport.html"
+>Вперед</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Настройка сети</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-guimode.html"
+>Наверх</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Выбор поддержки языка</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

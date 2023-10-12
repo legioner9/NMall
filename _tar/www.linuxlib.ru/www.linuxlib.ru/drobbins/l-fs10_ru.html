@@ -1,0 +1,644 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 10 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 10</h2>
+<br><h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs10.html">-->http://www-106.ibm.com/developerworks/library/l-fs10.html<!--</a>--></h3>
+<br><h2>Развертывание XFS.</h2>
+<p><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#author1">-->Daniel Robbins<!--</a>--> (<a href="../cdn-cgi/l/email-protection.html#187c6a777a7a71766b587f7d766c777736776a7f"><span class="__cf_email__" data-cfemail="8beff9e4e9e9e2e5f8cbeceee5ffe4e4a5e4f9ec">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>April 2002</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования
+  filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и других. Эти
+  filesystems еще не достаточно опробованы и имеются вопросы, что именно они
+  могут делать, насколько они хороши и насколько оправдано их использование в
+  промышленной Linux среде. Daniel Robbins отвечает на эти вопросы по ходу
+  пояснения инсталляции этих новых продвинутых filesystems под Linux 2.4. В этой
+  статье Daniel описывает, как добавить XFS к вашей системе и исследует
+  отдельные, более "продвинутые" features XFS.</blockquote>
+<p>В этой статье будет показано, как добавить поддержку XFS к вашей системе. Но
+сначала посетите и исследуйте SGI XFS Project page (смотри <!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#resources">-->Resources<!--</a>-->
+далее). Если проследуете по download link, вы найдете patches, tools и даже Red
+Hat XFS-enabled kernels. </p>
+<p>Но не торопитесь. Конечно, можно инсталлировать XFS используя pre-rolled,
+т.е. официальные релизы. Но в данном случае я не рекомендую такой подход. При
+написании этой статьи самый последним из официальных релизов XFS был 1.0.2,
+созданный еще в ноябре 2001. С того времени было внесено множество уточнений к
+XFS и, чтобы извлечь из этого выгоду, воспользуемся современными sources из XFS
+CVS tree. Developers и users, сделавшие выбор в пользу Gentoo Linux и
+воспользовавшиеся XFS из CVS, получили от XFS много больше. </p>
+<p><a name="ucvs">
+<h2>Использование CVS.</h2></a>
+</p><p>Если вы раньше не пользовались CVS, можете воспользоваться моей tutorial -
+CVS для developer и любителей (смотри <!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#resources">-->Resources<!--</a>-->).
+Даже если вы имеете самое общее представление о CVS, этого будет достаточно.
+Убедитесь только, что на вашей системе имеется инсталлированный CVS package и
+вам доступна команда <code>cvs</code>. </p>
+<p>Описание CVS instructions, которые будут использоваться далее, можно также
+найти на SGI's site (смотри <!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#resources">-->Resources<!--</a>-->).
+После grabbing исходников через <code>cvs</code>, вы получите новый каталог,
+содержащий up-to-date XFS-enabled kernel sources и самые современные XFS tools.
+Для grab the sources от XFS CVS сначала установите переменную окружения
+<code>CVSROOT</code> в требуемое значение. Например, по bash prompt введите:
+</p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ export CVSROOT=':pserver:<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="6c0f1a1f2c031f1f421f0b05420f0301">[email&#160;protected]</a>:/cvs'
+</code></pre></td></tr></tbody></table>
+<p>Теперь перейдите в каталог, где вы желаете разместить XFS directory tree, и
+выполните: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ cvs login
+</code></pre></td></tr></tbody></table>
+<p>По запросу пароля введите <code>cvs</code>. Теперь вы подключились к public
+CVS repository. Получите самые последние XFS sources, введя: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ cvs -z3 checkout linux-2.4-xfs
+</code></pre></td></tr></tbody></table>
+<p>Запустится процесс checkout. Это займет некоторое время, так как файлы,
+которые вы grabbing, включают полное Linux source tree. Через некоторое время,
+когда команда <code>cvs checkout</code> завершится, вы будете иметь новое
+<code>linux-2.4-xfs</code> directory tree в текущем рабочем каталоге.
+Рекомендация на будущее: если вам потребуется модернизировать source tree,
+просто внутри <code>linux-2.4-xfs</code> каталога введите: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ cvs -z3q update -dP
+</code></pre></td></tr></tbody></table>
+<p><a name="utree">
+<h3>Работа с деревом.</h3></a>
+</p><p>Имеется два важных каталога внутри нового <code>linux-2.4-xfs</code>. Первый
+называется <code>linux</code> и содержит XFS-enabled kernel source tree, а
+второй называется <code>cmd</code> и содержит sources для различных XFS
+userspace программ. Чтобы воспользоваться kernel sources, можно либо скопировать
+linux каталог в <code>/usr/src</code>, либо компилировать новое ядро "на месте".
+</p>
+<p>Теперь о том, как получить работающее ядро. Войдите в <code>linux</code>
+каталог и загрузите <code>Makefile</code> в ваш любимый редактор. В начале файла
+вы увидите несколько строк, которые выглядят примерно так: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+VERSION = 2
+PATCHLEVEL = 4
+SUBLEVEL = 17
+EXTRAVERSION = -xfs
+</code></pre></td></tr></tbody></table>
+<p>Эти строки сообщают <code>Makefile</code> компилировать ядро с официальным
+именем <code>2.4.17-xfs</code>. Некоторые предпочитают иметь ядро без
+<code>-xfs</code> в официальном имени. Если вы один из таких людей, измените
+строку, которая будет читаться: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+EXTRAVERSION =
+</code></pre></td></tr></tbody></table>
+<p>Теперь о kernel configuration. Для enable XFS, после <code>make
+menuconfig</code> перейдите в секцию File systems. Там вы увидите следующую
+опцию: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+&lt; &gt; SGI XFS filesystem support
+</code></pre></td></tr></tbody></table>
+<p>Разрешите ее (рекомендуется статически компилировать в ядро). Введите
+"<code>y</code>" и появятся еще три под опции: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+[ ]   Enable XFS Realtime support
+[ ]   Enable XFS Quota
+&lt; &gt;   Enable XFS DMAPI
+</code></pre></td></tr></tbody></table>
+<p>Опция "<code>XFS Realtime</code>" разрешает поддержку realtime subvolume в
+XFS, что позволит в дальнейшем конфигурировать области памяти, обеспечивающие
+deterministic performance для приложений реального времени. Опция "<code>XFS
+Quota</code>" позволит, как нетрудно догадаться, поддержку лимитов на размер
+доступного дискового пространства для пользователей и групп. Опция "<code>XFS
+DMAPI</code>", если помечена, разрешит специальный API, предназначенный для
+management приложений. В настоящее время под Linux еще нет tools, которые
+пользуются преимуществами DMAPI (имеются у Sistina's LVM и "родные" SGI XFS
+utilities). Однако некоторые DMAPI-enabled приложения для Linux уже находятся в
+разработке у SGI и IBM. </p>
+<p>После выбора "<code>SGI XFS filesystem support</code>" и конфигурирования
+остальной части ядра по вашему вкусу, вы готовы ввести <code>make dep &amp;&amp;
+make &amp;&amp; make bzImage &amp;&amp; make modules &amp;&amp; make
+modules_install</code>, инсталлировать новое ядро и перезагрузиться. .</p>
+<p><a name="tools">
+<h3>Инсталляция tools.</h3></a>
+</p><p>Теперь, когда вы работаете на XFS-enabled kernel, можно создать и
+инсталлировать различные XFS tools. Одна из хороших новостей относительно XFS -
+она поставляется с полным набором инструментов поддержки и утилит. Войдите в
+каталог <code>linux-2.4-xfs/cmd</code> и запустите (с правами root) следующий
+shell script: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# for x in attr acl xfsprogs dmapi xfsdump
+do
+cd $x
+autoconf
+/configure --prefix=/usr
+make
+make install
+cd ..
+done
+
+</code></pre></td></tr></tbody></table>
+<p>Не забудьте о переводе строки после <code>done</code>. Наш специальный build
+script начнет работу, и все XFS tools будут инсталлированы. После финиша добавим
+несколько developer-related файлов, которые не инсталлированы предыдущей
+командой <code>make install</code>l: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#ddddbb" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# for x in attr dmapi xfsprogs
+do
+cd $x
+make install-dev
+cd ..
+done
+
+</code></pre></td></tr></tbody></table>
+<p><a name="fsc">
+<h2>Создание и монтирование файловой системы.</h2></a>
+</p><p>После отработки script все XFS-related программы будут инсталлированы и
+готовы к использованию. Можно создать тестовую XFS и попытаться достигнуть
+оптимальной производительности. </p>
+<p>Если XFS создается поверх ReiserFS, потребуется небольшая уловка. По bash
+prompt введите следующую команду для "обнуления" начального участка block
+device, на котором хранилась ReiserFS, а теперь вы собираетесь инициализировать
+новую XFS filesystem: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# dd if=/dev/zero of=/dev/hdc9
+</code></pre></td></tr></tbody></table>
+<p>Такой шаг необходим для wipe out хранящихся ReiserFS метаданных. Иначе,
+команда <code>mount</code> может "запутаться" и случайно смонтировать новую XFS
+filesystem как дефектную ReiserFS! Достаточно позволить <code>dd</code>
+отработать 10 секунд и прервать комбинацией CTRL-C. При этом все "критические"
+части ранее существовавшей ReiserFS будут заполнены нулями, а код
+авто-детектирования типа файловой системы "путаться" больше не будет. </p>
+<p>Пришло время create новую файловую систему. Для этого можно воспользоваться
+командой <code>mkfs.xfs</code> следующим образом: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# mkfs.xfs /dev/hdc9
+</code></pre></td></tr></tbody></table>
+<p>Такая команда сделает все необходимое, но имеется пара опций, позволяющих
+<code>mkfs.xfs</code> сконфигурировать новую XFS под максимальную
+производительность. </p>
+<p>Первая из таких опций <code>-l size=32m</code>, что сообщит
+<code>mkfs.xfs</code> сконфигурировать файловую систему так, чтобы журнал
+метаданных имел размер 32 Mb. Это повысит производительность, сделав
+маловероятным переполнение журнала при высоких нагрузках. </p>
+<p>Вторая опция позволяет поднять производительность новой файловой системы,
+сообщив <code>mkfs.xfs</code> минимизировать число allocation groups. Обычно,
+<code>mkfs.xfs</code> выбирает число allocation groups автоматически. Но опыт
+показывает, выбирается число несколько большее, чем требуется для оптимальной
+производительности однопроцессорных Linux workstations и серверов. Если вы
+повторно перечитаете мою <!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->предыдущую
+статью<!--</a>-->, allocation groups позволяют XFS выполнять операции над метаданными
+параллельно. Это очень удобно для high-end серверов, но слишком много allocation
+groups добавляют работы. Вместо того чтобы разрешить <code>mkfs.xfs</code>
+автоматически выбрать число allocation groups для вашей файловой системы,
+сделайте это "вручную", используя <code>-d agcount=x</code>. Выберите
+<code>x</code> минимальным, например, 4, 6 или 8. Расчет достаточно прост,
+необходимо иметь, по крайней мере, одну allocation group на каждые 4 GB в target
+block device. Две описанные опции позволят создать "оптимизированную" XFS
+filesystem следующей командой: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# mkfs.xfs -d agcount=4 -l size=32m /dev/hdc9
+</code></pre></td></tr></tbody></table>
+<p>Теперь, после created файловой системы, ее можно монтировать. При этом можно
+воспользоваться некоторыми performance-enhancing опциями монтирования, чтобы
+"выжать" максимум из новой файловой системы: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+# mount /dev/hdc9 /mnt -o noatime,nodiratime,osyncisdsync
+</code></pre></td></tr></tbody></table>
+<p>Первые две опции монтирования выключают модификацию <code>atime</code>, что
+практически никогда и не требуется, но способствует деградации
+производительности. Опция <code>osyncisdsync</code> добивается такого sync/async
+поведения XFS, чтобы максимально соответствовать таковому в ext3. Благодаря
+таким <code>mkfs.xfs</code> и <code>mount</code> ваша новая XFS будет иметь
+скорость немного выше, чем при умолчании. </p>
+<p><a name="goodi">
+<h2>Положительные герои.</h2></a>
+</p><p>Одна из хороших вещей в XFS - она имеет много goodies. Одной из таких
+специальных функциональных возможностей являются "access control lists" или ACL.
+Сейчас это поддерживается в XFS по умолчанию. Списки контроля доступа позволяют
+определять fine-grained разрешения на файлы. Например, вместо ограниченного
+"rwx" для владельца, группы и других, становится возможным добавлять любое число
+дополнительных пользователей или групп и определять "rwx" permissions и для них.
+</p>
+<p>Полное описание access control lists - вне контекста этой статьи. Если вам
+это интересно, посмотрите большое введение в ACL на bestbits site (<!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#resources">-->Resources<!--</a>-->),
+особенно, если посетить страничку "Why you may want Access Control Lists
+(ACLs)". Обратите внимание, большая часть технической информации этого сайта
+связана с поддержкой ACL под ext2 и ext3 (но ничего дополнительного не требуется
+для ACL под XFS). </p>
+<p>XFS имеет еще одну feature, называемую "extended attributes". Такие extended
+attributes позволяют вам associate user-defined данные с объектами файловой
+системы. Например, если вы имеете графический файл по имени
+<code>mygraphic.png</code>, можно attach к нему атрибут, называемый
+"<code>thumbnail</code>", содержащий маленькую версию image. Эти данные не будут
+viewable обычными IO файловыми операциями, но к ним можно обращаться из
+программ, использующих special extended attributes API. По своей сути, extended
+attributes похожи на "resource fork", существующие на MacOS системах. </p>
+<p>Имеется пример использования extended attributes через команду
+<code>attr</code> из командной строки. Скажем, я желаю добавить
+<code>description</code> attribute к моему home каталогу. Я ввожу: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ attr -s description -V "Home of Daniel Robbins" /home/drobbins
+Attribute "description" set to a 22 byte value for /home/drobbins:
+Home of Daniel Robbins
+</code></pre></td></tr></tbody></table>
+<p>После этого, чтобы видеть список атрибутов, ассоциированных с
+<code>/home/drobbins</code>, можно ввести: </p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ attr -l /home/drobbins
+Attribute "description" has a 22 byte value for /home/drobbins/
+</code></pre></td></tr></tbody></table>
+<p>А чтобы просмотреть содержание <code>description</code> attribute, я ввожу:
+</p>
+<table cellspacing="0" cellpadding="5" width="100%" bgcolor="#cccccc" border="1">
+  <tbody>
+  <tr>
+    <td><pre><code>
+$ attr -q -g description /home/drobbins/
+Home of Daniel Robbins
+</code></pre></td></tr></tbody></table>
+<p>Extended attributes просты и забавны в использовании. Вы можете узнать о них
+больше, прочитав <code>man attr</code>. XFS включает также API C для
+взаимодействия с extended attributes. Если вы интересуетесь работой с C++
+IOStream интерфейсом к extended attributes, можете посмотреть libferris на
+SourceForge (<!--<a href="http://www.linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html#resources">-->Resources<!--</a>-->).
+</p>
+<p>Конечно, extended attributes и ACL открывают интересные возможности, но
+будьте осторожны. Большинство backup программ в настоящее время еще "не
+понимают" ни EA, ни ACL. Известные мне исключения - <code>xfsdump</code> и
+<code>xfsrestore</code>, поставляемые с XFS distribution. Если используете
+другую backup программу, проведите сначала интенсивное тестирование на поддержку
+EA и ACL. </p>
+<p>Я надеюсь, вам понравилось это "мгновенное" введение в XFS filesystem. Ждите
+новых статей! </p>
+<p><a name="resources">
+<h3>Resources</h3></a>
+</p><ul>
+
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul>
+<br>
+<br>
+</li>
+
+  <li>To get up to speed on CVS, check out Daniel's tutorial <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/A5C4A0AF4296C66886256A0E005DE112?OpenDocument">-->CVS
+  for the developer or amateur<!--</a>--> (<i>developerWorks</i>, March 2001).<br><br>
+  </li><li>SGI provides <!--<a href="http://oss.sgi.com/projects/xfs/cvs_download.html">-->instructions for
+  setting up CVS<!--</a>-->.<br><br>
+  </li><li>You can learn more about XFS at <!--<a href="http://oss.sgi.com/projects/xfs/index.html">-->SGI's XFS Project page<!--</a>-->.
+  Read the <!--<a href="http://oss.sgi.com/projects/xhs/faq.html">-->FAQ<!--</a>-->. Join the
+  <!--<a href="http://oss.sgi.com/projects/xfs/mail.html">-->mailing list<!--</a>-->. Download
+  the <!--<a href="http://oss.sgi.com/projects/xfs/download.html">-->software<!--</a>-->.<br><br>
+  </li><li>To learn more about XFS internals, Daniel highly recommends <!--<a href="http://oss.sgi.com/projects/xfs/papers/xfs_usenix/">-->Scalability in the
+  XFS File System<!--</a>-->, written by Adam Sweeney, Doug Doucette, Wei Hu, Curtis
+  Anderson, Mike Nishimoto, and Geoff Peck of SGI.<br><br>
+  </li><li>Familiarize yourself with access control lists at the <!--<a href="http://acl.bestbits.at/">-->Extended attributes and access control lists
+  page<!--</a>-->. You'll find a good example of using ACLs on the <!--<a href="http://acl.bestbits.at/example.html">-->Why you may want Access Control
+  Lists (ACLs)<!--</a>--> page.<br><br>
+  </li><li>For a C++ IOStream interface to extended attributes, check out <!--<a href="http://witme.sourceforge.net/libferris.web/">-->libferris<!--</a>--> on
+  SourceForge.<br><br>
+  </li><li>IBM's JFS is an alternative journaled file system licensed under the GNU
+  General Public License. For more information, go to the <!--<a href="http://oss.software.ibm.com/developerworks/opensource/jfs/index.html">-->JFS
+  for Linux<!--</a>--> home page.<br><br>
+  </li><li>For a detailed overview of JFS, take Daniel's tutorial <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/73CADD8F9875EAD0862569C8005B6783?OpenDocument">-->JFS
+  fundamentals<!--</a>--> (<i>developerWorks</i>, January 2001).<br><br>
+  </li><li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux
+  resources<!--</a>--> on <i>developerWorks</i>.<br><br>
+  </li><li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open
+  source resources<!--</a>--> on <i>developerWorks</i>. </li></ul>
+
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs10_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of
+</a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->, an advanced Linux for the
+ PC, and the <b>Portage</b> system, a
+next-generation ports system for
+ Linux. He has also served as a contributing author for the Macmillan books
+ <i>Caldera
+OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba Unleashed</i>. Daniel has been involved with computers in
+some
+ fashion since the second grade, when he was first exposed to the Logo
+ programming language as well as a potentially
+dangerous dose of Pac Man.
+ This probably explains why he has since served as a Lead Graphic Artist at
+ <b>SONY Electronic
+Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his new baby daughter,
+ Hadassah. You can contact
+Daniel at <a href="../cdn-cgi/l/email-protection.html#e286908d80808b8c91a285878c968d8dcc8d9085"><span class="__cf_email__" data-cfemail="6602140904040f08152601030812090948091401">[email&#160;protected]</span></a>.
+
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#9debf6f5f2f1f0ddedf4f3f2fef5f8e9b3fef4e9e4f1f4f3f8b3efe8">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,1465 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Обеспечиваем безопасность FreeBSD — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Руководство FreeBSD</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="security-intro.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 6. Безопасность</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="crypt.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SECURING-FREEBSD"
+>6.3. Обеспечиваем безопасность FreeBSD</A
+></H1
+><P
+>В этой секции мы расскажем об основных методах защиты и
+      обеспечивания безопасности Вашей системы FreeBSD, которые были
+      упомянуты в <A
+HREF="security-intro.html"
+>предыдущей секции</A
+>
+      этой главы.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SECURING-ROOT-AND-STAFF"
+>6.3.1. Защита аккаутнов суперпользователя и служебного
+	персонала</A
+></H2
+><P
+>В первую очередь нужно обеспечить безопасность
+	суперпользовательского аккаунта, и уже после принимать аналочичные
+	меры в отношении прочих привелигированных аккаунтов.  Во многих
+	системах аккаунт суперпользователя защищен паролем.  Имейте в виду,
+	что этот пароль крайне важен, а поэтому нелишним будет относиться к
+	нему с очень большой осторожностью.  Прежде всего, желательно
+	не использовать его кроме как за консолью, даже применяя команду
+	<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>su</SPAN
+>(1)</SPAN
+>.  В частности, удостоверьтесь, что терминалы, перечисленные
+	в файле <TT
+CLASS="FILENAME"
+>/etc/ttys</TT
+>, помечены как insecure
+	(небезопасные), чтобы запретить прямой доступ посредством команд
+	<TT
+CLASS="COMMAND"
+>telnet</TT
+> или <TT
+CLASS="COMMAND"
+>rlogin</TT
+>.  При
+	использовании других сервисов, таких, например, как
+	<B
+CLASS="APPLICATION"
+>sshd</B
+>, также следует запретить
+	непосредсвенный вход в систему с правами суперпользователя.
+	Проверьте все возможные подступы к системе - сервисы типа
+	FTP чато оказываются подверженными атакам.  Непосредственный
+	вход в систему с правами суперпользователя следует разрешить
+	только с консоли.</P
+><P
+>Конечно, Вам как системному администратору необходимо иметь
+	возжожность получить права суперпользователя, поэтому несколько
+	путей все же есть.  Однако, очень важно защитить их использование
+	дополнительными паролями.  Один из способов дать какому-либо
+	пользователю повышенные привилегии - это перечислить его
+	в группе <TT
+CLASS="LITERAL"
+>wheel</TT
+> (в файле
+	<TT
+CLASS="FILENAME"
+>/etc/group</TT
+>).  Пользователь, входящий в эту
+	группу, может вызвать <TT
+CLASS="LITERAL"
+>su</TT
+> для получения прав
+	суперпользователя.  Не следует включать всех членов служебного
+	персонала в группу <TT
+CLASS="LITERAL"
+>wheel</TT
+>, задавая ее как основную
+	группу пользователя в файле паролей.  Вместо этого, нужно включить
+	их в специальную группу <TT
+CLASS="LITERAL"
+>staff</TT
+>, и затем, только
+	в случае необходимости, некоторых из них включить в группу
+	<TT
+CLASS="LITERAL"
+>wheel</TT
+>, сделав соответсвующую запись в файле
+	<TT
+CLASS="FILENAME"
+>/etc/group</TT
+>.  Также возможно, при использовании
+	методов аутентикации типа kerberos, использовать файл
+	<TT
+CLASS="FILENAME"
+>.k5login</TT
+> для того, чтобы разрешить получение
+	привилегий супервозователя посредствеом команды <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ksu</SPAN
+>(1)</SPAN
+> без
+	необходимости включать кого-либо в группу <TT
+CLASS="LITERAL"
+>wheel</TT
+>.
+	Это может оказаться лучшим решением, так как предыдущий метод
+	позволяет хакеру получить права суперпользователя, если ему удастся
+	получить доступ к служебному акканту.  Тем не менее, все это лучше,
+	чем ничего.</P
+><P
+>Аккаунт суперпользователя можно защитить косвенным путем,
+	посредством использования альтернативных методов аутентикации и
+	замены хэшированных паролей служебных аккаунтов на символ
+	<TT
+CLASS="LITERAL"
+>*</TT
+> в файле паролей (/etc/passwd).  В этом случае,
+	даже если взломщик получит этот файл, он не сможет извлечь оттуда
+	пароли, включая пароль суперпользователя.  Сотрудники служебного
+	персонала будут сходить в систему при помощи защищенного механизма
+	аутентикации, например, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>kerberos</SPAN
+>(1)</SPAN
+> или <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ssh</SPAN
+>(1)</SPAN
+>, используя
+	специальную пару ключей (приватный/публичный).  При использовании
+	систем типа kerberos, Вам потребуется обеспечить безопасность
+	kerberos-серверов и Вашей рабочей станции.  При использовании
+	механизма публичного/приватного ключей, например, при работе с
+	<B
+CLASS="APPLICATION"
+>ssh</B
+>, Вам необходимо обеспечить
+	безопасность машины, <I
+CLASS="EMPHASIS"
+>с которой</I
+> Вы будете
+	заходить в систему (обычно это Ваша рабочая станция), но можно также
+	обеспечить себе дополнительную безопасность, защитив пару ключей
+	паролем в момент ее генерации (<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ssh-keygen</SPAN
+>(1)</SPAN
+>).  Возможность
+	заменять реальные хэши паролей на символ <TT
+CLASS="LITERAL"
+>*</TT
+> в
+	файле паролей (это особенно важно для аккаунтов служебного
+	персонала, обладающего повышенными привилегиями по сравнению с
+	обычными пользователями) также гарантирует, что они будут
+	пользоваться только безопасными методами аутентикации, которые Вы
+	предварительно настроили.  Это хорошо тем, что закрывает наиболее
+	часто используемую взломщиками дыру - прослушивание
+	(<SPAN
+CLASS="QUOTE"
+>"сниффинг"</SPAN
+>) сети с менее защищенной машины (на которой
+	у него уже есть все необходимые привилегии).</P
+><P
+>Еще стоит обратить внимание на следующие моменты: если Ваш
+	основной сервер предоставляет всевозможные сетевые сервисы, то на
+	Вашей рабочей станции по возможности максимальное число сетевых
+	служб должно быть отключено (а в идеале - все), и нелишним
+	будет использование хранителя экрана, защищенного паролем.  Конечно,
+	если у злоумышленника есть физический доступ к машине, то
+	практически никакие методы защиты не помогут (хотя и могут
+	значительно увеличить время взлома), однако большинство атак все же
+	происходят снаружи, по сети, когда у атакующего нет
+	непосредственного доступа к системе.</P
+><P
+>При использовании систем аутентикации типа kerberos, у Вас есть возможность централизованно менять пароли или блокировать доступ пользователей.  Это очень полезно при подозрении, что пароль какого-либо (например, администраторского) аккаунта стал известен постороннему лицу - в этом случае можно очень быстро запретить вход на все машины, где был заведен данный пользователь.  Представьте себе, насколько труднее и дольше было бы менять пароли на каждой из N машин отдельно!  Kerberos предосталяет и другие возможности (принудительная смена пароля по истечении определенного промежутка времени, например).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2259"
+>6.3.2. Безопасность серверов, выполняющихся с повышенными привилегиями, и исполнимых файлов, использующих SUID/SGID механизм</A
+></H2
+><P
+>Осторожный системный администратор конфигурирует систему так, чтобы запущены были только самые необходимые сервисы.  Не больше, не меньше.  Стоит с особой осторожностью отновиться
+      tHE prudent sysadmin only runs the servers he needs to, no more, no less.  Be aware that third party servers are often the
+	most bug-prone.  For example, running an old version of imapd or
+	popper is like giving a universal root ticket out to the entire
+	world.  Never run a server that you have not checked out
+	carefully.  Many servers do not need to be run as root.  For
+	example, the <B
+CLASS="APPLICATION"
+>ntalk</B
+>,
+	<B
+CLASS="APPLICATION"
+>comsat</B
+>, and
+	<B
+CLASS="APPLICATION"
+>finger</B
+> daemons can be run in special
+	user <TT
+CLASS="LITERAL"
+>sandboxes</TT
+>.  A sandbox isn't perfect unless
+	you go to a large amount of trouble, but the onion approach to
+	security still stands:  If someone is able to break in through
+	a server running in a sandbox, they still have to break out of the
+	sandbox.  The more layers the attacker must break through, the
+	lower the likelihood of his success.  Root holes have historically
+	been found in virtually every server ever run as root, including
+	basic system servers.  If you are running a machine through which
+	people only login via <B
+CLASS="APPLICATION"
+>sshd</B
+> and never
+	login via <B
+CLASS="APPLICATION"
+>telnetd</B
+> or
+	<B
+CLASS="APPLICATION"
+>rshd</B
+> or
+	<B
+CLASS="APPLICATION"
+>rlogind</B
+>, then turn off those
+	services!</P
+><P
+>FreeBSD now defaults to running
+	<B
+CLASS="APPLICATION"
+>ntalkd</B
+>,
+	<B
+CLASS="APPLICATION"
+>comsat</B
+>, and
+	<B
+CLASS="APPLICATION"
+>finger</B
+> in a sandbox.  Another program
+	which may be a candidate for running in a sandbox is <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>named</SPAN
+>(8)</SPAN
+>.
+	The default <TT
+CLASS="FILENAME"
+>rc.conf</TT
+> includes the arguments
+	necessary to run <B
+CLASS="APPLICATION"
+>named</B
+>in a sandbox in a
+	commented-out form.  Depending on whether you are installing a new
+	system or upgrading an existing system, the special user accounts
+	used by these sandboxes may not be installed.  The prudent
+	sysadmin would research and implement sandboxes for servers
+	whenever possible.</P
+><P
+>There are a number of other servers that typically do not run
+	in sandboxes: <B
+CLASS="APPLICATION"
+>sendmail</B
+>,
+	<B
+CLASS="APPLICATION"
+>popper</B
+>,
+	<B
+CLASS="APPLICATION"
+>imapd</B
+>, <B
+CLASS="APPLICATION"
+>ftpd</B
+>,
+	and others.  There are alternatives to some of these, but
+	installing them may require more work then you are willing to
+	perform (the convenience factor strikes again). You may have to
+	run these servers as root and rely on other mechanisms to detect
+	break-ins that might occur through them.</P
+><P
+>The other big potential root hole in a system are the
+	suid-root and sgid binaries installed on the system.  Most of
+	these binaries, such as <B
+CLASS="APPLICATION"
+>rlogin</B
+>, reside
+	in <TT
+CLASS="FILENAME"
+>/bin</TT
+>, <TT
+CLASS="FILENAME"
+>/sbin</TT
+>,
+	<TT
+CLASS="FILENAME"
+>/usr/bin</TT
+>, or <TT
+CLASS="FILENAME"
+>/usr/sbin</TT
+>.
+	While nothing is 100% safe, the system-default suid and sgid
+	binaries can be considered reasonably safe.  Still, root holes are
+	occasionally found in these binaries.  A root hole was found in
+	<TT
+CLASS="LITERAL"
+>Xlib</TT
+> in 1998 that made
+	<B
+CLASS="APPLICATION"
+>xterm</B
+> (which is typically suid)
+	vulnerable.  It is better to be safe then sorry and the prudent
+	sysadmin will restrict suid binaries that only staff should run to
+	a special group that only staff can access, and get rid of
+	(<TT
+CLASS="COMMAND"
+>chmod 000</TT
+>) any suid binaries that nobody uses.
+	A server with no display generally does not need an
+	<B
+CLASS="APPLICATION"
+>xterm</B
+> binary.  Sgid binaries can be
+	almost as dangerous.  If an intruder can break an sgid-kmem binary
+	the intruder might be able to read <TT
+CLASS="FILENAME"
+>/dev/kmem</TT
+>
+	and thus read the crypted password file, potentially compromising
+	any passworded account.  Alternatively an intruder who breaks
+	group <TT
+CLASS="LITERAL"
+>kmem</TT
+> can monitor keystrokes sent through
+	pty's, including pty's used by users who login through secure
+	methods.  An intruder that breaks the tty group can write to
+	almost any user's tty.  If a user is running a terminal program or
+	emulator with a keyboard-simulation feature, the intruder can
+	potentially generate a data stream that causes the user's terminal
+	to echo a command, which is then run as that user.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SECURE-USERS"
+>6.3.3. Securing User Accounts</A
+></H2
+><P
+>User accounts are usually the most difficult to secure.  While
+	you can impose Draconian access restrictions on your staff and
+	<TT
+CLASS="LITERAL"
+>*</TT
+> out their passwords, you may not be able to
+	do so with any general user accounts you might have.  If you do
+	have sufficient control then you may win out and be able to secure
+	the user accounts properly.  If not, you simply have to be more
+	vigilant in your monitoring of those accounts.  Use of
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> and kerberos for user accounts is
+	more problematic due to the extra administration and technical
+	support required, but still a very good solution compared to a
+	crypted password file.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2301"
+>6.3.4. Securing the Password File</A
+></H2
+><P
+>The only sure fire way is to <TT
+CLASS="LITERAL"
+>*</TT
+> out as many
+	passwords as you can and use <B
+CLASS="APPLICATION"
+>ssh</B
+> or
+	kerberos for access to those accounts.  Even though the crypted
+	password file (<TT
+CLASS="FILENAME"
+>/etc/spwd.db</TT
+>) can only be read
+	by root, it may be possible for an intruder to obtain read access
+	to that file even if the attacker cannot obtain root-write
+	access.</P
+><P
+>Your security scripts should always check for and report
+	changes to the password file (see <A
+HREF="securing-freebsd.html#SECURITY-INTEGRITY"
+>Checking file integrity</A
+>
+	below).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2309"
+>6.3.5. Securing the Kernel Core, Raw Devices, and
+	Filesystems</A
+></H2
+><P
+>If an attacker breaks root he can do just about anything, but
+	there are certain conveniences.  For example, most modern kernels
+	have a packet sniffing device driver built in.  Under FreeBSD it
+	is called the <TT
+CLASS="DEVICENAME"
+>bpf</TT
+> device.  An intruder
+	will commonly attempt to run a packet sniffer on a compromised
+	machine.  You do not need to give the intruder the capability and
+	most systems should not have the bpf device compiled in.</P
+><P
+>But even if you turn off the bpf device, you still have
+	<TT
+CLASS="FILENAME"
+>/dev/mem</TT
+> and <TT
+CLASS="FILENAME"
+>/dev/kmem</TT
+>
+	to worry about.  For that matter, the intruder can still write to
+	raw disk devices.  Also, there is another kernel feature called
+	the module loader, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>kldload</SPAN
+>(8)</SPAN
+>.  An enterprising intruder can
+	use a KLD module to install his own bpf device or other sniffing
+	device on a running kernel.  To avoid these problems you have to
+	run the kernel at a higher secure level, at least securelevel 1.
+	The securelevel can be set with a <TT
+CLASS="COMMAND"
+>sysctl</TT
+> on
+	the <TT
+CLASS="LITERAL"
+>kern.securelevel</TT
+> variable.  Once you have
+	set the securelevel to 1, write access to raw devices will be
+	denied and special chflags flags, such as <TT
+CLASS="LITERAL"
+>schg</TT
+>,
+	will be enforced.  You must also ensure that the
+	<TT
+CLASS="LITERAL"
+>schg</TT
+> flag is set on critical startup binaries,
+	directories, and script files - everything that gets run up
+	to the point where the securelevel is set.  This might be overdoing
+	it, and upgrading the system is much more difficult when you
+	operate at a higher secure level.  You may compromise and run the
+	system at a higher secure level but not set the
+	<TT
+CLASS="LITERAL"
+>schg</TT
+> flag for every system file and directory
+	under the sun.  Another possibility is to simply mount
+	<TT
+CLASS="FILENAME"
+>/</TT
+> and <TT
+CLASS="FILENAME"
+>/usr</TT
+> read-only.
+	It should be noted that being too draconian in what you attempt to
+	protect may prevent the all-important detection of an
+	intrusion.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SECURITY-INTEGRITY"
+>6.3.6. Checking File Integrity: Binaires, Configuration Files,
+	Etc.</A
+></H2
+><P
+>When it comes right down to it, you can only protect your core
+	system configuration and control files so much before the
+	convenience factor rears its ugly head.  For example, using
+	<TT
+CLASS="COMMAND"
+>chflags</TT
+> to set the <TT
+CLASS="LITERAL"
+>schg</TT
+> bit
+	on most of the files in <TT
+CLASS="FILENAME"
+>/</TT
+> and
+	<TT
+CLASS="FILENAME"
+>/usr</TT
+> is probably counterproductive because
+	while it may protect the files, it also closes a detection window.
+	The last layer of your security onion is perhaps the most
+	important - detection.  The rest of your security is pretty
+	much useless (or, worse, presents you with a false sense of
+	safety) if you cannot detect potential incursions.  Half the job
+	of the onion is to slow down the attacker rather then stop him in
+	order to give the detection side of the equation a chance to catch
+	him in the act.</P
+><P
+>The best way to detect an incursion is to look for modified,
+	missing, or unexpected files.  The best way to look for modified
+	files is from another (often centralized) limited-access system.
+	Writing your security scripts on the extra-secure limited-access
+	system makes them mostly invisible to potential hackers, and this
+	is important.  In order to take maximum advantage you generally
+	have to give the limited-access box significant access to the
+	other machines in the business, usually either by doing a
+	read-only NFS export of the other machines to the limited-access
+	box, or by setting up <B
+CLASS="APPLICATION"
+>ssh</B
+> keypairs to
+	allow the limit-access box to <B
+CLASS="APPLICATION"
+>ssh</B
+> to
+	the other machines.  Except for its network traffic, NFS is the
+	least visible method - allowing you to monitor the
+	filesystems on each client box virtually undetected.  If your
+	limited-access server is connected to the client boxes through a
+	switch, the NFS method is often the better choice.  If your
+	limited-access server is connected to the client boxes through a
+	hub or through several layers of routing, the NFS method may be
+	too insecure (network-wise) and using
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> may be the better choice even with
+	the audit-trail tracks that <B
+CLASS="APPLICATION"
+>ssh</B
+>
+	lays.</P
+><P
+>Once you give a limit-access box at least read access to the
+	client systems it is supposed to monitor, you must write scripts
+	to do the actual monitoring.  Given an NFS mount, you can write
+	scripts out of simple system utilities such as <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>find</SPAN
+>(1)</SPAN
+> and
+	<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>md5</SPAN
+>(1)</SPAN
+>.  It is best to physically md5 the client-box files
+	boxes at least once a day, and to test control files such as those
+	found in <TT
+CLASS="FILENAME"
+>/etc</TT
+> and
+	<TT
+CLASS="FILENAME"
+>/usr/local/etc</TT
+> even more often.  When
+	mismatches are found relative to the base md5 information the
+	limited-access machine knows is valid, it should scream at a
+	sysadmin to go check it out.  A good security script will also
+	check for inappropriate suid binaries and for new or deleted files
+	on system partitions such as <TT
+CLASS="FILENAME"
+>/</TT
+> and
+	<TT
+CLASS="FILENAME"
+>/usr</TT
+>.</P
+><P
+>When using <B
+CLASS="APPLICATION"
+>ssh</B
+> rather then NFS,
+	writing the security script is much more difficult.   You
+	essentially have to scp the scripts to the client box in order to
+	run them, making them visible, and for safety you also need to
+	<TT
+CLASS="COMMAND"
+>scp</TT
+> the binaries (such as find) that those
+	scripts use.  The <B
+CLASS="APPLICATION"
+>ssh</B
+> daemon on the
+	client box may already be compromised.  All in all, using
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> may be necessary when running over
+	unsecure links, but it's also a lot harder to deal with.</P
+><P
+>A good security script will also check for changes to user and
+	staff members access configuration files:
+	<TT
+CLASS="FILENAME"
+>.rhosts</TT
+>, <TT
+CLASS="FILENAME"
+>.shosts</TT
+>,
+	<TT
+CLASS="FILENAME"
+>.ssh/authorized_keys</TT
+> and so forth...
+	files that might fall outside the purview of the
+	<TT
+CLASS="LITERAL"
+>MD5</TT
+> check.</P
+><P
+>If you have a huge amount of user disk space it may take too
+	long to run through every file on those partitions.  In this case,
+	setting mount flags to disallow suid binaries and devices on those
+	partitions is a good idea.  The <TT
+CLASS="LITERAL"
+>nodev</TT
+> and
+	<TT
+CLASS="LITERAL"
+>nosuid</TT
+> options (see <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+>) are what you
+	want to look into.  I would scan them anyway at least once a week,
+	since the object of this layer is to detect a break-in whether or
+	not the break-in is effective.</P
+><P
+>Process accounting (see <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>accton</SPAN
+>(8)</SPAN
+>) is a relatively
+	low-overhead feature of the operating system which I recommend
+	using as a post-break-in evaluation mechanism.  It is especially
+	useful in tracking down how an intruder has actually broken into
+	a system, assuming the file is still intact after the break-in
+	occurs.</P
+><P
+>Finally, security scripts should process the log files and the
+	logs themselves should be generated in as secure a manner as
+	possible - remote syslog can be very useful.  An intruder
+	tries to cover his tracks, and log files are critical to the
+	sysadmin trying to track down the time and method of the initial
+	break-in.  One way to keep a permanent record of the log files is
+	to run the system console to a serial port and collect the
+	information on a continuing basis through a secure machine
+	monitoring the consoles.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2370"
+>6.3.7. Паранойя</A
+></H2
+><P
+>A little paranoia never hurts.  As a rule, a sysadmin can add
+	any number of security features as long as they do not effect
+	convenience, and can add security features that do effect
+	convenience with some added thought.  Even more importantly, a
+	security administrator should mix it up a bit - if you use
+	recommendations such as those given by this document verbatim, you
+	give away your methodologies to the prospective hacker who also
+	has access to this document.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2373"
+>6.3.8. Denial of Service Attacks</A
+></H2
+><P
+>This section covers Denial of Service attacks.  A DOS attack
+	is typically a packet attack.  While there is not much you can do
+	about modern spoofed packet attacks that saturate your network,
+	you can generally limit the damage by ensuring that the attacks
+	cannot take down your servers.</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Limiting server forks.</P
+></LI
+><LI
+><P
+>Limiting springboard attacks (ICMP response attacks, ping
+	    broadcast, etc.).</P
+></LI
+><LI
+><P
+>Kernel Route Cache.</P
+></LI
+></OL
+><P
+>A common DOS attack is against a forking server that attempts
+	to cause the server to eat processes, file descriptors, and memory
+	until the machine dies.  Inetd (see <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>inetd</SPAN
+>(8)</SPAN
+>) has several
+	options to limit this sort of attack.  It should be noted that
+	while it is possible to prevent a machine from going down it is
+	not generally possible to prevent a service from being disrupted
+	by the attack.  Read the inetd manual page carefully and pay
+	specific attention to the <TT
+CLASS="OPTION"
+>-c</TT
+>, <TT
+CLASS="OPTION"
+>-C</TT
+>,
+	and <TT
+CLASS="OPTION"
+>-R</TT
+> options.  Note that spoofed-IP attacks
+	will circumvent the <TT
+CLASS="OPTION"
+>-C</TT
+> option to inetd, so
+	typically a combination of options must be used.  Some standalone
+	servers have self-fork-limitation parameters.</P
+><P
+><B
+CLASS="APPLICATION"
+>Sendmail</B
+> has its
+	<TT
+CLASS="OPTION"
+>-OMaxDaemonChildren</TT
+> option which tends to work
+	much better than trying to use sendmail's load limiting options
+	due to the load lag.  You should specify a
+	<TT
+CLASS="LITERAL"
+>MaxDaemonChildren</TT
+> parameter when you start
+	<B
+CLASS="APPLICATION"
+>sendmail</B
+> high enough to handle your
+	expected load but no so high that the computer cannot handle that
+	number of <B
+CLASS="APPLICATION"
+>sendmails</B
+> without falling on
+	its face.  It is also prudent to run sendmail in queued mode
+	(<TT
+CLASS="OPTION"
+>-ODeliveryMode=queued</TT
+>) and to run the daemon
+	(<TT
+CLASS="COMMAND"
+>sendmail -bd</TT
+>) separate from the queue-runs
+	(<TT
+CLASS="COMMAND"
+>sendmail -q15m</TT
+>). If you still want realtime
+	delivery you can run the queue at a much lower interval, such as
+	<TT
+CLASS="OPTION"
+>-q1m</TT
+>, but be sure to specify a reasonable
+	<TT
+CLASS="LITERAL"
+>MaxDaemonChildren</TT
+> option for that sendmail to
+	prevent cascade failures.</P
+><P
+><B
+CLASS="APPLICATION"
+>Syslogd</B
+> can be attacked directly
+	and it is strongly recommended that you use the <TT
+CLASS="OPTION"
+>-s</TT
+>
+	option whenever possible, and the <TT
+CLASS="OPTION"
+>-a</TT
+> option
+	otherwise.</P
+><P
+>You should also be fairly careful with connect-back services
+	such as <B
+CLASS="APPLICATION"
+>tcpwrapper</B
+>'s reverse-identd,
+	which can be attacked directly.  You generally do not want to use
+	the reverse-ident feature of
+	<B
+CLASS="APPLICATION"
+>tcpwrappers</B
+> for this reason.</P
+><P
+>It is a very good idea to protect internal services from
+	external access by firewalling them off at your border routers.
+	The idea here is to prevent saturation attacks from outside your
+	LAN, not so much to protect internal services from network-based
+	root compromise.  Always configure an exclusive firewall, i.e.,
+	<SPAN
+CLASS="QUOTE"
+>"firewall everything <I
+CLASS="EMPHASIS"
+>except</I
+> ports A, B,
+	C, D, and M-Z"</SPAN
+>.  This way you can firewall off all of your
+	low ports except for certain specific services such as
+	<B
+CLASS="APPLICATION"
+>named</B
+> (if you are primary for a zone),
+	<B
+CLASS="APPLICATION"
+>ntalkd</B
+>,
+	<B
+CLASS="APPLICATION"
+>sendmail</B
+>, and other internet-accessible
+	services.  If you try to configure the firewall the other way
+	- as an inclusive or permissive firewall, there is a good
+	chance that you will forget to <SPAN
+CLASS="QUOTE"
+>"close"</SPAN
+> a couple of
+	services or that you will add a new internal service and forget
+	to update the firewall.  You can still open up the high-numbered
+	port range on the firewall to allow permissive-like operation
+	without compromising your low ports.  Also take note that FreeBSD
+	allows you to control the range of port numbers used for dynamic
+	binding via the various <TT
+CLASS="LITERAL"
+>net.inet.ip.portrange</TT
+>
+	<TT
+CLASS="COMMAND"
+>sysctl</TT
+>'s (<TT
+CLASS="COMMAND"
+>sysctl -a | fgrep
+	portrange</TT
+>), which can also ease the complexity of your
+	firewall's configuration.  I usually use a normal first/last range
+	of 4000 to 5000, and a hiport range of 49152 to 65535, then block
+	everything under 4000 off in my firewall (except for certain
+	specific internet-accessible ports, of course).</P
+><P
+>Another common DOS attack is called a springboard attack
+	- to attack a server in a manner that causes the server to
+	generate responses which then overload the server, the local
+	network, or some other machine.  The most common attack of this
+	nature is the <I
+CLASS="EMPHASIS"
+>ICMP ping broadcast attack</I
+>.
+	The attacker spoofs ping packets sent to your LAN's broadcast
+	address with the source IP address set to the actual machine they
+	wish to attack.  If your border routers are not configured to
+	stomp on ping's to broadcast addresses, your LAN winds up
+	generating sufficient responses to the spoofed source address to
+	saturate the victim, especially when the attacker uses the same
+	trick on several dozen broadcast addresses over several dozen
+	different networks at once.  Broadcast attacks of over a hundred
+	and twenty megabits have been measured.  A second common
+	springboard attack is against the ICMP error reporting system.
+	By constructing packets that generate ICMP error responses, an
+	attacker can saturate a server's incoming network and cause the
+	server to saturate its outgoing network with ICMP responses.  This
+	type of attack can also crash the server by running it out of
+	mbuf's, especially if the server cannot drain the ICMP responses
+	it generates fast enough.  The FreeBSD kernel has a new kernel
+	compile option called ICMP_BANDLIM which limits the effectiveness
+	of these sorts of attacks.  The last major class of springboard
+	attacks is related to certain internal inetd services such as the
+	udp echo service.  An attacker simply spoofs a UDP packet with the
+	source address being server A's echo port, and the destination
+	address being server B's echo port, where server A and B are both
+	on your LAN.  The two servers then bounce this one packet back and
+	forth between each other.  The attacker can overload both servers
+	and their LANs simply by injecting a few packets in this manner.
+	Similar problems exist with the internal chargen port.  A
+	competent sysadmin will turn off all of these inetd-internal test
+	services.</P
+><P
+>Spoofed packet attacks may also be used to overload the kernel
+	route cache.  Refer to the <TT
+CLASS="LITERAL"
+>net.inet.ip.rtexpire</TT
+>,
+	<TT
+CLASS="LITERAL"
+>rtminexpire</TT
+>, and <TT
+CLASS="LITERAL"
+>rtmaxcache</TT
+>
+	<TT
+CLASS="COMMAND"
+>sysctl</TT
+> parameters.  A spoofed packet attack
+	that uses a random source IP will cause the kernel to generate a
+	temporary cached route in the route table, viewable with
+	<TT
+CLASS="COMMAND"
+>netstat -rna | fgrep W3</TT
+>.  These routes
+	typically timeout in 1600 seconds or so.  If the kernel detects
+	that the cached route table has gotten too big it will dynamically
+	reduce the rtexpire but will never decrease it to less then
+	rtminexpire.  There are two problems:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>The kernel does not react quickly enough when a lightly
+	    loaded server is suddenly attacked.</P
+></LI
+><LI
+><P
+>The <TT
+CLASS="LITERAL"
+>rtminexpire</TT
+> is not low enough for
+	    the kernel to survive a sustained attack.</P
+></LI
+></OL
+><P
+>If your servers are connected to the internet via a T3 or
+        better it may be prudent to manually override both
+	<TT
+CLASS="LITERAL"
+>rtexpire</TT
+> and <TT
+CLASS="LITERAL"
+>rtminexpire</TT
+>
+	via <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>sysctl</SPAN
+>(8)</SPAN
+>.  Never set either parameter to zero (unless
+	you want to crash the machine :-).  Setting both
+	parameters to 2 seconds should be sufficient to protect the route
+	table from attack.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN2439"
+>6.3.9. Access Issues with Kerberos and SSH</A
+></H2
+><P
+>There are a few issues with both kerberos and
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> that need to be addressed if you
+	intend to use them.  Kerberos V is an excellent authentication
+	protocol but the kerberized <B
+CLASS="APPLICATION"
+>telnet</B
+> and
+	<B
+CLASS="APPLICATION"
+>rlogin</B
+> suck rocks.  There are bugs that
+	make them unsuitable for dealing with binary streams.  Also, by
+	default kerberos does not encrypt a session unless you use the
+	<TT
+CLASS="OPTION"
+>-x</TT
+> option.  <B
+CLASS="APPLICATION"
+>ssh</B
+>
+	encrypts everything by default.</P
+><P
+><B
+CLASS="APPLICATION"
+>ssh</B
+> works quite well in every
+	respect except that it forwards encryption keys by default.  What
+	this means is that if you have a secure workstation holding keys
+	that give you access to the rest of the system, and you
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> to an unsecure machine, your keys
+	becomes exposed.  The actual keys themselves are not exposed, but
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> installs a forwarding port for the
+	duration of your login and if a hacker has broken root on the
+	unsecure machine he can utilize that port to use your keys to gain
+	access to any other machine that your keys unlock.</P
+><P
+>We recommend that you use <B
+CLASS="APPLICATION"
+>ssh</B
+> in
+	combination with kerberos whenever possible for staff logins.
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> can be compiled with kerberos
+	support.  This reduces your reliance on potentially exposable
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> keys while at the same time
+	protecting passwords via kerberos.  <B
+CLASS="APPLICATION"
+>ssh</B
+>
+	keys should only be used for automated tasks from secure machines
+	(something that kerberos is unsuited to).  We also recommend that
+	you either turn off key-forwarding in the
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> configuration, or that you make use
+	of the <TT
+CLASS="LITERAL"
+>from=IP/DOMAIN</TT
+> option that
+	<B
+CLASS="APPLICATION"
+>ssh</B
+> allows in its
+	<TT
+CLASS="FILENAME"
+>authorized_keys</TT
+> file to make the key only
+	useable to entities logging in from specific machines.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="security-intro.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="crypt.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Введение</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="security.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DES, MD5, and Crypt</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

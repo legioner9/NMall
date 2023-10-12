@@ -1,0 +1,505 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 1.9.4.4  Хранимые процедуры и триггеры — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/ANSI_diff_Triggers.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/ANSI_diff_Triggers.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Introduction.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1 Общая информация
+</a><ul><li class="gp"><a href="Compatibility.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9 Насколько MySQL соответствует стандартам?
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.9.4 Отличия MySQL от ANSI SQL92
+</a><ul class="immediate"><li><a href="ANSI_diff_Sub-selects.html">1.9.4.1 Вложенные <code>SELECT</code>ы
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/ANSI_diff_SELECT_INTO_TABLE.html">1.9.4.2 Оператор  <code>SELECT INTO TABLE</code>
+</a></li><li><a href="ANSI_diff_Transactions.html">1.9.4.3 Транзакции и атомарные операции
+</a></li><li class="self">1.9.4.4 Хранимые процедуры и триггеры
+</li><li><a href="ANSI_diff_Foreign_Keys.html">1.9.4.5 Внешние ключи
+</a></li><li><a href="ANSI_diff_Views.html">1.9.4.6 Представления
+</a></li><li><a href="ANSI_diff_comments.html">1.9.4.7 Символы `--' как начало комментария
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="ANSI_diff_Transactions.html" title="1.9.4.3  Транзакции и атомарные операции">Previous</a> / <a rel="next" href="ANSI_diff_Foreign_Keys.html" title="1.9.4.5  Внешние ключи">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>1.9.4.4  Хранимые процедуры и триггеры</H4>
+
+<P>
+<A NAME="IDX140"></A>
+<A NAME="IDX141"></A>
+<A NAME="IDX142"></A>
+
+</P>
+<P>
+Хранимые процедуры представляют собой набор команд SQL, которые могут
+компилироваться и храниться на сервере. Таким образом, вместо того, чтобы
+хранить часто используемый запрос, клиенты могут ссылаться на
+соответствующую хранимую процедуру. Это обеспечивает лучшую
+производительность, поскольку данный запрос должен анализироваться только
+однажды и уменьшается трафик между сервером и клиентом. Концептуальный
+уровень можно также повысить за счет создания на сервере библиотеки
+функций.
+
+</P>
+<P>
+Триггер представляет собой хранимую процедуру, которая активизируется при
+наступлении определенного события. Например, можно задать хранимую
+процедуру, которая срабатывает каждый раз при удалении записи из
+транзакционной таблицы - таким образом обеспечивается автоматическое
+удаление соответствующего заказчика из таблицы заказчиков, когда все его
+транзакции удаляются.
+
+</P>
+<P>
+Возможность  работы  с  хранимыми процедурами  будет  обеспечивать
+планируемый  язык  обновлений. Наша цель - ввести хранимые процедуры
+приблизительно в версию сервера MySQL 5.0. Мы работаем также и над
+триггерами.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c32" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#c280b0a3a68ca7b7a4a7aea6828fbb90a7a3ae80adbaeca1adaf">Brad Neufeld</a> on Wednesday June 26 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=32&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=32">Edit</a>]</td></tr></table><p class="commenttext">Triggers and Stored procedures are wonderful tools,<br />
+but they come with a price.<br />
+<br />
+Enforcing the business rules at the database level<br />
+allows you to be confident that the data conforms.<br />
+<br />
+There are a few cautionary notes however.<br />
+<br />
+The first is that you will probably end up creating<br />
+your own procedural language which will differ from<br />
+the other procedural language and start to introduce<br />
+further discrepancies.  If possible, using an<br />
+existing language and creating an interpreter for<br />
+it would be preferable.  Although I am fluent in Oracle<br />
+PL/SQL and SQL Server 2000 T-SQL, I know that I would<br />
+really rather not be.  It would be an advantage to me<br />
+to be able to use a standard language so that I could<br />
+leverage those skills elsewhere.  A database where I<br />
+had to learn yet another proprietary instruction set<br />
+would make me dubious of wanting to get involved with<br />
+it.<br />
+<br />
+Performance will degrade and it will take awhile to<br />
+get it to a satisfactory level.  This does not take<br />
+anything away from the development team, it has been<br />
+true of every database system when they have done this.<br />
+DB2 still has a reputation of being slow and a memory<br />
+hog when you use their triggers and stored procedures.<br />
+Teradata only recently added the ability to use them<br />
+and it implemented them so poorly that nobody wants<br />
+them.  Be prepared for the performance hit and the<br />
+resulting aftermath.<br />
+<br />
+A possible way around this would be to include further<br />
+support for server software that applies the business<br />
+rules without actually being on the database.  J2EE,<br />
+for example, could be utilized with Enterprise Java Beans<br />
+and have the exact same net effect as having stored<br />
+procedures and triggers, without actually having to<br />
+modify the database.<br />
+<br />
+Just a few thoughts,<br />
+Thanks,<br />
+<br />
+Brad<br />
+</p><table id="c435" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#a7c6cbcbc8dec3c1cbc6c9c6c0c6c9e7c6d3d3c5ce89c4c8ca">Adrian Flanagan</a> on Monday July 22 2002, @7:16am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=435&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=435">Edit</a>]</td></tr></table><p class="commenttext">Triggers and stored procedures can be very important in <br />
+a large corporate development environment.  Typically <br />
+one group is responsible for the database, and multiple <br />
+others for client software.  Using triggers to guarantee <br />
+business rules, and providing stored procedures for <br />
+clients, allows the database group to enforce data <br />
+integrity.  Otherwise you will have bad data, I don't care <br />
+how good your people are. </p><table id="c442" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Mike B on Wednesday December 5 2001, @4:33pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=442&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=442">Edit</a>]</td></tr></table><p class="commenttext">I come from a MS SQL 7 background, and I've made <br />
+extensive use of SP's and triggers. They're an <br />
+excellent tool. Also the SQL is pre-compiled so <br />
+there isn't any lag time for compiling. Just got <br />
+to watch out for triggers however, as they make <br />
+debugging difficult! Make sure you have an <br />
+output statement in each one, so if you do hit a <br />
+trigger you'll know which one.</p><table id="c680" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#42282b2f0231363023342b2c6c212d2f">Jim McNeely</a> on Monday July 29 2002, @9:15am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=680&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=680">Edit</a>]</td></tr></table><p class="commenttext">I also hate triggers and I appreciate the simplicity and speed <br />
+of MySQL. However, in certain corporate situations where I <br />
+need an app I am creating to receive certain data whenever <br />
+a table changes, and I have no control over the app that is <br />
+making the changes on the other side, I really must have <br />
+triggers. In some situations I have had to tell people that <br />
+they have to migrate to another database if they can't live <br />
+without my app or let me alter their existing app. So, I say <br />
+MySQL needs triggers, but keep them optional on install, and <br />
+only use them with goofball clients that force you to use <br />
+them.</p><table id="c1455" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#d1b0b2b3e3e891a8b0b9bebeffb2bebc"><span class="__cf_email__" data-cfemail="fc9d9f9ecec5bc859d949393d29f9391">[email&#160;protected]</span></a> on Thursday December 19 2002, @7:59pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1455&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1455">Edit</a>]</td></tr></table><p class="commenttext">MySQL needs 1. Views , 2. Stored Procs , 3. Triggers. I agree<br />
+with the previous posters, keep the proc engine a seperate process from the db (kinda like an app server), that way only those that make use of procs or triggers suffer performance degradations, also if scalability is called for the engine can be run on seperate boxes..  Im sure the developers are working hard with these issues.. best not to have them rush some crap out just to satisfy the throngs of needy developers and DBA's.. keep up the fine JOB....</p><table id="c1522" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Harald Ujc on Friday December 20 2002, @1:24pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1522&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1522">Edit</a>]</td></tr></table><p class="commenttext">MySQL does NOT need stored procedures.<br />
+<br />
+I don't buy into the 'it's compiled so it's faster' argument some of you have posted.<br />
+<br />
+Instead, implement bind variables and db caching, keep all you data tier logic in a data tier component (Java/C#/whatever) and achieve equivalent performance to a compiled stored procedure.<br />
+<br />
+Creating a web app before .NET and MySQL, a group had to be knowledgable in javascript, html, middleware language, and PL/SQL, T-SQL (insert your db langauge here).<br />
+<br />
+Now, all I have to know is C# and...nothing else.  Let's keep it that way.  Last thing I want right now is to pick up yet another scripting langauge.<br />
+</p><table id="c1556" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#ea89848f86998584aa9d8b938993888f98c4898587">Colin Nelson</a> on Friday January 10 2003, @1:35am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1556&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1556">Edit</a>]</td></tr></table><p class="commenttext">MySQL DOES need Stored Procedures, but NOT Triggers.<br />
+<br />
+Stored Procedures allow server side control using CURSOR and loop structures.  Better to keep all logic in one place <br />
+rather than using an external script language.  Stored Procedures can be used as substitutes for both Views and Triggers.  They are more versatile than Views and clearer and easier than Triggers.<br />
+</p><table id="c1571" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Monday January 13 2003, @10:57pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1571&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1571">Edit</a>]</td></tr></table><p class="commenttext">Stored Procedures and Triggers certainly do have their place in an efficient, &lt;i&gt;enterprise&lt;/i&gt;-level database solution.  Without stored procs, the job of creating and managing server-side database updates, such as summation tables in a reporting dbs or processing bulk inserts would be tedious at best and costly at worst.  It is the job of the programmers/architects/dbas not only to use the technology best suited for task, but to understand both the advantages and disadvantages associated with their chosen tech.<br />
+Good Job, MySQL team!  I'm eagerly awaiting &quot;5.0 or so&quot;</p><table id="c1577" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Ondrej Pribyl on Tuesday January 14 2003, @6:41am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1577&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1577">Edit</a>]</td></tr></table><p class="commenttext">I agree that stored procedures should ideally be implemented in a way that does not penalise users who do not use them.  But personally, I would like to see them in MySQL ASAP.  The view that databases should just store and enable access to data in tables and nothing more strikes me old-fashioned.  Fair enough, procedural syntax is not uniform between products, but that won't last forever.<br />
+<br />
+Stored procedures have their place in a complex database application.  In OOP, there are plenty of advocates of hiding member variables and exposing functionality only via member methods.  Unless taken to extremes, this is sound design practice.  In a database this translates to hiding tables and views and exposing functionality via stored procedures.  In addition, once a database models sufficiently complex objects, bare tables are likely to present data at too low a level and in a fragmented fashion.  Table structures are largely dictated by the requirements of normalisation which does not necessarily have much in common with data objects a high-level external application operates with.  Views can alleviate this to a large extent, but once any kind of business logic needs implenenting, a stored procedure becomes a necessity.  And if a piece of business logic depends only on database data, it should go in the database.  Business logic should step outside the database once it relies on more than just database data, say it needs to consume a web service.<br />
+<br />
+Triggers are only necessary where an application has to share a database with others who manipulate data at table level rather than via stored procedures (and cannot be persuaded not to).  Otherwise they become an error-prone and lazy replacement for stored procedures.<br />
+<br />
+Keep up the good work, MySQL is an admirable effort.  I am looking forward to working with verstion 5.0.</p><table id="c1610" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Sunday January 19 2003, @1:06pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1610&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1610">Edit</a>]</td></tr></table><p class="commenttext">My I be so bold as to suggest following the PHP and Apache model of letting the users add support: <br />
+1. mod_Before_Trigger<br />
+2. mod_After_Trigger<br />
+3. mod_SP (Stored Procedure)<br />
+4. mod_Views<br />
+5. mod_Updatable_Views<br />
+6. mod_SubSelect<br />
+<br />
+- This model resolves many issues between those that believe a database is a garbage can while allowing those of us that believe in Cobb's rule Zero (0) to be satisfied. Using the above model you can create a dynamic catalog allowing the creation of views and constraints making mySQL a true relational database. </p><table id="c1718" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Wednesday February 5 2003, @4:05am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1718&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1718">Edit</a>]</td></tr></table><p class="commenttext">To those of you that support Stored Procedures, and Triggers, I applaud your professionalism and caveats on their requirement and use. It is entirely true that sloppy programming practices lead to poor performance. Stored procedures and triggers do not in and of themselves.<br />
+<br />
+To those of you that do not support Stored Procedures and Triggers for MySQL, I do not know what planet you come from, but it is entirely obvious that you are still living in the dark ages. <br />
+<br />
+Current SQL standards are set at SQL99 or SQL3 with more and more vendors supporting a conformance level 0 or 1 at the very least. Stored Procedures and Triggers are part of this standard. Whether they are implemented are another story.<br />
+<br />
+In addition, the use of the old E-R data model by itself is no longer advocated. Instead the E-R model is a jumping off point for what's known as a semantic data model, which a) more UML compliant, and b) lends itself to the application and reporting needs of the users by identifying what groupings of data makes sense to the user and what information the user might have on hand to retrieve or update said information.<br />
+<br />
+That being said, the most vendors in addition to traditional triggers allow system architects to control the complete behavior of the database, during operations such as INSERT, UPDATE, and DELETE and to replace the traditional operation entirely. <br />
+<br />
+Traditional triggers could only capture the data and save it elsewhere. For logging or auditing or cascading data updates or other purposes.<br />
+<br />
+These new triggers allow a database to have triggers on views, which would then actually do the update to the underlying tables.<br />
+<br />
+Or to prevent deletes altogether and to flag the row as inactive during a DELETE request.<br />
+<br />
+How can you in all honesty suggest that a tool, in and of itself is evil, unnecessary or useless, when its purpose and its needs can be shown mathematically as well as in practice?<br />
+<br />
+It seems to me that this is more a reaction from development of monolithic applications where the developer is used to having full control and therefore needs control of the data in the application.<br />
+<br />
+In the real world, applications make requests. The database decides what's legal. This is a logical separation of concerns. Otherwise, you'd be building business logic at every step of every application and we wouldn't need anything like .Net or J2EE to package business rules in a middle tier.<br />
+<br />
+Don't get me wrong. Not every business rule goes into the database. But the one's that do go in make sure that you don't get garbage in, and that your applications are relatively easy to maintain.<br />
+<br />
+Imagine the difficulty when you have a report that pulls in data from 4 different tables and needs to have the data indexed and to have the data be updatable through a form.<br />
+<br />
+Now tell me, how many applications will you modify when there is a structural or data format or data source change, to make sure the application doesn't break. And tell me how many test suites you'll have to run.<br />
+<br />
+And compare that to the one instance of a view in a database, with triggers and indexes which only need to be modified at a single central point.<br />
+<br />
+I would agree that stored procedures and triggers CAN make a database slow. It is up to the DBA to make sure they do a SHOW PLAN, or an EXPLAIN or what not to determine what trade-offs are present and how best to optimize the data. Because no matter what, whether you have stored procedures and triggers or not, sloppy code will always be slow.<br />
+<br />
+Any more questions?<br />
+<br />
+I welcome any responses grounded in theory or fact. Please don't come complaining to me about how your personal lack of desire to use Stored Procedures and Triggers mitigates your desire to not see them implemented in MySQL.</p><table id="c1802" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Charles McKnight on Sunday February 16 2003, @6:47pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1802&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1802">Edit</a>]</td></tr></table><p class="commenttext">Another thought would be to keep the stored proc engine separate, sort of like what PHP is doing with the Zend engine. In fact, it might be worth considering talking to Zend about doing just that. Otherwise, stored procs/triggers will likely cause the expected performance hit because of disk i/o (meaning that caching the little beggars in memory would be a really good idea if used with an intelligent caching scheme).</p><table id="c1830" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by test test on Wednesday February 19 2003, @4:58pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1830&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1830">Edit</a>]</td></tr></table><p class="commenttext">using an existing language as a scripting language or an interpreter for handling triggers and SP is a good idea.<br />
+<br />
+cross platform C/C++ interpreter (Ch) from<br />
+www.softintegration.com is an option. it is free to use<br />
+in linux, unix and mac os x. </p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=ANSI_diff_Triggers">Add your own comment.</a></p><div id="docnav"><a href="ANSI_diff_Triggers.html#">Top</a> / <a rel="prev" href="ANSI_diff_Transactions.html" title="1.9.4.3  Транзакции и атомарные операции">Previous</a> / <a rel="next" href="ANSI_diff_Foreign_Keys.html" title="1.9.4.5  Внешние ключи">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Differences_from_ANSI.html" title="1.9.4  Отличия MySQL от ANSI SQL92">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

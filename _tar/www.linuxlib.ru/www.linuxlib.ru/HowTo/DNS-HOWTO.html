@@ -1,0 +1,2257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>DNS HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1>DNS HOWTO</H1>
+
+<H2>Nicolai Langfeldt <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e288838c8ea28f83968acc978b8dcc8c8d">[email&#160;protected]</a></CODE>, перевод Alex Ott
+   <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="19766d6d5969716d7d376d696c377c7d6c376b6c">[email&#160;protected]</a></CODE> </H2>v2.2, 11 Февраля 1999
+<P><HR>
+<EM>Как стать за короткое время администратором DNS.</EM>
+<HR>
+<P><B>Примечание переводчика:</B> Шлите мне любые комментарии и
+замечания, даже небольшие.
+<H2><A NAME="s1">1. Преамбула</A></H2>
+
+<P>Ключевые слова: DNS, bind, bind-4, bind-8, named, dialup, ppp, slip,
+isdn, Internet, домен (domain), имя (name), сервера (hosts), разрешение
+имен (resolving), кэширование.
+<P>Этот документ является частью Linux Documentation Project.
+<H2>1.1 Официальная часть</H2>
+
+<P>Авторские права (c) Nicolai Langfeldt, 1995-1999. Не исправлять без изменения
+авторских прав, распространяется свободно при сохранении уведомления об
+авторских правах.
+<H2>1.2 Признательности и запрос о помощи</H2>
+
+<P>Я хочу поблагодарить Arnt Gulbrandsen, который постоянно читает
+черновики этого документа и дает много советов и рекомендаций. Я также хочу
+поблагодарить людей, которые прислали мне свои предложения и замечания.
+<P>Этот документ никогда не будет закончен, пожалуйста посылайте мне
+сообщения о ваших успехах и неудачах&nbsp;-- это сделает данный документ
+лучше. Также посылайте комментарии и/или вопросы на адрес
+<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5e343f30321e333f2a36702b3731703031">[email&#160;protected]</a></CODE>. Если вы посылаете сообщение и хотите получить
+ответ, то пожалуйста проявите вежливость и <EM>убедитесь</EM>, что обратный
+адрес является правильным и работает. Также <B>пожалуйста</B> прочитайте
+раздел
+<A HREF="DNS-HOWTO.html#qanda">Вопросы и ответы</A> до того как посылать
+сообщение. Также я понимаю только Английский и Норвежский языки. (<EM>От
+переводчика: вопросы на русском языке вы можете посылать мне на адрес,
+приведенный в начале документа</EM>).
+<P>Если вы хотите перевести этот документ, то пожалуйста сообщите мне об
+этом, что бы я мог отслеживать на каких языках этот документ был
+опубликован, и также чтобы я мог известить вас, когда этот документ будет
+обновлен.
+<H2>1.3 Посвящение</H2>
+
+<P>Этот документ посвящен Anne Line Norheim Langfeldt. Хотя она вероятно
+никогда его не прочитает, поскольку она не относится к классу девушек,
+увлеченных данной проблемой.
+<H2><A NAME="intro"></A> <A NAME="s2">2. Введение</A></H2>
+
+<P><B>Что это такое, и чем этот документ не является</B>
+<P>DNS&nbsp;-- это Доменная Система Имен (Domain Name System). DNS
+преобразует имена машин в IP-номера, которые являются адресами машин, она
+преобразует из имен в адреса и из адресов в имена. Этот документ показывает
+как определить такие преобразования, используя систему на базе
+Linux. Преобразование&nbsp;-- это просто создание ассоциации между двумя
+вещами, в нашем случае между именем машины, таким как
+<CODE>ftp.linux.org</CODE>, и номером IP этой машины, например
+<CODE>199.249.150.4</CODE>.
+<P>DNS является, для непосвященных (для вас ;-), одной из самых
+непрозрачных областей сетевого администрирования. Этот документ постарается
+сделать некоторые вещи понятнее. Здесь описывается как настроить <EM>простой</EM>
+сервер DNS. Начав с настройки кэширующего сервера, мы перейдем к настройке
+основного сервера DNS для домена. Для более сложных настроек вы можете
+посмотреть раздел
+<A HREF="DNS-HOWTO.html#qanda">Вопросы и ответы</A> этого документа.
+Если он не описывает, то что вам нужно, то вам понадобится <EM>прочитать</EM>
+полную документацию. Я возвращусь к тому из чего состоит эта полная
+документация в
+<A HREF="DNS-HOWTO.html#bigger">последнкй главе</A>.
+<P>До начала этого процесса, вы должны  настроить вашу машину так, чтобы вы
+могли выполнять команду <CODE>telnet</CODE> на нее/с нее, и производить любые
+сетевые соединения, и вам совершенно необходимо иметь возможность выполнять
+команду <CODE>telnet 127.0.0.1</CODE> и входить на свою собственную машину
+(протестируйте это сейчас!). Вам также необходимо иметь правильно
+настроенные файлы <CODE>/etc/nsswitch.conf</CODE> (или
+<CODE>/etc/host.conf</CODE>), <CODE>/etc/resolv.conf</CODE> и <CODE>/etc/hosts</CODE>,
+поскольку я не буду объяснять их функции в этом документе. Если работа сети у вас
+еще не настроена, то в <EM>NET-3-HOWTO</EM> и/или <EM>PPP-HOWTO</EM> вам
+объяснят как это сделать. Прочитайте эти документы.
+<P>Когда я говорю `ваша машина' я подразумеваю ту машину, на которой вы
+пытаетесь настроить DNS. А ни какая другая машина, которую вы могли вовлечь
+в ваши сетевые эксперименты.
+<P>Я предполагаю, что вы не находитесь за firewall любого типа, который
+блокирует запрос имен. Если вы все-таки находитесь за firewall, то вам
+необходима специальная настройка, смотрите раздел
+<A HREF="DNS-HOWTO.html#qanda">Вопросы и ответы</A>.
+<P>В Unix задача разрешения имен выполняется программой, называемой
+<CODE>named</CODE>. Она является частью пакета ``bind'', который сопровождается
+Paul Vixie для Internet Software Consortium. <CODE>Named</CODE> включен в
+большинство дистрибутивов Linux, и обычно устанавливается как
+<CODE>/usr/sbin/named</CODE>. Если у вас есть named, то вы вероятно сможете
+использовать его; Если у вас его нет, то вы можете получить исполняемые
+файлы с основных ftp серверов Linux, или взять последнюю и наилучшую версию
+исходных текстов с
+<!--<A HREF="ftp://ftp.isc.org/isc/bind/src/cur/bind-8/">-->ftp.isc.org:/isc/bind/src/cur/bind-8/<!--</A>-->. Этот документ описывает bind
+версии 8. Старые версии этого документа, описывающие bind версии 4, еще
+доступны по адресу
+<!--<A HREF="http://www.math.uio.no/~janl/DNS/">-->http://www.math.uio.no/~janl/DNS/<!--</A>-->, в том случае, если вы
+используете bind 4. Если справочная страница named ссылается (в самом
+конце, в разделе FILES) на файл
+<CODE>named.conf</CODE>, то у вас стоит bind 8, если она ссылается на
+<CODE>named.boot</CODE>, то у вас bind 4. Если у вас установлен bind версии 4 и вы
+ососзнаете необходимость сохранения безопасности, то вы действительно
+должны обновить вашу версию до версии 8.
+<P>DNS является базой данных во всемирной сети. Поэтому заботьтесь о том,
+что вы помещаете в нее. Если вы будете помещать в нее всякий хлам, то и вы
+и другие люди также получат всякий хлам. Храните вашу базу DNS в
+аккуратности и вы получите хорошее обслуживание с ее стороны. Учитесь как
+использовать ее, администрировать и отлаживать, и вы будете еще одним
+хорошим администратором, хранящим сеть от сбоев в результате неумелого
+управления.
+<P>В этом документе я констатирую набор вещей, которые в самом деле не
+являются полностью правильными (они являются по крайней мере наполовину
+правильными). Все это сделано в целях упрощения. Эти вещи (вероятно ;-)
+будут работать, если вы поверите, тому что я скажу.
+<P><B>Совет:</B> Сделайте резервные копии всех файлов, которые я буду
+советовать изменить, если у вас они уже есть, так что если ничего не будет
+работать, то вы можете вернуться назад к рабочей конфигурации.
+<H2><A NAME="caching"></A> <A NAME="s3">3. Настройка кеширующего сервера имен.</A></H2>
+
+<P><B>Это первый шаг в настройке DNS, очень полезный для dialup
+пользователей</B>
+<P>Кеширующий сервер найдет ответ на запрос об имени машины и запомнит его,
+чтобы ответить, когда вы запросите эту же информацию в следующий раз. Это
+значительно уменьшит время ожидания ответа при следующем запросе, особенно
+если у вас медленное соединение.
+<P>Для начала вам нужен файл, названный <CODE>/etc/named.conf</CODE>. Из него
+named читает информацию при старте. Сейчас он должен просто содержать
+следующие строки:
+
+<HR>
+<PRE>
+// Файл настроек для только кеширующего сервера
+
+options {
+        directory "/var/named";
+
+        // Раскомментируйте следующую строку, если вы
+        // работаете через firewall и система не работает:
+
+        // query-source port 53;
+};
+
+zone "." {
+        type hint;
+        file "root.hints";
+};
+
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "pz/127.0.0";
+};
+</PRE>
+<HR>
+
+<P>Строка `<CODE>directory</CODE>' задает где искать файлы. Все файлы используемые
+впоследствии, будут именоваться относительно этой директории. Таким образом
+<CODE>pz</CODE>&nbsp;-- это директория в директории <CODE>/var/named</CODE>, т.е.,
+<CODE>/var/named/pz</CODE>. <CODE>/var/named</CODE>&nbsp;-- это правильная директория
+согласно <EM>Linux File system Standard (Стандарту файловой системы Linux)</EM>.
+<P>Файл названный <CODE>/var/named/root.hints</CODE> должен находится в
+указанной директории. Он должен содержать следующую информацию:
+
+<HR>
+<PRE>
+; Здесь может быть комментарии, если у вас уже есть этот файл.
+; Если их нет, то не беспокойтесь.
+.                       6D IN NS        G.ROOT-SERVERS.NET.
+.                       6D IN NS        J.ROOT-SERVERS.NET.
+.                       6D IN NS        K.ROOT-SERVERS.NET.
+.                       6D IN NS        L.ROOT-SERVERS.NET.
+.                       6D IN NS        M.ROOT-SERVERS.NET.
+.                       6D IN NS        A.ROOT-SERVERS.NET.
+.                       6D IN NS        H.ROOT-SERVERS.NET.
+.                       6D IN NS        B.ROOT-SERVERS.NET.
+.                       6D IN NS        C.ROOT-SERVERS.NET.
+.                       6D IN NS        D.ROOT-SERVERS.NET.
+.                       6D IN NS        E.ROOT-SERVERS.NET.
+.                       6D IN NS        I.ROOT-SERVERS.NET.
+.                       6D IN NS        F.ROOT-SERVERS.NET.
+
+G.ROOT-SERVERS.NET.     5w6d16h IN A    192.112.36.4
+J.ROOT-SERVERS.NET.     5w6d16h IN A    198.41.0.10
+K.ROOT-SERVERS.NET.     5w6d16h IN A    193.0.14.129
+L.ROOT-SERVERS.NET.     5w6d16h IN A    198.32.64.12
+M.ROOT-SERVERS.NET.     5w6d16h IN A    202.12.27.33
+A.ROOT-SERVERS.NET.     5w6d16h IN A    198.41.0.4
+H.ROOT-SERVERS.NET.     5w6d16h IN A    128.63.2.53
+B.ROOT-SERVERS.NET.     5w6d16h IN A    128.9.0.107
+C.ROOT-SERVERS.NET.     5w6d16h IN A    192.33.4.12
+D.ROOT-SERVERS.NET.     5w6d16h IN A    128.8.10.90
+E.ROOT-SERVERS.NET.     5w6d16h IN A    192.203.230.10
+I.ROOT-SERVERS.NET.     5w6d16h IN A    192.36.148.17
+F.ROOT-SERVERS.NET.     5w6d16h IN A    192.5.5.241
+</PRE>
+<HR>
+
+<P>Этот файл описывает имена корневых серверов имен по всему миру. Их
+список изменяется время от времени и эта часть в дальнейшем <EM>должна</EM>
+сопровождаться. Смотрите
+<A HREF="DNS-HOWTO.html#maint">раздел по сопровождению</A>
+для того, чтобы узнать как хранить эту информацию соответствующей
+действительности.
+<P>Следующий раздел в <CODE>named.conf</CODE>&nbsp;-- это последняя <CODE>зона</CODE>. Я
+объясню как она используется в следующих разделах, сейчас просто создайте
+файл, названный <CODE>127.0.0</CODE> в поддиректории <CODE>pz</CODE>:
+
+<HR>
+<PRE>
+@               IN      SOA     ns.linux.bogus. hostmaster.linux.bogus. (
+                                1       ; Serial
+                                8H      ; Refresh
+                                2H      ; Retry
+                                1W      ; Expire
+                                1D)     ; Minimum TTL
+                        NS      ns.linux.bogus.
+1                       PTR     localhost.
+</PRE>
+<HR>
+
+<P>Далее вам необходимо, чтобы ваш файл <CODE>/etc/resolv.conf</CODE> выглядел
+примерно так:
+
+<HR>
+<PRE>
+search subdomain.your-domain.edu your-domain.edu
+nameserver 127.0.0.1
+</PRE>
+<HR>
+
+<P>Строка `<CODE>search</CODE>' задает в каких доменах должен идти поиск машин с
+кокторыми вы хотите соединиться. Строка `<CODE>nameserver</CODE>' указывает адрес
+вашего сервера имен, в нашем случае это ваша собственная машина, поскольку
+на ней запущен named (127.0.0.1 это правильный адрес, также никаких
+проблем, если ваша машина имеет другой адрес). Если вы хотите перечислите
+несколько серверов имен, то поместите их по одному в строку со словом
+`<CODE>nameserver</CODE>' для каждого. (Замечание: Named никогда не читает этот
+файл, это делает программа resolver, которая использует named).
+<P>Проиллюстрируем как это работает: Если клиент пытается найти машину с
+именем <CODE>foo</CODE>, то сначала программа пытается найти машину с полным
+именем <CODE>foo.subdomain.your-domain.edu</CODE>, затем с именем
+<CODE>foo.your-fomain.edu</CODE>, и в конце концов <CODE>foo</CODE>. Если клиент
+пытается найти <CODE>sunsite.unc.edu</CODE>, то сначала пробуется
+<CODE>sunsite.unc.edu.subdomain.your-domain.edu</CODE> (да это глупо, но вот
+так это работает), затем <CODE>sunsite.unc.edu.your-domain.edu</CODE>, и в
+конце концов <CODE>sunsite.unc.edu</CODE>. Вы можете не помещать слишком много
+доменов в строку поиска, поскольку поиск в них займет слишком много
+времени.
+<P>Пример предполагает, что вы находитесь в домене
+<CODE>subdomain.your-domain.edu</CODE>, и ваша машина вероятно называется
+<CODE>your-machine.subdomain.your-domain.edu</CODE>. Строка поиска не должна
+содержать ваш TLD (Top Level Domain (Домен Верхнего Уровня), `<CODE>edu</CODE>' в
+нашем случае). Если вам необходимо часто соединяться с машиной в другом
+домене, то вы можете добавить этот домен в строку поиска, примерно вот так:
+
+<HR>
+<PRE>
+search subdomain.your-domain.edu your-domain.edu other-domain.com
+</PRE>
+<HR>
+
+<P>и так далее. Очевидно, что вам необходимо поместить в эту строку имена
+настоящих доменов, вместо вышеприведенных. Пожалуйста заметьте отсутствие
+точки в конце имени домена. Это важно, пожалуйста заметьте отсутствие точки
+в конце имени доменов.
+<P>Далее в зависимости от вашей версии libc вам необходимо вносить
+исправления либо в файл <CODE>/etc/nsswitch.conf</CODE>, либо в файл
+<CODE>/etc/host.conf</CODE>. Если у вас уже есть файл <CODE>nsswitch.conf</CODE>, то
+значит мы будем вносить исправления в него, если же его нет, то мы будем
+вносить изменения в файл <CODE>host.conf</CODE>.
+<P><B>/etc/nsswitch.conf</B>
+<P>Это длинный файл описывающий как получить разные типы данных, из какого
+файла или базы данных. В начале он обычно содержит полезные комментарии,
+которые вы должны учесть при чтении этого файла. После того, как вы найдете
+строку начинающуюся с `<CODE>hosts:</CODE>', вы должны увидеть:
+
+<HR>
+<PRE>
+hosts:      files dns
+</PRE>
+<HR>
+
+
+Если в этом файле нет строки начинающейся с `<CODE>hosts:</CODE>', то поместите
+вышеприведенную строку в файл. Эта строка указывает программам сначала
+выполнять поиск в файле <CODE>/etc/hosts</CODE>, а затем просматривать DNS в
+соответствии с порядком указанном в файле <CODE>resolv.conf</CODE>.
+<P><B>/etc/host.conf</B>
+<P>Этот файл вероятно содержит разные данные, одна из строк должна
+начинаться со слова <CODE>order</CODE> и выглядеть примерно так:
+
+<HR>
+<PRE>
+order hosts,bind
+</PRE>
+<HR>
+
+<P>Если строки с `<CODE>order</CODE>' нет, то вы должны ее добавить. Она заставляет
+подпрограмму разрешения имен сначала посмотреть в файле
+<CODE>/etc/hosts</CODE>, а затем сделать запрос к серверу имен (который в
+<CODE>resolv.conf</CODE> указан как машина с адресом 127.0.0.1).
+<H2>3.1 Запуск named</H2>
+
+<P>После этих приготовлений пришло время запуска named. Если вы используете
+dialup соединение, то сначала производите подключение. Наберите `<CODE>ndc
+start</CODE>' без опций, и нажмите клавишу return. Если это не работает, то
+попробуйте следующую команду `<CODE>/usr/sbin/ndc start</CODE>'.  Если опять
+попытка не удалась, то смотрите раздел
+<A HREF="DNS-HOWTO.html#qanda">Вопросы и ответы</A>. Если вы посмотрите в файл сообщений syslog (обычно названный
+<CODE>/var/adm/messages</CODE>, но может быть другая директория
+<CODE>/var/log</CODE> и другой файл <CODE>syslog</CODE> в которые необходимо
+посмотреть) во время запуска named (выполните команду <CODE>tail -f
+/var/log/messages</CODE>), то вы должны увидеть что-то подобное следующему:
+<P>(строки заканчивающиеся на \ продолжаются на следующей строке)
+
+<BLOCKQUOTE><CODE>
+<PRE>
+Feb 15 01:26:17 roke named[6091]: starting.  named 8.1.1 Sat Feb 14 \
+  00:18:20 MET 1998 ^<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="eaa3808b8486aa9885818fc49f8385c48485">[email&#160;protected]</a>:/var/tmp/bind-8.1.1/src/bin/named
+Feb 15 01:26:17 roke named[6091]: cache zone "" (IN) loaded (serial 0)
+Feb 15 01:26:17 roke named[6091]: master zone "0.0.127.in-addr.arpa" \
+  (IN) loaded (serial 1)
+Feb 15 01:26:17 roke named[6091]: listening [127.0.0.1].53 (lo)
+Feb 15 01:26:17 roke named[6091]: listening [129.240.230.92].53 (ippp0)
+Feb 15 01:26:17 roke named[6091]: Forwarding source address is [0.0.0.0].1040
+Feb 15 01:26:17 roke named[6092]: Ready to answer queries.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Если есть какие-нибудь сообщения об ошибках, то значит вы что-то сделали
+неправильно. Named укажет в каком файле ошибка (я надеюсь, что это один из
+файлов named.conf и root.hints :-). Завершите выполнение named и проверьте
+файлы конфигурации.
+<P>Теперь вы можете протестировать ваше настройку. Запустите nslookup для
+проверки вашей работы.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+$ nslookup
+Default Server:  localhost
+Address:  127.0.0.1
+
+>
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Если это выглядит так, то значит вы заставили систему работать. Мы так
+надеемся. Если что-то другое, то вернитесь назад и все проверьте. Каждый
+раз когда вы изменяете файл <CODE>named.conf</CODE>, вам необходимо перезапустить
+named, используя команду <CODE>ndc restart</CODE>.
+<P>Теперь мы можем ввести запрос на поиск информации. Попробуйте найти
+машину близкую к вам. <CODE>pat.uio.no</CODE> находится близко от меня, в
+Университете Осло:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> pat.uio.no
+Server:  localhost
+Address:  127.0.0.1
+
+Name:    pat.uio.no
+Address:  129.240.130.16
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Сейчас nslookup попросит ваш named посмотреть информацию о машине
+<CODE>pat.uio.no</CODE>. Затем он соединится с одним из серверов имен,
+перечисленных в вашем файле <CODE>root.hints</CODE>, и запросит у него путь к
+данной машине. Это может занять какое-то время, до того как вы получите
+результаты, поскольку система может понадобится попробовать найти заданную
+машину во всех доменах, перечисленных в вашем файле
+<CODE>/etc/resolv.conf</CODE>.
+<P>Если вы запросите то же самое, то вы получите такой ответ:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> pat.uio.no
+Server:  localhost
+Address:  127.0.0.1
+
+Non-authoritative answer:
+Name:    pat.uio.no
+Address:  129.240.2.50
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Заметим, что мы в это раз получили сообщение `<CODE>Non-authoritative
+answer:</CODE>'. Это означает, что named в этот раз не делал запрос к внешним
+серверам имен, информация находиться в кеше. Но кешированная информация
+может быть устаревшей. Так что он вас информируют об этой (весьма
+незначительной) опасности сообщением `<CODE>Non-authorative
+answer:</CODE>'. <CODE>nslookup</CODE> выдает это сообщение, когда вы второй раз
+запрашиваете об одной и той же машине&nbsp;-- это знак того, что named
+кеширует информацию и это значит, что он работает правильно. Вы можете
+завершить работу <CODE>nslookup</CODE> дав команду `<CODE>exit</CODE>'.
+<H2>3.2 Как сделать лучше</H2>
+
+<P>В больших, хорошо организованных академических сетях или сетях ISP
+(Internet Service Provider) вы иногда сможете обнаружить, что
+администраторы сети настроили иерархию серверов DNS, которые помогут
+облегчить загрузку внутренней сети, также загрузку внешних серверов. Не так
+легко узнать находитесь ли вы внутри такой сети или нет. Однако это не
+совсем важно, и используя DNS-сервер вашего сетевого провайдера как
+``forwarder'' вы можете сделать ответы на запросы быстрее и уменьшить
+загрузку вашей сети. Если вы используете модем, то это может быть большой
+победой. Для пользы этого примера мы предполагаем, что ваш сетевой
+провайдер имеет два сервера имен, который вы можете использовать, с
+сетевыми номерами <CODE>10.0.0.1</CODE> и <CODE>10.1.0.1</CODE>. Затем в вашем файле
+<CODE>named.conf</CODE>, внутри открывающего раздела под названием ``options''
+вставьте следующие строки:
+
+<HR>
+<PRE>
+           forward first;
+           forwarders {
+                10.0.0.1;
+                10.1.0.1;
+            };
+</PRE>
+<HR>
+
+<P>Перезапустите ваш сервер имен и протестируйте его используя
+nslookup. Все должно работать отлично.
+<H2>3.3 Поздравления</H2>
+
+<P>Теперь вы знаете как установить кеширующий сервер имен. Возьмите пива,
+молока или того, что вы предпочитаете и отпразднуйте это.
+<H2><A NAME="simple"></A> <A NAME="s4">4. <EM>Простой</EM> домен.</A></H2>
+
+<P><B>Как установить свой собственный домен</B>
+<H2>4.1 Но сначала некоторое количество сухой теории</H2>
+
+<P>До того как мы в <EM>действительности</EM> начнем этот раздел, я хочу
+дать вам некоторые теоретические сведения о том как работает DNS и пример
+ее работы. И вы должны читать дальше, потому что это полезно для вас. Если
+вы не `хотите' делать это, то вы по крайней мере должны быстро просмотреть
+его. Остановитесь, когда вы увидите указания о том, что вы должны делать с
+вашим файлом <CODE>named.conf</CODE>.
+<P>DNS&nbsp;-- это иерархическая, организованная в виде дерева
+система. Вершина записывается как `<CODE>.</CODE>' и произносится как `root
+(корень)'.  В . существует некоторое количество Доменов верхнего уровня
+(Top Level Domains, TLDs), наиболее известными из которых являются ORG,
+COM, EDU и NET, но на самом деле их намного больше. ТОчно также как и
+дерево, они имеют корни и ветви. Если у вас есть некоторое образование в
+области компьютерных наук, то вы сможете думать о DNS как о дереве поиска,
+и вы сможете находить узлы, листья и связи между вершинами этого дерева.
+<P>При поиске машины, запрос обрабатывается рекурсивно, начиная с
+корня. Если вы хотите найти адрес машины <CODE>prep.ai.mit.edu</CODE>, то ваш
+сервер имен должен найти сервер имен, который обслуживает <CODE>edu</CODE>. Он
+запрашивает корневой сервер (<CODE>.</CODE>) (он уже знает корневые <CODE>.</CODE>
+сервера&nbsp;-- они перечислены в файле <CODE>root.hints</CODE>), корневой сервер
+<CODE>.</CODE> дает список серверов <CODE>edu</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+$ nslookup
+Default Server:  localhost
+Address:  127.0.0.1
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Запросите корневой сервер:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> server c.root-servers.net.
+Default Server:  c.root-servers.net
+Address:  192.33.4.12
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Установите тип запроса (Query type) в NS (записи о серверах имен):
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> set q=ns
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Запросите его о <CODE>edu</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> edu.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Заключительная точка <CODE>.</CODE> очень важна, она сообщает <CODE>nslookup</CODE>,
+что мы запрашиваем о edu находящемся прямо под корневым сервером <CODE>.</CODE>
+(это ускоряет поиск).
+
+<BLOCKQUOTE><CODE>
+<PRE>
+edu     nameserver = A.ROOT-SERVERS.NET
+edu     nameserver = H.ROOT-SERVERS.NET
+edu     nameserver = B.ROOT-SERVERS.NET
+edu     nameserver = C.ROOT-SERVERS.NET
+edu     nameserver = D.ROOT-SERVERS.NET
+edu     nameserver = E.ROOT-SERVERS.NET
+edu     nameserver = I.ROOT-SERVERS.NET
+edu     nameserver = F.ROOT-SERVERS.NET
+edu     nameserver = G.ROOT-SERVERS.NET
+A.ROOT-SERVERS.NET      internet address = 198.41.0.4
+H.ROOT-SERVERS.NET      internet address = 128.63.2.53
+B.ROOT-SERVERS.NET      internet address = 128.9.0.107
+C.ROOT-SERVERS.NET      internet address = 192.33.4.12
+D.ROOT-SERVERS.NET      internet address = 128.8.10.90
+E.ROOT-SERVERS.NET      internet address = 192.203.230.10
+I.ROOT-SERVERS.NET      internet address = 192.36.148.17
+F.ROOT-SERVERS.NET      internet address = 192.5.5.241
+G.ROOT-SERVERS.NET      internet address = 192.112.36.4
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Это дает нам информацию о том, что все <CODE>ROOT-SERVERS.NET</CODE> обслуживают
+<CODE>edu.</CODE>, так что мы можем продолжать опрашивать сервер <CODE>C</CODE>. Теперь мы
+хотим знать кто обслуживает следующий уровень имени домена: <CODE>mit.edu.</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> mit.edu.
+Server:  c.root-servers.net
+Address:  192.33.4.12
+
+Non-authoritative answer:
+mit.edu nameserver = W20NS.mit.edu
+mit.edu nameserver = BITSY.mit.edu
+mit.edu nameserver = STRAWB.mit.edu
+
+Authoritative answers can be found from:
+W20NS.mit.edu   internet address = 18.70.0.160
+BITSY.mit.edu   internet address = 18.72.0.3
+STRAWB.mit.edu  internet address = 18.71.0.151
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Сервера <CODE>steawb</CODE>, <CODE>w20ns</CODE> и <CODE>bitsy</CODE> все обслуживают <CODE>mit</CODE>,
+выберите один из них и запросите у него информацию о <CODE>ai.mit.edu</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> server W20NS.mit.edu.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+Имена машин не зависят от регистра, но я просто использую мышь для
+вырезания и вставки текста, так что я получаю их такими же, как
+они написаны на экране.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+Server:  W20NS.mit.edu
+Address:  18.70.0.160
+
+> ai.mit.edu.
+Server:  W20NS.mit.edu
+Address:  18.70.0.160
+
+Non-authoritative answer:
+ai.mit.edu      nameserver = ALPHA-BITS.AI.MIT.EDU
+ai.mit.edu      nameserver = GRAPE-NUTS.AI.MIT.EDU
+ai.mit.edu      nameserver = TRIX.AI.MIT.EDU
+ai.mit.edu      nameserver = MUESLI.AI.MIT.EDU
+ai.mit.edu      nameserver = LIFE.AI.MIT.EDU
+ai.mit.edu      nameserver = BEET-CHEX.AI.MIT.EDU
+ai.mit.edu      nameserver = MINI-WHEATS.AI.MIT.EDU
+ai.mit.edu      nameserver = COUNT-CHOCULA.AI.MIT.EDU
+ai.mit.edu      nameserver = MINTAKA.LCS.MIT.EDU
+
+Authoritative answers can be found from:
+AI.MIT.EDU      nameserver = ALPHA-BITS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = GRAPE-NUTS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = TRIX.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MUESLI.AI.MIT.EDU
+AI.MIT.EDU      nameserver = LIFE.AI.MIT.EDU
+AI.MIT.EDU      nameserver = BEET-CHEX.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MINI-WHEATS.AI.MIT.EDU
+AI.MIT.EDU      nameserver = COUNT-CHOCULA.AI.MIT.EDU
+AI.MIT.EDU      nameserver = MINTAKA.LCS.MIT.EDU
+ALPHA-BITS.AI.MIT.EDU   internet address = 128.52.32.5
+GRAPE-NUTS.AI.MIT.EDU   internet address = 128.52.36.4
+TRIX.AI.MIT.EDU internet address = 128.52.37.6
+MUESLI.AI.MIT.EDU       internet address = 128.52.39.7
+LIFE.AI.MIT.EDU internet address = 128.52.32.80
+BEET-CHEX.AI.MIT.EDU    internet address = 128.52.32.22
+MINI-WHEATS.AI.MIT.EDU  internet address = 128.52.54.11
+COUNT-CHOCULA.AI.MIT.EDU        internet address = 128.52.38.22
+MINTAKA.LCS.MIT.EDU     internet address = 18.26.0.36
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Так что <CODE>museli.ai.mit.edu</CODE> является сервером имен для
+<CODE>ai.mit.edu</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> server MUESLI.AI.MIT.EDU
+Default Server:  MUESLI.AI.MIT.EDU
+Address:  128.52.39.7
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Теперь я изменил тип запроса, поскольку мы нашли сервер имен и можем
+опрашивать его том, что мы хотим знать о <CODE>prep.ai.mit.edu</CODE>.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> set q=any
+> prep.ai.mit.edu.
+Server:  MUESLI.AI.MIT.EDU
+Address:  128.52.39.7
+
+prep.ai.mit.edu CPU = dec/decstation-5000.25    OS = unix
+prep.ai.mit.edu
+        inet address = 18.159.0.42, protocol = tcp
+          ftp  telnet  smtp  finger
+prep.ai.mit.edu preference = 1, mail exchanger = gnu-life.ai.mit.edu
+prep.ai.mit.edu internet address = 18.159.0.42
+ai.mit.edu      nameserver = beet-chex.ai.mit.edu
+ai.mit.edu      nameserver = alpha-bits.ai.mit.edu
+ai.mit.edu      nameserver = mini-wheats.ai.mit.edu
+ai.mit.edu      nameserver = trix.ai.mit.edu
+ai.mit.edu      nameserver = muesli.ai.mit.edu
+ai.mit.edu      nameserver = count-chocula.ai.mit.edu
+ai.mit.edu      nameserver = mintaka.lcs.mit.edu
+ai.mit.edu      nameserver = life.ai.mit.edu
+gnu-life.ai.mit.edu     internet address = 128.52.32.60
+beet-chex.ai.mit.edu    internet address = 128.52.32.22
+alpha-bits.ai.mit.edu   internet address = 128.52.32.5
+mini-wheats.ai.mit.edu  internet address = 128.52.54.11
+trix.ai.mit.edu internet address = 128.52.37.6
+muesli.ai.mit.edu       internet address = 128.52.39.7
+count-chocula.ai.mit.edu        internet address = 128.52.38.22
+mintaka.lcs.mit.edu     internet address = 18.26.0.36
+life.ai.mit.edu internet address = 128.52.32.80
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Так начиная от корня <CODE>.</CODE>, мы нашли нужные сервера имен для каждого
+уровня, указанных в имени домена. Если бы вы использовали ваш собственный
+сервер DNS вместо использования всех перечисленных серверов, то ваш сервер
+конечно же кешировал бы всю информацию, которую он находил во время
+прохождения этого пути, и тогда бы он больше не запрашивал эту информацию
+при повторном обращении.
+<P>В аналогии с деревом каждый знак ``<CODE>.</CODE>'' в имени является
+точкой ответвления дерева. И каждая часть между знаками ``<CODE>.</CODE>'' является
+именем индивидуальной ветви в дереве.
+<P>Мы поднимаемся по дереву взяв нужное имя (<CODE>prep.ai.mit.edu</CODE>), потом
+находим корень дерева (<CODE>.</CODE>) и затем ищем следующую ветвь по которой
+будем подниматься, в нашем случае это <CODE>edu</CODE>. Однажды найдя эту ветвь, мы
+будем подниматься по ней, переключившись на сервер, который знает об этой
+части имени. Затем мы ищем ветвь <CODE>mit</CODE> в ветви <CODE>edu</CODE> (объединеное имя
+становится равным <CODE>mit.edu</CODE>) и поднимаемся по ней, переключившись на
+сервер, который знает о <CODE>mit.edu</CODE>. Далее мы ищем слудующую ветвь--
+<CODE>ai.mit.edu</CODE> и переключаемся на сервер, который знает об этом
+домене. Теперь мы достигли нужного сервера в нужной точке
+ветвления. Последней задачей будет нахождение <CODE>prep.ai.mit.edu</CODE>, что
+является простой задачей. В научной литературе мы обычно называем машину
+<CODE>prep</CODE> <EM>листом</EM> дерева.
+<P>Менее обсуждаемым, но все равно важным является домен
+<CODE>in-addr.arpa</CODE>. Он также имеет иерархическую структуру, подобно
+`обычным' доменам. <CODE>in-addr.arpa</CODE> позволяет нам получить имя машины, по
+ее адресу. Необходимо заметить, то что ip-адреса в домене in-addr.arpa
+записаны в обратном порядке. Например, Если у вас есть машина с адресом:
+192.128.52.43, то named обрабатывает ее точно также как в примере для
+<CODE>prep.ai.mit.edu</CODE>: находит сервера <CODE>arpa.</CODE>. Находит сервера для
+домена <CODE>in-addr.arpa.</CODE>, находит сервера <CODE>192.in-addr.arpa.</CODE>, находит
+сервера для <CODE>128.192.in-addr.arpa.</CODE>, сервера для
+<CODE>52.128.192.in-addr.arpa.</CODE>. А потом уже находит необходимые записи о
+<CODE>43.52.128.192.in-addr.arpa.</CODE> Ловко? (скажите 'да'). Хотя обратный
+порядок может смущать, но это только первые два года.
+<P>Я вам солгал. DNS не работает точно так, как я это описал. Но достаточно
+близко к описанному процессу.
+<H2>4.2 Наш собственный домен</H2>
+
+<P>Теперь определим наш собственный домен. Мы будем делать домен
+<CODE>linux.bogus</CODE> и определим машины в нем. Я использую полностью поддельное
+имя домена, для того чтобы быть уверенным, что мы не побеспокоим никого во
+внешнем мире.
+<P>Одно важное замечание до того как мы начнем: Не все символы разрешено
+использовать в именах машин. Мы ограничимся символами английского алфавита:
+a-z, цифрами: 0-9 и символом '-' (тире). Придерживайтесь использования этих
+символов. Прописные и строчные символы не различаются DNS, так что
+<CODE>pat.uio.no</CODE> является равным <CODE>Pat.UiO.No</CODE>.
+<P>Мы уже начали эту часть строкой в <CODE>named.conf</CODE>:
+
+<HR>
+<PRE>
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "pz/127.0.0";
+};
+</PRE>
+<HR>
+
+<P>Заметьте отсутствие `<CODE>.</CODE>' в конце имен доменов в этом файле. Это
+указывает, что мы сейчас будем определять зону <CODE>0.0.127.in-addr.arpa</CODE>,
+и что мы будем основным сервером для нее, а также то, что она хранится в файле,
+названном <CODE>pz/127.0.0</CODE>. Мы уже сделали этот файл, в нем записано:
+
+<HR>
+<PRE>
+@               IN      SOA     ns.linux.bogus. hostmaster.linux.bogus. (
+                                1       ; Serial
+                                8H      ; Refresh
+                                2H      ; Retry
+                                1W      ; Expire
+                                1D)     ; Minimum TTL
+                        NS      ns.linux.bogus.
+1                       PTR     localhost.
+</PRE>
+<HR>
+
+<P>Заметьте наличие символа `<CODE>.</CODE>' в конце полных имен доменов в этом
+файле, в противоположность вышеприведенному файлу
+<CODE>named.conf</CODE>. Некоторые люди любят начинать каждый файл зон с директивы
+<CODE>$ORIGIN</CODE>, но это является излишним. Расположение (origin) (место
+зоны в иерархии DNS) файла зоны указывается в разделе зон в файле
+<CODE>named.conf</CODE>, в данном случае это <CODE>0.0.127.in-addr.arpa</CODE>.
+<P>Этот `файл зоны' содержит 3 `записи ресурсов (resource records)'
+(<CODE>RR</CODE>s): <CODE>A SOA RR</CODE>, <CODE>A NS RR</CODE> и <CODE>PTR RR</CODE>.  <CODE>SOA</CODE> это
+сокращение для Начала Полномочий (Start Of Authority). Символ `@' это
+специальный символ обозначающий расположение, и поскольку в колонке `домен
+(domain)' для этого файла записано <CODE>0.0.127.in-addr.arpa</CODE>, то первая
+строка на самом деле значит
+
+<BLOCKQUOTE><CODE>
+<PRE>
+0.0.127.in-addr.arpa.   IN      SOA ...
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>NS это RR для сервера имен (Name Server). В начале строки символ '@' не
+указывается, это подразумевается, поскольку предыдущая строка начиналась с
+символа '@'. Это сэкономит нам несколько нажатий на клавиши. Так что
+строка NS в действительности читается как
+
+<BLOCKQUOTE><CODE>
+<PRE>
+0.0.127.in-addr.arpa.   IN      NS      ns.linux.bogus
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Эта строка сообщает DNS, что машина является сервером имен домена
+<CODE>0.0.127.in-addr.arpa</CODE>, это <CODE>ns.linux.bogus</CODE>.  'ns' традиционное имя
+для серверов имен, но как и для web-серверов, чьим традиционным именем
+является <CODE>www.</CODE><EM>что-нибудь</EM>, данное имя может быть любым.
+<P>И в в окончание - запись PTR гласит, что машина с адресом 1 в подсети
+<CODE>0.0.127.in-addr.arpa</CODE>, например, 127.0.0.1 называется <CODE>localhost</CODE>.
+<P>Запись SOA находится в преамбуле каждого из файлов зон. Она описывает
+зону&nbsp;-- откуда она появляется (машина, названная <CODE>ns.linux.bogus</CODE>),
+кто отвечает за содержимое зоны (<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c8a0a7bbbca5a9bbbcadba88a4a1a6bdb0e6aaa7afbdbb">[email&#160;protected]</a></CODE>, вы должны
+вставить здесь свой адрес электронной почты), какая версия файла зоны
+текущая (serial: 1), и другие вещи, которые надо сделать для кеширующих и
+вторичных серверов DNS. Для полей refresh, retry, expire и minimum
+используйте числа приведенные в этом документе и вы должны быть в
+безопасности, используя их.
+<P>Затем перезапустите ваш  named (команда <CODE>ndc restart</CODE>) и используйте
+программу nslookup для проверки того, что сделано:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+$ nslookup
+
+Default Server:  localhost
+Address:  127.0.0.1
+
+> 127.0.0.1
+Server:  localhost
+Address:  127.0.0.1
+
+Name:    localhost
+Address:  127.0.0.1
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+мы видим, что named работает и можно получить данные о <CODE>localhost</CODE> из
+домена 127.0.0.1, это очень хорошо. Теперь приступим к нашей основной
+задаче, домену <CODE>linux.bogus</CODE>, вставим новый раздел '(zone)' в файл
+<CODE>named.conf</CODE>:
+
+<HR>
+<PRE>
+zone "linux.bogus" {
+        notify no;
+        type master;
+        file "pz/linux.bogus";
+};
+</PRE>
+<HR>
+
+<P>Заметим, что мы продолжаем опускать завершающий символ `<CODE>.</CODE>' в имени
+домена в файле <CODE>named.conf</CODE>.
+<P>В файле зоны <CODE>linux.bogus</CODE> мы поместим некоторые поддельные
+данные:
+
+<HR>
+<PRE>
+;
+; Файл зоны для linux.bogus
+;
+; Полный файл зоны
+;
+@       IN      SOA     ns.linux.bogus. hostmaster.linux.bogus. (
+                        199802151       ; serial, todays date + todays serial #
+                        8H              ; refresh, seconds
+                        2H              ; retry, seconds
+                        1W              ; expire, seconds
+                        1D )            ; minimum, seconds
+;
+                NS      ns              ; Internet адрес сервера имен
+                MX      10 mail.linux.bogus     ; Основной почтовый сервер
+                MX      20 mail.friend.bogus.   ; Дополнительный почтовый сервер
+;
+localhost       A       127.0.0.1
+ns              A       192.168.196.2
+mail            A       192.168.196.4
+</PRE>
+<HR>
+
+<P>Необходимо упомянуть две вещи о записи SOA.  <CODE>ns.linux.bogus</CODE>
+<EM>должен</EM> быть настоящей машиной с записью A. Не разрешается указывать
+машину с записью CNAME в записи SOA.  Это имя не обязательно должно быть
+`ns', оно может быть любым правильным именем машины. Далее,
+hostmaster.linux.bogus должен читаться как <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="fe96918d8a939f8d8a9b8cbe9297908b86d09c91998b8d">[email&#160;protected]</a>, это
+должен быть почтовый псевдоним или почтовый ящик для человека
+сопровождающего DNS и читающего почту достаточно часто. Любая почта,
+относительно домена будет посылаться на адрес указаный здесь. Имя не
+обязательно должно быт `hostmaster', это может быть любой правильный адрес
+электронной почты, но адрес с именем `hostmaster' как ожидается будет
+работать.
+<P>В этом файле приведен еще один новый тип записи о ресурсах (RR)&nbsp;--
+MX, или запись ресурса Почтовый Сервер (Mail eXchanger). Она сообщает
+почтовой системе куда посылать почту адресованную <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="b0c3dfddd5dfded5f0dcd9dec5c89ed2dfd7c5c3">[email&#160;protected]</a></CODE>,
+а именно серверам <CODE>mail.linux.bogus</CODE> или <CODE>mail.friend.bogus</CODE>. Число
+перед каждым именем машины&nbsp;-- это приоритет записи MX RR. Запись
+ресурса с наименьшим номером (10)&nbsp;-- это машины куда почта должна
+посылаться, если это возможно. Если происходит ошибка, то почта может быть
+послана на машину с большим номером, вторичному почтовому серверу,
+например, <CODE>mail.friend.bogus</CODE> для которого приоритет установлен
+равным&nbsp;20.
+<P>Перезапустите named с помощью команды <CODE>ndc restart</CODE>. Проверьте
+результаты работы используя команду nslookup:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+$ nslookup
+> set q=any
+> linux.bogus
+Server:  localhost
+Address:  127.0.0.1
+
+linux.bogus
+        origin = ns.linux.bogus
+        mail addr = hostmaster.linux.bogus
+        serial = 199802151
+        refresh = 28800 (8 hours)
+        retry   = 7200 (2 hours)
+        expire  = 604800 (7 days)
+        minimum ttl = 86400 (1 day)
+linux.bogus     nameserver = ns.linux.bogus
+linux.bogus     preference = 10, mail exchanger = mail.linux.bogus.linux.bogus
+linux.bogus     preference = 20, mail exchanger = mail.friend.bogus
+linux.bogus     nameserver = ns.linux.bogus
+ns.linux.bogus  internet address = 192.168.196.2
+mail.linux.bogus        internet address = 192.168.196.4
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>При внимательном тестировании вы обнаружите ошибку. Строка
+
+<BLOCKQUOTE><CODE>
+<PRE>
+linux.bogus     preference = 10, mail exchanger = mail.linux.bogus.linux.bogus
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+является полностью неправильной. Она должна выглядеть следующим образом
+
+<BLOCKQUOTE><CODE>
+<PRE>
+linux.bogus     preference = 10, mail exchanger = mail.linux.bogus
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Я сознательно сделал ошибку, чтобы вы смогли получить некоторый
+опыт&nbsp;--:-) Глядя в файл зоны мы обнаружим, что в строке
+
+<BLOCKQUOTE><CODE>
+<PRE>
+                MX      10 mail.linux.bogus     ; Основной почтовый сервер
+</PRE>
+</CODE></BLOCKQUOTE>
+
+
+отсутствует точка. Или лишний раз написано 'linux.bogus'. Если имя машины
+не заканчивается на символ точки в файле зоны, то к концу этого имени
+добавляется текущее расположение (origin), вызывая в итоге дублирование
+текста <CODE>linux.bogus.linux.bogus</CODE>. Так запись
+
+<HR>
+<PRE>
+                MX      10 mail.linux.bogus.    ; Основной почтовый сервер
+</PRE>
+<HR>
+
+
+или
+
+<HR>
+<PRE>
+                MX      10 mail                 ; Основной почтовый сервер
+</PRE>
+<HR>
+
+
+является правильной. Я предпочитаю последнюю форму, поскольку надо меньше
+набирать на клавиатуре. Существуют пользователи bind, которые не согласны с
+этим подходом, но есть и те, которые согласны с этим. В файле зоны имя
+домена должно быть написано и закачиваться на символ `<CODE>.</CODE>' или домен не
+должен быть указан, в этом случае по умолчанию доменом будет текущее
+расположение (origin) машины.
+<P>Я должен подчеркнуть, что в файле named.conf <EM>не должно</EM> быть символа
+`<CODE>.</CODE>' после имен доменов. У вас может не быть понятия про символ
+`<CODE>.</CODE>' -- это слишком часто или наоборот слишком редко заполняет разные
+вещи и смущает много людей.
+<P>Так что опираясь на мою точку зрения мы напишем новый файл зоны, с
+некоторой дополнительной информацией.
+
+<HR>
+<PRE>
+;
+; Файл зоны для linux.bogus
+;
+; Полный файл зоны
+;
+@       IN      SOA     ns.linux.bogus. hostmaster.linux.bogus. (
+                        199802151       ; serial, todays date + todays serial #
+                        8H              ; refresh, seconds
+                        2H              ; retry, seconds
+                        1W              ; expire, seconds
+                        1D )            ; minimum, seconds
+;
+                TXT     "Linux.Bogus, your DNS consultants"
+                NS      ns              ; Internet адрес сервера имен
+                NS      ns.friend.bogus.
+                MX      10 mail.linux.bogus     ; Основной почтовый сервер
+                MX      20 mail.friend.bogus.   ; Дополнительный почтовый сервер
+
+localhost       A       127.0.0.1
+
+gw              A       192.168.196.1
+                HINFO   "Cisco" "IOS"
+                TXT     "The router"
+
+ns              A       192.168.196.2
+                MX      10 mail
+                MX      20 mail.friend.bogus.
+                HINFO   "Pentium" "Linux 2.0"
+www             CNAME   ns
+
+donald          A       192.168.196.3
+                MX      10 mail
+                MX      20 mail.friend.bogus.
+                HINFO   "i486"  "Linux 2.0"
+                TXT     "DEK"
+
+mail            A       192.168.196.4
+                MX      10 mail
+                MX      20 mail.friend.bogus.
+                HINFO   "386sx" "Linux 1.2"
+
+ftp             A       192.168.196.5
+                MX      10 mail
+                MX      20 mail.friend.bogus.
+                HINFO   "P6" "Linux 2.1.86"
+</PRE>
+<HR>
+
+<P>Здесь присутствует несколько новых записей о ресурсах (RR): запись HINFO
+(Информация о машине, Host INFOrmation) имеет две части, хорошей привычкой
+является заключение каждой из этих частей в кавычки. Первая часть&nbsp;--
+это информация об оборудовании машины, а вторая часть описывает программное
+обеспечение и операционную систему данной машины. Машина, названная 'ns',
+имеет процессор Pentium и работает под управлением Linux 2.0. CNAME
+(Каноническое имя, Canonical NAME)&nbsp;-- это способ присвоить каждой
+машине несколько имен. Так, что www является алиасом для ns.
+<P>Использование записи CNAME является немного неоднозначным. Но безопасным
+способом будет следовать правилу, что записи MX, CNAME или SOA <EM>никогда</EM>
+не должны ссылаться на имя, указанное как запись CNAME, они должны
+ссылаться на имя определенное записью A, так что будет неправильно записать
+
+<HR>
+<PRE>
+foobar          CNAME   www                     ; NO!
+</PRE>
+<HR>
+
+
+но вместо этого необходимо записать
+
+<HR>
+<PRE>
+foobar          CNAME   ns                      ; Yes!
+</PRE>
+<HR>
+
+<P>Также лучше считать, что запись CNAME не является настоящим именем
+машины для использования в адресе электронной почты: адрес
+<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7d0a181f101c0e09180f3d0a0a0a531114130805531f121a080e">[email&#160;protected]</a></CODE> является неправильным адресом электронной
+почты. Вы можете ожидать, что некоторые администраторы электронной почты во
+внешнем мире следят за моблюдением этого правила, даже если у вас все
+работает нормально. Для того, чтобы избежать этого используйте запись A (и
+возможно также некоторые другие записи, такие как MX) вместо:
+
+<HR>
+<PRE>
+www             A       192.168.196.2
+</PRE>
+<HR>
+
+<P>Некоторые из разработчиков архитектуры bind (arch-bind-wizards),
+рекомендуют <EM>не</EM> использовать запись CNAME. Так, что ее использование
+надо рассматривать серьезно.
+<P>Но как вы видите, этот документ также как и множество других серверов не следуют этому правилу.
+<P>Загрузите новую базу данных выполнив команду <CODE>ndc reload</CODE>, это
+заставит named перечитать файлы зон заново.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+$ nslookup
+Default Server:  localhost
+Address:  127.0.0.1
+
+> ls -d linux.bogus
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Это означает, что должны быть перечислены все записи в данном домене. В
+результате получится следующее:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+[localhost]
+$ORIGIN linux.bogus.
+
+                        1D IN NS        ns
+                        1D IN NS        ns.friend.bogus.
+                        1D IN TXT       "Linux.Bogus, your DNS consultants"
+                        1D IN MX        10 mail
+                        1D IN MX        20 mail.friend.bogus.
+gw                      1D IN A         192.168.196.1
+                        1D IN HINFO     "Cisco" "IOS"
+                        1D IN TXT       "The router"
+mail                    1D IN A         192.168.196.4
+                        1D IN MX        10 mail
+                        1D IN MX        20 mail.friend.bogus.
+                        1D IN HINFO     "386sx" "Linux 1.0.9"
+localhost               1D IN A         127.0.0.1
+www                     1D IN CNAME     ns
+donald                  1D IN A         192.168.196.3
+                        1D IN MX        10 mail
+                        1D IN MX        20 mail.friend.bogus.
+                        1D IN HINFO     "i486" "Linux 1.2"
+                        1D IN TXT       "DEK"
+ftp                     1D IN A         192.168.196.5
+                        1D IN MX        10 mail
+                        1D IN MX        20 mail.friend.bogus.
+                        1D IN HINFO     "P6" "Linux 1.3.59"
+ns                      1D IN A         192.168.196.2
+                        1D IN MX        10 mail
+                        1D IN MX        20 mail.friend.bogus.
+                        1D IN HINFO     "Pentium" "Linux 1.2"
+@                       1D IN SOA       ns hostmaster (
+                                        199802151       ; serial
+                                        8H              ; refresh
+                                        2H              ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Это хорошо. Как вы видите, это выглядит почти как сам файл зоны. Теперь
+проверим какой будет ответ только для машины с именем <CODE>www</CODE>:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+> set q=any
+> www.linux.bogus.
+Server:  localhost
+Address:  127.0.0.1
+
+www.linux.bogus canonical name = ns.linux.bogus
+linux.bogus     nameserver = ns.linux.bogus
+linux.bogus     nameserver = ns.friend.bogus
+ns.linux.bogus  internet address = 192.168.196.2
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Другими словами, настоящим именем для <CODE>www.linux.bogus</CODE> является
+<CODE>ns.linux.bogus</CODE>, и он также дается некоторая дополнительная информацию
+о машине ns, достаточная, чтобы соединиться с ней.
+<P>Теперь мы находимся на середине пути.
+<H2>4.3 Обратная (reverse) зона</H2>
+
+<P>Теперь программы могут преобразовывать имена машин в домене linux.bogus
+в адреса, по которым они могут связаться с этими машинами. Но также, кроме
+этого, требуется обратная зона, которая дает возможность DNS
+преобразовывать адреса в имена машин. Эти имена используются достаточным
+количеством серверов различного рода (FTP, IRC, WWW и другими) для того,
+чтобы решить, хотят ли они с вами общаться или нет, и даже иногда имя машины
+используется для того, чтобы решить какой приоритет вам дать. Обратная зона
+требуется для полного доступа к различным сервисам в Internet.
+<P>Поместите следующие строки в файл <CODE>named.conf</CODE>:
+
+<HR>
+<PRE>
+zone "196.168.192.in-addr.arpa" {
+        notify no;
+        type master;
+        file "pz/192.168.196";
+};
+</PRE>
+<HR>
+
+<P>Эти строки похожи на описание зоны <CODE>0.0.127.in-addr.arpa</CODE>, а файл зоны
+также имеет сходное содержание:
+
+<HR>
+<PRE>
+@       IN      SOA     ns.linux.bogus. hostmaster.linux.bogus. (
+                        199802151 ; Serial, todays date + todays serial
+                        8H      ; Refresh
+                        2H      ; Retry
+                        1W      ; Expire
+                        1D)     ; Minimum TTL
+                NS      ns.linux.bogus.
+
+1               PTR     gw.linux.bogus.
+2               PTR     ns.linux.bogus.
+3               PTR     donald.linux.bogus.
+4               PTR     mail.linux.bogus.
+5               PTR     ftp.linux.bogus.
+</PRE>
+<HR>
+
+<P>Теперь перезапустите ваш named (<CODE>ndc restart</CODE>) и снова проверьте его
+работу с помощью программы nslookup:
+
+<HR>
+<PRE>
+> 192.168.196.4
+Server:  localhost
+Address:  127.0.0.1
+
+Name:    mail.linux.bogus
+Address:  192.168.196.4
+</PRE>
+<HR>
+
+<P>так, это выглядит нормально, теперь выдайте полный список машин в домене, для того
+чтобы проверить правильность информации:
+
+<HR>
+<PRE>
+> ls -d 196.168.192.in-addr.arpa
+[localhost]
+$ORIGIN 196.168.192.in-addr.arpa.
+@                       1D IN SOA       ns.linux.bogus. hostmaster.linux.bogus. (
+                                        199802151       ; serial
+                                        8H              ; refresh
+                                        2H              ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+
+                        1D IN NS        ns.linux.bogus.
+1                       1D IN PTR       gw.linux.bogus.
+2                       1D IN PTR       ns.linux.bogus.
+3                       1D IN PTR       donald.linux.bogus.
+4                       1D IN PTR       mail.linux.bogus.
+5                       1D IN PTR       ftp.linux.bogus.
+@                       1D IN SOA       ns.linux.bogus. hostmaster.linux.bogus. (
+                                        199802151       ; serial
+                                        8H              ; refresh
+                                        2H              ; retry
+                                        1W              ; expiry
+                                        1D )            ; minimum
+</PRE>
+<HR>
+
+<P>Выглядит хорошо! Если вывод вашей команды выглядит не так, то посмотрите
+сообщения об ошибках в вашем syslog, я объяснял как это сделать в самом
+начале главы.
+<H2>4.4 Предупреждение</H2>
+
+<P>Существует несколько вещей, которые я должен добавить здесь. Сетевые
+адреса, используемые здесь взяты из одного из блоков 'личных (private)
+сетей', их не разрешается публично использовать в internet. Так, что их
+можно спокойно использовать как пример в этом документе. Вторая вещь это
+строка <CODE>notify no;</CODE>. Она заставляет named не извещать вторичные
+(ведомые) сервера, когда вы обновляете один из файлов зон. В bind-8, named
+может уведомлять другие сервера, перечисленные в записях NS в файлах зон,
+когда конкретная зона обновляется. Это является удобным для обычного
+использования, но для личных экспериментов с зонами эта возможность должна
+быть отключена, мы же не хотим, чтобы наш эксперимент загрязнял internet?
+<P>И конечно, этот домен является фиктивным, также как и все адреса в
+нем. Для настоящего примера действующего домена смотрите следующий раздел.
+<H2>4.5 Почему не работает поиск в обратной зоне</H2>
+
+<P>Существует набор  ``gotchas'', которые обычно избегаются в процессе
+поиска имен, что часто появляются при установке обратных зон. До того как
+вы продолжите продвигаться вперед вам необходимо обеспечить работу
+обратного поиска ваших машин на вашем сервере имен. Если эта часть не
+работает, то вернитесь назад и исправьте это до того, как продолжите
+читать.
+<P>Я буду обсуждать два сбоя обратного поиска так, как они видятся извне
+вашей сети:
+<H3>Обратная зона не делегируется</H3>
+
+<P>Когда вы просите вашего сетевого провайдера о предоставлении диапазона
+сетевых адресов и имени домена, то имя домена обычно
+делегируется. Делегирование является клеем, который связывает записи NS,
+которые помогают вам переходить от одного сервера имен к другому, как это
+описывалось в теоретическом разделе. Вы прочитали его, не так ли? Если ваша
+обратная зона не работает, то вернитесь назад и прочитайте нужный
+раздел. Прямо сейчас.
+<P>Обратную зону также надо делегировать. Если вы получили от вашего
+провайдера сеть <CODE>192.168.196</CODE> с доменом <CODE>linux.bogus</CODE>, то вам
+необходимо поместить запись <CODE>NS</CODE> в вашу обратную зону, точно так же как
+и для прямой зоны. Если вы проследуете по цепочке с <CODE>in-addr.arpa</CODE> и
+поднимитесь до своей сети то вы скорее всего обнаружете разорванную
+цепочку. Скорее всего в районе вашего сетевого провайдера. Обнаружив разрыв
+цепочки свяжитесь с вашим сетевым провайдером и попросите его исправить
+ошибку.
+<H3>Вы получили бесклассовую сеть.</H3>
+
+<P>Это может показаться сложной темой, но бесклассовые подсети в настоящее
+время являются часто используемыми и у вас вероятно есть такая сеть, если
+вы не являетесь компанией средних размеров.
+<P>Бесклассовая сеть -- это то, что сохраняет работу Internet в наши
+дни. Несколько лет назад было много разговоров о том., что ip-номера
+слишком коротки. Умные люди в IETF (Internet Engineering Task Force, они
+сохраняют  Internet в рабочем состоянии) объединились вместе и решили
+данную проблему. За цену. Цена заключается в том, что вы получаете подсеть
+меньше подсети класса ``C'' и некоторые вещи могут не работать. Пожалуйста
+посмотрите страницу
+<!--<A HREF="http://www.acmebw.com/askmrdns/00007.htm">-->Ask Mr. DNS at http://www.acmebw.com/askmrdns/00007.htm<!--</A>--> для
+подробного объяснения об этом и как с этим работать.
+<P>Вы прочитали эту информацию? Я ничего не буду объяснять здесь, так что
+пожалуйста прочитайте.
+<P>Первая часть проблемы заключается в том, что ваш провайдер должен
+понимать технологию, описанную Mr. DNS. Не все маленькие провайдеры имеют
+работающее решение данной проблемы. Если это так, то вы должны объяснить
+это провайдеру и быть настойчивы. Но сначала убедитесь, что вы сами это
+понимаете ;-). Они смогут установить правильную обратную зону на своем
+сервере, который вы должны проверить на работоспособность используя команду
+nslookup.
+<P>Вторая и последняя часть этой проблемы заключается в том, что вы должны
+понять применяемую технологию. Если вы не уверены в этом, то вернитесь
+назад и заново прочитайте все материалы. Затем вы сможете настроить
+обратную зону своей собственной бесклассовой сети, как это описано Mr. DNS.
+<P>Существует другая возможность для скрытой ошибки. Старые программы
+разрешения имен не смогут следовать приему с  <CODE>CNAME</CODE> в цепочке
+разрешения имен и буду давать сбой при выяснении имени вашей машины. В
+результате этого различные сервисы будут относить вас к классу
+неправильного доступа, запрщать доступ или делать что-то подобное. Если вы
+столкнулись с таким сервисом, то решение (которое я знаю) заключается
+только в том, чтобы ваш правайдер вставил вашу запись PTR прямо в фиктивный
+файл бесклассовой зоны вместо фиктивной записи CNAME.
+<P>Некоторые провайдеры будут предлагать другие способы решения этой
+проблемы, подобные основанным на  Web формам ввода ваших записей обратной
+зоны или другие автоматические системы.
+
+<H2><A NAME="real-example"></A> <A NAME="s5">5. Пример реального домена</A></H2>
+
+<P><B>Мы здесь перечислим несколько <EM>настоящих</EM> файлов зон</B>
+<P>Пользователи предложили, чтобы я включил пример настроек действующего
+домена как учебное пособие.
+<P>Я использую этот пример с разрешения David Bullock из LAND-5. Эти файлы
+содержат информацию, которая являлась реальной на 24 Сентября 1996 года, и
+были отредактированы мною для соответствия правилам синтаксиса bind-8 и
+использовали некоторые мои расширения. Так что, то что вы увидите здесь
+будет отличаться от того, что вы увидите сделав запрос на настоящий сервер
+имен LAND-5.
+<H2>5.1 /etc/named.conf (или /var/named/named.conf)</H2>
+
+<P>Здесь мы обнаружим два раздела основных зон для двух необходимых
+обратных зон: для сети <CODE>127.0.0</CODE>, а также для домена LAND-5 с
+номером <CODE>206.6.177</CODE>. А записи для основной зоны домена
+land-5.com. Также заметим, что вместо размещения файлов в директории
+названной <CODE>pz</CODE>, как я делал здесь до этого, администратор поместил эти
+файлы в директорию названную <CODE>zone</CODE>.
+
+<HR>
+<PRE>
+// Загрузочный файл для сервера имен LAND-5
+
+options {
+        directory "/var/named";
+};
+
+zone "." {
+        type hint;
+        file "root.hints";
+};
+
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "zone/127.0.0";
+};
+
+zone "land-5.com" {
+        type master;
+        file "zone/land-5.com";
+};
+
+zone "177.6.206.in-addr.arpa" {
+        type master;
+        file "zone/206.6.177";
+};
+</PRE>
+<HR>
+
+<P>Если вы поместите эти данные в ваш файл named.conf для того, чтобы
+поэкспериментировать с ними, то <B>ПОЖАЛУЙСТА</B> поместите строку <CODE>notify
+no;</CODE> в раздел зон, принадлежащих land-5, для того чтобы избежать
+инцидентов.
+<H2>5.2 /var/named/root.hints</H2>
+
+<P>Запомните, что это файл не является постоянным, и данные одного из
+перечисленных здесь серверов являются устаревшими. Вам лучше использовать
+вместо приведенного файла, файл сделанный перед этим помощью программы dig,
+как это объяснялось ранее.
+
+<HR>
+<PRE>
+; &lt;&lt;>> DiG 8.1 &lt;&lt;>> @A.ROOT-SERVERS.NET.
+; (1 server found)
+;; res options: init recurs defnam dnsrch
+;; got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 10
+;; flags: qr aa rd; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 13
+;; QUERY SECTION:
+;;      ., type = NS, class = IN
+
+;; ANSWER SECTION:
+.                       6D IN NS        G.ROOT-SERVERS.NET.
+.                       6D IN NS        J.ROOT-SERVERS.NET.
+.                       6D IN NS        K.ROOT-SERVERS.NET.
+.                       6D IN NS        L.ROOT-SERVERS.NET.
+.                       6D IN NS        M.ROOT-SERVERS.NET.
+.                       6D IN NS        A.ROOT-SERVERS.NET.
+.                       6D IN NS        H.ROOT-SERVERS.NET.
+.                       6D IN NS        B.ROOT-SERVERS.NET.
+.                       6D IN NS        C.ROOT-SERVERS.NET.
+.                       6D IN NS        D.ROOT-SERVERS.NET.
+.                       6D IN NS        E.ROOT-SERVERS.NET.
+.                       6D IN NS        I.ROOT-SERVERS.NET.
+.                       6D IN NS        F.ROOT-SERVERS.NET.
+
+;; ADDITIONAL SECTION:
+G.ROOT-SERVERS.NET.     5w6d16h IN A    192.112.36.4
+J.ROOT-SERVERS.NET.     5w6d16h IN A    198.41.0.10
+K.ROOT-SERVERS.NET.     5w6d16h IN A    193.0.14.129
+L.ROOT-SERVERS.NET.     5w6d16h IN A    198.32.64.12
+M.ROOT-SERVERS.NET.     5w6d16h IN A    202.12.27.33
+A.ROOT-SERVERS.NET.     5w6d16h IN A    198.41.0.4
+H.ROOT-SERVERS.NET.     5w6d16h IN A    128.63.2.53
+B.ROOT-SERVERS.NET.     5w6d16h IN A    128.9.0.107
+C.ROOT-SERVERS.NET.     5w6d16h IN A    192.33.4.12
+D.ROOT-SERVERS.NET.     5w6d16h IN A    128.8.10.90
+E.ROOT-SERVERS.NET.     5w6d16h IN A    192.203.230.10
+I.ROOT-SERVERS.NET.     5w6d16h IN A    192.36.148.17
+F.ROOT-SERVERS.NET.     5w6d16h IN A    192.5.5.241
+
+;; Total query time: 215 msec
+;; FROM: roke.uio.no to SERVER: A.ROOT-SERVERS.NET.  198.41.0.4
+;; WHEN: Sun Feb 15 01:22:51 1998
+;; MSG SIZE  sent: 17  rcvd: 436
+</PRE>
+<HR>
+
+<H2>5.3 /var/named/zone/127.0.0</H2>
+
+<P>Как основа файла обязательными записями являются запись SOA, и запись,
+которая объявляет 127.0.0.1 как <CODE>localhost</CODE>. Требуется указать обе эти
+записи. Больше ничего не должно быть в этом файле. Его скорее всего никогда
+не надо будет обновлять, до тех пор пока не изменится адрес сервера имен
+или ответственного за машину (hostmaster).
+
+<HR>
+<PRE>
+@               IN      SOA     land-5.com. root.land-5.com. (
+                                199609203       ; Serial
+                                28800   ; Refresh
+                                7200    ; Retry
+                                604800  ; Expire
+                                86400)  ; Minimum TTL
+                        NS      land-5.com.
+
+1                       PTR     localhost.
+</PRE>
+<HR>
+
+<H2>5.4 /var/named/zone/land-5.com</H2>
+
+<P>Здесь мы увидим обязательную запись SOA, и необходимые записи NS. Мы
+можем видеть, что имеется дополнительный сервер имен расположенный по
+адресу <CODE>ns2.psi.net</CODE>. <EM>Всегда</EM> необходимо иметь дополнительный
+сервер имен за пределами домена в качестве резерва. Мы также можем видеть,
+что этот домен имеет основной сервер, названный land-5, который заботится о
+множестве разных сервисов Internet, это сделано используя записи CNAME (как
+альтернатива использованию записей A).
+<P>Как вы видите из записи SOA, файл зоны расположен в домене
+<CODE>land-5.com</CODE>, ответственным лицом является
+<CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="34465b5b407458555a5019011a575b59">[email&#160;protected]</a></CODE>. <CODE>hostmaster</CODE>&nbsp;-- это другой часто используемый
+адрес для ответственного за эту работу человека.  Серийный номер записан в
+привычном формате yyyymmdd и дополнен серийным номером для текущего дня;
+это примерно 6-я версия файла зоны на 20 сентября
+1996. Помните, что серийный номер <EM>должен</EM> увеличиваться монотонно,
+здесь только <EM>одна</EM> цифра для серийного номера текущего дня, так что
+после 9 поправок мы должны ждать завтрашнего дня, для того чтобы дальше
+продолжить редактировать файл. Рассмотрите возможность использования двух
+цифр для номера вместо одной.
+
+<HR>
+<PRE>
+@       IN      SOA     land-5.com. root.land-5.com. (
+                        199609206       ; serial, todays date + todays serial #
+                        8H              ; refresh, seconds
+                        2H              ; retry, seconds
+                        1W              ; expire, seconds
+                        1D )            ; minimum, seconds
+                NS      land-5.com.
+                NS      ns2.psi.net.
+                MX      10 land-5.com.  ; Основной почтовый сервер
+
+localhost       A       127.0.0.1
+
+router          A       206.6.177.1
+
+land-5.com.     A       206.6.177.2
+ns              A       206.6.177.3
+www             A       207.159.141.192
+
+ftp             CNAME   land-5.com.
+mail            CNAME   land-5.com.
+news            CNAME   land-5.com.
+
+funn            A       206.6.177.2
+@               TXT     "LAND-5 Corporation"
+
+;
+;       Рабочие станции
+;
+ws-177200       A       206.6.177.200
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177201       A       206.6.177.201
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177202       A       206.6.177.202
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177203       A       206.6.177.203
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177204       A       206.6.177.204
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177205       A       206.6.177.205
+                MX      10 land-5.com.   ; Основная почтовая машина
+; {много повторяющихся определений удалено}
+ws-177250       A       206.6.177.250
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177251       A       206.6.177.251
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177252       A       206.6.177.252
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177253       A       206.6.177.253
+                MX      10 land-5.com.   ; Основная почтовая машина
+ws-177254       A       206.6.177.254
+                MX      10 land-5.com.   ; Основная почтовая машина
+</PRE>
+<HR>
+
+<P>Если вы поработаете с сервером имен домена land-5, то вы обнаружите, что
+имена машин имеют форму <CODE>ws_</CODE><EM>номер</EM>. С последних версий bind 4 named
+начал ограничивать то, какие символы могут быть использованы в именах
+машин. Так, что эти имена нельзя было использовать с bind-8, и я подставил
+символ '-' (тире) вместо символа '_' (подчеркивание), для того, чтобы этот
+пример можно было привести в документе.
+<P>Другая вещь, которую необходимо заметить, это то, что все рабочие
+станции не имеют индивидуальных имен, а вместо этого состоят из префикса за
+которым следует 2 последних числа из IP-адреса. Используя такое соглашение
+вы можете значительно упростить работу по сопровождению, но это может быть
+достаточно безлично и в действительности может быть источником недовольства
+со стороны ваших клиентов.
+<P>Мы также видим, что имя <CODE>funn.land-5</CODE>.com это алиас для
+land-5.com, но используется запись A, а не запись CNAME. Это хорошая
+тактика, как было упомянуто выше.
+<H2>5.5 /var/named/zone/206.6.177</H2>
+
+<P>Я прокомментирую это файл после этого листинга.
+
+<HR>
+<PRE>
+@               IN      SOA     land-5.com. root.land-5.com. (
+                                199609206       ; Serial
+                                28800   ; Refresh
+                                7200    ; Retry
+                                604800  ; Expire
+                                86400)  ; Minimum TTL
+                        NS      land-5.com.
+                        NS      ns2.psi.net.
+;
+;       Servers
+;
+1       PTR     router.land-5.com.
+2       PTR     land-5.com.
+2       PTR     funn.land-5.com.
+;
+;       Рабочие станции
+;
+200     PTR     ws-177200.land-5.com.
+201     PTR     ws-177201.land-5.com.
+202     PTR     ws-177202.land-5.com.
+203     PTR     ws-177203.land-5.com.
+204     PTR     ws-177204.land-5.com.
+205     PTR     ws-177205.land-5.com.
+; {много повторяющихся определений удалено}
+250     PTR     ws-177250.land-5.com.
+251     PTR     ws-177251.land-5.com.
+252     PTR     ws-177252.land-5.com.
+253     PTR     ws-177253.land-5.com.
+254     PTR     ws-177254.land-5.com.
+</PRE>
+<HR>
+
+<P>Обратная зона является той частью настройки, которая кажется способной
+вызвать большое горе (печаль, grief). Она используется для того, чтобы
+найти имя машины по ее IP-адресу. Пример: у вас есть IRC-сервер и он
+принимает соединения от IRC-клиентов. Однако он находится в Норвегии и
+хочет принимать соединения только от клиентов из Норвегии и других
+скандинавских стран. Когда вы соединяетесь с клиентом, то с помощью
+библиотеки языка С вы можете узнать адрес соединяющейся с сервером машины,
+поскольку этот адрес содержится во всех пакетах, передаваемых по
+сети. Теперь сервер может вызвать функцию названную gethostbyaddr, которая
+ищет имя машины по заданному IP-номеру. Gethostbyaddr запросит сервер DNS,
+который выполнит поиск заданной машины в DNS. Допустим клиент соединяется с
+машины ws-177200.land-5.com. IP-номер, который библиотека C передает
+IRC-серверу, равен 206.6.177.200. Для того, чтобы найти имя машины нам
+необходимо найти домен <CODE>200.177.6.206.in-addr.arpa</CODE>. DNS-сервер
+сначала найдет сервера домена <CODE>arpa.</CODE>, затем найдет сервера
+<CODE>in-addr.arpa.</CODE>, следуя дальше через сервера группы 206, затем 6 и в
+конце концов найдет сервер для зоны <CODE>177.6.206.in-addr.arpa</CODE> в
+домене land-5. От которого он в конце концов может получит ответ, что для
+<CODE>200.177.6.206.in-addr.arpa</CODE> у нас есть запись ``<CODE>PTR
+ws-177200.land-5.com</CODE>'', означающая что имя машины с адресом
+<CODE>206.6.177.200</CODE> равно <CODE>ws-177200.land-5.com</CODE>. Как и
+объяснение того, как мы искали <CODE>prep.ai.mit.edu</CODE>, этот пример
+вымышлен.
+<P>Вернемся к нашему примеру с IRC-сервером. IRC-сервер принимает
+соединения только из скандинавских стран, например, <CODE>*.no</CODE>,
+<CODE>*.se</CODE>, <CODE>*.dk</CODE>, имя <CODE>ws-177200.land-5.com</CODE> явно не
+соответствует этому правилу и сервер запретит соединение. Если бы <EM>не</EM>
+было обратного мапирования адреса <CODE>206.2.177.200</CODE> с помощью зоны
+<CODE>in-addr.arpa</CODE>, то сервер не смог бы вообще найти имя машины и
+должен был бы сравнивать адрес <CODE>206.2.177.200</CODE> с заданными
+масками&nbsp;-- <CODE>*.no</CODE>, <CODE>*.se</CODE> и <CODE>*.dk</CODE>, которым этот
+адрес явно не соответствует.
+<P>Некоторые люди скажут, что обратное преобразование адресов важно только
+для серверов, и не важно для остальной работы. Это не так: многие ftp,
+news, IRC и даже некоторые http (WWW) сервера <EM>не</EM> принимают соединения
+от машин для которых они не могут найти имена. Так что в действительности
+обратное преобразование для машин является <EM>обязательным</EM>.
+<H2><A NAME="maint"></A> <A NAME="s6">6. Сопровождение</A></H2>
+
+<P><B>Содержание в рабочем состоянии</B>.
+<P>Существует только одна задача по сопровождению named, кроме содержания
+его запущенным на машине. Это регулярное обновление файла
+<CODE>root.hints</CODE>. Наиболее легкий путь&nbsp;-- это использование программы
+dig. Сначала запустите dig без аргументов и вы получите файл
+<CODE>root.hints</CODE>, соответствующтй вашим данным.  Затем запросите один из
+перечисленных корневых серверов, выполнив команду <CODE>dig @rootserver</CODE>. Вы
+заметите, что вывод этой команды выглядит ужасно похоже на файл
+<CODE>root.hints</CODE>. Сохраните выводимые данные в файл (с помощью команды
+<CODE>dig @e.root-servers.net . ns &gt;root.hints.new</CODE>) и замените этим
+файлом старый файл <CODE>root.hints</CODE>.
+<P>Помните, что необходимо перезапустить named после замены файла.
+<P>Al Longyear послал мне этот скрипт, который может быть автоматически
+запущен для того, чтобы обновлять файл <CODE>root.hints</CODE>, создайте запись в
+crontab для запуска его раз в месяц и забудьте про него. В скрипте
+предполагается, что почтовая система работает и что определен почтовый
+алиас `hostmaster'. Вы должны подправить этот скрипт для соответствия вашим
+настройкам.
+
+<HR>
+<PRE>
+#!/bin/sh
+#
+# Обновляет информацию кеша сервера имен раз в месяц.
+# Он автоматически запускается раз в месяц с помощью cron.
+#
+# Original by Al Longyear
+# Updated for bind 8 by Nicolai Langfeldt
+# Miscelanious error-conditions reported by David A. Ranch
+# Ping test suggested by Martin Foster
+#
+
+(
+ echo "To: hostmaster &lt;hostmaster>"
+ echo "From: system &lt;root>"
+ echo "Subject: Automatic update of the named.conf file"
+ echo
+
+ PATH=/sbin:/usr/sbin:/bin:/usr/bin:
+ export PATH
+ cd /var/named
+
+ # Мы подключены? проверка подключения к серверу вашего ISP
+ case `ping -qnc some.machine.net` in
+   *'100% packet loss'*)
+        echo "The network is DOWN. root.hints NOT updated"
+        echo
+        exit 0
+        ;;
+ esac
+
+ dig @rs.internic.net . ns >root.hints.new 2>&amp;1
+
+ case `cat root.hints.new` in
+   *NOERROR*)
+        # It worked
+        :;;
+   *)
+        echo "The root.hints file update has FAILED."
+        echo "This is the dig output reported:"
+        echo
+        cat root.hints.new
+        exit 0
+        ;;
+ esac
+
+ echo "The named.conf file has been updated to contain the following information:"
+ echo
+ cat root.hints.new
+
+ chown root.root root.hints.new
+ chmod 444 root.hints.new
+ rm -f root.hints.old
+ mv root.hints root.hints.old
+ mv root.hints.new root.hints
+ ndc restart
+ echo
+ echo "The nameserver has been restarted to ensure that the update is complete."
+ echo "The previous root.hints file is now called
+/var/named/root.hints.old."
+) 2>&amp;1 | /usr/lib/sendmail -t
+exit 0
+</PRE>
+<HR>
+
+<P>Некоторые из вас заметили, что файл <CODE>root.hints</CODE> также доступен
+по ftp с сервера Internic. Пожалуйста <EM>не</EM> используйте ftp для
+обновления файла <CODE>root.hints</CODE>, вышеприведенный метод более
+дружелюбен по отношению к сети.
+<H2><A NAME="bind8"></A> <A NAME="s7">7. Преобразование настроек named из версии 4 в версию 8</A></H2>
+
+<P>Раньше это был раздел об использовании bind 8, написанный David
+E. Smith (<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bbdfdacddefbd9cec9dedace8f8995d6d795d4c9dc">[email&#160;protected]</a>). Я немного изменил его для того, чтобы
+соответствовать имени раздела.
+<P>В нем совсем немного. За исключением использования файла named.conf
+вместо named.boot, все остальное тоже самое. И bind8 поставляется со
+скриптом на perl, который преобразует файлы настроек со старым синтаксисом
+в файл с новым синтаксисом. Пример файла named.boot (старый стиль) для
+кеширующего сервера имен:
+
+<HR>
+<PRE>
+directory /var/named
+cache   .                                       root.hints
+primary 0.0.127.IN-ADDR.ARPA                    127.0.0.zone
+primary localhost                               localhost.zone
+</PRE>
+<HR>
+
+
+В командной строке, находясь в директории bind8/src/bin/named (<EM>этот
+пример предполагает, что у вас имеется исходный код пакета bind8. Если у
+вас бинарный пакет, то скрипт вероятно должен быть где-то рядом, хотя я не
+уверен, в том где точно он будет находится</EM>), наберите:
+
+<HR>
+<PRE>
+./named-bootconf.pl &lt; named.boot > named.conf
+</PRE>
+<HR>
+
+
+Эта команда создаст соответствующий файл named.conf:
+
+<HR>
+<PRE>
+// generated by named-bootconf.pl
+
+options {
+        directory "/var/named";
+};
+
+zone "." {
+        type hint;
+        file "root.hints";
+};
+
+zone "0.0.127.IN-ADDR.ARPA" {
+        type master;
+        file "127.0.0.zone";
+};
+
+zone "localhost" {
+        type master;
+        file "localhost.zone";
+};
+</PRE>
+<HR>
+
+<P>Этот скрипт работает для всего, что могло быть записано в файле
+<CODE>named.boot</CODE>, хотя он не добавляет все новые расширения и опции
+настройки, которые разрешено использовать в bind8. Здесь я приведу более
+полный файл <CODE>named.conf</CODE>, который делает те же самые вещи, но
+немного более эффективно.
+
+<HR>
+<PRE>
+// Это файл конфигурации для named (для BIND 8.1 или более поздних).
+// Он обычно устанавливается как /etc/named.conf.
+// Отличие от `шаблонного' файла named.conf (кроме этого комментария :)
+// в том, что строка &lt;tt/directory/ разкомментирована, поскольку
+// у меня уже есть файлы зон в директории /var/named.
+
+options {
+        directory "/var/named";
+        datasize 20M;
+};
+
+zone "localhost" IN {
+        type master;
+        file "localhost.zone";
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+        type master;
+        file "127.0.0.zone";
+};
+
+zone "." IN {
+        type hint;
+        file "root.hints";
+};
+</PRE>
+<HR>
+
+<P>В директории bind8/src/bin/named/test исходных текстов bind8 содержится
+этот файл, а также копии файлов зон, которые многие люди могут просмотреть
+и использовать для быстрого старта с нуля.
+<P>Форматы файлов зон и файлов <CODE>root.hints</CODE> одинаковы, также как и
+команды для их обновления.
+<H2><A NAME="qanda"></A> <A NAME="s8">8. Вопросы и ответы</A></H2>
+
+<P>Пожалуйста прочитайте этот раздел до того, как соберетесь писать мне о чем либо.
+
+<OL>
+<LI>Мой named требует наличия файла named.boot
+
+<P>Вы прочитали неправильный HOWTO. Пожалуйста посмотрите старую версию
+этого документа, которая описывает bind 4. Ее можно найти по адресу
+<!--<A HREF="http://www.math.uio.no/~janl/DNS/">-->http://www.math.uio.no/~janl/DNS/<!--</A>-->
+</LI>
+<LI>Как использовать DNS изнутри сети, защищенной firewall?
+
+<P>Совет: вам также может понадобиться строка
+
+<HR>
+<PRE>
+  query-source port 53;
+
+</PRE>
+<HR>
+
+
+в разделе ``options'' файла <CODE>named.conf</CODE>, как предполагается в
+примере, приведенном в разделе
+<A HREF="DNS-HOWTO.html#caching">Кеширующий   сервер</A>.
+</LI>
+<LI>Как могу сделать круговорот DNS для определенного сервиса, например
+www.busy.site, среди доступных для него адресов, для того, чтобы получить
+эффект баланса нагрузки, или чего-то подобного.
+
+<P>Сделайте несколько разных записей <B>A</B> для www.busy.site и
+используйте bind версии 4.9.3 или старше.  При этом bind при ответах
+будет смещаться по кругу между заданными адресами. Этот метод <EM>не</EM>
+будет работать с более ранними версиями bind.
+</LI>
+<LI>Я хочу установить DNS в закрытой корпоративной сети (intranet). Что
+мне надо сделать?
+
+<P>Вам необходимо убрать файл root.hints и просто использовать файлы
+зон. Это также означает, что вам никогда не нужно будет обновлять его.
+</LI>
+<LI>Как я могу установить дополнительный (ведомый) сервер имен?
+
+<P>Если основной/ведущий сервер имен имеет адрес 127.0.0.1, то вам
+необходимо поместить примерно такую строку в файл named.conf
+дополнительного сервера имен:
+
+<HR>
+<PRE>
+  zone "linux.bogus" {
+        type slave;
+        file "sz/linux.bogus";
+        masters { 127.0.0.1; };
+  };
+
+</PRE>
+<HR>
+
+
+Вы можете перечислить несколько альтернативных основных серверов для
+зоны, которые могут копироваться, внутри списка <CODE>masters</CODE>,
+разделенного знаком ';' (точка с запятой).
+</LI>
+<LI>Я хочу иметь работающий bind, в то время, когда я не подключен к
+сети.
+
+<P>Есть три подхода к решению этой проблемы:
+
+<UL>
+<LI>Я получил это письмо от Ian Clark &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="97fef4d7f3f2f6fcfef9b9f2f3e2b9f6e2">[email&#160;protected]</a>&gt;, где он
+объяснял свой способ решения данной проблемы:
+
+<BLOCKQUOTE><CODE>
+<PRE>
+У меня запущен named на моей машине с 'Masquerading'. У меня есть два файла
+root.hints&nbsp;-- один, названный root.hints.real, который содержит настоящий
+список имен корневых серверов и второй, названный root.hints.fake, который
+содержит...
+
+----
+; root.hints.fake
+; этот файл не содержит информации
+----
+
+Когда я отключаюсь от провайдера, я копирую файл root.hints.fake в файл
+root.hints и перезапускаю named.
+
+Когда я снова подключаюсь к провайдеру, то я копирую файл root.hints.real в
+root.hints и опять перезапускаю named.
+
+Это делается из скриптов ip-down и ip-up соответственно.
+
+Сначала я делаю запрос об имени домена, о котором named не имеет
+информации, и он помещает примерно такую строку в файл  messages..
+
+Jan 28 20:10:11 hazchem named[10147]: No root nameserver for class IN
+
+Кажется это работает в моем случае. Я могу использовать сервер имен для
+локальных машин в то время, когда я отключен от сети,
+без каких либо задержек по тайм-ауту для
+внешних доменов, и сервер имен работает нормально с внешними доменами,
+в то в время, когда я подключен к сети.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+</LI>
+<LI>Я также получил информацию от Karl-Max Wanger о том, как bind
+взаимодействует с NFS и portmapper на большинстве большинстве машин, не
+имеющих доступа к внешней сети.
+
+<BLOCKQUOTE><CODE>
+<PRE>
+
+У меня запущен named на всех машинах, которые только время от времени
+подключены к Internet с помощью модема. Сервер имен только кеширует
+информацию, он не авторизует никакую информацию и запрашивает обо всем
+сервера перечисленные в файле root.cache. Как обычно в Slackware, он
+запускается до nfsd и mountd.
+
+На одной из моих машин (портативный компьютер Libretto 30) у меня была
+проблема с тем, что иногда я мог примонтировать ее диск с другой
+машины, подключенной к моей локальной сети, но в остальное время эта операция не
+удавалось. У меня был один и тот же эффект, вне зависимости от
+использования PLIP, PCMCIA ethernet карты или PPP по последовательному
+интерфейсу.
+
+После некоторого времени, проведенного в предположениях и экспериментах, я
+нашел, что named несомненно вносит беспорядок в процесс регистрации nfsd и
+mountd, что выполняется с помощью portmapper при запуске (я как обычно
+запускаю эти демоны во время загрузки). Запуск named после nfsd и mountd
+полностью устранил эту проблему.
+
+Поскольку не ожидается  никакого ущерба от такой измененной
+последовательности загрузки, то я рекомендую всем сделать также как
+сделал я, для
+предотвращения потенциальных осложнений.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+</LI>
+<LI>В заключение, существует HOWTO об этом по адресу
+<!--<A HREF="http://www.acmebw.com/askmrdns/#linux-ns">-->Ask Mr. DNS at http://www.acmebw.com/askmrdns/#linux-ns<!--</A>-->.  Хотя это о bind 4, вы можете
+это применить и для bind 8.
+</LI>
+</UL>
+
+</LI>
+<LI>Где кеширующий сервер имен хранит свой кеш? Есть ли способ
+контролировать размер кеша.
+
+<P>Кеш полностью хранится в памяти, он <EM>никогда</EM> сохраняется на на
+диск. Каждый раз, когда вы прекращаете выполнение named содержимое кеша
+теряется. Кеш не контролируется ни одним из способов. named обслуживает
+его, согласно некскольким простым правилам. Вы не можете контролировать
+кеш или его размер по любым причинам. Если вы хотите, то вы можете
+``исправить'' это, подправив named. Однако это не рекомендуется.
+</LI>
+<LI>Сохраняет ли named свой кеш между перезапусками? Как я могу
+заставить named сохранять его?
+
+<P>Нет, named <EM>не</EM> сохряняет кеш при завершении. Это означает, что кеш
+должен быть построен заново каждый раз при перезапуске named. <EM>Нет</EM>
+способа, который заставил бы named сохранять кеш в файле. Если вы хотите,
+то вы можете ``исправить'' это, подправив named. Однако это не
+рекомендуется.
+</LI>
+<LI>Как я могу получить домен? Я хочу настроить свой домен, названный
+(например) <CODE>linux-rules.net</CODE>. Как можно назначить этот домен для меня?
+
+<P>Свяжитесь с вашим провайдером интернет. Он сможет вам помочь в этом
+вопросе. Заметьте, что в большинстве частей мира вам необходимо заплатить
+деньги за получение домена.
+</LI>
+</OL>
+
+<H2><A NAME="bigger"></A> <A NAME="s9">9. Как стать более знающим администратором DNS.</A></H2>
+
+<P><B>Документации и утилиты.</B>
+<P>Существует настоящая документация. Доступная в электронной и в печатной
+формах. Чтение некоторых из этих руководств требуется для того, чтобы
+сделать шаг от простого администратора DNS к крупному администратору. В
+печатном виде стандартной книгой является <EM>DNS and BIND</EM> авторов C. Liu
+и P. Albitz, выпущенная O'Reilly &amp; Associates, Sebastopol, CA, ISBN
+0-937175-82-X. Я читал ее, она великолепна. Также существует раздел о DNS в
+книге <EM>TCP/IP Network Administration</EM>, написанной Craig Hunt и
+изданной O'Reilly..., ISBN 0-937175-82-X. Также для администрирования DNS
+(или всего, относящегося к этому) должна быть хорошей книга <EM>Zen and the
+Art of Motorcycle Maintenance</EM> автора Robert M. Prisig :-) доступна как
+ISBN 0688052304, а также другие книги.
+<P>В электронной форме вы можете найти материалы на
+<!--<A HREF="http://www.dns.net/dnsrd/">-->http://www.dns.net/dnsrd/<!--</A>--> (Каталог ресурсов DNS),
+<!--<A HREF="http://www.isc.org/bind.html">-->http://www.isc.org/bind.html<!--</A>-->; FAQ, справочные материалы (BOG; Bind
+Operations Guide), а также статьи и определения протоколов и дополнения
+(hacks) к DNS (эти, и большинство, если не все, RFC, упомянутые ниже, они
+также идут в поставке bind). Мне не нужны большинство из них, но я не
+являюсь крупным DNS администратором. Arnt Gulbrandsen читал BOG и находится
+в экстазе от его :-). В группе новостей
+<!--<A HREF="news:comp.protocols.tcp-ip.domains">-->comp.protocols.tcp-ip.domains<!--</A>--> происходят дискуссии о DNS. В
+добавление к этому, здесь перечислены некоторые RFC о DNS, самыми важными
+из которых вероятно являются следующие:
+
+<DL>
+<DT><B>RFC 2052</B><DD><P>A. Gulbrandsen, P. Vixie, <EM>A DNS RR for specifying
+the location of services (DNS SRV)</EM>, October 1996
+<DT><B>RFC 1918</B><DD><P>Y. Rekhter, R. Moskowitz, D. Karrenberg, G. de Groot,
+E. Lear, <EM>Address Allocation for Private Internets</EM>, 02/29/1996.
+<DT><B>RFC 1912</B><DD><P>D. Barr, <EM>Common DNS Operational and Configuration
+Errors</EM>, 02/28/1996.
+<DT><B>RFC 1912 Errors</B><DD><P>B. Barr <EM>Errors in RFC 1912</EM>, this is available
+at
+<!--<A HREF="http://www.cis.ohio-state.edu/~barr/rfc1912-errors.html">-->http://www.cis.ohio-state.edu/~barr/rfc1912-errors.html<!--</A>-->
+<DT><B>RFC 1713</B><DD><P>A. Romao, <EM>Tools for DNS debugging</EM>, 11/03/1994.
+<DT><B>RFC 1712</B><DD><P>C. Farrell, M. Schulze, S. Pleitner, D. Baldoni,
+<EM>DNS Encoding of Geographical Location</EM>, 11/01/1994.
+<DT><B>RFC 1183</B><DD><P>R. Ullmann, P. Mockapetris, L. Mamakos, C. Everhart,
+<EM>New DNS RR Definitions</EM>, 10/08/1990.
+<DT><B>RFC 1035</B><DD><P>P. Mockapetris, <EM>Domain names - implementation and
+specification</EM>, 11/01/1987.
+<DT><B>RFC 1034</B><DD><P>P. Mockapetris, <EM>Domain names - concepts and
+facilities</EM>, 11/01/1987.
+<DT><B>RFC 1033</B><DD><P>M. Lottor, <EM>Domain administrators operations
+guide</EM>, 11/01/1987.
+<DT><B>RFC 1032</B><DD><P>M. Stahl, <EM>Domain administrators guide</EM>,
+11/01/1987.
+<DT><B>RFC 974</B><DD><P>C. Partridge, <EM>Mail routing and the domain system</EM>,
+01/01/1986.
+</DL>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

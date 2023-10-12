@@ -1,0 +1,629 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 1 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 1.</h2>
+<br>
+<h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs.html">-->http://www-106.ibm.com/developerworks/library/l-fs.html<!--</a>--></h3><br>
+<h2>Journalling and ReiserFS</h2>
+<p><a href="l-fs1_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#e682948984848f8895a6818388928989c8899481"><span class="__cf_email__" data-cfemail="8eeafce1ecece7e0fdcee9ebe0fae1e1a0e1fce9">[email&#160;protected]</span></a>)<br>President/CEO<br>June 2001</p>
+<blockquote>
+С выходом релиза 2.4 Linux появилась возможность использования
+ filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и
+других.
+ Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно
+ они могут делать, насколько они хороши и
+насколько оправдано их использование
+ в промышленной Linux среде. Daniel Robbins отвечает на эти вопросы по ходу
+ пояснения
+инсталляции этих новых продвинутых filesystems под Linux 2.4. В этой,
+ первой статье из цикла, даются пояснения по journalling
+вообще и ReiserFS в
+ частности.
+</blockquote>
+<h3>Что следует ожидать от прочтения этого цикла статей.</h3>
+<p>
+Цель этого цикла состоит в том, чтобы дать твердое, практическое введение в
+ новые файловые системы для Linux, такие как
+ReiserFS, XFS, JFS, GFS, ext3 и
+ другие. Я хочу "вооружить" читателя практичным взглядом на эти вещи и
+ подготовить к
+осознанному использованию новых файловых систем. Цель так же
+ в том, чтобы помочь Вам (насколько это возможно) избежать многих
+потенциальных
+ ловушек. Иначе, предлагается осторожный просмотр файловых систем с позиций
+ стабильности, производительности
+(плюсов и минусов), любых отрицательных
+ воздействий на приложения, анализ комбинаций kernel/patch и т.п.
+ Рассматривайте цикл
+статей как "insider's guide" для файловых систем нового
+ поколения.
+</p>
+<p>Это то, что следует иметь в виду. Однако, открывая цикл, я несколько
+ отвлекаюсь от поставленной "практической" цели и
+отвлекаюсь на небольшое
+ "теоретическое" вступление. Далее будут охвачены две темы, очень важные
+ для Linux development community
+- "журнализация" и "техническая" точка зрения
+ на проект ReiserFS. Journalling - технология, которую долго ждали, и пришло
+ время
+ее практического использования. На этой технологии работают ReiserFS,
+ XFS, JFS, ext3 и GFS. Важно точно понять, что собственно
+делает journalling
+ и почему Linux в ней нуждается. Даже если вам это хорошо известно, я надеюсь,
+ что мое journalling intro Вам
+будет полезно. Это хорошая "рыба" для объяснения
+ технологии другим и кое-что для практики. Часто процесс внедрения нового
+приходится начинать с "Linux guy/gal", убеждая других в необходимости
+ "качественного скачка".
+</p>
+<p>Во второй части статьи рассматриваются технические аспекты ReiserFS.
+ Делается это для демонстрации того факта, что новые
+файловые системы делают
+ ту же работу, что и "традиционные", но часто немного быстрее. Они также
+ позволяют выполнять работу
+способами, прежде невозможными. Первая статья
+ важна для понимания всего цикла. Возможности новых файловых систем, вероятно,
+затронут будущее развитие Linux.
+</p>
+<h3>Введение в journalling: meta-data</h3>
+<p>Начнем с банального. Файловые системы существуют для того, чтобы хранить,
+ находить и манипулировать данными. Для выполнения
+таких задач сама файловая
+ система должна иметь внутреннюю "управляющую" структуру, которая позволяет
+ все это делать. Такая
+внутренняя структура ("the data about the data")
+ называется <i>meta-data</i>. От организации этих meta-data зависят рабочие
+характеристики файловых систем (и это то, чем файловые системы друг от друга
+ отличаются).
+</p>
+<p>Обычно с такими meta-data сам пользователь не взаимодействует. Вместо этого
+ с ними работает драйвер файловой системы. Linux
+filesystem driver специально
+ разработан для управления этим лабиринтом метаданных. Однако, для
+ функционирования драйвера
+имеется одно важное требование; он ожидает видеть
+ метаданные в разумном, непротиворечивом, не разрушенном состоянии. В
+противном
+ случае обращение к файлам становится невозможным.
+</p>
+<h3>Введение в journalling: fsck</h3>
+<p>Поговорим о fsck. Где-то в начале загрузки Linux запускается fsck и
+ начинается сканирование всех локальных файловых систем
+(перечислены
+ в /etc/fstab). Делается это для того, чтобы гарантировать непротиворечивость
+ meta-data и, в конечном счете,
+возможность монтирования файловой системы.
+ Такое сканирование занимает много времени и, в целях "экономии", предполагается
+следующее. Если Linux завершает работу "корректно", то сброс на диск всех
+ кэшированных данных происходит "штатно". В таком
+случае есть гарантия,
+ что filesystem размонтирована "чисто" и готова к очередному монтированию.
+ Как правило, fsck ограничивается
+только проверкой "флага чистого
+ размонтирования" и, если проблем нет, делает разумное предположение, что
+ с meta-data все OK.
+</p>
+<p>Однако все мы знаем, что происходят и аварийные ситуации вследствие сбоя
+ в питании или глубокого зависания системы. В таких
+ситуациях о "чистом
+ размонтировании" со сбросом всех кэшированных данных на диск речи не идет.
+ Если такое происходит, очередной
+запуск fsck обнаруживает это и делается
+ разумный вывод, что filesystems, вероятно, не готова к взаимодействию с
+ драйвером.
+Очень может быть, что meta-data находятся в противоречивом состоянии.
+</p>
+<p>Чтобы ликвидировать возможные последствия, fsck начнет полное сканирование
+ и проверку непротиворечивости метаданных, по ходу
+исправляя многие ошибки.
+ В большинстве случаев после "сканирования с исправлениями" файловая система
+ готова к монтированию.
+Следует понять, что способность к монтированию еще не
+ означает целостность самих данных.
+</p>
+<h3>Проблемы с fsck</h3>
+<p>Нельзя сказать, что описанное - плохой подход к обеспечению целостности
+ файловой системы, но решение не оптимально. Не
+оптимальность результат того,
+ что fsck должен просканировать все метаданные файловой системы для вывода об
+ их непротиворечивости.
+Выполнение полной проверки всех метаданных задача сама
+ по себе трудоемкая. К этому следует добавить, что с увеличением размера
+файловой системы затраты на полное сканирование растут прогрессивно (на
+ персональной машине это может занять несколько минут,
+на сервере полчаса
+ и больше). И еще, стандартное поведение fsck предполагает периодически проверки
+ после некоторого числа
+"чистых размонтирований", что не может считаться
+ приемлемым для mission-critical datacenter, когда "время - деньги". К счастью,
+имеется лучшее решение.
+</p>
+<h3>Журнал.</h3>
+<p>Журналируемые файловые системы снимают проблему fsck через дополнительную
+ data structure, называемую журналом. Такой журнал
+- on-disk structure.
+ Прежде, чем драйвер файловой системы сделает любое изменение в meta-data,
+ делается запись в журнал с
+описанием предстоящих действий. Только после этого
+ происходит изменение самих метаданных. Таким образом, журналируемая файловая
+система обслуживает регистрационный файл последних модификаций метаданных.
+ Затраты на ведение такого журнала несравненно ниже,
+чем сканирование всей
+ файловой системы на предмет непротиворечивости метаданных.
+</p>
+<p>Представьте себе цепочку - хранящиеся данные (stuff),
+ "данные об этих данных" (the data about the stuff) и журнал с
+meta-meta-data
+ (the data about the data about the stuff).
+</p>
+<h3>Journalling в действии.</h3>
+<p>А что же делает fsck на журналируемой файловой системе? Обычно - ничего.
+ Он просто "не видит" файловую систему и разрешает
+ее монтирование.
+ Реальное волшебство быстрого восстановления filesystem в непротиворечивое
+ состояние ложится на драйвер
+файловой системы. Когда файловая система
+ монтируется, Linux filesystem driver выясняет, все ли было в порядке.
+ Если "чистого
+размонтирования" не было и метаданные должны быть исправлены то,
+ вместо выполнения полного сканирования (как это делает fsck),
+драйвер читает
+ журнал. Так как в журнале содержится хронология всех последних изменений
+ метаданных, выполняется просмотр
+мизерной части meta-data. Вопрос о приведении
+ файловой системы в непротиворечивое состояние решается в течение долей,
+ максимум
+нескольких секунд. В отличие от традиционного (на сегодняшний день)
+ подхода, время восстановления не зависит от размера
+файловой системы
+ (зависит от интенсивности операций IO в момент, предшествующий краху).
+ Благодаря журналу снимаются многие
+проблемы, ставшие препятствием на пути
+ увеличения размеров файловых систем.
+</p>
+<h3>ReiserFS</h3>
+<p>Теперь перейдем к ReiserFS, первой из нескольких журналируемых файловых
+ систем, которые планируется исследовать. ReiserFS
+3.6.x (версия для Linux 2.4)
+ разработана Hans Reiser и его командой Namesys. Hans и его команда проповедуют
+ философию, что
+лучшая файловая система та, которая формирует единую
+ общедоступную среду, или namespace. В такой среде приложения могут
+взаимодействовать более гибко, эффективно и мощно. Для достижения этого,
+ файловая система должна выполнять часть работы,
+традиционно выполнявшуюся
+ приложениями. При таком подходе пользователи часто могут продолжать прямое
+ использование файловой
+системы вместо формирования уровней специального
+ назначения, типа баз данных и т.п.
+</p>
+<h3>Работа с маленькими файлами.</h3>
+<p>Как обстоят дела с размещением в файловой системе большого числа маленьких
+ порций информации? В Namesys решили, по крайней
+мере, для начала, сосредоточится
+ на одном из аспектов работы файловой системы - работе с маленькими файлами.
+ Строго говоря,
+файловые системы наподобие ext2 и ufs в этой области ведут себя
+ неэффективно, часто вынуждая разработчиков проектировать базы
+данных или
+ использовать другие "фокусы" для получения удовлетворительной
+ производительности. Такой подход приводит к
+"изобретению множества велосипедов"
+ и порождает огромное число несовместимых API узкоспециального назначения.
+</p>
+<p>Разберемся, а за счет чего ext2 поощряет этот вид "велосипедного"
+ программирования. Ext2 хороша для хранения достаточно
+большого числа файлов
+ размером более двадцати килобайт каждый, но совсем не идеальна для хранения
+ 2,000 50-байтовых файлов.
+Мало того, что заметно снижается производительность,
+ но и само хранение маленьких файлов на ext2 приводит к неэффективному
+использованию дискового пространства, так как ext2 ассигнует под каждый файл
+ целое число 1-2-4 KB блоков (размер блока
+устанавливается при формировании
+ файловой системы).
+</p>
+<p>Обычная житейская мудрость подсказывает нам отказаться от хранения многих
+ смехотворно маленьких файлов непосредственно на
+файловой системе. Вместо этого
+ возникает идея хранения информации в некоторой базе данных, работающей
+ над filesystem. В ответ
+на это Hans Reiser сказал бы, что всякий раз, когда
+ формируется уровень над filesystem, это свидетельствует лишь о том, что
+файловая система не отвечает нашим потребностям. Если бы она удовлетворяла,
+ от этого можно было бы отказаться. Следовательно,
+хорошо спроектированная
+ файловая система экономит время на разработку и устраняет ни с чем более не
+ совместимый код.
+</p>
+<p>Но это все теория. А как на практике ReiserFS работает с большим числом
+ маленьких файлов? Удивительно, но очень хорошо.
+Фактически, ReiserFS при
+ обработке файлов размером меньше одного K выигрывает в скорости у ext2 в
+ восемь - пятнадцать раз!
+Вообще, ReiserFS превосходит по быстродействию ext2 в
+ почти каждой области, но действительно сияет, когда сравнивается
+обработка
+ маленьких файлов.
+</p>
+<h3>Технология ReiserFS</h3>
+<p>За счет чего ReiserFS эффективно работает с маленькими файлами?
+ ReiserFS использует специально оптимизированные b* balanced
+tree (одно на
+ filesystem) для организации всех данных файловой системы. Одно это дает
+ большое увеличение производительности,
+а также снимает ряд искусственных
+ ограничений на размещение файловой системы. Например, становится возможным
+ иметь каталог,
+содержащий 100,000 других подкаталогов. Еще одна выгода от
+ использования b*tree в том, что ReiserFS, подобно большинству других
+filesystems нового поколения, динамически ассигнует inodes вместо их
+ статического набора, образующегося при создании
+"традиционной" файловой
+ системы. Это дает большую гибкость и оптимальность в формировании пространства
+ хранения.
+</p>
+<p>ReiserFS также имеет ряд features, нацеленных специально для улучшения
+ работы с маленькими файлами. ReiserFS не связана
+ограничением в ассигновании
+ памяти для файла в целом числе 1-2-4 KB блоков. По необходимости для файла
+ может ассигноваться
+точный размер. ReiserFS также включает некоторые виды
+ специальной оптимизации файловых "хвостов" для хранения конечных частей
+файлов,
+ меньших, чем блок filesystem. Для увеличения скорости, ReiserFS способен
+ хранить содержимое файлов непосредственно
+внутри b*tree, а не в виде указателя
+ на дисковый блок (в ext2 есть понятие fastlink, когда содержимое "мягкой"
+ ссылки до 60
+байт хранится в inode).
+</p>
+<p>Тем самым достигается две вещи. Первое, сильно увеличивается
+ производительность, так как data и stat_data (inode) информация
+может хранится
+ рядом и считываться одной дисковой операцией IO. Второе, ReiserFS способен
+ упаковать хвосты, экономя дисковое
+пространство. Фактически, при разрешении
+ ReiserFS выполнять упаковку хвостов (значение по умолчанию) будет экономиться
+ примерно
+шесть процентов дискового пространства (в сравнении с ext2).
+</p>
+<p>Следует иметь в виду, что упаковка хвостов требует дополнительной работы,
+ так как при изменении размеров файлов необходима
+"переупаковка". По этой
+ причине в ReiserFS упаковка хвоста может отключаться, позволяя администратору
+ выбрать между скоростью
+и эффективностью использования дискового пространства.
+</p>
+<p>ReiserFS - превосходная filesystem. В следующей статье будет описан процесс
+ инсталляции ReiserFS под Linux 2.4. Будет
+описана процедура оптимальной
+ настройки под требования приложений, опции ядра и другое.
+</p>
+<h3>Resources</h3>
+<ul>
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><a href="l-fs1_ru.html">Презентация ReiserFS.</a> (Часть 1)</li>
+<li><a href="l-fs2_ru.html">Использование ReiserFS в Linux 2.4.</a> (Часть 2)</li>
+<li><a href="l-fs3_ru.html">Презентация tmpfs и bind mounts.</a> (Часть 3)</li>
+<li><a href="l-fs4_ru.html">Презентация devfs.</a> (Часть 4)</li>
+<li><a href="l-fs5_ru.html">Установка devfs.</a> (Часть 5)</li>
+<li><a href="l-fs6_ru.html">Переход на devfs (с использованием init wrapper).</a> (Часть 6)</li>
+<li><a href="l-fs7_ru.html">Презентация ext3.</a> (Часть 7)</li>
+<li><a href="l-fs8_ru.html">Неожиданности от ext3.</a> (Часть 8)</li>
+<li><a href="l-fs9_ru.html">Презентация XFS.</a> (Часть 9)</li>
+<li><a href="l-fs10_ru.html">Развертывание XFS.</a> (Часть 10)</li>
+<li><a href="l-fs11_ru.html">Совершенствование файловых систем.</a> (Часть 11)</li>
+<li><a href="evms12.htm">Руководство по "продвинутым" файловым системам.</a>(Часть 12)</li>
+</ul><br>
+<br></li>
+<li>The <!--<a href="http://www.namesys.com/">-->Namesys Web page<!--</a>--> is <i>the</i>
+ place to learn more about ReiserFS.</li>
+<li>The <!--<a href="http://www.namesys.com/mailinglist.html">-->ReiserFS mailing
+ list<!--</a>--> is an excellent source for current, more
+in-depth ReiserFS
+ information. Be sure to check out the <!--<a href="http://marc.theaimsgroup.com/?l=reiserfs&amp;r=1&amp;w=2">-->
+ReiserFS
+ mailing list archive<!--</a>-->, too.</li>
+<li>You can find a very nice in-depth look at the meta-data differences
+ between UFS, ext2, ReiserFS, and more in Juan I. Santos
+Florido's <!--<a href="http://www.linuxgazette.com/issue55/florido.html">-->Linux Gazette
+ Journalling Filesystems<!--</a>--> review.</li>
+<li>Jedi's <!--<a href="http://www.jedi.claranet.fr/reiserfs-tuning.html">-->ReiserFS/Qmail tuning
+ page<!--</a>--> contains a lot of good
+information for <!--<a href="http://www.qmail.org/">-->qmail<!--</a>--> users. Also be sure to check out <!--<a href="http://www.jedi.claranet.fr/reisersmtp.html">-->
+ReiserSMTP<!--</a>-->, Jedi's collection of drop-in qmail components that offer dramatically higher qmail
+ performance.</li>
+<li>
+<!--<a href="http://www.lwn.net/">-->Linux Weekly News<!--</a>--> is a great resource
+ for keeping up with the latest kernel developments.</li>
+<li>Read Steve Best's <!--<a href="http://www-106.ibm.com/developerworks/library/jfs.html">-->JFS Overview<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Take a <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/73CADD8F9875EAD0862569C8005B6783?OpenDocument">-->
+JFS fundamentals tutorial<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on <i>developerWorks</i>.
+</li>
+</ul>
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs1_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel
+Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of </a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->,
+an advanced Linux for the
+ PC, and the <b>Portage</b> system, a next-generation ports system for
+ Linux. He has also served as a
+contributing author for the Macmillan books
+ <i>Caldera OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba
+Unleashed</i>. Daniel has been involved with computers in some
+ fashion since the second grade, when he was first exposed to the
+Logo
+ programming language as well as a potentially dangerous dose of Pac Man.
+ This probably explains why he has since served as
+a Lead Graphic Artist at
+ <b>SONY Electronic Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his
+new baby daughter,
+ Hadassah. You can contact Daniel at <a href="../cdn-cgi/l/email-protection.html#aecadcc1ccccc7c0ddeec9cbc0dac1c180c1dcc9"><span class="__cf_email__" data-cfemail="5430263b36363d3a271433313a203b3b7a3b2633">[email&#160;protected]</span></a>.
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#ddabb6b5b2b1b09dadb4b3b2beb5b8a9f3beb4a9a4b1b4b3b8f3afa8">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

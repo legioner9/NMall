@@ -1,0 +1,617 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.2.10  Управление доступом, этап 2: верификация запросов — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Request_access.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Request_access.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="Privilege_system.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.2 Общие проблемы безопасности и система привилегий доступа MySQL
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/General_security.html">4.2.1 Общие принципы обеспечения безопасности
+</a></li><li><a href="Security.html">4.2.2 Как обезопасить MySQL от хакеров
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Privileges_options.html">4.2.3 Опции запуска <code>mysqld</code>, относящиеся к безопасности
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/LOAD_DATA_LOCAL.html">4.2.4 Вопросы безопасности, относящиеся к команде LOAD DATA LOCAL
+</a></li><li><a href="What_Privileges.html">4.2.5 Функции, выполняемые системой привилегий
+</a></li><li><a href="Privileges.html">4.2.6 Как работает система привилегий
+</a></li><li><a href="Privileges_provided.html">4.2.7 Привилегии, предоставляемые MySQL
+</a></li><li><a href="Connecting.html">4.2.8 Соединение с сервером MySQL
+</a></li><li><a href="Connection_access.html">4.2.9 Управление доступом, этап 1: верификация подсоединения
+</a></li><li class="self">4.2.10 Управление доступом, этап 2: верификация запросов
+</li><li><a href="Access_denied.html">4.2.11 Причины появления ошибок <code>Access denied</code> ("в доступе отказано")
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Connection_access.html" title="4.2.9  Управление доступом, этап 1: верификация подсоединения">Previous</a> / <a rel="next" href="Access_denied.html" title="4.2.11  Причины появления ошибок Access denied (&quot;в доступе отказано&quot;)">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.2.10  Управление доступом, этап 2: верификация запросов</H3>
+
+<P>
+После установления соединения сервер приступает к выполнению второго
+этапа. Для каждого поступающего запроса сервер проверяет, имеется ли у вас
+достаточно привилегий для его выполнения, основываясь при этом на типе
+операции, которую вы хотите выполнить. Теперь в действие вступают поля
+привилегий в таблицах привилегий. Информация о привилегиях может
+находиться в любой из таблиц привилегий - <code>user</code>, <code>db</code>, <code>host</code>, <code>tables_priv</code> или
+<code>columns_priv</code>. Обработка таблиц привилегий осуществляется с помощью команд
+<code>GRANT</code> и <code>REVOKE</code>. Обратитесь к разделу See section <A HREF="GRANT.html">4.3.1  Синтаксис команд <code>GRANT</code> и <code>REVOKE</code></A>. Интерес
+может представлять раздел See section <A HREF="Privileges.html">4.2.6  Как работает система привилегий</A>, в котором перечислены поля, имеющиеся в каждой из
+таблиц привилегий.
+
+</P>
+<P>
+Таблица <code>user</code> предоставляет привилегии глобального характера, и их
+применение не зависит от того, в какой базе вы работаете в данный момент.
+Например, если таблица <code>user</code> предоставляет пользователю привилегию <code>DELETE</code>,
+он может удалять строки из любой базы данных на серверном хосте! Иными
+словами, привилегии в таблице <code>user</code> - это привилегии суперпользователя.
+Поэтому целесообразно предоставлять привилегии в таблице <code>user</code> только
+суперпользователям, таким как администраторы сервера или администраторы
+баз данных. Что касается других пользователей, для их привилегий в таблице
+user следует установить значение <code>'N'</code> и предоставлять им привилегии только
+на уровне баз данных, используя для этого таблицы <code>db</code> и <code>host</code>.
+
+</P>
+<P>
+<A NAME="IDX479"></A>
+<A NAME="IDX480"></A>
+<A NAME="IDX481"></A>
+
+</P>
+<P>
+Таблицы <code>db</code> и <code>host</code> предоставляют привилегии на уровне базы данных. Значения
+в полях контекста могут задаваться следующим образом:
+
+</P>
+
+<ul>
+<LI>
+
+Шаблонные символы <samp>`%'</samp> и <samp>`_'</samp> могут использоваться в полях <code>Host</code> и <code>Db</code>
+любой таблицы.
+
+<LI>
+
+Значение <code>'%'</code> в колонке <code>Host</code> таблицы <code>db</code> означает ``любой хост''. Пустое
+значение в поле <code>Host</code> таблицы <code>db</code> означает ``за дополнительной
+информацией следует обратиться к таблице <code>host</code>''.
+
+<LI>
+
+Значение <code>'%'</code> или пустое значение в поле <code>Host</code> таблицы <code>host</code> означает
+``любой хост''.
+
+<LI>
+
+Значение <code>'%'</code> или пустое значение в поле <code>Db</code> любой из таблиц означает
+``любая база данных''.
+
+<LI>
+
+Пустое значение в поле <code>User</code> любой из таблиц соответствует анонимному
+пользователю.
+</ul>
+
+<P>
+<A NAME="IDX482"></A>
+<A NAME="IDX483"></A>
+<A NAME="IDX484"></A>
+<A NAME="IDX485"></A>
+Таблицы <code>db</code> и <code>host</code> считываются и сортируются при запуске сервера (тогда же,
+когда он считывает таблицу <code>user</code>). Таблица <code>db</code> сортируется по полям
+контекста <code>Host</code>, <code>Db</code> и <code>User</code>, а таблица <code>host</code> - по полям контекста <code>Host</code> и <code>Db</code>.
+Как и в случае таблицы <code>user</code>, при сортировке первыми отбираются наиболее
+конкретные значения, а последними - наименее конкретные, а когда сервер
+производит поиск совпадающих записей, используется первая совпадающая
+запись, которую он находит.
+
+</P>
+<P>
+<A NAME="IDX486"></A>
+<A NAME="IDX487"></A>
+Таблицы <code>tables_priv</code> и <code>columns_priv</code> предоставляют привилегии соответственно
+на уровне таблиц и столбцов. Значения в полях контекста задаются следующим
+образом:
+
+</P>
+
+<ul>
+<LI>
+
+В обеих таблицах в поле <code>Host</code> можно использовать шаблонные символы <samp>`%'</samp>
+и <samp>`_'</samp>.
+
+<LI>
+
+В обеих таблицах <code>'%'</code> или пустое значение в поле <code>Host</code> означает ``любой
+хост''.
+
+В обеих таблицах в полях <code>Db</code>, <code>Table_name</code> и <code>Column_name</code> запрещено
+использовать шаблонные символы или пустое значение.
+</ul>
+
+<P>
+<code>Таблицы_priv</code> и <code>columns_priv</code> сортируются по полям <code>Host</code>, <code>Db</code> и <code>User</code>. Эта
+сортировка проводится так же, как и в таблице <code>db</code>, хотя в данном случае
+задача несколько упрощается, т.к. шаблонные символы могут встретиться
+только в поле <code>Host</code>.
+
+</P>
+<P>
+Ниже описывается процесс верификации запроса. (Если вы хорошо знакомы с
+исходным кодом проверки доступа, то заметите некоторые отличия:
+приведенное здесь описание несколько упрощено, чтобы сделать его более
+понятным, однако оно соответствует тому, что в действительности делает
+код).
+
+</P>
+<P>
+Для запросов на администрирование (<code>SHUTDOWN</code>, <code>RELOAD</code>, etc.) сервер
+проверяет запись только в таблице <code>user</code>, т.к. это единственная таблица,
+которая определяет привилегии администрирования. Доступ предоставляется
+при условии, что выбранная запись разрешает затребованные операции, и
+запрещается в противном случае. Например, вы хотите завершить работу <code>mysql</code>
+с помощью <code>mysqladmin shutdown</code>, но ваша запись в таблице <code>user</code> не
+предоставляет вам привилегию <code>SHUTDOWN</code>. В этом случае в доступе будет
+отказано без дальнейшей проверки таблицы <code>db</code> и <code>host</code> (поскольку в них
+отсутствует столбец <code>Shutdown_priv</code>, в такой проверке нет необходимости).
+
+</P>
+<P>
+В случае запросов, относящихся к базам данных (<code>INSERT</code>, <code>UPDATE</code> и т.д.),
+сервер сначала проверяет глобальные привилегии пользователя (привилегии
+суперпользователя), просматривая запись в таблице <code>user</code>. Если эта запись
+разрешает затребованную операцию, доступ предоставляется. Если глобальные
+привилегии, указанные в таблице <code>user</code>, недостаточны, сервер проверяет
+таблицы <code>db</code> и <code>host</code> и определяет привилегии пользователя на уровне баз
+данных:
+
+</P>
+
+<ol>
+<LI>
+
+Сервер просматривает таблицу <code>db</code> в поисках записи с подходящими
+значениями в полях <code>Host</code>, <code>Db</code> и <code>User</code>. Поля <code>Host</code> и <code>User</code> сравниваются с
+именем подключающегося хоста и именем пользователя MySQL. Поле <code>Db</code>
+сравнивается с именем базы данных, к которой пользователь хочет
+получить доступ. Если запись с подходящими значениями в полях <code>Host</code> и
+<code>User</code> отсутствует, в доступе будет отказано.
+
+<LI>
+
+Если же в таблице <code>db</code> имеется подходящая запись и значение в поле <code>Host</code>
+- не пустое, эта запись определяет привилегии пользователя, касающиеся
+базы данных.
+
+<LI>
+
+Если же в подходящей записи, выбранной в таблице <code>db</code>, значение в поле
+Host пустое, это означает, что перечень хостов, которым разрешен
+доступ к требуемой базе данных, приведен в таблице <code>host</code>. В этом случае
+дальнейший поиск производится в таблице <code>host</code>, где ищется запись с
+подходящими значениями в полях <code>Host</code> и <code>Db</code>. Если ни одной подходящей
+записи в таблице <code>host</code> нет, в доступе будет отказано. Если такая запись
+имеется, привилегии пользователя на уровне базы данных вычисляются
+путем логического умножения (не логического сложения!) привилегий,
+найденных в записях, которые выбраны в таблицах <code>db</code> и <code>host</code>. Другими
+словами, пользователю назначаются те привилегии, для которых в обеих
+записях установлено значение <code>'Y'</code>. (Этот способ можно использовать
+следующим образом: предоставить всеобщие привилегии в записи,
+хранящейся в таблице <code>db</code>, а затем выборочно ограничить их отдельно по
+каждому хосту, используя для этого записи в таблице <code>host</code>.)
+</ol>
+
+<P>
+Определив привилегии на уровне базы данных, предоставляемые записями в
+таблицах <code>db</code> и <code>host</code>, сервер добавляет их к глобальным привилегиям, заданным
+в таблице <code>user</code>. Если в результате привилегий оказывается достаточно для
+выполнения затребованной операции, доступ предоставляется. В противном
+случае сервер проверяет по таблицам <code>tables_priv</code> и <code>columns_priv</code> привилегии
+пользователя на уровне таблиц и столбцов и добавляет их к уже имеющимся
+привилегиям. В зависимости от полученного результата доступ либо
+предоставляется, либо нет.
+
+</P>
+<P>
+Если приведенное выше описание вычислений привилегий пользователя
+перевести на язык алгебры логики, используя логические операторы, то в
+результате получится примерно следующее:
+
+</P>
+
+<pre>
+global privileges
+OR (database privileges AND host privileges)
+OR table privileges
+OR column privileges
+</pre>
+
+<P>
+Сам по себе алгоритм определения привилегий на первый взгляд может
+показаться неочевидным. И в самом деле, если первоначально глобальных
+привилегий, определяемых таблицей <code>user</code>, оказывается недостаточно для
+выполнения затребованной операции, то зачем впоследствии эти вроде бы
+бесполезные привилегии добавляются к привилегиям на уровне баз данных,
+таблиц и столбцов? Смысл такого добавления заключается в том, что для
+выполнения запроса может потребоваться не один, а несколько типов
+привилегий. Например, для выполнения оператора <code>INSERT ... SELECT</code> вам
+потребуется как привилегия <code>INSERT</code>, так и привилегия <code>SELECT</code>. Ваши
+привилегии могут быть таковы, что запись в таблице user предоставляет вам
+одну привилегию, а запись в таблице <code>db</code> - другую. Другими словами,
+привилегии, необходимые для выполнения запроса, у вас есть, но сервер не
+может выяснить при просмотре каждой таблицы в отдельности, и поэтому
+привилегии, предоставляемые записями из обеих таблиц, должны быть
+объединены.
+
+</P>
+<P>
+<A NAME="IDX488"></A>
+<A NAME="IDX489"></A>
+
+</P>
+<P>
+Таблицу <code>host</code> можно использовать еще для одной цели - для поддержки списка
+надежных серверов.
+
+</P>
+<P>
+В таблицах на TcX <code>host</code> содержит список всех машин локальной сети. Им
+предоставляются все привилегии.
+
+</P>
+<P>
+Таблицу <code>host</code> можно также использовать для регистрации хостов, которые
+являются <strong>ненадежными</strong>. Предположим, одна из ваших машин -
+<code>public.your.domain</code> находится в общедоступной области, которую вы считаете
+незащищенной. В таком случае можно разрешить доступ всем хостам вашей
+сети, за исключением одной ``неблагонадежной'' машины, используя записи в
+таблице <code>host</code>, подобные приведенным ниже:
+
+</P>
+
+<pre>
++--------------------+----+-
+| Host               | Db | ...
++--------------------+----+-
+| public.your.domain | %  | ... (для всех привилегий установлено значение 'N')
+| %.your.domain      | %  | ... (для всех привилегий установлено значение 'Y')
++--------------------+----+-
+</pre>
+
+<P>
+<A NAME="IDX490"></A>
+<A NAME="IDX491"></A>
+<A NAME="IDX492"></A>
+<A NAME="IDX493"></A>
+<A NAME="IDX494"></A>
+
+</P>
+<P>
+Естественно, всегда нужно протестировать записи в таблицах привилегий
+(например, с помощью <code>mysqlaccess</code>), чтобы убедиться в том, что привилегии
+доступа установлены вами действительно так, как задумано.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c540" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#5c292839723835392f2839301c2b393e723839"><span class="__cf_email__" data-cfemail="6b1e1f0e450f020e181f0e072b1c0e09450f0e">[email&#160;protected]</span></a> on Saturday February 16 2002, @10:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=540&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=540">Edit</a>]</td></tr></table><p class="commenttext"> !!! Process_priv=N  does not generally mean <br />
+NOT, !!!!            <br />
+<br />
+also:      <br />
+<br />
+4.5.6.6 SHOW PROCESSLIST     <br />
+<!--<a href="http://www.mysql.com/doc/S/H/SHOW_PROCESSLIST.html">-->http://www.mysql.com/doc/S/H/SHOW_PROCESSLIST.html<!--</a>--><br />
+      <br />
+<br />
+&quot;If you have the process privilege, you can see <br />
+all threads.      <br />
+Otherwise, you can see only your own threads.&quot;</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Request_access">Add your own comment.</a></p><div id="docnav"><a href="Request_access.html#">Top</a> / <a rel="prev" href="Connection_access.html" title="4.2.9  Управление доступом, этап 1: верификация подсоединения">Previous</a> / <a rel="next" href="Access_denied.html" title="4.2.11  Причины появления ошибок Access denied (&quot;в доступе отказано&quot;)">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

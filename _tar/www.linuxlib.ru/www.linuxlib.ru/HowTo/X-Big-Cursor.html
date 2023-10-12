@@ -1,0 +1,872 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини-HOWTO: Большой курсор в X11 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Мини-HOWTO: Большой курсор в X11</A
+></H1
+><H2
+CLASS="SUBTITLE"
+>Как увеличить курсор мыши в X windows</H2
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN5"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN6"
+>Jorg Schneider</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0d6762687f6a237e6e6563686469687f4d647f6c2378666c236968">[email&#160;protected]</a></P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+>Перевод: <A HREF="../cdn-cgi/l/email-protection.html#20504158604153500d4c494e55580e434f4d" TARGET="_top">Павел Гашев</A
+>,
+<!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>--></H3
+></DIV
+><P
+CLASS="PUBDATE"
+>версия 2, 11 августа 1997<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN16"
+></A
+><P
+></P
+><P
+>В этом документе описывается процесс, позволяющий увеличить курсор мыши в X-windows.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="X-Big-Cursor.html#TOP"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="X-Big-Cursor.html#AEN34"
+>Об этом документе</A
+></DT
+><DT
+>3. <A
+HREF="X-Big-Cursor.html#HOWTO"
+>Как это сделать</A
+></DT
+><DT
+>4. <A
+HREF="X-Big-Cursor.html#NOTES"
+>Замечания и ограничения</A
+></DT
+><DT
+>5. <A
+HREF="X-Big-Cursor.html#TECH"
+>Технические рассуждения</A
+></DT
+><DT
+>6. <A
+HREF="X-Big-Cursor.html#IDEAS"
+>Другие идеи, позволяющие сделать курсор более заметным</A
+></DT
+><DT
+>7. <A
+HREF="X-Big-Cursor.html#INFO"
+>Дополнительная информация</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="X-Big-Cursor.html#FONTSERVER"
+>Сервер шрифтов</A
+></DT
+><DD
+><DL
+><DT
+>7.1.1. <A
+HREF="X-Big-Cursor.html#FSCONFIG"
+>Установка сервера шрифтов</A
+></DT
+></DL
+></DD
+><DT
+>7.2. <A
+HREF="X-Big-Cursor.html#GETBDF"
+>Как достать bdf-файлы для некоторых шрифтов</A
+></DT
+></DL
+></DD
+><DT
+>8. <A
+HREF="X-Big-Cursor.html#AEN158"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="TOP"
+>1. Введение</A
+></H1
+><P
+>Существует несколько причин, по которым стандартный курсор X11 может быть маловат:
+
+<P
+></P
+><UL
+><LI
+><P
+> когда X запущен на портативном компьютере с жидкокристаллическим дисплеем (LCD) с низким контрастом;</P
+></LI
+><LI
+><P
+> на нормальных дисплеях с большим разрешением (например 1600x1280);</P
+></LI
+><LI
+><P
+> для человека с плохим зрением даже на нормальном оборудовании.</P
+></LI
+></UL
+>&#13;</P
+><P
+>В любом случае, увеличение курсора может решить проблему. Идеально, если эту задачу выполняет одна X-программа, автоматически увеличивающая каждый раз все виды курсоров.</P
+><P
+>Насколько я знаю, не существует простого пути для создания такой утилиты, так как X-протокол не имеет представления о том, как узнать вид курсора. Для более подробной информации см. раздел "<A
+HREF="X-Big-Cursor.html#TECH"
+><I
+>Технические рассуждения</I
+></A
+>".</P
+><P
+>Впрочем, кое-что можно сделать:</P
+><P
+>Существует набор стандартных курсоров мыши, которые находятся в шрифте "cursor" (вы можете посмотреть их командой "<TT
+CLASS="LITERAL"
+>xfd -fn cursor</TT
+>"). Большинство программ используют именно эти курсоры, и ключевой идеей является замена стандартного шрифта "cursor" на увеличенную версию.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN34"
+>2. Об этом документе</A
+></H1
+><P
+>Причиной написания этого мини-HOWTO послужила просьба моего однокурсника с плохим зрением, который спросил меня о том, как увеличить курсор мыши под X. После того, как я нашел способ это сделать, я написал первую версию данного документа. Информация об этом методе не является общей, но тем не менее я решился поместить его в Linux мини-HOWTO, даже несмотря на тот факт, что
+<I
+CLASS="EMPHASIS"
+>он совсем не специфичен для Linux</I
+>. Как и другие мини-HOWTO, он находится в <!--<A
+HREF="http://sunsite.unc.edu/LDP/HOWTO/"
+TARGET="_top"
+>-->http://sunsite.unc.edu/LDP/HOWTO/<!--</A
+>-->.</P
+><P
+><!--<A
+HREF="http://i11www.ira.uka.de/~schneid/X11-big-cursor/master/"
+TARGET="_top"
+>-->Основная версия<!--</A
+>--> этого документа поддерживается в формате SGML/linuxdoc. Это позволяет автоматически получать версии в других форматах (которые можно найти там же): html, text, LaTeX, DVI, PostScript, GNU info.</P
+><P
+><A HREF="../cdn-cgi/l/email-protection.html#e09388898e8f8295a0858d898388818ece92898dce8f92ce8a90" TARGET="_top">Shinobu Miyata</A
+> перевел этот текст на Японский <!--<A
+HREF="http://i11www.ira.uka.de/~schneid/jp/X11-big-cursor/"
+TARGET="_top"
+>-->http://i11www.ira.uka.de/~schneid/jp/X11-big-cursor/<!--</A
+>-->.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="HOWTO"
+>3. Как это сделать</A
+></H1
+><P
+>Следуйте шагам, описанным ниже. Если вы не хотите загружать и компилировать пакет bdfresize, вы можете пропустить первые три шага и найти увеличенный шрифт, вместо того, чтобы создавать его.
+
+<P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>берем файл cursor.bdf (исходный текст шрифта "cursor") из какого-нибудь дистрибутива X, например <!--<A
+HREF="ftp://ftp.x.org/pub/R6.3/xc/fonts/bdf/misc/cursor.bdf"
+TARGET="_top"
+>-->ftp://ftp.x.org/pub/R6.3/xc/fonts/bdf/misc/cursor.bdf<!--</A
+>--> (если вы его там не найдете, попробуйте поискать его в сети или возьмите <!--<A
+HREF="http://i11www.ira.uka.de/~schneid/X11-big-cursor/cursor.bdf"
+TARGET="_top"
+>-->мою копию<!--</A
+>-->).  </P
+></LI
+><LI
+><P
+> берем, компилируем и инсталлируем пакет bdfresize
+<!--<A
+HREF="ftp://ftp.cs.titech.ac.jp/X11/contrib/Local/bdfresize-1.4.tar.Z"
+TARGET="_top"
+>-->ftp://ftp.cs.titech.ac.jp/X11/contrib/Local/bdfresize-1.4.tar.Z<!--</A
+>-->
+ (или <!--<A
+HREF="http://i11www.ira.uka.de/~schneid/X11-big-cursor/bdfresize-1.4.tar.gz"
+TARGET="_top"
+>-->моя копия<!--</A
+>-->):
+     zcat bdfresize-1.4.tar.Z  | tar xf -
+     cd bdfresize-1.4
+     xmkmf
+     make
+
+На Linux вы, наверно, должны сделать:
+     make CCOPTIONS='-include /usr/include/bsd/bsd.h' clean all
+     </P
+></LI
+><LI
+><P
+> создаем каталог и записываем в него увеличенный шрифт (например в два раза):
+
+     mkdir $HOME/fonts
+     bdfresize -f 2 cursor.bdf | bdftopcf &#62;$HOME/fonts/cursor2.pcf
+     mkfontdir $HOME/fonts
+
+
+Я подготовил несколько <!--<A
+HREF="http://i11www.ira.uka.de/~schneid/X11-big-cursor/fonts/"
+TARGET="_top"
+>-->шрифтов<!--</A
+>-->
+с увеличением в 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8 и 16 раз. Если вы не хотите пользоваться bdfresize, можете найти их и поместить в каталог
+<TT
+CLASS="LITERAL"
+>$HOME/fonts</TT
+>.&#13;</P
+></LI
+><LI
+><P
+>изменяем файлы <TT
+CLASS="LITERAL"
+>.xinitrc</TT
+> или <TT
+CLASS="LITERAL"
+>.xsession</TT
+>: перед тем как запустится X-клиент (который использует курсор), должны запускаться следующие команды:
+
+     xset +fp $HOME/fonts
+     xsetroot -cursor_name X_cursor
+     &#13;</P
+></LI
+><LI
+><P
+> перезапустите X-сервер.</P
+></LI
+></OL
+>&#13;</P
+><P
+>Это все. Теперь все курсоры мыши должны быть в два раза больше.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="NOTES"
+>4. Замечания и ограничения</A
+></H1
+><P
+>&#13;<P
+></P
+><UL
+><LI
+><P
+>X-сервер может ограничивать максимальный размер курсора, особенно если курсор реализуется аппаратно. Другие X-сервера не имеют таких ограничению. Например, XF86_S3 3.3 работает с курсором 512x512 (правда очень медленно).</P
+></LI
+><LI
+><P
+>Увеличенный шрифт должен иметь то же название, что и оригинал. (<I
+CLASS="EMPHASIS"
+>имя шрифта</I
+> должно быть <TT
+CLASS="LITERAL"
+>cursor</TT
+>, <I
+CLASS="EMPHASIS"
+>имя файла</I
+> не имеет значение); это не проблема, так как <TT
+CLASS="LITERAL"
+>bdfresize</TT
+> не меняет имя шрифта.</P
+></LI
+><LI
+><P
+>В списке каталогов шрифтов каталог с новым шрифтом должен быть помешен выше каталога со стандартным шрифтом; это выполняет команда <TT
+CLASS="LITERAL"
+>xset +fp</TT
+> (в отличие от
+<TT
+CLASS="LITERAL"
+>xset fp+</TT
+>).</P
+></LI
+><LI
+><P
+>Любые изменения в каталоге <TT
+CLASS="LITERAL"
+>$HOME/fonts/</TT
+> вступают в силу после команд <TT
+CLASS="LITERAL"
+>mkfontdir $HOME/fonts; xset fp rehash</TT
+>
+и перезапуска X-клиентов (а точнее, для вновь созданных курсоров).</P
+></LI
+><LI
+><P
+> <TT
+CLASS="LITERAL"
+>xset +fp path</TT
+> может не работать на X-терминале, если он использует сервер шрифтов (см. раздел <A
+HREF="X-Big-Cursor.html#FONTSERVER"
+><I
+>Сервер шрифтов</I
+></A
+>)
+или другой способ управления шрифтами (это может исправить только ваш системный администратор).</P
+></LI
+><LI
+><P
+>Этот же способ можно использовать для <TT
+CLASS="LITERAL"
+>olcursor</TT
+> и
+<TT
+CLASS="LITERAL"
+>decw$cursor</TT
+>, и других шрифтов с курсорами мыши, которые вам могут встретиться.</P
+></LI
+><LI
+><P
+>Курсорные шрифты, созданные bdfresize, выглядят не очень гладкими, особенно при большом увеличении. Было бы не плохо, если бы кто-нибудь нарисовал свои крупные курсоры.</P
+></LI
+></UL
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="TECH"
+>5. Технические рассуждения</A
+></H1
+><P
+>Возможно ли написать программу, автоматически увеличивающую указатели?</P
+><P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Решение 1 (частичное)</DT
+><DD
+><P
+>Использовать XTestCompareCursor из XTEST. Для всех окон, над которыми движется указатель мыши курсор окна сравнивается с набором "известных" курсоров (например, из шрифта cursor). Если найден похожий курсор, то он заменяется на увеличенную версию. В противном случае, он остается без изменения или подставляется стандартный курсор. Это работает в том случае, если у вас есть XTest.</P
+></DD
+><DT
+>Решение 2</DT
+><DD
+><P
+>Написать X-прокси-сервер, передающий все запросы на X-сервер, за исключением запросов соответствующих функции <TT
+CLASS="LITERAL"
+>XCreate*Cursor</TT
+> из библиотеки Xlib. Курсоры, определенные в запросах <TT
+CLASS="LITERAL"
+>XCreate*Cursor</TT
+> должны изменяться на соответствующие увеличенные. </P
+><P
+>Прокси-сервер имитирует новый дисплей, например <TT
+CLASS="LITERAL"
+>:1</TT
+>. Все клиенты, использующие этот дисплей (например <TT
+CLASS="LITERAL"
+>xterm -display
+:1</TT
+>) показываются на обычном X-сервере <TT
+CLASS="LITERAL"
+>:0</TT
+>), но их курсоры автоматически увеличиваются. Курсоры клиентов, использующих <TT
+CLASS="LITERAL"
+>:0</TT
+> <I
+CLASS="EMPHASIS"
+>не изменяются</I
+>.</P
+></DD
+></DL
+></DIV
+></P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="IDEAS"
+>6. Другие идеи, позволяющие сделать курсор более заметным</A
+></H1
+><P
+>Вот некоторые идеи, позволяющие сделать курсор более заметным, при помощи простых программ.</P
+><P
+>&#13;<P
+></P
+><UL
+><LI
+><P
+>Когда нажимается какая-нибудь клавиша, вывести на пол-секунды что-нибудь (большой курсор или маленькое окно) на месте курсора.</P
+></LI
+><LI
+><P
+>Использовать XRecolorCursor для смены цвета курсора каждую 0.1 секунды.</P
+></LI
+></UL
+>&#13;</P
+><P
+>Более ожидаемое решение - это <I
+CLASS="EMPHASIS"
+>мышиный хвост</I
+> а-ля windows, т.е. при движении мыши, курсор рисуется на новом месте, а на старом месте стирается только через некоторую задержку. Мышиный хвост лучше всего реализовать в X-сервере, но проще все его сделать как X-клиент, а еще лучше как прокси-сервер (см. "<A
+HREF="X-Big-Cursor.html#TECH"
+><I
+>Технические рассуждения</I
+></A
+>").</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="INFO"
+>7. Дополнительная информация</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FONTSERVER"
+>7.1. Сервер шрифтов</A
+></H2
+><P
+>Сервер шрифтов - это сетевой сервис с простым протоколом, предоставляющий X11 набор шрифтов. Он предоставляет как список шрифтов, так и изображение.</P
+><P
+>Вы можете использовать сервер шрифтов для модифицированных шрифтов вместо того, чтобы хранить их у себя на компьютере.</P
+><P
+>Этот способ особенно удобен, если несколько машин не используют общую файловую системы или если вы пользуетесь X-терминалами. </P
+><P
+>Сам сервер шрифтов и утилиты, связанные с ним, идут с дистрибутивом X11R5+ (AFAIK).</P
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="FSCONFIG"
+>7.1.1. Установка сервера шрифтов</A
+></H3
+><P
+>Прочитайте руководства <I
+CLASS="EMPHASIS"
+>fs(1)</I
+>, <I
+CLASS="EMPHASIS"
+>fslsfonts(1)</I
+> (или
+<I
+CLASS="EMPHASIS"
+>xfs(1)</I
+>, <I
+CLASS="EMPHASIS"
+>xfslsfonts(1)</I
+> и попробуйте - это не сложно. Скажем, если вы запустили сервер шрифтов на машине <TT
+CLASS="LITERAL"
+>some.host.edu</TT
+>
+на порту 7100. Вы можете проверить, как он работает командой</P
+><P
+><TT
+CLASS="LITERAL"
+>fslsfonts -server some.host.edu:7100</TT
+></P
+><P
+>И настроить X-сервер командой</P
+><P
+><TT
+CLASS="LITERAL"
+>xset +fp tcp/some.host.edu:7100</TT
+>,</P
+><P
+>которая должна выполниться без ошибок.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="GETBDF"
+>7.2. Как достать bdf-файлы для некоторых шрифтов</A
+></H2
+><P
+>Если у вас установлен сервер шрифтов, то используйте команду <TT
+CLASS="LITERAL"
+>fstobdf</TT
+>, идущую вместе с сервером.</P
+><P
+>Кроме того, вы можете попробовать команду <TT
+CLASS="LITERAL"
+>getbdf</TT
+>, которая записывает любой установленный в X11 шрифт в bdf файл.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN158"
+>8. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO,
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#adc1c4c3d8d580c5c2dad9c2edc0c8d9ccc1cccf83d8c3ce83c8c9d8"><span class="__cf_email__" data-cfemail="e68a8f88939ecb8e89919289a68b8392878a8784c8938885c8838293">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#711d181f04095c191e06051e311002011d181f04095f0304"><span class="__cf_email__" data-cfemail="492520273c316421263e3d2609283a392520273c31673b3c">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

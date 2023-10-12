@@ -1,0 +1,875 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux simple fax printer server mini-HOWTO (faxsrv-mini-HOWTO) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Linux simple fax printer server mini-HOWTO (faxsrv-mini-HOWTO)</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Erez Strauss</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+>&nbsp;&nbsp;&nbsp;&nbsp;     <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e48196819ea48a8193948885878197ca878b89">[email&#160;protected]</a>
+    <br>
+&nbsp;&nbsp;&nbsp;</P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+>  Перевод: <A HREF="../cdn-cgi/l/email-protection.html#86f6e7fec6e7f5f6abeaefe8f3fea8e5e9eb" TARGET="_top">Павел Гашев</A
+>,
+  <!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>-->
+ </H3
+></DIV
+><P
+CLASS="PUBDATE"
+>версия 1.0, 8 ноября 1997 года
+<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN15"
+></A
+><P
+></P
+><P
+>Этот документ в деталях описывает быстрый способ установки факс-сервера в
+системе Linux. Возможности факса становятся доступны для пользователей
+сервера и сети.</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Fax-Server.html#AEN17"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="Fax-Server.html#AEN22"
+>Вопросы и Ответы</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="Fax-Server.html#AEN24"
+>Что такое "сервер факсовой печати"?</A
+></DT
+><DT
+>2.2. <A
+HREF="Fax-Server.html#AEN27"
+>Как его установить?</A
+></DT
+><DD
+><DL
+><DT
+>2.2.1. <A
+HREF="Fax-Server.html#AEN31"
+>Программа efax</A
+></DT
+><DT
+>2.2.2. <A
+HREF="Fax-Server.html#AEN36"
+>Запись в printcap</A
+></DT
+><DT
+>2.2.3. <A
+HREF="Fax-Server.html#AEN43"
+>Команда fax</A
+></DT
+><DT
+>2.2.4. <A
+HREF="Fax-Server.html#AEN48"
+>Файл /usr/bin/fax</A
+></DT
+><DT
+>2.2.5. <A
+HREF="Fax-Server.html#AEN62"
+>Каталог /var/spool/fax</A
+></DT
+><DT
+>2.2.6. <A
+HREF="Fax-Server.html#AEN66"
+>lock-файл</A
+></DT
+><DT
+>2.2.7. <A
+HREF="Fax-Server.html#AEN72"
+>Файл /dev/modem</A
+></DT
+><DT
+>2.2.8. <A
+HREF="Fax-Server.html#AEN82"
+>Каталог <TT
+CLASS="LITERAL"
+>/var/lock</TT
+>.</A
+></DT
+></DL
+></DD
+><DT
+>2.3. <A
+HREF="Fax-Server.html#AEN89"
+>Как послать факс с сервера?</A
+></DT
+><DT
+>2.4. <A
+HREF="Fax-Server.html#AEN95"
+>Как мне указать номер факса?</A
+></DT
+><DT
+>2.5. <A
+HREF="Fax-Server.html#AEN98"
+>Как мне послать факс с другого Unix в сети?</A
+></DT
+><DT
+>2.6. <A
+HREF="Fax-Server.html#AEN110"
+>Пользователям Caldera и LPRng</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="Fax-Server.html#AEN118"
+>Последняя версия и как связаться с автором</A
+></DT
+><DT
+>4. <A
+HREF="Fax-Server.html#AEN125"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN17"
+>1. Введение</A
+></H1
+><P
+>Для того чтобы, установить принтер/факс на Linux, необходимо определенное
+программное обеспечение и факс-модем.</P
+><P
+>Программное обеспечение для печати использует факсимильное программное
+обеспечение в качестве фильтра печати. Номер факса для программы efax
+(автор Ed Casas &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5e3b3a3d1e3d3d3b703d3133">[email&#160;protected]</a>&gt;) передается через номер задачи в печать.&#13;</P
+><P
+>Остальная часть документа построена в виде вопросов и ответов на них.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN22"
+>2. Вопросы и Ответы</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN24"
+>2.1. Что такое "сервер факсовой печати"?</A
+></H2
+><P
+>Сервер факсовой печати - это набор нескольких программ: efax и сервер
+печати, объединенные таким образом, что посылка факса с компьютера
+превращается в посылку распечатки на принтер.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN27"
+>2.2. Как его установить?</A
+></H2
+><P
+>Установка efax в качестве сервера факсовой печати включает в себя несколько
+задач. Я решал их несколько раз и собрал весь опыт в этом mini-HOWTO, так
+что комментарии только приветствуются (<TT
+CLASS="LITERAL"
+>&lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="670215021d27090210170b060402144904080a">[email&#160;protected]</a>&gt;</TT
+>). Я описываю
+здесь задачи и их решения. Вот все инструкции в двух словах:&#13;</P
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN31"
+>2.2.1. Программа efax</A
+></H3
+><P
+>Проверьте, что у вас установлен пакет efax.</P
+><P
+>На системах, основанных на RPM, это будет команда 'rpm -qv efax'.</P
+><P
+>Вы можете взять исходные тексты efax с серверов sunsite и redhat:
+ftp://sunsite.unc.edu/pub/Linux/apps/serialcomm/fax/efax08a.tar.gz или
+пакет rpm:
+ftp://ftp.redhat.com/pub/redhat/redhat-4.2/i386/RedHat/RPMS/efax-0.8a-3.i386.rpm&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN36"
+>2.2.2. Запись в printcap</A
+></H3
+><P
+>В документации efax отсутствует двоеточие в конце записи printcap.</P
+><P
+>Решение: Добавьте следующую запись в <TT
+CLASS="LITERAL"
+>/etc/printcap</TT
+>:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>fax:\
+        :lp=/dev/null:\
+        :sd=/var/spool/fax:\
+        :if=/usr/bin/faxlpr:</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN43"
+>2.2.3. Команда fax</A
+></H3
+><P
+>Используйте жесткую (hard link), а не символьную ссылку (symbolic) на команду fax.</P
+><P
+>Запустите команду:
+<PRE
+CLASS="SCREEN"
+>ln /usr/bin/fax /usr/bin/faxlpr</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN48"
+>2.2.4. Файл /usr/bin/fax</A
+></H3
+><P
+>Отредактируйте /usr/bin/fax, согласно вашим предпочтениям:</P
+><P
+>выберите правильный Класс факса для вашего модема:
+<PRE
+CLASS="SCREEN"
+>CLASS=2.0</PRE
+>
+Установите поле FROM="ваш международный телефонный номер"
+<PRE
+CLASS="SCREEN"
+>NAME="Ваше имя"</PRE
+>
+Добавьте строку, конвертирующую международный телефонный номер в локальный.
+Для Израиля это будет:
+
+<PRE
+CLASS="SCREEN"
+>TELCVT='sed -e s/+972/0/ -e s/+/00/'  # Израиль</PRE
+>&#13;</P
+><P
+>Исправьте ошибку в строке 586, смените <TT
+CLASS="LITERAL"
+>cfile=...</TT
+>
+ на две следующие строки:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>cfile=`/usr/bin/tail -1 lock`
+cfile=`cat $cfile`</PRE
+>&#13;</P
+><P
+>Не должно быть знаков '-':</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>0) echo "$l" | mail -s "факс на $num послан" $user@$host ;;
+*) echo "$l" | mail -s "факс на $num не прошел" $user@$host ;;</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN62"
+>2.2.5. Каталог /var/spool/fax</A
+></H3
+><P
+>Создайте каталог /var/spool/fax
+<PRE
+CLASS="SCREEN"
+>mkdir /var/spool/fax
+chmod 777 /var/spool/fax</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN66"
+>2.2.6. lock-файл</A
+></H3
+><P
+>lock-файл (<TT
+CLASS="LITERAL"
+>/var/spool/fax/lock</TT
+>) создается с неправильными правами.
+Исправьте это:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>touch /var/spool/fax/lock ; chmod 644 /var/spool/fax/lock</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN72"
+>2.2.7. Файл /dev/modem</A
+></H3
+><P
+>Программа efax работает с файлом <TT
+CLASS="LITERAL"
+>/dev/modem</TT
+>,
+но не работает с символьной
+ссылкой, так что вам придется создать файл устройства с тем же главным
+(major) и дополнительным (minor) номером, как и <TT
+CLASS="LITERAL"
+>/dev/cua?</TT
+>,
+к которому подключен модем. Чтобы разрешить доступ к факс-модему всем пользователям,
+файл должен иметь права доступа rw-rw-rw-.</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>ls -lL /dev/modem
+rm /dev/modem
+mknod /dev/modem c Mj Mi
+chmod 666 /dev/modem</PRE
+>&#13;</P
+><P
+>Mj = 5, а Mi = 64 для cua0, 65 для cua1 и т.д. Например (для cua1):</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>mknod /dev/modem c 5 65</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN82"
+>2.2.8. Каталог <TT
+CLASS="LITERAL"
+>/var/lock</TT
+>.</A
+></H3
+><P
+>Смените права доступа к каталогу <TT
+CLASS="LITERAL"
+>/var/lock</TT
+></P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>chmod 1777 /var/lock</PRE
+>&#13;</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN89"
+>2.3. Как послать факс с сервера?</A
+></H2
+><P
+>Вам нужно указать опции -Pfax и -J&lt;номер факса&gt;</P
+><P
+>Используйте одну из команд:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>lpr -Pfax -J &lt;номер факса&gt; [имена файлов]
+любая команда | lpr -Pfax -J&lt;номер факса&gt;</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN95"
+>2.4. Как мне указать номер факса?</A
+></H2
+><P
+>После опции -J.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN98"
+>2.5. Как мне послать факс с другого Unix в сети?</A
+></H2
+><P
+>Добавьте следующую запись в файл <TT
+CLASS="LITERAL"
+>/etc/printcap</TT
+></P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>fax:\
+        :sd=/var/spool/fax:\
+        :mx#0:\
+        :sh:\
+        :rm=машина.домен:\
+        :rp=fax:</PRE
+>&#13;</P
+><P
+>создайте каталог <TT
+CLASS="LITERAL"
+>/var/spool/fax</TT
+> и добавьте имя клиента в файл
+<TT
+CLASS="LITERAL"
+>/etc/hosts.lpd</TT
+> на сервере.</P
+><P
+>Посылка факса осуществляется так же, как и выше.</P
+><P
+>Примечание:</P
+><P
+>Заголовок, который добавляется к страницам факса программой efax, не
+содержит имя пользователя, посылающего факс, впрочем это можно исправить.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN110"
+>2.6. Пользователям Caldera и LPRng</A
+></H2
+><P
+>LPRng - это программное обеспечение, управляющее печатью, но использующее другой способ поддержки управляющего файла.</P
+><P
+>Luca Montecchiani &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="472a692b3224260732342669292233">[email&#160;protected]</a>&gt; обнаружил и исправил эту проблему. В файле
+<TT
+CLASS="LITERAL"
+>/usr/bin/fax</TT
+>
+ нужно изменить две строки <I
+CLASS="EMPHASIS"
+>cfile=...</I
+> (с номерами 586,587)</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+># Исправлено для работы с пакетом LPRng
+# Luca Montecchiani (08/11/97 <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="523f7c3e273133122721337c3c3726">[email&#160;protected]</a>)
+if [ !-z "$CONTROL_FILE" ]
+    then
+        cfile=`cat tail -1 lock`
+        cfile=`cat $cfile`
+    else
+        cfile=$CONTROL_FILE
+fi&#13;</PRE
+>&#13;</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN118"
+>3. Последняя версия и как связаться с автором</A
+></H1
+><P
+>Последняя версия этого файла находится по адресам:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>http://www.newplaces.com/linux/faxsrv/faxsrv-mini-HOWTO.sgml
+http://www.newplaces.com/linux/faxsrv/faxsrv-mini-HOWTO.html
+http://www.newplaces.com/linux/faxsrv/faxsrv-mini-HOWTO.txt
+http://www.newplaces.com/linux/faxsrv/faxsrv-mini-HOWTO.info</PRE
+>&#13;</P
+><P
+>Вы можете связаться со мной:
+<PRE
+CLASS="SCREEN"
+>Erez Strauss
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="a9ccdbccd3e9c7ccded9c5c8caccda87cac6c4">[email&#160;protected]</a>
+http://www.newplaces.com/linux/
+http://www.newplaces.com/
+Phone: +972 52 739737
+Fax:  +972 9 954 3034</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN125"
+>4. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но так или иначе автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#6f0306011a17420700181b002f020a1b0e030e0d411a010c410a0b1a"><span class="__cf_email__" data-cfemail="f5999c9b808dd89d9a82819ab598908194999497db809b96db909180">[email&#160;protected]</span></A
+>&#62;</TT
+>, или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#6b0702051e134603041c1f042b0a181b0702051e1345191e"><span class="__cf_email__" data-cfemail="1f7376716a67327770686b705f7e6c6f7376716a67316d6a">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,1117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Создание собственных конфигурационных файлов PPP — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Подробное руководство по
+          PPP</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "c309.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">Chapter 3.
+          Конфигурирование PPP-соединения</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "x568.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="AEN341">3.2. Создание собственных
+      конфигурационных файлов PPP</a></h1>
+
+      <p>По умолчанию, в процессе установки FreeBSD создается
+      несколько примеров конфигурационных файлов в каталогах <tt
+      class="FILENAME">/etc/ppp</tt> и <tt class=
+      "FILENAME">/usr/share/examples/ppp</tt>. Пожалуйста выберите
+      время для ознакомления с этими файлами; они были взяты с
+      работающих систем и полное представление об особенностях и
+      возможностях программы PPP.</p>
+
+      <p>Мы <span class="emphasis"><i class=
+      "EMPHASIS">настоятельно</i></span> рекомендем Вам изучить эти
+      файлы и использовать их при настройке собственной
+      конфигурации по мере необходимости.</p>
+
+      <p>Более подробную информацию о программе `ppp` Вы можете
+      получить, прочитав man-страницу справочного руководства по
+      ppp:</p>
+
+      <div class="INFORMALEXAMPLE">
+        <a name="AEN349"></a>
+<pre class="SCREEN">
+    # man ppp
+</pre>
+      </div>
+      <br>
+      <br>
+
+      <p>Более подробную информацию о языке скриптов `chat`,
+      используемого программой PPP, Вы можете получить, прочитав
+      man-страницу справочного руководства по chat:</p>
+
+      <div class="INFORMALEXAMPLE">
+        <a name="AEN352"></a>
+<pre class="SCREEN">
+    # man chat
+</pre>
+      </div>
+      <br>
+      <br>
+
+      <p>В этом разделе описано рекомендуемое содержание
+      конфигурационных файлов программы PPP.</p>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN355">3.2.1. Файл '<tt class=
+        "FILENAME">/etc/ppp/ppp.conf</tt>'</a></h2>
+
+        <p>В файле '<tt class="FILENAME">/etc/ppp/ppp.conf</tt>'
+        содержится информация и настройки, необходимые для
+        уставновки PPP-соединения. В этом файле может содержаться
+        более одной конфигурации. Более детельное описание
+        содержания и синтаксиса этого файла Вы можете получить в
+        руководстве по FreeBSD (XXX URL? XXX).</p>
+
+        <p>Этот раздел описывает только минимальную конфигурацию
+        для получения нормального "рабочего" соединения.</p>
+
+        <p>Ниже приведен пример файла /etc/ppp/ppp.conf, который
+        будет использоваться для обеспечения Интернет-шлюза для
+        нашей локальной сети:</p>
+
+        <div class="NOTE">
+          <blockquote class="NOTE">
+            <p><b>Note:</b> Полное описание синтаксиса для <tt
+            class="FILENAME">/etc/ppp/ppp.conf</tt> Вы можете найти
+            в странице Справичника <span class="CITEREFENTRY"><span
+            class="REFENTRYTITLE">ppp</span>(8)</span>. В частности
+            обратите внимание, что все строки которые не являются
+            метками заканчивающимися точкой с запятой (например <tt
+            class="LITERAL">default:</tt>, <tt class=
+            "LITERAL">interactive:</tt>), или командой начинающейся
+            с <span class="QUOTE">"!"</span> (например <tt class=
+            "LITERAL">!include</tt>), или коментарием <span class=
+            "emphasis"><i class="EMPHASIS">обязаны</i></span> иметь
+            отступ в начале строки (indented)!</p>
+          </blockquote>
+        </div>
+<pre class="PROGRAMLISTING">
+    ###############################################################################
+    # Конфигурационный файл PPP ('/etc/ppp/ppp.conf')
+    #
+    # Стандартные установки; они всегда выполняются при запуске программы PPP
+    # и применяются для конфигурации всех систем.
+    ###############################################################################
+    default:
+      set device /dev/cuaa0
+      set speed 57600
+      disable pred1
+      deny pred1
+      disable lqr
+      deny lqr
+      set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \"\" ATE1Q0M0 OK-AT-OK\\dATDT\\T TIMEOUT 40 CONNECT"
+      set redial 3 10
+    ###############################################################################
+    #
+    # Для интерактивного режима используйте следующую конфигурацию:
+    #
+    # Формат вызова `ppp -alias interactive'
+    #
+    ###############################################################################
+    interactive:
+      set authname Ваш_логин_на_удаленную_систему
+      set authkey Ваш_пароль_на_удаленную_систему
+      set phone Телефон_для_вызова_системы
+      set timeout 300
+      set openmode active
+      accept chap
+    ###############################################################################
+    #
+    # Для режима с дозвоном по необходимости (или автоматического)
+    # используйте следующую конфигурацию:
+    #
+    # Формат вызова: `ppp -auto -alias demand'
+    #
+    ###############################################################################
+    demand:
+      set authname Ваш_логин_на_удаленную_систему
+      set authkey Ваш_пароль_на_удаленную_систему
+      set phone Телефон_для_вызова_системы
+      set timeout 300
+      set openmode active
+      accept chap
+      set ifaddr 127.1.1.1/0 127.2.2.2/0 255.255.255.0
+      add 0 0 127.2.2.2
+    ###############################################################################
+    # Конец файла /etc/ppp/ppp.conf
+</pre>
+        Этот файл, взятый без изменений с работающей системы,
+        содержит три взаимосвязанные конфигурационные секции:<br>
+        <br>
+
+        <div class="SECT3">
+          <h3 class="SECT3"><a name="AEN374">3.2.1.1. "<span class=
+          "emphasis"><i class="EMPHASIS">Стандартная</i></span>"
+          секция</a></h3>
+
+          <p>'<span class="emphasis"><i class=
+          "EMPHASIS">Стандартная</i></span>'секция содержит
+          параметры и настройки, используюемые во всех остальных
+          секциях этого файла. Эта секция неявно добавляется в
+          каждую секцию.</p>
+
+          <p>В этой секции можно размещать "стандартные глобальные
+          настройки", которые применяются для всех сессий дозвона;
+          например, настройки модема и префиксы дозвона, которые
+          обычно не изменяются, независимо от того с системой
+          какого типа будет произведено соединение.</p>
+
+          <p>Ниже приведено описание каждой строки в "стандартной"
+          секции примера файла '<tt class=
+          "FILENAME">/etc/ppp/ppp.conf</tt>':</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN382"></a>
+<pre class="SCREEN">
+    set device /dev/cuaa0
+</pre>
+          </div>
+          Эта строка сообщает программе PPP, что ей необходимо
+          использовать первый последовательный порт. В системе
+          FreeBSD устройство '<tt class="FILENAME">/dev/cuaa0</tt>'
+          - это тот же самый порт, который известен под именем
+          "<span class="emphasis"><i class=
+          "EMPHASIS">COM1:</i></span>" в системах DOS, Windows,
+          Windows 95 и т.д...<br>
+          <br>
+
+          <p>Если Ваш модем подключен к порту <span class=
+          "emphasis"><i class="EMPHASIS">COM2:</i></span>, то
+          необходимо указать значение '<tt class=
+          "FILENAME">/dev/cuaa1</tt>, если <span class=
+          "emphasis"><i class="EMPHASIS">COM3:</i></span> - '<tt
+          class="FILENAME">/dev/cuaa2</tt>'.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN392"></a>
+<pre class="SCREEN">
+    set speed 57600
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта строка устанавливает скорость передачи и приема
+          для соединения между последовательным портом и модемом. И
+          хотя модем, используемый в данной конфигурации, имеет
+          максимальную скорость 28.8К, устанавливая эту величину в
+          значение 57600 мы позволим последовательному соединению
+          работать на более высокой скорости, которая будет
+          соответствовать высокой пропускной способности канала, в
+          результате использования сжатия данных, встроенного в
+          последние модели модемов.</p>
+
+          <p>Если у вас возникнут проблемы при установке модемного
+          соединения, попробуйте изменить эту величину на значение
+          38400 или, еще меньше, на 19200.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN397"></a>
+<pre class="SCREEN">
+    disable pred1
+    deny pred1
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эти две строки выключают режим сжатия "CCP/Predictor
+          type 1", встроенный в программу PPP. Текущая версия `ppp`
+          поддерживает сжатие данных в соответствии с требованиями
+          стандартов сети Интернет. К сожалению, многие
+          Интернет-провайдеры используют оборудование, которое не
+          поддерживает эту возможность. Большинство модемов
+          выполняют сжатие "на лету", однако Вы не потеряете
+          многого в производительности системы, выключив этот режим
+          на своем узле и запретив удаленному узлу принуждать Вас к
+          его поддержке.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN401"></a>
+<pre class="SCREEN">
+    disable lqr
+    deny lqr
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эти две строки контролируют функции "отчета о качестве
+          линии", которые являются частью полной спецификации
+          протокола Point-to-Point (PPP). (За более подробной
+          информацией обратитесь к RFC-1989.)</p>
+
+          <p>Первая строка "disable lqr" сообщает программе PPP не
+          пытаться сообщать о состоянии качества линии устройству
+          на удаленном узле.</p>
+
+          <p>Вторая строка "deny lqr" сообщает программе PPP
+          запретить любые попытки удаленного узла сообщать о
+          качестве линии.</p>
+
+          <p>Поскольку современные модемы имеют встроенную
+          автоматическую коррекцию ошибок и детектирование, а режим
+          сообщения о качестве линии в продуктах многих
+          производителей применяется не полностью, то включить эти
+          две строки в стандартную конфигурацию будет очень не
+          плохо с точки зрения безопасности системы.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN408"></a>
+<pre class="SCREEN">
+    set dial "ABORT BUSY ABORT NO\\sCARRIER TIMEOUT 5 \"\" ATE1Q0M0
+    OK-AT-OK\\dATDT\\T TIMEOUT 40 CONNECT"
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">ПРИМЕЧАЕНИЕ: (Этот оператор необходимо ввести
+          одной строкой; все переносы строк, которые Вы встретите в
+          этом документе должны игнорироваться.)</i></span></p>
+
+          <p>Эта строка сообщает программе PPP как работать с
+          модемом и определяет некоторые устаревшие директивы для
+          его управления:</p>
+
+          <ul>
+            <li>
+              <p>Попытки дозвона ошибочны, если модем вернул код
+              "BUSY" ("ЗАНЯТО"),</p>
+            </li>
+
+            <li>
+              <p>Попытки дозвона ошибочны, если модем вернул код
+              "NO CARRIER" ("НЕТ НЕСУЩЕЙ"),</p>
+            </li>
+
+            <li>
+              <p>Программа PPP ожидает завершение каждого
+              последующего события в течение 5-секундного
+              интервала:</p>
+
+              <ul>
+                <li>
+                  <p>Первоначально программа PPP не ожидает от
+                  модема никаких событий (определяется выше
+                  указанием символов \"\" в операторе dial)</p>
+                </li>
+
+                <li>
+                  <p>Программа будет посылать модему строку
+                  инициализации "ATE1Q0M0" и ждать ответа "OK".
+                  Если ответ не будет получен, то программа будет
+                  вынуждена послать на модем команду "AT" и снова
+                  ожидать ответа "OK",</p>
+                </li>
+
+                <li>
+                  <p>Перед посылкой в модем строки дозвона
+                  программа вынуждена ждать около 1 секунды
+                  (определено симвлами "\\d" в операторе dial).
+                  Часть выражаения "ATDT" есть стандартный модемный
+                  префикс для дозвона с использованием тонового
+                  набора номера; если Ваша телефонная линия не
+                  поддерживаеи тоновый набора, замените "ATDT" на
+                  "ATDP". Символы "\\T" определяют место
+                  расположения для реального номера телефона
+                  (который будет автоматически вставляться из
+                  параметра "set dial").</p>
+                </li>
+              </ul>
+              <br>
+              <br>
+            </li>
+
+            <li>
+              <p>И наконец, перед тем как закончится максимальный
+              тайм-аут в 40 секунд, программа PPP ожидает "увидеть"
+              код "CONNECT"("СОЕДИНЕНИЕ"), возвращаемый
+              модемом.</p>
+            </li>
+          </ul>
+          <br>
+          <br>
+
+          <p>Ошибка в любой точке этого "диалога" будет
+          интерпретироваться как ошибка дозвона и программа PPP
+          откажет в соединении.</p>
+
+          <p>(Более детальную информацию по языку мини-скриптов,
+          используемого дозвонщиком PPP можно получить, обратившись
+          к man-странице справочного руководства по "chat".)</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN432"></a>
+<pre class="SCREEN">
+    set redial 3 10
+</pre>
+          </div>
+          Эта строка определяет количество попыток дозвона
+          (максимум 3), используемых программой PPP в случае, если
+          соединение не может быть установлено сразу. Интервал
+          между попытками равен 10 секундам.<br>
+          <br>
+        </div>
+
+        <div class="SECT3">
+          <h3 class="SECT3"><a name="AEN434">3.2.1.2. "<span class=
+          "emphasis"><i class="EMPHASIS">Интерактивная</i></span>"
+          секция</a></h3>
+
+          <p>'<span class="emphasis"><i class=
+          "EMPHASIS">Интерактивная:</i></span>' секция содержит
+          параметры и настройки, используемые для установки
+          "интерактивных" PPP-сессий с определенными удаленными
+          системами. В настройки этой секции будут автоматически
+          добавлены строки, находящиеся в "стандартной" секции.</p>
+
+          <p>В примере, используемом в этой секции данного
+          руководства подразумевается, что Вы будете соединяться с
+          удаленной системой, которая "понимает" как
+          идентифицировать пользователя без использования языка
+          скриптов. То есть, в этом примере используется протокол
+          CHAP для установки соединения.</p>
+
+          <p>Считается, что если дозвонщик системы Windows '95
+          может установить соединение простым нажатием кнопки
+          "Подключиться", то такой пример конфигурации должен
+          работать на "ура".</p>
+
+          <p>С другой стороны, когда Вы соединяетесь с Вашим
+          Интернет-провайдером, используя механизм дозвона
+          Microsoft Windows '95, Вам необходимо использовать
+          инструментарий создания скриптов дозвона из пакета
+          Microsoft Plus! или Вы должны включить флажок "Вывести
+          окно терминала после соединения" в свойствах соединения
+          для Windows '95, а затем Вам необходимо заглянуть в
+          примеры конфигурационных файлов PPP и справочную
+          информацию по ppp, для того, чтобы написать скрипты
+          "ожидание / ответ" для установки соединения с Вашим
+          Интернет-провайдером. Команда "set login" используется
+          как раз для этой цели.</p>
+
+          <p>А еще лучше, найдите такого Интернет-провайдера,
+          который знает как обеспечить PAP- или
+          CHAP-идентификацию!</p>
+
+          <p>Примеры конфигурации, показанные здесь были успешно
+          использованы для соединения с:</p>
+
+          <ul>
+            <li>
+              <p>Various Shiva LanRovers</p>
+            </li>
+
+            <li>
+              <p>IBM Network (<!--<a href="http://www.ibm.net" target=
+              "_top">-->http://www.ibm.net<!--</a>-->)</p>
+            </li>
+
+            <li>
+              <p>AT&amp;T WorldNet (<!--<a href=
+              "http://att.com/worldnet" target=
+              "_top">-->http://att.com/worldnet<!--</a>-->)</p>
+            </li>
+
+            <li>
+              <p>Erol's (<!--<a href="http://www.erols.com" target=
+              "_top">-->http://www.erols.com<!--</a>-->)</p>
+            </li>
+          </ul>
+          <br>
+          <br>
+
+          <p>Ниже приведено описание каждой строки в
+          "интерактивной" секции примера файла '<tt class=
+          "FILENAME">/etc/ppp/ppp.conf</tt>':</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN459"></a>
+<pre class="SCREEN">
+    set authname Ваш_логин_на_удаленную_систему
+</pre>
+          </div>
+          Эта строка определяет имя, которое будет использовано для
+          регистрации на удаленной системе.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN462"></a>
+<pre class="SCREEN">
+    set authkey Ваш_пароль_на_удаленную_систему
+</pre>
+          </div>
+          Эта строка определяет пароль для регистрации на удаленной
+          системе.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN465"></a>
+<pre class="SCREEN">
+    set phone Телефон_для_вызова_системы
+</pre>
+          </div>
+          Эта строка определяет номер телефона, по которому будет
+          производиться вызов удаленной системы. Если у Вас
+          установлена своя мини-АТС перед номером телефона
+          необходимо указать цифру '<span class="emphasis"><i
+          class="EMPHASIS">9</i></span>'.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN469"></a>
+<pre class="SCREEN">
+    set timeout 300
+</pre>
+          </div>
+          Эта строка сообщает программе PPP, чтобы она
+          автоматически "вешала" трубку, если в течение 300 секунд
+          (5 минут) по каналу не производится передача данных. Вы
+          можете указать необходимый интервал, который
+          удовлетворяет Вашим требованиям.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN472"></a>
+<pre class="SCREEN">
+    set openmode active
+</pre>
+          </div>
+          Эта строка сообщает программе PPP о том, что как только
+          модемы произведут соединение, она должна немедленно
+          пытаться произвести настройку соединения. Некоторые
+          удаленные узлы делают это автоматически, некоторые нет.
+          Установка этого параметра инструктирует Вашу сторону
+          соединения взять на себя инициативу и пытаться настроить
+          соединение.<br>
+          <br>
+<pre class="SCREEN">
+    accept chap
+</pre>
+
+          <p>Эта строка сообщает программе PPP использовать
+          "Challenge-Handshake Authentication Protocol" ("протокол
+          аутентификации запрос-рукопожатие") для Вашей
+          аутентификации. Значения идентификатора пользователя и
+          пароля, передаваемые между локальной и удаленной
+          стороной, берутся из полей 'authname' и 'authkey',
+          указанных выше.</p>
+        </div>
+
+        <div class="SECT3">
+          <h3 class="SECT3"><a name="AEN476">3.2.1.3. Секция "<span
+          class="emphasis"><i class=
+          "EMPHASIS">запрос</i></span>"</a></h3>
+
+          <p>"<span class="emphasis"><i class=
+          "EMPHASIS">Demand</i></span>"-секция содержит параметры и
+          настройки, используемые для установки PPP-соединения "с
+          вызовом по требованию" с определенной удаленной системой.
+          Настройки этой секции также будут включать строки из
+          "стандартной" секции, которые будут включены сюда
+          автоматически.</p>
+
+          <p>За исключением двух последних линий эта секция
+          полностью идентична конфигурационной секции, которая
+          определяет "интерактивную" конфигурацию.</p>
+
+          <p>Как было замечено ранньше, примеры, находящиеся в этом
+          разделе данного руководства подразумевают, что Вы
+          соединяетесь с удаленной системой, которая понимает как
+          использовать протокол CHAP для установки соединения.</p>
+
+          <p>Ниже приведено описание каждой строки секции "demand"
+          в примере файла '<tt class=
+          "FILENAME">/etc/ppp/ppp.conf</tt>':</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN486"></a>
+<pre class="SCREEN">
+    set authname Ваш_логин_на_удаленную_систему
+</pre>
+          </div>
+          Эта строка определяет имя, которое будет использовано для
+          регистрации на удаленной системе.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN489"></a>
+<pre class="SCREEN">
+    set authkey Ваш_пароль_на_удаленную_систему
+</pre>
+          </div>
+          Эта строка определяет пароль, который будет использован
+          для регистрации на удаленной системе.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN492"></a>
+<pre class="SCREEN">
+    set phone Телефон_для_вызова_удаленной_системы
+</pre>
+          </div>
+          Эта строка определяет номер телефона, по которому будет
+          производиться вызов удаленной системы.<br>
+          <br>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN495"></a>
+<pre class="SCREEN">
+    set timeout 300
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта строка сообщает программе PPP, чтобы она
+          автоматически "вешала" трубку, если в течение 300 секунд
+          (5 минут) по каналу не производится передача данных. Вы
+          можете указать необходимый интервал, который
+          удовлетворяет Вашим требованиям.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN499"></a>
+<pre class="SCREEN">
+    set openmode active
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта строка сообщает программе PPP о том, что как
+          только модемы произведут соединение, она должна
+          немедленно пытаться произвести настройку соединения.
+          Некоторые удаленные узлы делают это автоматически,
+          некоторые нет. Установка этого параметра инструктирует
+          Вашу сторону соединения взять на себя инициативу и
+          пытаться настроить соединение.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN503"></a>
+<pre class="SCREEN">
+    accept chap
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта строка сообщает программе PPP использовать
+          "Challenge-Handshake Authentication Protocol" ("протокол
+          аутентификации запрос-рукопожатие") для Вашей
+          аутентификации. Значения идентификатора пользователя и
+          пароля, передаваемые между локальной и удаленной
+          стороной, берутся из полей 'authname' и 'authkey',
+          указанных выше.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN507"></a>
+<pre class="SCREEN">
+    set ifaddr 127.1.1.1/0 127.2.2.2/0 255.255.255.0
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта команда устанавливает пару "фальшивых" IP-адресов
+          для локальной и удаленной сторон PPP-соединения. Она
+          инструктирует программу PPP создать IP-адрес 127.1.1.1
+          для локальной стороны '<span class="emphasis"><i class=
+          "EMPHASIS">tun0</i></span>' (туннельного) устройства и
+          127.2.2.2 для удаленной стороны. Добавление '<tt class=
+          "FILENAME">/0</tt>' к каждому адресу сообщает программе
+          PPP, что в этих адресах нет значимых битов и они могут (и
+          фактически должны!) быть переданы между локальной и
+          удаленной системами, когда соединение установилось.
+          Строка 255.255.255.0 сообщает программе PPP какую маску
+          подсети применять для этих псевдо-интерфейсов.</p>
+
+          <p>Запомните, мы считаем, что Ваш Интернет-провайдер
+          предоставил Вам IP-адреса для обеих сторон соединения!
+          Если Ваш Интернет-провайдер присвоил Вам определенный
+          IP-адрес, то Вы обязаны при конфигурации Вашей системы
+          ввести его здесь <span class="emphasis"><i class=
+          "EMPHASIS">вместо</i></span> адреса <span class=
+          "emphasis"><i class="EMPHASIS">127.1.1.1</i></span>.</p>
+
+          <p>К слову, если Ваш Интернет-провайдер сообщил Вам
+          определенный IP-адрес, который он использует на своей
+          стороне, Вы обязаны ввести этот адрес здесь <span class=
+          "emphasis"><i class="EMPHASIS">вместо</i></span> адреса
+          <span class="emphasis"><i class=
+          "EMPHASIS">127.2.2.2</i></span>.</p>
+
+          <p>В обоих случаях, возможно хорошей идеей будет оставить
+          символы '<tt class="FILENAME">/0</tt>' в конце каждого
+          адреса. Это дает программе PPP возможность изменять
+          адрес(а) соединения, если это будет <span class=
+          "emphasis"><i class="EMPHASIS">необходимо</i></span>.</p>
+
+          <div class="INFORMALEXAMPLE">
+            <a name="AEN522"></a>
+<pre class="SCREEN">
+    add 0 0 127.2.2.2
+</pre>
+          </div>
+          <br>
+          <br>
+
+          <p>Эта последняя строка сообщает программе PPP, что она
+          должна добавить маршрут по умолчанию для IP-трафика,
+          который указывает на (фальшивый) IP-адрес системы
+          Интернет-провайдера.</p>
+
+          <p><span class="emphasis"><i class="EMPHASIS"><span
+          class="emphasis"><i class="EMPHASIS">Примечание: Если Вы
+          используте определенный Вашим Интернет-провайдером адрес
+          вместо <span class="emphasis"><i class=
+          "EMPHASIS">127.2.2.2</i></span> в предыдущей строке,
+          используйте этот же номер и здесь, вместо <span class=
+          "emphasis"><i class=
+          "EMPHASIS">127.2.2.2</i></span></i></span></i></span>.</p>
+
+          <p>Добавив этот "фальшивый" маршрут для IP-трафика,
+          программа PPP получает возможность в момент простоя:</p>
+
+          <ul>
+            <li>
+              <p>Принимать пакеты, которые FreeBSD-система уже не
+              знает куда отправлять,</p>
+            </li>
+
+            <li>
+              <p>Устанавливать соединение с Интернет-провайдером
+              "<span class="emphasis"><i class="EMPHASIS">на
+              лету</i></span>",</p>
+            </li>
+
+            <li>
+              <p>Переконфигурировать IP-адреса локальной и
+              удаленной сторон соединения,</p>
+            </li>
+
+            <li>
+              <p>Отправлять пакеты между Вашей рабочей станцией и
+              Интернет-провайдером</p>
+            </li>
+          </ul>
+          автоматически!<br>
+          <br>
+
+          <p>Как только интервал времени (в секуднах), указанный в
+          качестве тайм-аута в "стандартной" секции, истечет и в
+          течение этого промежутка времени трафик TCP/IP будет
+          равен нулю, программа PPP будет автоматически закрывать
+          соединение (попросту говоря "класть" трубку) и процесс
+          будет повторяться заново.</p>
+        </div>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN542">3.2.2. Файл '<tt class=
+        "FILENAME">/etc/ppp/ppp.linkup</tt>'</a></h2>
+
+        <p>Другие файлы, необходимые для полной конфигурации PPP
+        находятся в '<tt class=
+        "FILENAME">/etc/ppp/ppp.linkup</tt>'. Этот файл содержит
+        инструкции для функционирования программы PPP после того
+        как коммутирумое соединение будет установлено.</p>
+
+        <p>В случае использования конфигурации "дозвона при
+        необходимости" программа PPP будет вынуждена удалить
+        маршрут по умолчанию, который был установлен для удаленной
+        стороны соединения и указывал на фальшивый адрес (127.2.2.2
+        в нашем примере из предыдущего раздела) и устанавить новый
+        маршрут по умолчанию, который указывает на реальный
+        IP-адрес удаленной машины (который будет опознан в процессе
+        настройки коммутируемого соединения).</p>
+
+        <p>Демонстрационный файл '<tt class=
+        "FILENAME">/etc/ppp/ppp.linkup</tt>':</p>
+
+        <div class="INFORMALEXAMPLE">
+          <a name="AEN550"></a>
+<pre class="SCREEN">
+    #########################################################################=
+
+    # Файл установки соединений PPP ('/etc/ppp/ppp.linkup')
+    #
+    #  Этот файл обрабатывается после того, как PPP установит сетевое соединение.
+    #
+    #  Обработка этого файла производится в следующем порядке.
+    #
+    #  1) Сначала, производится поиск присвоенного нам IP-адреса и выполняются
+    #     связанные с этим команды.
+    #
+    #  2) Если IP-адрес не найден, то производится поиск имени, определенного
+    #     во время запуска PPP и выполняются связанные с этим команды.
+    #
+    #  3) Если не найдено ничего из выше перечисленного выше, то выполняются
+    #     команды 'MYADDR:'.
+    #
+    ##############################################################################=
+    #
+    # Эта секция используется в конфигурации "demand" в файле /etc/ppp/ppp.conf:
+    demand:
+     delete ALL
+     add 0 0 HISADDR
+    #
+    # Все другие конфигурации в файле /etc/ppp/ppp.conf используют это:
+    #
+    MYADDR:
+     add 0 0 HISADDR
+    ##############################################################################
+    # Конец файла /etc/ppp/ppp.linkup
+</pre>
+        </div>
+        Заметьте, что секция, имеющая название "demand:" в этом
+        файле идентична имени конфигурации, используемому в файле
+        '<tt class="FILENAME">/etc/ppp/ppp.conf</tt>'. Эта секция
+        сообщает программе PPP о том, что как только соединение
+        будет установлено, с использованием этой конфигурации, она
+        должна:
+
+        <ol type="1">
+          <li>
+            <p>Удалить любую информацию об IP-маршрутизации,
+            которую создала программа PPP</p>
+          </li>
+
+          <li>
+            <p>Добавить маршрут по умолчанию, указывающий на
+            реальный IP-адрес удаленной стороны.</p>
+          </li>
+        </ol>
+        <br>
+        <br>
+
+        <p>Критичным моментом является то, что те конфигурации в
+        файле '<tt class="FILENAME">/etc/ppp/ppp.conf</tt>',
+        которые включают операторы '<span class="emphasis"><i
+        class="EMPHASIS">set ifaddr</i></span>' и '<span class=
+        "emphasis"><i class="EMPHASIS">add 0 0</i></span>' (т.e.
+        настройки, используемые для конфигураци "дозвон при
+        необходимости") выполняют команды "delete ALL" и "add 0 0
+        HISADDR" в файле <tt class=
+        "FILENAME">/etc/ppp/ppp.linkup</tt>.</p>
+
+        <p><span class="emphasis"><i class="EMPHASIS"><span class=
+        "emphasis"><i class="EMPHASIS">Это механизм, который
+        управляет действительной конфигурацией
+        соединения.</i></span></i></span></p>
+
+        <p>Все конфигурации явно не указанные в файле <tt class=
+        "FILENAME">/etc/ppp/ppp.linkup</tt> будут использовать все
+        команды, указаные в секции "MYADDR:" этого файла. Эту
+        секцию будут считывать конфигурации без "дозвона при
+        необходимости" (такие как в нашем "интерактивном:"
+        примера). Эта секция просто добавляет маршрут по умолчанию
+        на реальный адрес Интернет-провайдра (на удаленной
+        стороне).</p>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "c309.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "x568.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">
+          Конфигурирование PPP-соединения</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "c309.html" accesskey="U">Up</a></td>
+
+          <td width="33%" align="right" valign="top">
+          IP-совмещение</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

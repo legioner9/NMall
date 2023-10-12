@@ -1,0 +1,2279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>The Linux Serial HOWTO — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1> The Linux Serial HOWTO </H1>
+
+<H2>revised by David S.Lawyer
+<A HREF="https://www.linuxlib.ru/HowTo/bf347@lafn.org"><span class="__cf_email__" data-cfemail="0d6f6b3e393a4d616c6b6323627f6a">[email&#160;protected]</span></A> original by Greg Hankins <BR>
+Русский перевод
+Ilgiz Kalmetev,
+<A HREF="../cdn-cgi/l/email-protection.html#1c75707b75665c717d7570326e7e326e69"><span class="__cf_email__" data-cfemail="4b22272c22310b262a222765392965393e">[email&#160;protected]</span></A></H2>  v1.12, July 1998
+<P><HR>
+<EM>  Этот документ описывает возможности последовательного порта, нераскрытые в  Text-Terminal-HOWTO или Serial-Programming-HOWTO. Он описывает в основном  getty, мультипортовые последовательные платы и модемы.</EM>
+<HR>
+<H2><A NAME="s1">1. Введение</A></H2>
+
+<P>
+Это - Linux Serial HOWTO. В нем приведена информация о последовательных портах,
+которая не описана в других HOWTO'S. Это - информация об установке модема
+под Linux, некоторые советы по последовательным устройствам и советы по поиску
+неисправностей.
+<P>
+Существует другой HOWTO для терминалов (см. ``Относящиеся HOWTO'S "). Этот
+HOWTO относится к Linux для платформы Intel x86, хотя может подойти и
+для других архитектур.
+<P>
+<P>
+<H2>1.1 Авторские права</H2>
+
+<P>
+Авторские права (c) 1993 - 1997 принадлежат Greg Hankins, а в 1998 - David
+Lawyer. Этот документ может распространяться под условиями, изложенными в
+лицензии LDP на
+<!--<A HREF="http://sunsite.unc.edu/LDP/COPYRIGHT.html">-->http://sunsite.unc.edu/LDP/COPYRIGHT.html<!--</A>-->. Этот документ не
+может распространяться в измененной форме без согласия автора.
+<P>
+<P>
+<H2>1.2 Относящиеся HOWTO'S   (было: Последовательный порт)</H2>
+
+<P>
+<UL>
+<LI>  Serial-Programming-HOWTO поможет вам писать программы на C (или куски их),
+чтобы работать с последовательным портом. Вы можете сделать эквивалент
+"stty...", открывать порты в различных режимах и пр.
+ </LI>
+<LI>  Text-Terminal-HOWTO - все о текстовых терминалах (dumb терминалы).</LI>
+</UL>
+
+<P>
+<H2>1.3 Примечание к выпуску</H2>
+
+<P>
+Я, David Lawyer, являюсь новым ведущим (Greg Hankins был первоначальным автором
+и ведущим). Внесено мало изменений, и я не проверил много чего, чтобы увидеть,
+является ли оно современным. Для этого надо проделать много работы. Сообщите
+мне, что неправильно или отсутствует. В будущем, я может быть разделю этот
+Howto: 1. Информация о терминалах в Text-Terminal-HOWTO. 2. Информация о
+модемах в новом Howto: ModemHOWTO. 3. Информация о последовательных портах,
+добавленная к этому Howto. Таким образом ищите новые версии в августе или
+сентябре 1998.
+<P>
+<P>
+<H2>1.4 Новые версии этого документа</H2>
+
+<P>
+Новые версии Serial HOWTO будут доступны на
+<!--<A HREF="ftp://sunsite.unc.edu:/pub/Linux/docs/HOWTO/Serial-HOWTO">-->ftp://sunsite.unc.edu:/pub/Linux/docs/HOWTO/Serial-HOWTO<!--</A>--> и зеркалах. Имеются
+другие форматы, типа Postscript и DVI в каталоге other-formats.
+Serial HOWTO также доступен на
+<!--<A HREF="http://sunsite.unc.edu/LDP/HOWTO/Serial-HOWTO.html">-->http://sunsite.unc.edu/LDP/HOWTO/Serial-HOWTO.html<!--</A>--> и будет помещаться в
+comp.os.linux.answers ежемесячно.
+<P>
+<P>
+<H2>1.5 Обратная связь</H2>
+
+<P>
+Пожалуйста присылайте мне любые вопросы, комментарии, предложения или
+дополнительный материал. Я всегда рад услышать, что вы думаете об этом
+HOWTO. Также я всегда готов к разъяснениям! Сообщите мне точно, что вы не
+понимаете, или что могло бы быть более ясным. Вы можете найти меня по адресу
+<A HREF="../cdn-cgi/l/email-protection.html#85e7e3b6b1b2c5e9e4e3ebabeaf7e2"><span class="__cf_email__" data-cfemail="f09296c3c4c7b09c91969ede9f8297">[email&#160;protected]</span></A> (David Lawyer).
+<P>
+<P>
+<H2>1.6 Оговорка</H2>
+
+<P>
+Ваш mileage может измениться. Данные ответы не могут работать для всех систем и
+всех комбинаций установок.
+<P>
+<P>
+<H2><A NAME="s2">2. Поддерживаемые последовательные аппаратные устройства</A></H2>
+
+<P>
+Linux, насколько известно, работает со следующими последовательными аппаратными
+устройствами.
+<P>
+<P>
+<H2>2.1 Стандартный последовательные платы PC </H2>
+
+<P>
+<UL>
+<LI>  стандартные последовательные платы PC (COM1 - COM4), к которым могут быть
+подключены внешние последовательные устройства (модемы, последовательные
+мыши и т.д ...). Так как PC больше не поставляются с ними (но имеют чипы для
+этой цели, установленные на материнской плате), то они должны быть в
+розничной продаже.
+ </LI>
+<LI>  стандартные внутренние модемы PC (COM1 - COM4)
+ </LI>
+<LI>  Quickpath Systems Port-Folio 550e (позвляет IRQ - 3, 4, 5, 9, 10, 11, 12 и
+15). Примечание: из-за конфликтов адресов, вы не можете использовать
+COM4 и видеокарту IBM8514 одновременно. Это из-за ошибки в плате IBM8514.</LI>
+</UL>
+
+<P>
+<H2>2.2 Plug And Play (PnP) модемы</H2>
+
+<P>
+Большинство модемов сегодня - PnP, и большинство из них будет (после некоторых
+усилий) работать с Linux. Самое лучшие из них - те, которые имеют перемычки
+для отключения PnP.
+<P>
+Во многих случаях, если вы просто устанавливаете перемычки для некоторых значений
+COM и IRQ, PnP отключится. Вы можете также захотеть отключить PnP в BIOS
+вашего компьютера. Если вы не можете отключить PnP, тогда попробуйте вот что:
+<UL>
+<LI>  загрузите Win95/98, сконфигурируйте модем и посмотрите, сохраняются ли
+установки, когда вы загружаете Linux. Если нет, то:
+ </LI>
+<LI>  загрузите Win95/98, сконфигурируйте модем и затем сделайте горячую загрузку
+Linux так, чтобы установки сохранились. Вы можете сделать это загрузчиком
+loadlin.
+ </LI>
+<LI>  возьмите инструментальные средства PnP с
+<!--<A HREF="http://www.redhat.com/linux-info/pnp">-->http://www.redhat.com/linux-info/pnp<!--</A>--></LI>
+</UL>
+
+<P>
+<H2>2.3 Dumb многопортовые последовательные платы (с микросхемами      8250/16450/16550A)</H2>
+
+<P>
+Они также называются "последовательные адаптеры".
+<P>
+* = > "setserial" показывает подробности конфигурирования
+<UL>
+<LI>   AST FourPort и аналоги (4 порта) *</LI>
+<LI>    Accent Async-4 (4 порта) *</LI>
+<LI>    Arnet Multiport-8 (8 портов)</LI>
+<LI>    Bell Technologies HUB6 (6 портов)</LI>
+<LI>    Boca BB-1004 (4 портов), BB-1008 (8 портов), BB-2016 (16 портов) *</LI>
+<LI>    Boca IOAT66 (6 портов)</LI>
+<LI>    Boca 2by4 (4 последовательных порта, 2 параллельных порта)</LI>
+<LI>    Byterunner (claims low prices)</LI>
+<LI>    Computone ValuePort V4-ISA (совместим с AST FourPort) *</LI>
+<LI>    Digi PC/8 (8 портов)</LI>
+<LI>    GTEK BBS-550 (8 портов) См. mini-howto по нему.</LI>
+<LI>    HUB-6 См. Bell Technologies.</LI>
+<LI>    Longshine LCS-8880, Longshine LCS-8880+ (совместим с AST FourPort)</LI>
+<LI>    Moxa C104, Moxa C104+ (совместим с AST FourPort)</LI>
+<LI>    PC-COMM (4 порта)</LI>
+<LI>
+<!--<A HREF="http://www.sealevel.com">-->Sealevel Systems<!--</A>--> COMM-2 (2 порта), COMM-4 (4 порта) и COMM-8 (8 портов)</LI>
+<LI>    SIIG I/O Expander 2S IO1812 (4 порта)</LI>
+<LI>    STB-4COM (4 порта)</LI>
+<LI>    Twincom ACI/550</LI>
+<LI>    Usenet Serial Board II (4 порта) *</LI>
+</UL>
+
+В общем-то, Linux будет поддерживать любую последовательную плату, которая
+использует 8250, 16450, 16550, 16550A, 16650 (или совместимые) UART, или
+внутренний модем, который эмулирует однин из вышеупомянутых UART.
+<P>
+Обратите внимание: BB-1004 и BB-1008 не поддерживают сигналы DCD и RI, и таким
+образом не пригодны для использования в качестве модемов, обслуживающих
+входящие звонки. В остальном они прекрасно будут работать.
+<P>
+<P>
+<H2>2.4 Интеллектуальные многопортовые последовательные платы</H2>
+
+<P>
+Удостоверьтесь, что совместимый с Linux драйвер доступен. Этот список слегка
+устарел.
+<UL>
+<LI>   Comtrol RocketPort (36MHz ASIC; 4, 8, 16 или 32 порта) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#f79e999198b794989a8385989bd994989a"><span class="__cf_email__" data-cfemail="9ef7f0f8f1defdf1f3eaecf1f2b0fdf1f3">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.comtrol.com">-->http://www.comtrol.com<!--</A>--><BR>
+   состояние драйвера: поддерживается Comtrol<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://tsx-11.mit.edu/pub/linux/packages/comtrol">-->ftp://tsx-11.mit.edu/pub/linux/packages/comtrol<!--</A>-->
+ </LI>
+<LI>   Computone IntelliPort II (16MHz 80186; 4, 8 или 16 портов),
+IntelliPort II EXpandable (20MHz 80186; 16 - 64 порта) <BR>
+  контактный адрес: Michael H. Warfield,
+<A HREF="https://www.linuxlib.ru/HowTo/mhw@wittsend.atl.ga.us"><span class="__cf_email__" data-cfemail="e4898c93a4938d909097818a80ca859088ca8385ca9197">[email&#160;protected]</span></A> <BR>
+   состояние драйвера: "pre-ALPHA"
+ </LI>
+<LI>   Cyclades Cyclom-Y (Cirrus Logic CD1400 UARTS; 8 - 32 порта),
+Cyclom-Z (25MHz MIPS R3000; 8 - 128 портов)
+контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#77041e37001e1a07181b5913121a181959141859021c"><span class="__cf_email__" data-cfemail="c8bba188bfa1a5b8a7a4e6acada5a7a6e6aba7e6bda3">[email&#160;protected]</span></A>
+или
+<!--<A HREF="http://www.cyclades.com">-->http://www.cyclades.com<!--</A>-->
+состояние драйвера: поддерживается Cyclades
+расположение драйвера: <BR>
+
+<!--<A HREF="ftp://ftp.cyclades.com/pub/cyclades">-->ftp://ftp.cyclades.com/pub/cyclades<!--</A>--> и включен в ядро Linux, начиная с
+версии 1.1.75
+ </LI>
+<LI>   Decision PCCOM8 (8 портов) <BR>
+   контактный адрес: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="2d5d4e4e4240156d5e444a435840035e48">[email&#160;protected]</a> <BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.signum.se/pub/pccom8">-->ftp://ftp.signum.se/pub/pccom8<!--</A>-->
+ </LI>
+<LI>   Digi PC/XI (12. 5MHz 80186; 4, 8, или 16 портов),
+PC/XE (12. 5/16MHz 80186; 2, 4, или 8 портов),
+PC/XR (16MHz IDT3041; 4 или 8 портов),
+PC/XEM (20MHz IDT3051; 8 - 64 порта) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#87f4e6ebe2f4c7e3e0eeeea9e4e8ea"><span class="__cf_email__" data-cfemail="34475d74435d59445b581a5051595b5a1a575b1a415f4755585147">[email&#160;protected]</span>@dgii.com</A> или
+<!--<A HREF="http://www.dgii.com">-->http://www.dgii.com<!--</A>--><BR>
+   состояние драйвера: поддерживается Digi<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.dgii.com/drivers/linux">-->ftp://ftp.dgii.com/drivers/linux<!--</A>-->
+и включен в ядро Linux, начиная с версии 2.0
+ </LI>
+<LI>   Digi COM/XI (10MHz 80188; 4 или 8 портов) <BR>
+   контактный адрес: Simon Park,
+<A HREF="../cdn-cgi/l/email-protection.html#b9cad0f9ced0d4c9d6d597dddcd4d6d797dad697ccd2"><span class="__cf_email__" data-cfemail="b0c3d9f0c7d9ddc0dfdc9ed4d5dddfde9ed3df9ec5db">[email&#160;protected]</span></A><BR>
+   состояние драйвера: ALPHA <BR>
+   примечание: Саймон - часто задерживается с ответом по email в течение месяцев
+из-за его работы. Mark Hatle, <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="9dfbeffce4ddf6efe4ede9f2f3b3f0fcf3f6fce9f2b3f0eee8eeb3f8f9e8">[email&#160;protected]</a> - доброволец,
+любезно согласившийся сделать драйвер доступным, если вам он нужен. Mark не
+поддерживает и не занимается драйвером.
+ </LI>
+<LI>   Equinox SuperSerial Technology (30MHz ASIC; 2 - 128 портов) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#addeccc1c8deedc8dcd8c4c3c2d583cec2c0"><span class="__cf_email__" data-cfemail="146775787167547165617d7a7b6c3a777b79">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.equinox.com">-->http://www.equinox.com<!--</A>--><BR>
+   состояние драйвера: поддерживается Equinox<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.equinox.com/library/sst">-->ftp://ftp.equinox.com/library/sst<!--</A>-->
+ </LI>
+<LI>   GTEK Cyclone (16C654 UARTS; 6, 16 и 32 порта),
+SmartCard (24MHz Dallas DS80C320; 8 портов),
+BlackBoard-8A (16C654 UARTS; 8 портов),
+PCSS (15/24MHz 8032; 8 портов) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#aedddec1daeec9dacbc580cdc1c3"><span class="__cf_email__" data-cfemail="6013100f14200714050b4e030f0d">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.gtek.com">-->http://www.gtek.com<!--</A>--><BR>
+   состояние драйвера: поддерживается GTEK<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.gtek.com/pub">-->ftp://ftp.gtek.com/pub<!--</A>-->
+ </LI>
+<LI>   Hayes ESP (COM-BIC; 1 - 8 портов) <BR>
+   контактный адрес: Andrew J. Robinson,
+<A HREF="../cdn-cgi/l/email-protection.html#c0a1b2afa2a9aeb3af80aeb9b8eeaea5b4"><span class="__cf_email__" data-cfemail="b0d1c2dfd2d9dec3dff0dec9c89eded5c4">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.nyx.net/~arobinso">-->http://www.nyx.net/~arobinso<!--</A>--><BR>
+   cостояние драйвера: поддерживается автором <BR>
+   расположение драйвера:
+<!--<A HREF="http://www.nyx.net/~arobinso">-->http://www.nyx.net/~arobinso<!--</A>--> и включен в ядро Linux,
+начиная с версии 2.1.15
+ </LI>
+<LI>   Maxpeed SS (Toshiba; 4, 8 и 16 портов) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#2f464149406f424e575f4a4a4b014c4042"><span class="__cf_email__" data-cfemail="452c2b232a0528243d352020216b262a28">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.maxpeed.com">-->http://www.maxpeed.com<!--</A>--><BR>
+   состояние драйвера: поддерживаетсяй Maxpeed <BR>
+   расположение драйвера:
+<!--<A HREF="ftp://maxpeed.com/pub/ss">-->ftp://maxpeed.com/pub/ss<!--</A>-->
+ </LI>
+<LI>   Moxa C218 (12MHz 80286; 8 портов),
+Moxa C320 (40MHz TMS320; 8 - 32 порта) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#96fff8f0f9d6fbf9eef7b8f5f9fbb8e2e1"><span class="__cf_email__" data-cfemail="3e575058517e5351465f105d5153104a49">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.moxa.com.tw">-->http://www.moxa.com.tw<!--</A>--><BR>
+   состояние драйвера: поддерживается Moxa<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.moxa.com.tw/drivers/c218-320/linux">-->ftp://ftp.moxa.com.tw/drivers/c218-320/linux<!--</A>-->
+ </LI>
+<LI>   SDL RISCOM/8 (Cirrus Logic CD180; 8 портов) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#493a28252c3a093a2d252a262424672a2624"><span class="__cf_email__" data-cfemail="93e0f2fff6e0d3e0f7fff0fcfefebdf0fcfe">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.sdlcomm.com">-->http://www.sdlcomm.com<!--</A>--><BR>
+   состояние драйвера: поддерживается SDL<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.sdlcomm.com/pub/drivers">-->ftp://ftp.sdlcomm.com/pub/drivers<!--</A>-->
+  </LI>
+<LI>   Specialix SIO (20MHz Zilog Z280; 4 - 32 порта),
+XIO (25MHz Zilog Z280; 4 - 32 порта) <BR>
+   контактный адрес: Саймон Аллен,
+<A HREF="../cdn-cgi/l/email-protection.html#43302a2e2c2d222f2f262d03202a3b6d202c2e33362f2a2d286d202c6d3628"><span class="__cf_email__" data-cfemail="ea99838785848b86868f84aa898392c48985879a9f86838481c48985c49f81">[email&#160;protected]</span></A><BR>
+   состояние драйвера: БЕТА<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://sunsite.unc.edu/pub/Linux/kernel/patches/serial">-->ftp://sunsite.unc.edu/pub/Linux/kernel/patches/serial<!--</A>-->
+ </LI>
+<LI>   Stallion EasyIO-4 (4 порта),
+EasyIO-8 (8 портов),
+EasyConnection (8 - 32 порта) - каждый с Cirrus Logic CD1400 UARTs,
+Stallion (8MHz 80186 CPU; 8 или 16 портов),
+Brumby (10/12 MHZ 80186 CPU; 4, 8 или 16 портов),
+ONBOARD (16MHz 80186 CPU; 4, 8, 12, 16 или 32 порта),
+EasyConnection 8/64 (25MHz 80186 CPU; 8 - 64 порта) <BR>
+   контактный адрес:
+<A HREF="../cdn-cgi/l/email-protection.html#4437252821370437302528282d2b2a6a272b29"><span class="__cf_email__" data-cfemail="483b29242d3b083b3c292424212726662b2725">[email&#160;protected]</span></A> или
+<!--<A HREF="http://www.stallion.com">-->http://www.stallion.com<!--</A>--><BR>
+   состояние драйвера: поддерживается Stallion<BR>
+   расположение драйвера:
+<!--<A HREF="ftp://ftp.stallion.com/drivers/ata5/linux">-->ftp://ftp.stallion.com/drivers/ata5/linux<!--</A>--> и
+включен в ядро linux, начиная с 1.3.27</LI>
+</UL>
+
+Обзор изделий Comtrol, Cyclades, Digi, и Stallion был напечатан в июне
+1995 в Linux Journal. Статья доступна на
+<!--<A HREF="http://www.ssc.com/lj/issue14">-->http://www.ssc.com/lj/issue14<!--</A>-->.
+<P>
+<P>
+<H2>2.5 Неподдерживаемые последовательные аппаратные средства</H2>
+
+<P>
+<H3>Winmodemы не работают</H3>
+
+<P>
+Модемы, помеченные ``Winmodems", например USR Sportster Winmodem и IBM
+Aptiva MWAVE, не поддерживаются в Linux. Эти модемы используют частные
+разработки, которые требуют специальных драйверов Windows.
+<P>
+Избегайте модемов этих типов.
+<P>
+<P>
+<H3>Драйверы Rockwell (RPI) могут работать</H3>
+
+<P>
+Модемы, которые требуют драйверы Rockwell RPI, пригодны для использования
+не полностью, так как программное обеспечение драйвера не работает под Linux.
+RPI делает сжатие и исправление ошибки, используя программное обеспечение MS на
+CPU вашего компьютера. Если вы желаете эксплуатировать модем без использования
+RPI (и таким образом обходиться без сжатия и исправления ошибок), то вы можете
+легко отключить RPI, послав в модем (в виде строки инициализации) команду
+отключения RPI: +H0
+<P>
+<P>
+<H2><A NAME="s3">3. Какими именами обозначаются последовательные порты?</A></H2>
+
+<P>
+Порт ввода-вывода - это способ передать данные в/из компьютера. Имеются
+множество типов портов ввода-вывода типа последовательных портов, параллельных
+портов, контроллеров дисковода, плат локальной сети ethernet и т.д. Мы будем
+иметь дело с последовательными портами, так как модемы и терминалы -
+последовательные устройства. Каждый последовательный порт должен иметь адрес
+ввода-вывода и прерывание (IRQ). Имеются четыре последовательных порта,
+соответствующие COM1 - COM4:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+         ttyS0 (COM1) address 0x3f8 IRQ 4
+         ttyS1 (COM2) address 0x2f8 IRQ 3
+         ttyS2 (COM3) address 0x3e8 IRQ 4
+         ttyS3 (COM4) address 0x2e8 IRQ 3
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Если Linux не обнаруживает последовательные порты при загрузке, то
+удостоверьтесь, что поддержка последовательных устройств разрешена и
+вкомпилирована в ядро. В этом документе, я обращаюсь к COM1 как ttyS0, COM2
+как ttyS1, COM3 как ttyS2, и COM4 как ttyS3. Обратите внимание, что по
+умолчанию эти устройства имеют перекрывающиеся IRQ. Вы не можете использовать
+все порты с этими значениями по умолчанию, и вы должны переназначить другие
+IRQ. См. раздел ``Я могу использовать более, чем два последовательных
+устройства?" при установке IRQ.
+<P>
+<P>
+<H2>3.1 Устройства: модем, мышь</H2>
+
+<P>
+На некоторых инсталляциях, будут созданы два дополнительных устройства,
+/dev/modem для вашего модема и /dev/mouse для вашей мыши. Оба из них -
+символические связи с соответствующими устройствами в /dev, которые вы
+определили при установке (если у вас bus mouse, то /dev/mouse укажет на
+устройство bus mouse).
+<P>
+В отношении /dev/mouse и /dev/modem ведутся споры. Я строго против
+использования этих связей. В частности, если вы планируете использовать ваш
+модем для приема входящих звонков, то вы можете столкнуться с проблемами,
+потому что файлы блокировки не могут работать правильно, если вы используете
+/dev/modem. Используйте эту связь, если это вам нравится, но удостоверьтесь,
+что она указывает на правильное устройство. Однако, если вы измените или
+удалите эту связь, то некоторые приложения (minicom, например) могу потребовать
+перенастройки.
+<P>
+<P>
+<H2>3.2 Устройство cua</H2>
+
+<P>
+Каждое устройство ttyS имеет соответствующее устройство cua. Велись некоторые
+разговоры об отмене cua, так что возможно самое лучшее - это использовать ttyS.
+Основное различие между cua и ttyS - то, что для обычной команды "open" (без
+каких-либо флажков) в прикладной программе, cua откроет порт, даже если
+сигналы управления модема (типа DCD) просят этого не делать.
+<P>
+(Чтобы проверить сигналы управления модема должен быть установлен stty.)
+Порт ttyS отказался бы открываться в этом случае, но его можно принудительно
+открыть, задавая некоторые флажки в команде "open".
+<P>
+Таким образом порт ttyS может делать все, что может порт cua. За исключением
+того, что результаты "принудительного" открытия in read statements in the
+program работают по-другому, но программисты могут обойти это, изменяя
+свои программы. Удаление cua привело бы Linux в большее соответствие с Posix
+стандартом и решило бы некоторые проблемы с файлами блокировки.
+<P>
+<P>
+<H2>3.3 Устройства и числа последовательных портов в /dev</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      /dev/ttyS0 major 4, minor 64    /dev/cua0 major 5, minor 64
+      /dev/ttyS1 major 4, minor 65    /dev/cua1 major 5, minor 65
+      /dev/ttyS2 major 4, minor 66    /dev/cua2 major 5, minor 66
+      /dev/ttyS3 major 4, minor 67    /dev/cua3 major 5, minor 67
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Обратите внимание, что все дистрибутивы должны приходить с этими устройствами,
+уже правильно установленными (если cua не отменен). Вы можете проверить это,
+напечатав:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux% ls -l /dev/cua* linux% ls -l /dev/ttyS*
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<H3>Создание ttyS устройств в /dev</H3>
+
+<P>
+Если у вас нет устройства, то вы должны будете создать его командой mknod.
+Например, предположим, что вам нужно создать устройство ttyS0:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux# mknod -m 666 /dev/cua0 c 5 64
+      linux# mknod -m 666 /dev/ttyS0 c 4 64
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Вы можете использовать скрипт MAKEDEV, который лежит в /dev. Он упрощает
+создание устройств. Например, если вам нужно создать устройств ttyS0, то
+вы напечатаете:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux# cd /dev
+      linux# ./MAKEDEV ttyS0
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Эти строки создают устройства для входящих и исходящих устройств
+и должны установить правильные права доступа.
+<P>
+<P>
+<H2>3.4 Примечания для dumb многопортовых плат</H2>
+
+<P>
+Использование ваших многопортовых плат зависит от того какая плата у вас есть.
+Некоторые из них перечислены подробно в rc.serial или в 0setserial, который
+приходит с пакетом setserial. Я строго рекомендую взять последнюю версию
+setserial, если вы пытаетесь использовать многопортовые платы. Вероятно, вы
+должны будете создать эти устройства.
+<P>
+Используйте или команду mknod, или скрипт MAKEDEV. Устройства для многопортовых
+плат создаются сложением ``64 + номер_порта". Так, если вы хотели создать
+устройство ttyS17, то напечатайте:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ linux# mknod -m 666 /dev/cua17 c 5 81
+ linux# mknod -m 666 /dev/ttyS17 c 4 81
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Обратите внимание, что ``64 + 17 = 81". При использовании скрипта MAKEDEV, вы
+должны ввести:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ linux# cd /dev
+ linux# ./MAKEDEV ttyS17
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Обратите внимание: руководство SIIG для IO1812 распечатывает для COM5-COM8
+неправильные значения.
+<P>
+Они должны быть COM5 = 0x250, COM6 = 0x258, COM7 = 0x260 и COM8 = 0x268.
+<P>
+Обратите внимание: Digi PC/8 Interrupt Status Register - в 0x140.
+<P>
+Обратите внимание: для AST Fourport, вам возможно потребуется указать
+skip_test в rc.serial.
+<P>
+<P>
+<H2>3.5 Примечания для интеллектуальных многопортовых плат</H2>
+
+<P>
+Читайте информацию, которая приходит с драйвером. Эти платы используют
+специальные устройства и нестандартные. Эта информация изменяется в
+зависимости от ваших аппаратных средств.
+<P>
+<P>
+<H2><A NAME="s4">4. Интересные программы, о которых вы должны знать</A></H2>
+
+<P>
+<H2>4.1 Что такое getty?</H2>
+
+<P>
+getty - программа, которая обслуживает процесс входа в систему, когда вы
+регистрируетесь на Unix машине. Вы должны будете использовать getty, если
+хотите звонить модемом на вашу Linux машину. Вы не должны использовать getty,
+если вы хотите только звонить наружу вашим модемом. Имеются три версии, которые
+обычно используются в Linux: getty_ps, mgetty и agetty. Синтаксис для этих
+программ отличается, так что убедитесь, что вы проверили и удостоверились,
+что вы используете правильный синтаксис для того getty, которым пользуетесь.
+<P>
+<P>
+<H3>О getty_ps</H3>
+
+<P>
+Большинство дистрибутивов приходит с установленным пакетом getty_ps. (Debian
+использовал agetty, но теперь использует mgetty). Он содержит две программы:
+getty - используется для консоли и устройств терминала, и uugetty для модемов.
+Я использую эту версию getty, так что на него я и буду ориентироваться.
+<P>
+<P>
+<H3>О mgetty</H3>
+
+<P>
+mgetty - версия getty, главным образом для использования с модемами. Она может
+использоваться для аппаратных терминалов, но документация приблизительно на 99%,
+связана с модемами. В дополнение ко входу в систему по телефонной линии, mgetty
+также обеспечивает поддержку факсов и автоматическое обнаружение PPP.
+Документация по mgetty (поставляется в формате texinfo) достаточно хороша, и
+не нуждается в дополнении.
+<P>
+Пожалуйста, обратитесь к ней для инструкций по установке. Вы можете найти
+последнюю информацию о mgetty по адресу
+<!--<A HREF="http://www.leo.org/~doering/mgetty/">-->http://www.leo.org/~doering/mgetty/<!--</A>-->.
+<P>
+<P>
+<H3>О agetty</H3>
+
+<P>
+Agetty - третья разновидность getty. Это простая полнофункциональная реализация
+getty, которая больше подходит для виртуальных консолей или терминалов, чем
+для модемов.
+<P>
+<P>
+<H2>4.2 Что такое setserial?</H2>
+
+<P>
+setserial - программа, которая позволяет вам смотреть и изменять различные
+атрибуты последовательного устройства, включая адрес порта, прерывание и
+другие опции последовательного порта. Вы можете посмотреть версию вашей копии
+этой программы, запустив setserial без параметров. Если параметр - /dev/ttyS1,
+и т.д., то вы увидите некоторую информацию об этом порте.
+<P>
+Когда ваша Linux система загружается, настраиваются только ttyS{0-3}, используя
+значения по умолчанию IRQS 4 и 3. Так что, если у вас есть любые другие
+последовательные порты, обеспеченные другими платами или если ttyS{0-3} имеют
+необычный IRQ, то вы должны использовать setserial, чтобы сконфигурировать эти
+последовательные порты. Полный список опций есть в man.
+<P>
+<P>
+<H2><A NAME="s5">5. Как сделать исходящий звонок через мой модем?</A></H2>
+
+<P>
+<H2>5.1 Аппаратные требования</H2>
+
+<P>
+Вы можете использовать или внешний или внутренний модем. Внутренние стоят
+меньше и не занимают местоо на столе или корпусе компьютера. Но внешний
+проще в устанавке и имеет лампочки, которые дают вам сведения о том, что
+происходит. Однако внешние модемы нужно выключать, когда они не используются,
+и вероятно, они немного потребляют электричество даже когда выключены.
+<P>
+<P>
+<H3>Внешние модемы</H3>
+
+<P>
+Сначала, удостоверьтесь, что у вас правильный кабель. Ваш модем требует
+прямой кабель, без пересекающихся штырьков. Любой компьютерный магазин должен
+иметь их. Удостоверитесь, что вам дали то, что нужно. Если вы используете DB25
+последовательный порт, то он всегда будет будет "папа" DB25 (входящий разъем).
+Не путайте его с параллельным портом, который является "мамой" DB25
+(охватывающим). Подключите ваш модем к одному из ваших последовательных
+портов. Проконсультируйтесь с руководством по вашему модему об том, как
+сделать это, если вам нужна справка.
+<P>
+<P>
+<H3>Внутренние модемы</H3>
+
+<P>
+Для внутреннего модема вам не нужен кабель. Внутренний модем не нуждается в
+последовательном порте, он в него встроен. Все, что вы должны сделать -
+настроить его на незанятые прерывание и адрес порта ввода-вывода.
+Проконсультируйтесь с вашим руководством по модему, если вы затрудняетесь.
+Также, см. раздел ``Я могу использовать более чем два последовательных
+устройства?", если вам нужна справка при выборе прерываний или адресов.
+<P>
+На некоторых материнских платах вы должны будете отключить последовательный
+порт, который заменяет модем, чтобы избежать конфликтов. Это может быть
+выполнено перемычками или в установках BIOS, в зависимости от вашей материнской
+платы.
+<P>
+Проконсультируйтесь с руководством по вашей материнской плате.
+<P>
+Если у вас видеоплата IBM8514, то вы должны знать о том, что в ней есть ошибка.
+Вы можете столкнуться с проблемами, если захотите, чтобы ваш внутренний модем
+работал на ttyS3. Если Linux не обнаруживает ваш внутренний модем на ttyS3, вы
+можете использовать setserial, и модем будет прекрасно работать. Внутренние
+модемы на ttyS{0-2} не должны иметь каких-либо проблем.
+<P>
+Linux не производит автоматической конфигурации на ttyS3 из-за ошибки этой
+видеоплаты.
+<P>
+<P>
+<H2>5.2 Общение с вашим модемом</H2>
+
+<P>
+Используйте kermit, minicom или другую программу связи, чтобы проверить
+установку, прежде, чем вы перейдете к более сложным вещам типа SLIP или PPP.
+Вы можете найти последнюю версию kermit на
+<!--<A HREF="http://www.columbia.edu/kermit/">-->http://www.columbia.edu/kermit/<!--</A>-->.
+<P>
+Например, надо сказать, что ваш модем был на ttyS3, и его быстродействие было
+115200 бит\сек. Вы должны были бы сделать следующее:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux# kermit
+      C-Kermit 6.0.192, 6 Sep 96, for Linux
+       Copyright (C) 1985, 1996,
+        Trustees of Columbia University in the City of New York.
+      Default file-transfer mode is BINARY Type ? or HELP for help.
+      C-Kermit>set line /dev/ttyS3
+      C-Kermit>set carrier-watch off
+      C-Kermit>set speed 115200
+      /dev/ttyS3, 115200 bps
+      C-Kermit>c
+      Connecting to /dev/ttyS3, speed 115200.
+      The escape character is Ctrl-\ (ASCII 28, FS)
+      Type the escape character followed by C to get back,
+      or followed by ? to see other options.
+      ATE1Q0V1                           ; you type this and then the Enter key
+      OK                                 ; modem should respond with this
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Если ваш модем отвечает на команды AT, то вы можете считать, что ваш модем
+на Linux стороне работает правильно. Теперь попробуйте позвонить на другой
+модем, напечатав:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      ATDT7654321
+</PRE>
+</CODE></BLOCKQUOTE>
+
+где 7654321 - номер телефона. Используйте ATDP вместо ATDT, если у вас номер
+набирается пульсом. Если обращение проходит, то ваш модем работает.
+<P>
+Чтобы вернуться к подсказке kermit, нажав клавишу Ctrl, нажмите клавишу
+наклонной черты влево, затем отпустите клавишу Ctrl, и нажимите клавишу C:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      Ctrl-\-C
+      (Back at linux)
+      C-Kermit>quit
+      linux#
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Это было только тест с использованием примитивного дозвона "вручную".
+<P>
+Нормальный способ состоит в том, чтобы позволить kermit звонить с помощью
+встроенной базы данных модемов и возможностями автоматическими набора,
+например, для модема USRobotics (USR):
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        linux# kermit
+        C-Kermit 6.0.192, 6 Sep 1997, for Linux
+         Copyright (C) 1985, 1996,
+          Trustees of Columbia University in the City of New York.
+        Default file-transfer mode is BINARY
+        Type ? or HELP for help
+        C-Kermit>set modem type usr        ; Select modem type
+        C-Kermit>set line /dev/ttyS3       ; Select communication device
+        C-Kermit>set speed 115200          ; Set the dialing speed
+        C-Kermit>dial 7654321              ; Dial
+         Number: 7654321
+         Device=/dev/ttyS3, modem=usr, speed=115200
+         Call completed.&lt;BEEP>
+        Connecting to /dev/ttyS3, speed 115200
+        The escape character is Ctrl-\ (ASCII 28, FS).
+        Type the escape character followed by C to get back,
+        or followed by ? to see other options.
+
+        Welcome to ...
+
+        login:
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>См. раздел ``Программы cвязи" о программах связи, если вам нужны какие-либо
+указания.
+<P>
+Когда вы делаете исходящий звонок вашим модемом, установите быстродействие
+последовательного порта самым высоким, которое поддерживает ваш модем
+(обычно это не более 115200 бит\сек). This is not the same as the "advertised"
+speed of the modem such as 56K. Версии Linux с libc версии выше 5.x имеют
+поддержку для скоростей до 115200 бит\сек. В Linux работают даже более высокие
+скорости, чем эти.
+<P>
+<P>
+<H2>5.3 Настройка модема на исходящие звонки </H2>
+
+<P>
+Для использования модема только для исходящих звонков, вы можете
+сконфигурировать ваш модем.
+<P>
+Если вы предполагаете использовать ваш модем для входящих звонков, вы должны
+настроить ваш модем на то же самое быстродействие, которое вы предполагаете
+указать в getty. Однако, большинство модемов сегодня устанавливает свое
+быстродействие автоматически на одинаковое быстродействие, используя команды
+модема. Таким образом, getty, запущенный на скорости 115200, автоматически
+установит модем на это быстродействие, когда getty пошлет init строку на
+последовательный порт, на котором установлен модем. Вообще, фабричные значения
+по умолчанию, которые дают возможность исправления ошибок и аппаратного
+управления потоком данных - это самая лучшая установка для исходящих звонков
+модемом, проконсультируйтесь с руководством по вашему модему для этих установок.
+<P>
+<P>
+<H2>5.4 Аппаратное управление потоком данных</H2>
+
+<P>
+Если ваш модем поддерживает аппаратное управление потоком данных (RTS/CTS), я
+строго рекомендую вам его использовать. Это особенно важно для модемов, которые
+поддерживают сжатие данных. Сначала, вы должны разрешить RTS/CTS управление
+потоком данных на последовательном порту непосредственно. Это лучше всего
+выполнять при запуске, например, в /etc/rc.d/rc.local или /etc/rc.d/rc.serial.
+Удостоверьтесь, что эти файлы выполняются из главного файла rc.sysinit! Вы
+должны сделать следующее для каждого последовательного порта, на котором вы
+хотите разрешить аппаратное управление потоком данных:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      stty crtscts &lt; /dev/ttyS3
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Если не разрешено по умолчанию, то также разрешите RTS/CTS на вашем модеме.
+В этом вам может помочь ваша программа связи. Проконсультируйтесь с
+руководством по вашему модему, если необходимо, и затем сохраните настройку
+вашего модем, если ваш модем поддерживает сохранение профилей.
+<P>
+<P>
+<H2><A NAME="s6">6. Как заставить мой модем принимать входные и совершать исходящие звонки</A></H2>
+
+<P>
+Настройте ваш модем правильно на исходящие звонки. Если вы не читали раздел
+``Как сделать исходящий звонок через мой модем?", то прочитайте его сейчас!
+Он содержит очень важную информацию об установке. Вы не должны читать этот
+раздел, если вы хотите только звонить наружу вашим модемом.
+<P>
+<P>
+<H2>6.1 Настройка модема на входящие и исходящие звонки</H2>
+
+<P>
+Для использования входящих и исходящих звонков, вы должны установить ваш модем
+некоторым образом (снова, используя AT команды на вашем модеме):
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ E1       включение эхоотображения
+ Q0       сообщать коды результата
+ V1       verbose ON
+ S0=0     не поднимать трубку (uugetty обрабатывает эту функцию опцией WAITFOR)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Если вы не установили эти параметры правильно, ваша INIT строка в вашем файле
+настроек может не сработать, нарушая всю работу. Но более подробная информация
+о файлах конфигурации расположена ниже ...
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ &amp;C1     включать DCD только после соединения
+ &amp;S0     DSR всегда включен
+ DTR on/off сброс модема (зависит от производителя - RTFM)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Они воздействуют на то, что ваш модем делает, когда он начинает и заканчивает
+звонить.
+<P>
+Если ваш модем не поддерживает сохранение профилей, то вы можете установить их
+через INIT строку в вашем файле конфигурации. См. ниже. Некоторые модемы
+приходят с DIP переключателями, которые воздействуют на установки регистров.
+Убедитесь, что они тоже установлены правильно.
+<P>
+Я начал коллекционировать установки модемов для различных типов модемов. Пока,
+я только имею несколько из них, если вы хотите послать мне вашу рабочую
+конфигурацию, пожалуйста, сделайте это! Вы можете получить их на
+<!--<A HREF="ftp://ftp.cc.gatech.edu/pub/people/gregh/modem-configs">-->ftp://ftp.cc.gatech.edu/pub/people/gregh/modem-configs<!--</A>--><P>
+Обратите внимание: чтобы заставить мой модем USR Courier V.34 сброситься
+правильно, когда падает DTR, я должен был установить &amp;D2  и S13=1 (установка
+бита 0 регистра S13).
+<P>
+На модеме USR Sportster V.34 это также работает.
+<P>
+Обратите внимание: некоторые модемы Supra обрабатывают DCD иначе, чем другие
+модемы. Если вы используете Supra, попробуйте установить &amp;C0, а не &amp;C1. Вы
+должны также установить &amp;D2, чтобы корректно обрабатывать DTR.
+<P>
+<P>
+<H2>6.2 Установка getty_ps</H2>
+
+<P>
+Получить последнюю версию можно на
+<A HREF="https://www.linuxlib.ru/HowTo/sunsite.unc.edu:/pub/Linux/system/serial">sunsite.unc.edu:/pub/Linux/system/serial</A>.
+<P>
+В частности, если вы хотите использовать высокие скорости (57600 и 115200
+бит\сек), вы должны взять версию 2.0.7j или выше. Вы должны также иметь
+libc 5.x или выше.
+<P>
+По умолчанию, getty_ps будет сконфигурирован в соответствии с Linux FSSTND
+(Стандарт Файловой системы), что означает, что бинарники будут в /sbin, а
+файлы конфигурации будут называться /etc/conf.{uu}getty.ttySN.
+<P>
+Это не указано в документации! Также ожидается, что файлы блокировки будут в
+/var/lock. Удостоверьтесь, что у вас есть каталог /var/lock.
+<P>Если вы не хотите совместимости с FSSTND, бинарники расположаться в / и т.д,
+файлы конфигурации расположаться в /etc/default/{uu}getty.ttySN, и файлы
+блокировки в /usr/spool/uucp. Я рекомендую этот способ, если вы используете
+UUCP, потому что с UUCP возникнут проблемы, если вы переместите файлы
+блокировки туда, где он не ищет их.
+<P>
+getty_ps может также использовать syslogd, чтобы регистрировать сообщения. См.
+man для syslogd(1) и syslog.conf(5) для настройки syslogd, если он еще у вас
+не запущен. Сообщения регистрируются с приоритетом LOG_AUTH, ошибки используют
+LOG_ERR и отлажидка использует LOG_DEBUG. Если вы не хотите использовать
+syslogd, вы можете подредактировать tune.h в исходных файлах getty_ps, чтобы
+использовать регистрационный файл для сообщений вместо файла регистрации по
+умолчанию, именуемого /var/adm/getty.
+<P>
+Решите, что вы хотите - FSSTND совместимость или возможности syslog. Вы можете
+также выбирать комбинацию из двух. Отредактируйте Makefile, tune.h и config.h,
+чтобы отразить ваше решение. Затем скомпилируйте и установите согласно
+инструкциям, включенных в пакет.
+<P>
+> От этой отметки, все относящееся к getty будет относиться к getty_ps.
+<P>Ссылки на uugetty относятся к uugetty, который приходит с пакетом getty_ps. Эти
+инструкции не будут работать с mgetty или agetty.
+<P>
+<P>
+<H2><A NAME="s7">7. uugetty</A></H2>
+
+<P>
+<H2>7.1 Установка uugetty</H2>
+
+<P>
+Удостоверьтесь, что ваше выходное и входное устройство для последовательного
+порта - ваш модем включен. Если у вас модем стоит на ttyS3, вам понадобяться
+устройства /dev/cua3 и /dev/ttyS3. Если у вас неправильные устройства, см.
+раздел ``Создание ttyS устройств в /dev" о том, как создать устройства, и
+создайте устройства. Если вы хотите звонить наружу вашим модемом в то
+время, как uugetty ожидает на порту регистрации в системе, то используйте
+устройство /dev/cuaN вместо устройства /dev/ttySN
+<P>
+[Можно было бы обойтись и без cua, если программное обеспечение не требует их.]
+<P>
+uugetty делает проверку важного файла блокировки. Подредактируйте
+/etc/gettydefs, чтобы включить в него запись для вашего модема. Когда вы
+завершите редактирование /etc/gettydefs, вы можете проверить правиьльность
+синтаксиса, сделав:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux# getty -c /etc/gettydefs
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<H3>Современные модемы</H3>
+
+<P>
+Если у вас модем со сжатием данных и скоростью 9600 бит\сек или более быстрый,
+вы можете блокировать ваш последовательный порт на одну скорость. Например:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      # 115200 fixed speed
+      F115200# B115200 CS8 # B115200 SANE -ISTRIP HUPCL #@S @L @B login: #F115200
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Если у вас ваш модем настроен на аппаратное управление потоком данных RTS/CTS,
+вы можете добавить в запись CRTSCTS:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      # 115200 fixed speed with hardware flow control
+      F115200# B115200 CS8 CRTSCTS # B115200 SANE -ISTRIP HUPCL CRTSCTS #@S @L @B login: #F115200
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<H3>Старые медленные модемы</H3>
+
+<P>
+Если у вас медленный модем (меньше 9600 бит\сек), то вместо одной строки для
+одной скорости, вам потребуется несколько строк, чтобы попробовать ряд
+скоростей.
+<P>
+Обратите внимание, что эти строки связаны друг другу последним "словом" в
+строке, типа #38400. Между каждой записью необходимо оставлять пустые строки.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        # Modem entries
+        115200# B115200 CS8 # B115200 SANE -ISTRIP HUPCL #@S @L @B login: #57600
+
+        57600# B57600 CS8 # B57600 SANE -ISTRIP HUPCL #@S @L @B login: #38400
+
+        38400# B38400 CS8 # B38400 SANE -ISTRIP HUPCL #@S @L @B login: #19200
+
+        19200# B19200 CS8 # B19200 SANE -ISTRIP HUPCL #@S @L @B login: #9600
+
+        9600# B9600 CS8 # B9600 SANE -ISTRIP HUPCL #@S @L @B login: #2400
+
+        2400# B2400 CS8 # B2400 SANE -ISTRIP HUPCL #@S @L @B login: #115200
+ vv
+
+
+&lt;sect2>Сообщение при входе в систему
+&lt;p>
+ Если хотите, вы можете заставить uugetty печатать интересные вещи при входе в
+ систему. В моих примерах, я ставлю имя системы, линию и текущую скорость
+ бит\сек. Вы можете добавить и другие вещи:
+&lt;tscreen>&lt;verb>
+          @B    Текущая скорость (оценивается при определении значения @B )
+                в бит/сек.
+          @D    Текущая дата в формате MM/DD/YY.
+          @L    Последовательная линия, с которой работает getty.
+          @S    Имя системы.
+          @T    Текщее время в формате HH:MM:SS (24-часовой).
+          @U    Число работающих в данный момент пользователей. В качестве
+                этого значения берется количество записей в файле /etc/utmp,
+                которые имеют непустое поле ut_name.
+          @V    Значение VERSION, как задано в файле defaults.
+          Чтобы отобразить символ '@', используйте или '\@', или '@@'.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<P>
+<H2>7.2 Настройка uugetty</H2>
+
+<P>
+Имеется большое количество параметров, которые вы можете изменить для каждого
+имеющегося у вас порта.
+<P>
+Они выполнены в виде отдельного настроечного файла для каждого порта. Файл
+/etc/conf.uugetty будет использоваться всеми процессами uugetty, а
+/etc/conf.uugetty.ttySN будет использоваться только этим одним портом.
+Пример файлов конфигурации по умолчанию, может быть найден в исходниках
+getty_ps, которые есть в большинстве Linux-дистрибутивах. Из-за экономии места
+они здесь не приводятся. Обратите внимание, что, если вы используете
+старые версии getty (старее, чем 2.0.7e), или не используете FSSTND, то
+заданный по умолчанию файл будет /etc/default/uugetty.ttySN. Файл
+/etc/conf.uugetty.ttyS3 Грэга примерно такой:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        # пример настроечного файла uugetty для Hayes-совместимых модемов
+        # с разрешением входящих звонков
+        #
+        # проверка наличия lock файла... Если этот lock файл есть, то uugetty
+        # перезапускается так, чтобы модем был заново проинициализирован
+        ALTLOCK=cua3
+        ALTLINE=cua3
+        # какой порт инициализировать
+        INITLINE=cua3
+        # время таймаута, после которого связь обрывается ...
+        TIMEOUT=60
+        # строка инициализации модема...
+        # формат: &lt;ожидаемое> &lt;отправляемое> ... (чат-последовательность)
+        INIT="" AT\r OK\r\n
+        WAITFOR=RING
+        CONNECT="" ATA\r CONNECT\s\A
+        # эта строка устанавливает задержку перед выдачей сообщения при входе в
+        # систему
+        DELAY=1
+        #DEBUG=010
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Добавьте следующую строку в ваш /etc/inittab, так, чтобы uugetty запускался
+на вашем последовательном порту (заменив значения в соответствии с вашей
+системой - расположение файла конфигурации, порт, быстродействие и заданный по
+умолчанию тип терминала):
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      S3:456:respawn:/sbin/uugetty -d /etc/default/uugetty.ttyS3 ttyS3 F115200 vt100
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Рестарт init:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+      linux# init q
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Скорость в вашем /etc/inittab указывается самой высокой, которую поддерживает
+ваш модем.
+<P>
+Теперь Linux будет следить за появлением запросов на соединение на вашем
+последовательном порту. Можно звонить с других машин и входить в вашу систему.
+<P>
+uugetty имеет еще множество опций, см. полное описание в man по getty(1m).
+Среди прочего имеется возможность планирования и возможность обратного звонка.
+<P>
+<P>
+<H2><A NAME="s8">8. Как настроить терминальный вход на моем PC?</A></H2>
+
+<P>
+Детально это описывается в Text-Terminal-HOWTO (но он все еще незавершен).
+Инструкции в этом разделе будут работать как для подсоедиенных терминалов, так
+и для других компьютеров, подключенных к последовательным портам вашей
+Linux машины.
+<P>
+<P>
+<H2>8.1 Аппаратные требования</H2>
+
+<P>
+Удостоверьтесь, что у вас соответствующий кабель. Нуль-модемный кабель,
+купленный в компьютерном магазине, может подойти, но вероятно, что он не сможет
+работать с аппаратным управлением потоком данных. Но он должен быть нуль-
+модемным кабелем! Многие компьютерные магазины выставляют этот кабель как
+последовательный кабель принтера. Удостоверьтесь, что вы используете ваш
+последовательный порт (разъем-"папу" (входящий в ответную часть) DB25 или DB9),
+а не ваш параллельный порт (разъем-"маму"(охватывающий) DB25 или centronics).
+<P>
+Для разъема DB25, вам нужно минимум:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+     PC "папа" DB25                            Terminal DB25
+     TxD   Передача данных       2 --> 3     RxD   Прием данных
+     RxD   Прием данных          3 &lt;-- 2     TxD   Передача данных
+     SG    Сигнальная земля      7 --- 7     SG    Сигнальная земля
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Этот нуль-модемный кабель хорошо работает между двумя компьютерами, которые
+используют сигналы хендшейкинга RTS/CTS, но многие терминалы используют
+сигнал хендшейкинга DTR, которое не может быть установлен в linux с помощью
+программы "stty". Включите в stty crtscts и соедините штырек терминала 20 (DTR) со
+штырьком PC 5 (CTS).
+<BLOCKQUOTE><CODE>
+<PRE>
+
+     PC "папа" DB25                                  Terminal DB25
+     TxD   Передача данных               2 --> 3     RxD   Прием данных
+     RxD   Прием данных                  3 &lt;-- 2     TxD   Передача данных
+     RTS   Запрос передачи               4 --> 5     CTS   Готов к передаче
+     CTS   Готов к передаче              5 &lt;-- 4     RTS   Запрос передачи
+     DSR   Data Set Ready                6
+                                         |
+     DCD   Обнаружение несущей           8 &lt;-- 20    DTR   Готовность данных терминала
+     SG    Сигнальная земля              7 --- 7     SG    Сигнальная земля
+                                               6     DSR   Data Set Ready
+                                               |
+     DTR   Готовность данных терминала  20 --> 8     DCD   Обнаружение несущей
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Если на вашем последовательном порту стоит разъем DB9, то попробуйте следующую
+распайку:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+     PC DB9                                  Terminal DB25
+     TxD   Передача данных       2 --> 2     RxD   Прием данных
+     RxD   Прием данных          3 &lt;-- 3     TxD   Передача данных
+     SG    Сигнальная земля      5 --- 7     SG    Сигнальная земля
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+В качестве альтернативы, вот полный DB9-DB25 нуль-модемный кабель (Вряд ли
+будет работать с аппаратным хендшейкингом терминала; см. выше):
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+   PC DB9                                         Terminal DB25
+   TxD   Передача данных              2 --> 2     RxD   Прием данных
+   RxD   Прием данных                 3 &lt;-- 3     TxD   Передача данных
+                                            6     DSR   Data Set Ready
+                                            |
+   DTR   Готовность данных терминала  4 --> 8     DCD   Обнаружение несущей
+   GND   Сигнальная земля             5 --- 7     GND   Сигнальная земля
+   DCD   Обнаружение несущей          1
+                                      |
+   DSR   Data Set Ready               6 &lt;-- 20    DTR   Готовность данных терминала
+   RTS   Запрос передачи              7 --> 5     CTS   Готов к передаче
+   CTS   Готов к передаче             8 &lt;-- 4     RTS   Запрос передачи
+   (RI   Ring Indicator               9 не обязательно)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+(Да, штырьки 2 и 3 в разъеме DB9 действительно имеют значения противоположные
+значениям в разъеме DB25!)
+<P>
+Если вы не используете полный нуль-модемный кабель, то вам возможно придется
+применить следующий прием: на разъеме с компьютерной стороны, соедините RTS
+и CTS вместе, а также вместе соедините DSR, DCD и DTR. Таким образом, когда
+компьютер захочет получить сигнал хендшейкинга, он получит его (от самого себя).
+<P>
+Теперь, когда у вас правильный кабель?, соедините ваш терминал с вашим
+компьютером. Если можете, скажите терминалу игнорировать сигналы управления
+модемом. Пробуйте использовать в установках терминала скорость 9600 бит\сек,
+8 информационных битов, 1 стоповый бит, без битов контроля по четности
+(или разрешите контроль по четности, если вы хотите дополнительных сложностей).
+<P>
+<P>
+<H2>8.2 Установка getty (часть getty_ps)</H2>
+
+<P>
+Проконсультируйтесь с вашим руководством по getty для других программ getty,
+например, agetty.
+<P>
+Добавьте записи для getty в файл /etc/gettydefs, чтобы использовать ваш
+терминал, если их там до сих пор нет:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        # 38400 bps Dumb Terminal entry
+        DT38400# B38400 CS8 CLOCAL # B38400 SANE -ISTRIP CLOCAL #@S @L login: #DT38400
+
+        # 19200 bps Dumb Terminal entry
+        DT19200# B19200 CS8 CLOCAL # B19200 SANE -ISTRIP CLOCAL #@S @L login: #DT19200
+
+        # 9600 bps Dumb Terminal entry
+        DT9600# B9600 CS8 CLOCAL # B9600 SANE -ISTRIP CLOCAL #@S @L login: #DT9600
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Если хотите, вы можете заставить uugetty печатать интересные вещи при входе в
+систему. В моих примерах, я ставлю имя системы и текущую линию. Вы можете
+добавить и другие вещи:
+<BLOCKQUOTE><CODE>
+<PRE>
+          @B    Текущая скорость (оценивается при определении значения @B )
+                в бит/сек.
+          @D    Текущая дата в формате MM/DD/YY.
+          @L    Последовательная линия, с которой работает getty.
+          @S    Имя системы.
+          @T    Текщее время в формате HH:MM:SS (24-часовой).
+          @U    Число работающих в данный момент пользователей. В качестве
+                этого значения берется количество записей в файле /etc/utmp,
+                которые имеют непустое поле ut_name.
+          @V    Значение VERSION, как задано в файле defaults.
+          Чтобы отобразить символ '@', используйте или '\@', или '@@'.
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Когда вы завершили редактирование файла /etc/gettydefs, вы можете проверить
+правильность синтаксиса, сделав:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+
+          linux# getty -c /etc/gettydefs
+
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Удостоверьтесь, что у вас нет файла конфигурации getty или uugetty для
+последовательного порта, к которому подключен ваш терминал
+(/etc/default{/uu}getty.ttySN или /etc/conf.{uu}getty.ttySN), поскольку он
+вероятно будет пересекаться с getty, запущенном на этом терминале. Удалите
+файл, если он существует.
+<P>
+Отредактируйте ваш файл /etc/inittab, чтобы запустить getty на последовательном
+порту (установив для вашего окружения правильные порт, скорость и заданный
+по умолчанию тип терминала):
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ S1:456:respawn:/sbin/getty ttyS1 DT9600 vt100
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Перезапустите init:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ linux# init q
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>В этом месте, вы должны на терминале увидеть подсказку для входа в систему.
+Вам, вероятно, придется нажать Enter, чтобы привлечь внимание терминала.
+<P>
+<P>
+<H2>8.3 Примечания о настройке PC в качестве терминала</H2>
+
+<P>
+Многие люди настраивают другие PC как терминалы, соединенные с Linux машинами.
+<P>
+Например, старые 8088 или 80286 PC отлично подходят для этой цели. Все, в чем
+вы нуждаетесь для запуска - это загрузочный диск DOS, содержащий версию DOS,
+подходящую вашему PC-терминалу, и программы связи для вашего PC-терминала.
+Kermit очень хорошо подходит для этой цели. Вы можете найти скомпилированные
+версии kermit для каждой OS на
+<!--<A HREF="http://www.columbia.edu/kermit/">-->http://www.columbia.edu/kermit/<!--</A>-->. Также хорошо
+будут работать другие популярные программы связи DOS типа telix и procomm.
+Убедитесь, что ваши настройки PC-терминала содержат правильную информацию о
+последовательном порте.
+<P>
+<P>
+<H2><A NAME="s9">9. Я могу использовать более, чем два последовательных устройства?</A></H2>
+
+<P>
+Вы не должны читать этот раздел, если не хотите использовать три или более
+последовательных устройства ... (принимая, что у вас нет многопортовой платы).
+<P>
+Если у вас есть другой запасной последовательный порт, то да, вы можете. Число
+последовательных портов, которые вы можете использовать, ограничено числом
+прерываний (IRQs) и адресов портов ввода-вывода. Это - ограничение не системы
+Linux, а ограничение шины PC. Каждому последовательному устройству должны быть
+назначены адрес и собственное прерывание.
+<P>
+Если два устройства совместно используют одно и тоже прерывание, то они могут
+нормально работать, при условии, что эти два устройства не будут действовать
+одновременно. (В большинстве случаев, две программы не должны даже выполняться
+одновременно.) Последовательное устройство может быть последовательным портом,
+внутренним модемом или многопортовой последовательной платой.
+<P>
+Многопортовые последовательные платы специально разработаны для получения
+множества последовательных портов, которые совместно используют одно и то же
+IRQ для всех последовательных портов на плате.
+<P>
+Linux получает данные из них, используя различные адреса ввода-вывода для
+каждого порта на плате.
+<P>
+<P>
+<H2>9.1 Выбор прерываний последовательных устройств</H2>
+
+<P>
+Обычный PC имеет ttyS0 и ttyS2 на IRQ 4, и ttyS1 и ttyS3 на IRQ 3. Вы можете
+увидеть, какие IRQs используются, напечатав: setserial /dev/ttyS2, и т.д.
+Просмотр /proc/interrupts покажет некоторых из них. Чтобы использовать более,
+чем два последовательных устройства, вы должны будете переназначить прерывания.
+Хороший подход состоит в переназначении прерывания для параллельного порта. В
+PC обычно для ваших параллельных портов установлены прерывания IRQ 5 и IRQ 7,
+но мало кто использует два параллельных порта. Вы можете переназначать одно из
+прерываний на последовательное устройство, и прекрасно использовать оставшийся
+параллельный порт. чтобы сделать это, вам нужна будет программа setserial.
+Кроме того, вы должны поиграть с перемычками на матернской плате, свериться с
+документацией на вашу плату. Установите перемычки на IRQ, который вы хотите
+назначить каждому порту.
+<P>
+Вы должны установить все так, чтобы имелось одно и только одно прерывание
+для каждого последовательного устройства. Вот как Грэг устанавливает его в
+/etc/rc.d/rc.local - вы должны сделать это в файле, который выполняется после
+запуска:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        /sbin/setserial /dev/ttyS0 irq 3        # моя последовательная мышь
+        /sbin/setserial /dev/ttyS1 irq 4        # мой Wyse dumb терминал
+        /sbin/setserial /dev/ttyS2 irq 5        # мой модем Zoom
+        /sbin/setserial /dev/ttyS3 irq 9        # мой модем USR
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Стандартные назначения IRQ:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+                 IRQ  0    Таймер, канал 0
+                 IRQ  1    Клавиатура
+                 IRQ  2    Cascade for controller 2
+                 IRQ  3    Последовательный порт 2
+                 IRQ  4    Последовательный порт 1
+                 IRQ  5    Параллельный порт 2
+                 IRQ  6    Накопитель на гибких дисках
+                 IRQ  7    Параллельный порт 1
+                 IRQ  8    Часы реального времени
+                 IRQ  9    Перенаправлен на IRQ2
+                 IRQ 10    не назначен
+                 IRQ 11    не назначен
+                 IRQ 12    не назначен
+                 IRQ 13    Математический сопроцессор
+                 IRQ 14    Накопитель на жестких дисках 1
+                 IRQ 15    Накопитель на жестких дисках 2
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>В действительности нет никакого "правильного способа" назначения прерывания.
+Только удостоверьтесь, что оно не используется материнской платой или любыми
+другими платами.
+<P>
+Номера прерываний 2, 3, 4, 5 или 7 - это хороший выбор. ``не назначен" означает,
+что в настоящее время ничего стандартно не использует эти IRQS. Также обратите
+внимание, что IRQ 2 - это тоже, что и IRQ 9. Вы можете вызывать его или как 2
+или как 9, последовательный драйвер очень понятливый. Если у вас
+последовательная плата с 16-разрядным разъемом шины, то вы можете также
+использовать IRQ 10, 11, 12 или 15.
+<P>
+Только удостоверьтесь, что вы не используете IRQ 0, 1, 6, 8, 13 или 14! Они
+используются вашей материнской платой. Вы модете заработать множество
+неприятностей, используя эти IRQ не по назначению. Когда вы закончите,
+посмотрите /proc/interrupts и удостоверьтесь, что конфликтов нет.
+<P>
+<P>
+<H2>9.2 Установка адресов последовательных устройств</H2>
+
+<P>
+Затем, вы должны установить адрес порта. Проверьте в руководстве по вашей плате
+установки перемычек. Подобно прерываниям, одно последовательное устройство
+может иметь только один адрес. Ваши порты обычно будут приходить с такими
+установками:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        ttyS0 адрес 0x3f8
+        ttyS1 адрес 0x2f8
+        ttyS2 адрес 0x3e8
+        ttyS3 адрес 0x2e8
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Выберите адреса, которые вы хотите использовать для каждого последовательного
+устройства и соответственно установите перемычки. Мой модем установлен на
+ttyS3, мышь на ttyS0, а мой терминал на ttyS2.
+<P>
+Когда вы перезагрузитесь, Linux должен увидеть ваши последовательные порты по
+тем адресам, на которые вы их установили. IRQ, который видит Linux, может не
+соответствовать IRQ, который вы устанавливаете перемычками. Не волнуйтесь об
+этом. Linux не делает попыток определить IRQ при загрузке, потому что
+определение IRQ рисковано и может быть неправильным. Используйте setserial,
+чтобы сообщить Linux, какое IRQ используется портом. Вы можете проверить
+/proc/ioports, чтобы увидеть, какие адреса порта ввода-вывода используются
+после загрузки Linux.
+<P>
+<P>
+<H2><A NAME="s10">10. Как мне настроить последовательные порты на более высокие скорости?      Какую скорость я должен задать для моего модема?</A></H2>
+
+<P>
+Этот раздел должен помочь вам выяснить, какую скорость нужно использовать в
+программах связи или getty, которые работают в вашим модемом.
+<P>
+Обычно вы только устанавливаете скорость параметром, заданным в getty или меню
+вашей коммуникационной программы (или в конфигурационном файле). Если по
+некоторым причинам, это не работает для высоких скоростей, то имеется
+возможность задавть специальные опции в setserial: с помощью опций spd_hi или
+spd_vhi, задаваемыми в setserial, установка 38400 фактически даст скорость
+57600 (spd_hi) или 115200 (spd_vhi).
+<P>
+Удостоверьтесь, что для более высоких скоростей у вас имеется по крайней мере
+16550A UARTS. Существуют некоторые предлагаемые скорости:
+<UL>
+<LI>    Если у вас 28.8К (V.34), 33.6К (V.34) или 56К (V.90) модем, используйте
+115200 бит\сек.
+ </LI>
+<LI>    Если у вас 14400 бит\сек (V.32bis) модем со сжатием данных V.42bis,
+используйте 57600 бит\сек.
+ </LI>
+<LI>    Если у вас 9600 бит\сек (V.32) модем со сжатием данных V.42bis,
+используйте 38400 бит\сек.
+ </LI>
+<LI>    Если ваш модем работает медленнее, чем на 9600 бит\сек (V.32), то установите
+скорость на самую высокую, какую только поддерживает ваш модем. Например,
+300 бит\сек (V.21/Bell 103), 1200 бит\сек (V.22/Bell 212A) или 2400 бит\сек
+(V.22bis).</LI>
+</UL>
+
+Если вы используете setserial, то потестируйте его команды сперва в командной
+строке, а затем, когда убедитесь, что все работает, поместите их в
+/etc/rc.d/rc.serial или /etc/rc. d/rc.local или /etc/rc.boot/0setserial так,
+чтобы они выполнялись при загрузке системы. Удостоверьтесь, что вы используете
+правильный путь для setserial и правильное имя устройства. Вы можете проверить
+установки последовательного порта командой:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+         setserial -a /dev/ttyS3
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<H2><A NAME="s11">11. Коммуникационные программы и утилиты</A></H2>
+
+<P>
+Вот список нескольких коммуникационных программ, которые доступны в Интернет
+через FTP, если их нет в вашем дистрибутиве.
+<UL>
+<LI>   ecu - программа связи
+ </LI>
+<LI>
+<!--<A HREF="http://www.columbia.edu/kermit/">-->C-Kermit<!--</A>--> - переносная scriptable,
+последовательная и TCP/IP связь, включая передачу файлов и трансляцию
+символьных наборов
+ </LI>
+<LI>   minicom - telix-подобная программа связи
+ </LI>
+<LI>   procomm - procomm-подобная коммуникационная программа с протоколом zmodem
+ </LI>
+<LI>   seyon -  коммуникационная программа под X
+ </LI>
+<LI>   xc - коммуникационный пакет xcomm
+ </LI>
+<LI>   также имеются полезные программы term и SLiRP. Они предоставляют
+функциональные возможности TCP/IP, используя учетную запись shell.
+ </LI>
+<LI>   screen - другая многосессионная программа. Она ведет себя как виртуальные
+консоли.
+ </LI>
+<LI>   callback - программа, которая заставит ваш модем звонить вам обратно.
+ </LI>
+<LI>   mgetty+fax работает с факсами и является альтернативой ps_getty.
+ </LI>
+<LI>   ZyXEL - управляющая программа для модемов ZyXEL U-1496. Она обеспечивает
+защиту входящих, исходящих и обратных звонков, обработку факсов и голосовые
+почтовые ящики.
+ </LI>
+<LI>   Программное обеспечение SLIP и PPP можно найти на
+<!--<A HREF="ftp://sunsite.unc.edu/pub/Linux/system/network/serial">-->ftp://sunsite.unc.edu/pub/Linux/system/network/serial<!--</A>-->.
+</LI>
+<LI>   Другие вещи можно найти на
+<!--<A HREF="ftp://sunsite.unc.edu/pub/Linux/system/serial">-->ftp://sunsite.unc.edu/pub/Linux/system/serial<!--</A>--> и
+<!--<A HREF="ftp://sunsite.unc.edu/pub/Linux/apps/serialcomm">-->ftp://sunsite.unc.edu/pub/Linux/apps/serialcomm<!--</A>--> или на одном из зеркал. Это
+каталоги, где хранятся программы для работы с последовательными устройствами.
+</LI>
+</UL>
+
+<P>
+<H2><A NAME="s12">12. Советы и разное по последовательным устройствам</A></H2>
+
+<P>
+Вы можете счесть полезными несколько советов ...
+<P>
+<H2>12.1 kermit и zmodem</H2>
+
+<P>
+Чтобы использовать zmodem с kermit, добавьте следующее к вашему .kermrc:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+ define rz !rz &lt; /dev/ttyS3 > /dev/ttyS3 define sz !sz \%0 > /dev/ttyS3 &lt; /dev/ttyS3
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Убедитесь, что указали правильный порт, к которому подключен ваш модем. Затем,
+чтобы использовать его, нужно только напечатать rz или sz &lt;имя файла> в
+командной строке kermit.
+<P>
+<H2>12.2 Автоматическая настройка типов терминала</H2>
+
+<P>
+Чтобы тип вашего терминала автоматически устанавливался, когда вы
+регистрируетесь в системе, добавьте тип терминала в /etc/inittab. Если бы у
+меня к порту ttyS1 был подключен терминал vt100, то я добавил бы ``vt100" в
+команду getty:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+       S1:456:respawn:/sbin/getty ttyS1 DT9600 vt100
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Другие getty имеют подобные опции. Вы можете также использовать tset, который
+может устанавливать характеристики терминала, когда вы регистрируетесь в
+системе, и не зависит от каких-либо значений по умолчанию.
+<P>
+<P>
+<H2>12.3 Цвета ls при последовательной связи</H2>
+
+<P>
+Если ls выдает результат своей работы в цвете на терминалах, поддерживающих
+цвет, отключите это. Включение цвета осуществляется опциями ls --color и
+ls --colour .
+<P>
+В некоторых дистрибутивах ls настроен с цветом по умолчанию. Проверьте в файлах
+/etc/profile и /etc/csh.cshrc псевдонимы ls. Также вы можете установить
+псевдоним ls в значение ls --no-color, если не хотите изменять системные
+значения по умолчанию.
+<P>
+<P>
+<H2>12.4 Печать на принтер, соединенный с терминалом</H2>
+
+<P>
+Имеется программа, называемая vtprint, доступная на
+<!--<A HREF="ftp://ftp.sdsu.edu/pub/vtprint">-->ftp://ftp.sdsu.edu/pub/vtprint<!--</A>--> и на
+<!--<A HREF="http://www.sdsu.edu/~garrett">-->http://www.sdsu.edu/~garrett<!--</A>-->.
+<P>
+Другая программа, которая будет делать это, называется xprt. Ее можно найти на
+<!--<A HREF="ftp://sunsite.unc.edu/pub/Linux/system/printing">-->ftp://sunsite.unc.edu/pub/Linux/system/printing<!--</A>-->.
+<P>
+<P>
+<H2>12.5 Может ли Linux настроить последовательные устройства автомагически?</H2>
+
+<P>
+Да. Если это еще не настроено (или почти настроено), то вы можете заставить
+Linux обнаруживать и настраивать последовательные устройства автоматически при
+запуске. Если необходимо добавьте строку:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+         /sbin/setserial /dev/ttyS3 auto_irq skip_test autoconfig
+</PRE>
+</CODE></BLOCKQUOTE>
+
+в ваш файл /etc/rc.d/rc.local или /etc/rc.d/rc.serial или в файл
+/etc/rc.boot/0setserial файл. Проделайте это для каждого последовательного
+порта, который вы хотите настроить автоматически. Убедитесь, что используете
+имена реально существующих в вашей системе устройств.
+<P>
+<P>
+<H3>Примечания для многопортовых плат</H3>
+
+<P>
+Адреса и IRQS платы смотрите в файлах rc.serial или /etc/rc.boot/0setserial,
+которые поставляются с программой setserial. В них можно найти множество
+подробностей о многопортовых платах, включая адреса ввода-вывода и имена
+устройств.
+<P>
+<P>
+<H2>12.6 Использование последовательной консоли</H2>
+
+<P>
+Имеется статья в выпуске
+<!--<A HREF="http://www.ssc.com/lj/issue36/index.html">-->36 Linux Journal, <!--</A>-->, которая объясняет, как использовать
+последовательную консоль. См. Text-Terminal-HOWTO.
+<P>
+<P>
+<H2>12.7 Повышение производительности последовательных устройств</H2>
+
+<P>
+Если вы наблюдаете медленную производительность и последовательный порт
+слишком быстр для системы с (E)IDE дисками, то вы можете взять пакет hdparm.
+Это утилита, которая может изменять параметры (E)IDE устройств, включая
+unmasking других IRQs при выполнении дискового IRQ. Это ускорит отклик и
+поможет решить проблему обслуживания последовательных устройств. Убедитесь,
+что вы очень тщательно прочитали man страницу, так как некоторые комбинации
+привода/контроллера могут быть некорректными, и файловая система может
+разрушиться.
+<P>
+Также обратите внимание на утилиту irqtune, который изменяет приоритет IRQ
+устройства, например последовательного порта, к которому подключен ваш модем.
+Это может улучшить производительность последовательного устройства на вашей
+системе. Irqtune FAQ можно найти на
+<!--<A HREF="http://www.best.com/~cae/irqtune">-->http://www.best.com/~cae/irqtune<!--</A>-->.
+<P>
+<P>
+<H2><A NAME="s13">13. На шаг дальше ...</A></H2>
+
+<P>
+Этот раздел не обязателен для прочтения, но может дать вам более глубокие
+знания Unix и мира телекоммуникаций.
+<P>
+<P>
+<H2>13.1 Что такое lock файлы (файлы блокировки)?</H2>
+
+<P>
+Файл блокировки - это просто файл, говорящий, что указанное устройство
+в настоящее время занято (используется).
+<P>Они хранятся в /usr/spool/uucp или /var/lock. В Linux файлы блокировки
+именуются LCK..name, где name - это или имя устройства, или имя UUCP сайта.
+Некоторые процессы создают эти файлы блокировки для того, чтобы иметь
+монопольный доступ к устройству. Например, если вы делаете исходящий звонок
+вашим модемом, появится файл блокировки, сообщая другим процессам, что кто-то
+уже использует модем. Файл блокировки в основном содержат PID процесса,
+который занял устройство. Большинство программ проверяют наличие файла
+блокировки, и пытаются определить, является ли эта блокировка все еще
+допустимой, производя в таблице процессов поиск процесса, который блокировал
+устройство. Если определяется, что файл блокировки действителен, то программа
+(возможно) заканчивает работу. Если нет, то некоторые программы удаляют
+устаревший файл блокировки, и используют устройство, создавая собственный файл
+блокировки. Другие программы только завершают работу и сообщают вам, что
+устройство занято процессом.
+<P>
+<P>
+<H2>13.2 ``бод" или ``бит\сек"</H2>
+
+<P>
+``бод" и ``бит\сек" являются возможно одним из наиболее часто неправильно
+применяемых терминов в области компьютеров и телекоммуникаций. Многие люди
+считают эти термины взаимозаменяемыми, хотя фактически это не так!
+<DL>
+<DT><B> бод (baud)</B><DD><P>Скорость в бодах - это количество посланных секунду сигналов, например одно
+посланное модемом (модем - это сокращение от "модулятор-демодулятор") изменение.
+Например, скорость в 1200 бод подразумевает, что один сигнал изменяется каждые
+833 микросекунды. Обычные скорости модемов в бодах - 50, 75, 110, 300, 600,
+1200 и 2400. Большинство высокоскоростных модемов могут работать со скоростями
+2400 бод. Из-за ограничений ширины полосы частот на голосовых телефонных
+линиях, достичь скорости более 2400 бод тяжелее, и работает только на линиях с
+pristine качеством. В одном боде можно закодировать несколько бит, и таким
+образом получится, что скорость в битах превышает скорость в бодах. ``бод"
+назван по имени Эмиля Баудота (Emile Baudot), изобретателя асинхронного
+телеграфного принтера.
+<P>
+<DT><B> бит\сек (bps)</B><DD><P>Скорость бит\сек - количество переданных за одну секунду бит. Раньше для
+модемов обычными скоростями бит\сек были 50, 75, 110, 300, 1200, 2400, 9600.
+Сегодня это - 14.4Кб, 28.8Кб, 33.6Кб, и 56Кб (они не соответствуют скоростям в
+кабеле "последовательный порт-модем", которые дополняют старые модемные
+скорости бит\сек (50-9600): 19.2Кб, 38.4Кб, 57.6Кб и 115.2Кб). При
+использовании модемов со сжатием  V.42bis (максимальное сжатие 4:1), возможно
+достижение скорости до 115.2Кб/сек. Вот что имеет в виду большинство людей,
+когда они неправильно применяют слово ``бод".
+</DL>
+
+Итак, если высокоскоростные модемы работают на 2400 бод, как они умудряются
+посылать 14400 бит\сек (или больше)? Модемы достигают скоростей бит\сек бОльших,
+чем скорости в бодах, кодируя несколько битов при каждом изменении сигнала или
+смене фазы. Таким образом, когда в одном боде закодировано 2 или больше битов,
+скорость бит\сек превышает скорость в бодах. Если ваш модем соединяется со
+скоростью 14400 бит\сек, он собирается посылать 6 битов при каждом изменении
+фазы, со скоростью 2400 бод.
+<P>
+Как начался этот бардак? Ну, когда модемы работали медленно, скорость бит\сек
+фактически равнялась скорости в бодах. Одним изменением фазы кодировался один
+бит. Термины бит\сек и бод были взаимозаменяемыми, потому что имели одинаковые
+значения. Например, модем 300 бит\сек также имел скорость 300 бод. Все
+изменилось, когда появились более быстрые модемы, и скорость передачи
+информации в битах превысила скорость в бодах.
+<P>
+<P>
+<H2>13.3 Что такое UART? Как они воздействуют на производительность?</H2>
+
+<P>
+UART (Universal Asynchronous Receiver Transmitter -- Универсальный Асинхронный
+Приемопередатчик) - это микросхема на вашей мультикарте или материнской плате.
+Функции UART может выполнять и другая микросхема, которая занимается кроме
+этого другими вещами.
+<P>
+Назначение UART состоит в том, чтобы преобразовать данные в биты, посылать биты
+по последовательной линии и затем восстанавливать данные на другом конце линии.
+UART имеет дело с данными, разбитыми побайтно, что удобно для представления
+символов ASCII.
+<P>
+Скажем, у вас есть терминал, подключенный к PC. Когда вы печатаете символ,
+терминал передает этот символ своему передатчику (тоже UART). Передатчик
+посылает этот байт наружу по последовательной линии побитно с определенной
+скоростью. UART на PC конце линии получает все эти биты и восстанавливает из
+них байт и помещает его в буфер.
+<P>
+Есть два различных типа UART. Вы вероятно слышали о dumb UART - 8250 и
+16450, и FIFO UART - 16550A. Чтобы понять их различия, сначала давайте
+исследуем, что случается когда UART послал или получил байт.
+<P>
+UART непосредственно не может делать что-либо с данными, он только посылает
+и получает их. Для первоначальных UART, ЦП получает запрос на прерывание от
+последовательного устройства каждый раз, когда байт был послан или получен.
+<P>
+Затем ЦП перемещает полученный байт из буфера UART в область оперативной памяти
+или передает UART другой байт для передачи. В UART 8250 и 16450 буфера
+однобайтные. Это означает, что за одно прерывание ЦП посылается или принимается
+только 1 байт. Для низких скоростей это нормально. Но при высоких скоростях
+передачи, ЦП настолько загружается работой с UART, что хуже обслуживает другие
+задачи. В некоторых случаях, ЦП не успевает обработать прерывание вовремя, и
+байт затирается вновь пришедшим, потому что байты поступают в буфер UART
+слишком быстро.
+<P>
+В этой ситуации полезен UART 16550A. Эти чипы приходят с 16-байтным FIFO. Это
+означает, что такая микросхема может получать или передавать до 14 байтов
+прежде, чем она должна будет сформировать запрос на прерывание ЦП. В свою
+очередь ЦП может передать сразу 14 байтов за один раз. Хотя порог прерывания
+не всегда устанавливается в 14, все равно имеется значительное преимущество
+перед другими UART, которые имеют только однобайтный буфер.
+<P>
+ЦП получает меньшее количество прерываний, и имет больше времени для
+выполнения других вещей.
+<P>
+Данные не теряются, и все счастливы. (Существует также 16550 UART, но он
+обрабатывается как 16450, так как имеет дефект.)
+<P>
+В общем, UART 8250 и 16450 должны прекрасно подходить для скоростей до
+38400 бит\сек. На скоростях больее 38400 бит\сек, вы могли бы заметить
+потерю данных. Другие операционные системы для PC (definition used loosely
+here), вроде DOS, не многозадачные, так что они могли бы лучше работать с 8250
+или 16450s. Именно поэтому некоторые люди не замечают потерь данных, пока не
+начинают работать в Linux.
+<P>
+В не-UART и интеллектуальных многопортовых платах стоят DSP чипы, которые
+имеют дополнительные буферы и более развитое управление, и таким образом
+ЦП менее загружается.
+<P>
+Например, платы Cyclades Cyclom и Stallion EasyIO используют Cirrus Logic
+CD1400 RISC UART, а многие платы используют ЦП 80186 или даже
+специальные RISC ЦП, для обработки последовательного ввода-вывода.
+<P>Имейте в виду, что dumb UART не плохи, просто они не очень хороши для
+высоких скоростей. У вас не должно возникать проблем с подключением терминалов
+или мышей к этим UART. Но, для высокоскоростных модемов 16550A - определенно
+обязателен.
+<P>На большинстве новых PC (486's, Pentiums или выше) установлены 16550A. Если
+ваша техника действительно старая, то вы можете нарастить ее вычислительные
+возможности купив микросхем 16550A и заменив ваши 16450 UART. Если
+используется другой тип микросхемы, то вам не повезло. Если UART вставлется в
+"кроватку", то обновление упрощается (если вы можете найти замену). Новые и
+старые микросхемы совместимы по значениям выводов. Возможно, более правильно
+купить последовательную плату через Интернет (некоторые розничные торговцы их
+продают).
+<P>
+<P>
+<H2><A NAME="s14">14. Поиск неисправностей</A></H2>
+
+<P>
+<H2>14.1 Я получаю сообщение ``line NNN  of inittab invalid''</H2>
+
+<P>
+Удостоверьтесь, что вы используете правильный для вашей версии init синтаксис.
+<P>
+Различные init используют различный синтаксис в файле /etc/inittab.
+Удостоверьтесь, что вы используете правильный синтаксис для вашей версии getty.
+<P>
+<P>
+<H2>14.2 Когда я пытаюсь сделать исходящий звонок, система говорит        ``/dev/cua N : Device or resource busy''</H2>
+
+<P>
+Эта проблема может возникать, когда DCD или DTR неправильно установлены. DCD
+должен быть установлен только когда имеется фактическое соединение (то есть
+кто-то позвонил), а не когда getty наблюдает за состоянием порта. Проверьте,
+что ваш модем сконфигурирован так, чтобы DCD устанавливался только когда
+имеется соединение. DTR должен быть установлен всякий раз, когда кто-то
+использует или наблюдает за линией, вроде getty, kermit или любой другой
+программы связи.
+<P>
+Другая общая причина ошибки ``device busy", - что вы настроили ваш
+последовательный порт на уже кем-то занятое прерывание.
+<P>
+Когда каждое устройство инициализируется, оно запрашивает Linux о своих правах
+использования аппаратных прерываний. Linux смотрит, какое прерывание назначено
+усройству, и если это прерывание уже занято, то устройство не сможет корректно
+проинициализироваться. Устройство не имеет другого способа сообщить вам о своей
+неправильной инициализации, кроме выдачи сообщения "device busy", когда вы
+попытаетесь воспользоваться этим устройством. Проверьте прерывания на всех
+ваших платах (последовательных, ethernet SCSI и т.д.). Поищите конфликты IRQ.
+<P>
+<P>
+<H2>14.3 Я получаю сообщение ``getty respawning too fast: disabled for 5 minutes''</H2>
+
+<P>
+Удостоверьтесь, что ваш модем сконфигурирован правильно. Проверьте регистры
+Е и Q. Это может происходить, когда ваш модем общается с getty.
+<P>
+Удостоверьтесь, что в вашем /etc/inittab getty вызывается правильно.
+<P>
+Неправильный синтаксис или имена устройств могут вызвать серьезные проблемы.
+<P>
+Проверите правильность синтаксиса вашего /etc/gettydefs, делая следующее:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+         linux# getty -c /etc/gettydefs
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Также такое может случиться при неудачной инициализации uugetty . См.
+раздел ``getty или uugetty все еще не работает".
+<P>
+<P>
+<H2>14.4 Последовательных устройства работают медленно, или последовательные       устройства могут отправлять данные только в одном направлении </H2>
+
+<P>
+Вероятно у вас конфликт IRQ. Удостоверьтесь, что это не так. Проверьте все
+ваши платы (последовательные, ethernet, SCSI и т.д ...). Проверьте установки
+перемычек и параметры setserial для всех ваших последовательных устройств.
+Также попытайтесь обнаружить конфликты в /proc/ioports и /proc/interrupts .
+<P>
+<P>
+<H2>14.5 Мой модем виснет после того, как кто-то зависает, или uugetty не       возрождается повторно</H2>
+
+<P>
+Это может случиться, когда ваш модем не сбрасывается при отсутствии DTR.
+Я видел как светодиоды RD и SD сходили с ума, когда это случалось. Вы должны
+сбросить ваш модем. В большинстве Hayes-совместимых модемов это делается
+командой &amp;D3, но на моем USR Courier, я должен был установить &amp;D2 и S13=1.
+Проверьте ваше руководство по модему.
+<P>
+<P>
+<H2>14.6 Мой терминал, соединен с моим PC, но после того, как я ввожу свое имя       для входа в систему, он только блокируется </H2>
+
+<P>
+<UL>
+<LI>   Если вы используете getty: вероятно у вас не указано CLOCAL в файле
+/etc/gettydefs для терминала, и вы вероятно не используете полный
+нуль-модемный кабель. Вам нужен CLOCAL, который заставляет Linux игнорировать
+сигналы управления модемом. Вот на что это должно быть похоже:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+         # 38400 bps Dumb Terminal entry
+         DT38400# B38400 CS8 CLOCAL # B38400 SANE -ISTRIP CLOCAL #@S @L login: #DT38400
+
+         # 19200 bps Dumb Terminal entry
+         DT19200# B19200 CS8 CLOCAL # B19200 SANE -ISTRIP CLOCAL #@S @L login: #DT19200
+
+         # 9600 bps Dumb Terminal entry
+         DT9600# B9600 CS8 CLOCAL # B9600 SANE -ISTRIP CLOCAL #@S @L login: #DT9600
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Затем, уничтожьте процесс getty, так что новый будет порожден с новой записью.
+ </LI>
+<LI>   Если вы используете agetty: добавьте флажок -L в строку agetty в файле
+/etc/inittab. Она заставит его проигнорировать сигналы управления модема.
+<P>
+Затем перезапустите init, напечатав init q. Запись должна выглядеть следующим
+образом:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+
+         s1:345:respawn:/sbin/agetty -L 9600 ttyS1 vt100
+</PRE>
+</CODE></BLOCKQUOTE>
+
+</LI>
+</UL>
+<P>
+<H2>14.7 На высоких скоростях мой модем теряет данные</H2>
+
+<P>
+Если вы попробуете заставить работать ваш модем быстрее, чем на 38400 бит\сек,
+и у вас нет UART 16550A, то вы должны обновить вашу технику. О UART написано в
+разделе ``Что такое UART?".
+<P>
+<P>
+<H2>14.8 При загрузке Linux не указывает настройки последовательных устройств,       которые я задал</H2>
+
+<P>
+Это не совсем так. Linux не пытается обнаружить IRQ при запуске, он делает
+только обнаружение последовательных устройств. Таким образом неважно, что он
+говорит о IRQ, потому что он принимает только стандартные IRQS.
+<P>
+Но когда при загрузке setserial изменяет IRQ, вы должны увидеть это на экране.
+<P>
+Так, например, при том, что я устанавливаю ttyS2 на IRQ 5, я вижу
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        Jan 23 22:25:28 misfits vmunix: tty02 at 0x03e8 (irq = 4) is a 16550A
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>вначале загрузки Linux. Вы должны использовать setserial, чтобы сообщить
+Linux IRQ, который вы используете.
+<P>
+<P>
+<H2>14.9 rz и/или sz не работают, когда я звоню на мою машину с Linux модемом</H2>
+
+<P>
+Если Linux ищет /dev/modem, когда вы пытаетесь передавать файлы, посмотрите
+файлы /etc/profile или /etc/csh.cshrc. Возможно, что в этих файлах определены
+несколько псевдонимов, как это случается в некоторых дистрибутивах, особенно в
+Slackware. Эти псевдонимы запутывают программы zmodem. Уберите их или исправьте.
+<P>
+<P>
+<H2>14.10 Мой экран отображает прикольные символы</H2>
+
+<P>Это случается на виртуальных консолях, когда вы посылаете двоичные данные на
+ваш экран, или иногда при последовательных соединениях. Способ устранить это
+состоит в том, чтобы напечатать echo ^v^[c. Делается это так:
+<P>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+         linux% echo &lt;ctrl>v&lt;esc>c
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>
+<H2>14.11 getty или uugetty все еще не работают</H2>
+
+<P>
+Есть опция DEBUG, которая приходит с getty_ps. Отредактируйте ваш настроечный
+файл /etc/conf.{uu}getty.ttySN и добавьте DEBUG=NNN. Где NNN - одна из
+следующих комбинаций чисел в зависимости от того, что вы собираетесь отлаживать:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+
+        D_OPT   001            установки опций
+        D_DEF   002            обработка файлов по умолчанию
+        D_UTMP  004            обработка utmp/wtmp
+        D_INIT  010            инициализация линии (INIT)
+        D_GTAB  020            обработка файла gettytab
+        D_RUN   040            другая диагностика времени выполнения
+        D_RB    100            отладка ringback
+        D_LOCK  200            обработка файла блокировки uugetty
+        D_SCH   400            обработка schedule
+        D_ALL   777            все вместе
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<P>Для первой отладки отлично подходит DEBUG=010.
+<P>
+Если у вас запущен syslogd, отладочная информация появится в ваших log-файлах.
+Если syslogd не запущен, то информация появится в /tmp/getty:ttySN для
+отлаживаемого getty и /tmp/uugetty:ttySN для uugetty, и в log-файле
+/var/adm/getty.log . Посмотрите в отладочной информации, что происходит.
+Наиболее вероятно, что вам придется настроить некоторые из параметров в вашем
+файле конфигурации, и перенастроить ваш модем.
+<P>
+Вы могли бы также попробовать mgetty. Для некоторых он проще.
+<P>
+<P>
+<H2><A NAME="s15">15. Другие источники информации</A></H2>
+
+<P>
+<UL>
+<LI>    man по agetty(8), getty(1m), gettydefs(5), init(1),
+login(1), mgetty(8), setserial(8)
+ </LI>
+<LI>    Руководство вашнго модема или терминала
+ </LI>
+<LI>    NET-3 HOWTO: все о сетях, включая SLIP, CSLIP и PPP
+ </LI>
+<LI>    PPP HOWTO: помощь в настройке PPP
+ </LI>
+<LI>    Printing HOWTO: для настройки последовательного принтера
+ </LI>
+<LI>    Serial-Programming-HOWTO: некоторые аспекты программирования
+последовательных портов
+ </LI>
+<LI>    Term HOWTO: все, что вы хотели узнать о программе term
+ </LI>
+<LI>    Text-Terminal-HOWTO: как они работают, как их устанавливать и настраивать
+ </LI>
+<LI>    UPS HOWTO: настройка UPS-датчиков, подключенных к вашему последовательному
+порту
+ </LI>
+<LI>    UUCP HOWTO: информция о настройке UUCP
+ </LI>
+<LI>    Группы новостей Usenet:
+<BLOCKQUOTE><CODE>
+<PRE>
+
+    comp.os.linux.answers       FAQs, How-Tos, READMEs итд о Linux.
+    comp.os.linux.hardware      Аппаратная совместимость с ОС Linux
+    comp.os.linux.networking    Работа с сетями и связь в Linux.
+    comp.os.linux.setup         Установка Linux и администрирование системы.
+    comp.terminals
+</PRE>
+</CODE></BLOCKQUOTE>
+ </LI>
+<LI>    Почтовый список рассылки по последовательным устройствам в Linux. Чтобы
+подписаться на него, пошлите письмо по адресу <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0c616d66637e686361634c7a6b697e227e79786b697e7f22696879">[email&#160;protected]</a>,
+поместив в тело сообщения строку ``subscribe linux-serial". Если вы
+поместите в тело сообщения "help", то вы получите сообщение со справкой.
+Сервер также обслуживает много других списков почтовой рассылки Linux.
+Для получения перечня этих списков рассылки отправьте команду ``lists''.
+ </LI>
+<LI>    Белая Книга, обсуждающая связь по последовательным линиям и многопортовые
+последовательные платы, доступна на
+<!--<A HREF="http://www.cyclades.com">-->Cyclades<!--</A>-->.
+ </LI>
+<LI>    Часто задаваемые вопросы по модемам:
+
+<!--<A HREF="http://web.aimnet.com/~jnavas/modem/faq.html">-->Navas 28800 Modem FAQ<!--</A>-->
+<!--<A HREF="http://www.teleport.com/~curt/modems.html">-->Curt's High Speed Modem Page<!--</A>-->
+ </LI>
+<LI>    Программирование последовательных устройств:
+<UL>
+<LI>    Serial-Programming-HOWTO </LI>
+<LI>
+<!--<A HREF="http://hegschool.aw.com/cseng/authors/stevens/advanced/advanced.nclk">-->Advanced Programming in the UNIX Environment<!--</A>-->
+от W. Richard Stevens (ISBN 0-201-56317-7; Addison-Wesley) </LI>
+<LI>
+<!--<A HREF="http://www.ora.com/catalog/posix/">-->POSIX Programmer's Guide<!--</A>-->
+от Donald Levine (ISBN 0-937175-73-0; O'Reilly)</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+<H2><A NAME="s16">16. Содействия</A></H2>
+
+<P>
+В основном первоначальный HOWTO был написан Greg Hankins
+(
+<A HREF="https://www.linuxlib.ru/HowTo/greg.hankins@cc.gatech.edu"><span class="__cf_email__" data-cfemail="b4d3c6d1d39adcd5dadfdddac7f4d7d79ad3d5c0d1d7dc9ad1d0c1">[email&#160;protected]</span></A>). Он также переработал множество вкладов от других
+людей, чтобы поддержать непрерывность стиля и последовательность изложения.
+<P>
+Он писал: "Спасибо каждому, кто способствовал работе или комментировал
+документ, список людей стал слишком длинен, чтобы перечислить (больше сотни)
+Специальная благодарность Ted T'so за ответы на вопросы о последовательных
+драйверах, Kris Gleason, который поддерживал getty_ps, и Gert Dцring, который
+поддерживает mgetty."
+<P>
+<P>
+<P><B>                          КОНЕЦ SERIAL HOWTO</B>
+<P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

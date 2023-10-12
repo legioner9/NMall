@@ -1,0 +1,514 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 20 Опциональные компоненты устанавливаемые с веб-сервером Apache — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch19_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#20">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 20 Опциональные компоненты устанавливаемые с веб-сервером Apache
+      - Webalizer</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_1.html#1">-->Webalizer<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_1.html#3">-->Информирование
+      Apache о выходном каталоге Webalizer<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_1.html#4">-->Запуск
+      Webalizer вручную в первый раз<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_1.html#5">-->Запуск
+      Webalizer автоматически при помощи cron<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_2.html#6">-->FAQ-O-Matic<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_2.html#7">-->Информирование
+      Apache о месте расположения файлов Faq-O-Matic<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_2.html#8">-->Настройка
+      FAQ-O-Matic<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#9">-->Webmail
+      IMP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#10">-->Установка
+      PHPLib который требуется программе Horde из Webmail IMP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#11">-->Настройка и
+      создание SQL базы данных Webmail IMP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#12">-->Настройка
+      вашего конфигурационного файла "php.ini" из PHP4<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#13">-->Настройка
+      Apache на работу с Webmail IMP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_3.html#14">-->Настройка
+      Webmail IMP из вашего веб-броузера<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=185
+      src="ch20_1.files/57.jpg" width=143></TD></TR></TBODY></TABLE>
+<P align=justify>В этой главе, я буду говорить о трех полезных внешних
+программах, которые можно инсталлировать на ваш Linux сервер. Эти программы
+созданы для использования с веб сервером Apache и полезны если вы планируете
+использовать Apache в вашей организации. Если это не так, то вы можете
+пропустить эту главу и затем продолжить чтение этой книги. Вначале мы будем
+говорить о Webalizer, который предназначен для анализа файлов регистраций веб
+сервера. Затем мы обсудим FAQ-O-Matic, который может быть использован для
+создания списков FAQ, базы данных отслеживания ошибок, документации и много
+другого на вашем сервере. В Заключении, мы будем говорить об очень тонкой
+интересной программе, называемой Webmail, которая позволит вам предлагать вашим
+клиентам почтовые бюджеты, или доступ и чтение почты в безопасным способом.</P>
+<H3><A name=1>Webalizer</A></H3><B>Краткий обзор</B>
+<P align=justify>Веб сервер Apache регистрирует всю предписанную информацию в
+тестовый файл, который может быть просмотрен и проанализирован веб
+администратором. Этот файл также может быть обработан специальной программой,
+которая создает отчеты в виде графических представлений.</P>
+<P align=justify>Как написанов файле README Webalizer:</P>
+<P align=justify>Webalizer - это программа для анализа файлов регистраций веб
+сервера, которая создает отчеты в HTML формате для просмотра в броузере.
+Результаты представляются в виде таблиц и графиков, которые облегчают
+интерпретацию полученной информации. Программа наряду с ежегодной, ежемесячной,
+ежедневной и почасовой статистикой использования, отображает информацию об
+использовании сайта, URL, referrer, пользовательских агентах (броузерах) и
+странах (пользовательские агенты и referrer доступны только при использовании
+комбинированного формата файлов регистрации).</P>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам "/var/tmp" (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем "root".<BR>Webalizer версии
+1_30-04<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница Webalizer: <!--<A
+href="http://www.mrunix.net/webalizer/"
+target=_blank>-->http://www.mrunix.net/webalizer/<!--</A>--><BR>FTP сервер Webalizer: <!--<A
+href="ftp://207.153.121.6/" target=_blank>-->207.153.121.6<!--</A>--><BR>Вы должны
+скачать: webalizer-1_30-04-src.tgz<BR></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp webalizer-version-src.tgz /var/tmp/<BR>[root@deep /]# cd
+/var/tmp/<BR>[root@deep tmp]# tar xzpf webalizer-version-src.tgz</FONT><BR>
+<P align=justify><B>Предварительные требования</B></P>
+<P align=justify>Webalizer требует наличия графической библиотеки GD, которая
+требуется для генерации встроенных графиков Webalizer. Если это не так, то вы
+должны инсталлировать ее из вашего Red Hat Linux CD-ROM.<BR>Для проверки наличия
+установленной библиотеки GD используйте следующую команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# rpm -qi gd<BR>package gd is not
+installed<BR></FONT>
+<P align=justify>Для инсталляции пакета GD на вашей Linux системе используйте
+команду:</P><FONT color=#008080><PRE>[root@deep /]# mount /dev/cdrom /mnt/cdrom/
+[root@deep /]# cd /mnt/cdrom/RedHat/RPMS/
+[root@deep RPMS]# rpm -Uvh gd-version.i386.rpm
+gd         ##################################################
+[root@deep RPMS]# rpm -Uvh gd-devel-version.i386.rpm
+gd-devel   ##################################################
+[root@deep RPMS]# cd /; umount /mnt/cdrom/</PRE></FONT>
+<P align=justify>Веб сервер должен быть уже установлен на вашей системе.</P>
+<P align=justify><B>Замечание</B>. Для большей информации о веб сервере Apache
+читайте соответствующую главу этой книги.</P>
+<H3>Компиляция</H3>
+<P align=justify>Переместитесь в новый каталог Webalizer и введите следующие
+команды на вашем терминале:</P><FONT color=#008080 size=-1>CC="egcs"
+\<BR>CFLAGS="-O9 -funroll-loops -ffast-math -malign-double -mcpu=pentiumpro
+-march=pentiumpro -fomit-frame-pointer -fno-exceptions" \<BR>./configure
+\<BR>--prefix=/usr<BR>[root@deep webalizer-1.30-04]# make<BR>[root@deep
+webalizer-1.30-04]# make install<BR>[root@deep webalizer-1.30-04]# mkdir
+/home/httpd/usage<BR></FONT>
+<P align=justify>Команда "make" будет компилировать все файлы с исходными кодами
+в двоичные исполняемые файлы, команда "make install" проинсталлирует все
+двоичные и сопутствующие им файлы в требуемые места. Команда "mkdir" создаст
+новый каталог "usage" в каталоге "/home/httpd/", где мы будем размещать все
+связанные с Webalizer файлы.</P><B>Очистка после работы</B><BR><FONT
+color=#008080 size=-1>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# rm -rf
+webalizer-version/ webalizer-version-src.tgz<BR></FONT>
+<P align=justify>Команды "rm" будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции Webalizer. Также будет
+удален сжатый архив Webalizer.</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве "floppy.tgz", включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файлы связанные с Webalizer из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса: <!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска Webalizer должен быть создан, либо скопирован
+следующий файл:<BR>Копируйте webalizer.conf в каталог "/etc/".</P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Конфигурация файла "/etc/webalizer.conf"</H3>
+<P align=justify>"/etc/webalizer.conf" является конфигурационным файлом по
+умолчанию для Webalizer. С его помощью, вы можете определить какие каталоги или
+страницы на вашем веб сервере анализировать, какие URL-ы скрывать и пр. По
+умолчанию, программа Webalizer будет инсталлировать простой конфигурационный
+файл с именем "webalizer.conf.sample" в каталог "/etc/". Вы можете использовать
+его, переименовав в "webalizer.conf", чтобы Webalizer мог найти его и
+использовать. В этом файле можно использовать много разных опций, поэтому важно
+прочитать документацию поставляемую с Webalizer, чтобы получить больше
+информации о различных установках и параметрах. Ниже мы прокомментируем наиболее
+важные и часто используемые параметры.<BR>Редактируйте файл
+webalizer.conf.sample (vi /etc/webalizer.conf.sample) или создайте файл
+webalizer.conf (touch /etc/webalizer.conf) и добавьте/измените следующее:</P><PRE>LogFile /var/log/httpd/access_log
+OutputDir /home/httpd/usage
+Incremental yes
+PageType htm*
+PageType cgi
+PageType php
+HideURL *.gif
+HideURL *.GIF
+HideURL *.jpg
+HideURL *.JPG
+HideURL *.ra
+IgnoreURL /taskbar*</PRE>
+<P align=justify>Эти опции говорят webalizer следующее:</P>
+<P align=justify><B>LogFile /var/log/httpd/access_log</B><BR>Опция "LogFile"
+определяет файл регистрации обрабатываемый Webalizer. По умолчанию он
+подразумевает файл "access_log" от веб сервера Apache, но вы можете определить
+другой, например файл "access.log" от прокси сервера Squid, используемого в
+режиме httpd-акселератора. Смотрите главу 18, "Программное обеспечение прокси
+сервера ", для получения большей информации.</P>
+<P align=justify><B>OutputDir /home/httpd/usage</B><BR>Опция "OutputDir"
+определяет месторасположение выходного каталога, используемого для хранения
+отчетов Webalizer. Рекомендуется, чтобы вы создали этот каталог там, где
+располагается ваш веб сервер Apache.</P>
+<P align=justify><B>Incremental yes</B><BR>Опция "Incremental" если установлена
+в "Yes" говорит программе обрабатывать часть файла регистрации, и позволит вам
+ротировать ваши файлы регистраций так много раз как вам надо без потери
+информации о доступе к серверу. Рекомендуется установить эту опцию в "Yes".</P>
+<P align=justify><B>PageType htm* cgi php</B><BR>Опция "PageType" определяет
+файлы с какими расширениями Webalizer обрабатывает как страницы. Каждое
+добавление нового расширения должно быть в отдельной строке, как это показано в
+конфигурационном файле.</P>
+<P align=justify><B>HideURL *.gif *.GIF *.jpg *.JPG *.ra</B><BR>Опция "HideURL"
+определяет какие элементов (графические файлы, аудио файлы и другие не 'html'
+файлы) скрываются в отчетах. Каждый добавляемый элемент должен быть в отдельной
+строке, как это показано в конфигурационном файле.</P>
+<P align=justify><B>IgnoreURL /taskbar*</B><BR>Опция "IgnoreURL" определяет URL,
+которые полностью игнорируются в создаваемых отчетах. Эта опция может быть
+использована для игнорирования каталогов, которые не важны для ваших отчетов.
+Она также полезно, когда вы хотите определять, какие URL должны быть обработаны,
+а какие нет.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Если вы решили использовать существующий файл
+"/etc/webalizer.conf.sample" для настройки ваших параметров для Webalizer, не
+забедьте переименовать его в "webalizer.conf" или программа не найдет его.</P>
+<H3><A name=3>Информирование Apache о выходном каталоге Webalizer</A></H3>
+<P align=justify>Сейчас, когда Webalizer инсталлирован на вашей системе, мы
+должны добавить следующие строки в файл "httpd.conf"</P><B>Шаг 1</B>
+<P align=justify>Редактируйте файл httpd.conf (vi /etc/httpd/conf/httpd.conf) и
+добавьте следующие строки между тэгами секции &lt;IfModule mod_alias.c&gt; и
+&lt;/IfModule&gt;:</P><FONT color=#008080><PRE>Alias /usage/ "/home/httpd/usage/"
+&lt;Directory "/home/httpd/usage"&gt;
+  Options None
+  AllowOverride None
+  Order deny,allow
+  Deny from all
+  Allow from 192.168.1.0/24
+&lt;/Directory&gt;</PRE></FONT><BR><B>Шаг 2</B>
+<P align=justify>Не забудьте перезагрузить ваш веб сервер, чтобы изменения
+внесенные в файл "httpd.conf" вступили в силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/httpd restart
+Shutting down http:               [ OK ]
+Starting httpd:                   [ OK ]</PRE></FONT>
+<H3><A name=4>Запус Webalizer вручную в первый раз</A></H3>
+<P align=justify>Сейчас наступило время запустить программу генерирующую отчеты
+(html) и графики в выходном каталоге Webalizer так, чтобы мы могли увидеть их в
+окне броузера. Этот шаг требуется только при первом запуске после инсталляции,
+так как в будущем это будет делать cron.</P>
+<P align=justify>Для запуска Webalizer вручную, используйте команду</P><FONT
+color=#008080 size=-1>[root@deep /]# /usr/bin/webalizer<BR>Webalizer V1.30-04
+(Linux 2.2.14) English<BR>Using logfile /var/log/httpd/access_log<BR>Creating
+output in /home/httpd/usage<BR>Hostname for reports is
+'deep.openna.com'<BR>History file not found...<BR>Previous run data not
+found...<BR>Saving current run data... [03/06/2000 04:42:03]<BR>Generating
+report for March 2000<BR>Generating summary report<BR>Saving history
+information...<BR>81 records (2 ignored) in 0.31 seconds<BR></FONT>
+<P align=justify>На этой стадии, мы должны проверить, что Webalizer работает
+корректно. Чтобы сделать это наберите в окне броузера следующий адрес:
+http://my-web- server/usage/. Где &lt;my-web-server&gt; - это адрес вашего веб
+сервера, а &lt;/usage&gt; - это каталог в котором располагаются отчеты
+Webalizer.</P><IMG alt="" border=0 height=375 src="ch20_1.files/47.jpg"
+width=477><BR>
+<H3><A name=5>Запуск Webalizer автоматически при помощи cron</A></H3>
+<P align=justify>Последнее, что вы должны сделать, это автоматизировать задачу
+генерации отчетов программой Webalizer. Поместите соответствующий элемент в
+crontab пользователя root, чтобы сделать запуск Webalizer работой cron. Для
+этого вы должны редактировать ваш файл crontab и добавить в него строку,
+запускающую Webalizer каждые, например, 28 минут:</P><FONT color=#008080
+size=-1>[root@deep /]# crontab -e<BR><BR># Run Webalizer to update Apache Log
+files every 28 minutes.<BR>28 * * * * /usr/bin/webalizer<BR></FONT>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/webalizer.conf.sample
+&gt; /usr/bin/webalizer
+&gt; /usr/man/man1/webalizer.1</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch19_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#20">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch20_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

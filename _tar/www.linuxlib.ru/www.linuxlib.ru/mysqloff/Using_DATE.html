@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | A.5.2  Проблемы с использованием столбцов типа DATE — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Using_DATE.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Using_DATE.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Problems.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />A Проблемы и распространенные ошибки
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Query_Issues.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />A.5 Проблемы, относящиеся к запросам
+</a><ul class="immediate"><li><a href="Case_sensitivity.html">A.5.1 Чувствительность к регистру при поиске
+</a></li><li class="self">A.5.2 Проблемы с использованием столбцов типа <code>DATE</code>
+</li><li><a href="Problems_with_NULL.html">A.5.3 Проблемы со значением <code>NULL</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Problems_with_alias.html">A.5.4 Проблемы  с <code>alias</code>
+</a></li><li><a href="Deleting_from_related_tables.html">A.5.5 Удаление строк из взаимосвязанных таблиц
+</a></li><li><a href="No_matching_rows.html">A.5.6 Решение проблем с отсутствием строк, удовлетворяющих условиям поиска
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Problems_with_float.html">A.5.7 Проблемы со сравнением чисел с плавающей точкой
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Case_sensitivity.html" title="A.5.1  Чувствительность к регистру при поиске">Previous</a> / <a rel="next" href="Problems_with_NULL.html" title="A.5.3  Проблемы со значением NULL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Query_Issues.html" title="A.5  Проблемы, относящиеся к запросам">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>A.5.2  Проблемы с использованием столбцов типа <code>DATE</code></H3>
+
+<P>
+<A NAME="IDX1212"></A>
+
+</P>
+<P>
+<A NAME="IDX1213"></A>
+<A NAME="IDX1214"></A>
+
+</P>
+<P>
+Значения типа <code>DATE</code> имеют формат <code>YYYY-MM-DD</code>; согласно стандарту ANSI SQL,
+никакой другой формат не допускается. Пользователь должен применять этот
+формат в выражениях <code>UPDATE</code> и в определении <code>WHERE</code> операторов <code>SELECT</code>.
+Например:
+
+</P>
+
+<pre>
+mysql&#62; SELECT * FROM tbl_name WHERE date &#62;= '1997-05-05';
+</pre>
+
+<P>
+Из соображений удобства MySQL автоматически преобразовывает дату в число,
+если дата используется в числовом контексте (и наоборот). Благодаря своей
+``разумности'' MySQL допускает также ``мягкую'' строковую форму при обновлении
+и в определении <code>WHERE</code>, сравнивающем дату со столбцом типа <code>TIMESTAMP, DATE</code>
+или <code>DATETIME</code> ("мягкая" форма означает, что для разделения составляющих
+даты можно использовать любой знак пунктуации; например, <code>1998-08-15</code> и
+<code>1998#08#15</code> эквивалентны). MySQL может также преобразовывать в даты
+строки, не содержащие разделителей (наподобие <code>19980815</code>), при условии,
+что представляемая строкой дата не лишена смысла.
+
+</P>
+<P>
+Специальная дата <code>0000-00-00</code> может записываться и извлекаться в виде
+<code>0000-00-00</code>. При использовании даты <code>0000-00-00</code> из <code>MyODBC</code> она будет
+автоматически преобразована в <code>NULL</code> в версии <code>MyODBC 2.50.12</code> и выше, так как
+<code>ODBC</code> не обеспечивает обработку такого рода дат.
+
+</P>
+<P>
+Поскольку в MySQL выполняются описанные выше преобразования, следующие
+команды будут работать:
+
+</P>
+
+<pre>
+mysql&#62; INSERT INTO tbl_name (idate) VALUES (19970505);
+mysql&#62; INSERT INTO tbl_name (idate) VALUES ('19970505');
+mysql&#62; INSERT INTO tbl_name (idate) VALUES ('97-05-05');
+mysql&#62; INSERT INTO tbl_name (idate) VALUES ('1997.05.05');
+mysql&#62; INSERT INTO tbl_name (idate) VALUES ('1997 05 05');
+mysql&#62; INSERT INTO tbl_name (idate) VALUES ('0000-00-00');
+mysql&#62; SELECT idate FROM tbl_name WHERE idate &#62;= '1997-05-05';
+mysql&#62; SELECT idate FROM tbl_name WHERE idate &#62;= 19970505;
+mysql&#62; SELECT MOD(idate,100) FROM tbl_name WHERE idate &#62;= 19970505;
+mysql&#62; SELECT idate FROM tbl_name WHERE idate &#62;= '19970505';
+</pre>
+
+<P>
+Однако приведенные ниже команды работать не будут:
+
+</P>
+
+<pre>
+mysql&#62; SELECT idate FROM tbl_name WHERE STRCMP(idate,'19970505')=0;
+</pre>
+
+<P>
+<code>STRCMP()</code> - строковая функция, следовательно, она преобразует <code>idate</code> в
+строку и сравнивает строки. Функция не станет преобразовывать <code>19970505</code> в
+дату и сравнивать даты.
+
+</P>
+<P>
+Заметим, что MySQL не проверяет правильности дат, поэтому такая
+некорректная дата, как <code>1998-2-31</code>, будет занесена в базу. Если же дату
+нельзя преобразовать в какое-нибудь разумное значение, в поле типа <code>DATE</code>
+заносится 0. Проверка  правильности дат не делается - в основном из
+соображений, связанных со скоростью: мы считаем, что проверкой дат должно
+заниматься приложение, а не сервер.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1315" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jake Kacher on Saturday November 2 2002, @3:37pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1315&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1315">Edit</a>]</td></tr></table><p class="commenttext">Unless I find a way to display the date for update or <br />
+insert in the american format of month-day-year the <br />
+company will not use MySQL.  Using APS and <br />
+MyODBC shows date in the correct format but data <br />
+is all screwed up when saving it (it converts to year-<br />
+month-day). I'd rather use PHP with my <br />
+Dreamweaver but there the dates can not be <br />
+formatted at all for update.   Help! :)</p><table id="c1333" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by JuliАn Barreiro on Tuesday November 5 2002, @10:24pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1333&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1333">Edit</a>]</td></tr></table><p class="commenttext">On a textarea the visitor inserts the date in<br />
+'dd/mm/yyyy' format.<br />
+<br />
+With a php script i change the format to<br />
+'yyyy-mm-dd' (it seems mysql format-like), but in<br />
+the data base the date is incorrect (0000-00-00).<br />
+</p><table id="c1342" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Lance Caswell on Thursday November 7 2002, @6:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1342&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1342">Edit</a>]</td></tr></table><p class="commenttext">Julian...make sure to INSERT your date as a string. <br />
+E.g. INSERT INTO table (date) VALUES ('YYYY-MM-<br />
+DD')<br />
+not INSERT INTO table (date) VALUES (YYYY-MM-DD)</p><table id="c1447" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1447&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1447">Edit</a>]</td></tr></table><p class="commenttext">Hello All <br />
+the solution for ms database with mmddYYYY dates <br />
+is to insert the data as varchar or char, run the script <br />
+below and change the field(s) to date after that <br />
+conversion. <br />
+<br />
+Worked wonders for us trying to convert cvs data <br />
+from excel to mysql.<br />
+<br />
+<br />
+<br />
+<br />
+&lt;?<br />
+mysql_pconnect(&quot;host&quot;,&quot;user&quot;,&quot;pass&quot;) or die<br />
+(&quot;Unable to<br />
+connect to SQL server&quot;); mysql_select_db<br />
+(&quot;DBname&quot;) or die(&quot;Unable to select<br />
+database&quot;);<br />
+<br />
+function truena_en_pedacitos($string)<br />
+{<br />
+        if($string != &quot;&quot;)<br />
+        {<br />
+                $cnt=0;<br />
+                $token=strtok(trim($string), &quot;/&quot;);<br />
+                while($token)<br />
+                {<br />
+                        $cnt++;<br />
+                        $var[$cnt]=$token;<br />
+                        $token=strtok(&quot;/&quot;);<br />
+                }<br />
+<br />
+        $date = date(&quot;Y-m-d&quot;, mktime(0,0,0,$var[1], <br />
+$var[2], $var[3])); }<br />
+        else {<br />
+                $date = &quot;0000-00-00&quot;;<br />
+        }<br />
+<br />
+        return $date;<br />
+}<br />
+<br />
+<br />
+$result = mysql_query(&quot;SELECT id, res_date, <br />
+arr_date, dep_date FROM<br />
+reservationsold&quot;); $rown = mysql_num_rows<br />
+($result);<br />
+<br />
+echo &quot;Cambiando fechas chafas a fechas chidas ...&quot;;<br />
+echo &quot;&quot;;<br />
+<br />
+$counter = 0;<br />
+while($counter &lt; $rown)<br />
+{<br />
+        $the_id = mysql_result($result, $counter, &quot;id&quot;);<br />
+        $reservation = truena_en_pedacitos<br />
+(mysql_result($result, $counter,<br />
+        &quot;res_date&quot;)); $arrival = truena_en_pedacitos<br />
+(mysql_result($result,<br />
+        $counter, &quot;arr_date&quot;)); $departure =<br />
+        truena_en_pedacitos(mysql_result($result, <br />
+$counter, &quot;dep_date&quot;));<br />
+<br />
+        echo &quot;update reservationsold set res_date <br />
+= '$reservation',<br />
+        arr_date = '$arrival', dep_date = '$departur<br />
+e' where id = '$the_id'&quot;;<br />
+        echo &quot;&quot;;<br />
+<br />
+        $insert = mysql_query(&quot;update reservationsold <br />
+set res_date =<br />
+        '$reservation', arr_date = '$arrival', dep_<br />
+date = '$departure' where id = '$the_id'&quot;);<br />
+<br />
+        $counter++;<br />
+}<br />
+<br />
+?&gt;</p><table id="c1498" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Allen Booth on Sunday December 8 2002, @6:19pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1498&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1498">Edit</a>]</td></tr></table><p class="commenttext">Note to Lance:  Thanks SO much for this piece of code that <br />
+changes the date format.  Tons of people will want to use <br />
+this (or a variant thereof).  <br />
+<br />
+I have done a similar thing using SQL code so file upload <br />
+and format changes can be done with a single command.  <br />
+Those who need this kind of thing can use my code as a <br />
+starting point.  You'll find it at <!--<a href="http://www.albooth.com/">-->http://www.albooth.com/<!--</a>--><br />
+mysqldateformatchanger.html.</p><table id="c1549" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by JЖrg HЖhle on Thursday January 9 2003, @8:27am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1549&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1549">Edit</a>]</td></tr></table><p class="commenttext">It seems that the 0000-00-00 to NULL conversion also affects JDBC (mysql connectorJ 3.0.3-beta), not only ODBC.</p><table id="c1665" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Rory Sellers on Monday January 27 2003, @3:25pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1665&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1665">Edit</a>]</td></tr></table><p class="commenttext">I'm surprised nobody has mentioned DATE_FORMAT(). After all, the problem for many folks isn't how the data is stored, but how it is displayed, and reformatting the display through the database at SELECT-time is almost always easier than using the application (e.g. PHP or whatever)!</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Using_DATE">Add your own comment.</a></p><div id="docnav"><a href="Using_DATE.html#">Top</a> / <a rel="prev" href="Case_sensitivity.html" title="A.5.1  Чувствительность к регистру при поиске">Previous</a> / <a rel="next" href="Problems_with_NULL.html" title="A.5.3  Проблемы со значением NULL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Query_Issues.html" title="A.5  Проблемы, относящиеся к запросам">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

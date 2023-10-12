@@ -1,0 +1,470 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 9.2.2.5  Компиляция и установка определяемых пользователем функций — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/UDF_compiling.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/UDF_compiling.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Extending_MySQL.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />9 Расширение MySQL
+</a><ul><li class="gp"><a href="Adding_functions.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />9.2 Добавление новых функций в MySQL
+</a><ul><li class="p"><a href="Adding_UDF.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />9.2.2 Добавление новой определяемой пользователем функции
+</a><ul class="immediate"><li><a href="UDF_calling.html">9.2.2.1 Последовательность вызова UDF для простых функций
+</a></li><li><a href="UDF_aggr._calling.html">9.2.2.2 Последовательность вызова UDF для агрегатных функций
+</a></li><li><a href="UDF_arguments.html">9.2.2.3 Обработка  аргументов
+</a></li><li><a href="UDF_return_values.html">9.2.2.4 Возвращаемые значения и обработка ошибок
+</a></li><li class="self">9.2.2.5 Компиляция и установка определяемых пользователем функций
+</li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="UDF_return_values.html" title="9.2.2.4  Возвращаемые значения и обработка ошибок">Previous</a> / <a rel="next" href="Adding_native_function.html" title="9.2.3  Добавление новых родных функции">Next</a> / <a rel="up" href="Adding_UDF.html" title="9.2.2  Добавление новой определяемой пользователем функции">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>9.2.2.5  Компиляция и установка определяемых пользователем функций</H4>
+
+<P>
+<A NAME="IDX1163"></A>
+<A NAME="IDX1164"></A>
+
+</P>
+<P>
+Файлы, реализующие UDFы, должны компилироваться и устанавливаться на
+машине, где работает сервер. Эта процедура описана ниже для файла примеров
+UDF <tt>`udf_example.cc'</tt>, входящего в поставку исходного кода MySQL. Данный файл
+содержит следующие функции:
+
+</P>
+
+<ul>
+<LI>
+
+<code>metaphon()</code> возвращает <code>metaphon</code>-строку для строкового аргумента. Эта
+строка в общем напоминает <code>soundex</code>-строку, но более приспособлена для
+английского языка.
+<LI>
+
+<code>myfunc_double()</code> возвращает отношение суммы ASCII-значений символов своих
+аргументов к суммарной длине аргументов.
+<LI>
+
+<code>myfunc_int()</code> возвращает суммарную длину своих аргументов.
+<LI>
+
+<code>sequence([const int])</code> возвращает последовательность, начиная с заданного
+номера, либо с 1, если номер не задан.
+<LI>
+
+<code>lookup()</code> возвращает IP-адрес для имени удаленного компьютера.
+<LI>
+
+<code>reverse_lookup()</code> возвращает имя удаленного компьютера для IP-адреса.
+Функция может вызываться для строки <code>"xxx.xxx.xxx.xxx"</code> либо для четырех
+чисел.
+</ul>
+
+<P>
+Динамически загружаемый файл должен компилироваться как разделяемый
+объектный файл с помощью команды следующего вида:
+
+</P>
+
+<pre>
+shell&#62; gcc -shared -o udf_example.so myfunc.cc
+</pre>
+
+<P>
+Корректные опции компилятора для своей системы можно легко получить,
+запустив следующую команду в каталоге <tt>`sql'</tt> дерева исходных текстов MySQL:
+
+</P>
+
+<pre>
+shell&#62; make udf_example.o
+</pre>
+
+<P>
+Следует выполнить команду компиляции, подобную приведенной выше <code>make</code>, с
+той разницей, что надо удалить опцию <code>-c</code> ближе к концу строки и добавить <code>-o</code>
+<tt>`udf_example.so'</tt> в конце строки (в некоторых системах, возможно, <code>-c</code> придется
+оставить в команде).
+
+</P>
+<P>
+После компиляции разделяемого объектного файла, содержащего UDFы, следует
+установить его и дать о нем знать MySQL. В результате компиляции
+разделяемого объектного модуля из <tt>`udf_example.cc'</tt> получается файл с именем
+наподобие <tt>`udf_example.so'</tt> (точное имя может на разных платформах может быть
+различным). Скопируйте этот файл в какой-нибудь просматриваемый <code>ld</code>
+каталог, вроде <tt>`/usr/lib'</tt>. Во многих системах можно устанавливать переменную
+окружения <code>LD_LIBRARY</code> или <code>LD_LIBRARY_PATH</code> для указания каталога, в котором
+размещены файлы UDF-функций. В руководстве по <code>dlopen</code> указывается, какую
+переменную следует использовать в данной системе. Необходимо сделать
+соответствующие установки в <code>mysql.server</code> или <code>safe_mysqld</code> и перезапустить
+<code>mysqld</code>.
+
+</P>
+<P>
+После установки библиотеки следует уведомить <code>mysqld</code> о новых функциях
+следующими командами:
+
+</P>
+
+<pre>
+mysql&#62; CREATE FUNCTION metaphon RETURNS STRING SONAME "udf_example.so";
+mysql&#62; CREATE FUNCTION myfunc_double RETURNS REAL SONAME "udf_example.so";
+mysql&#62; CREATE FUNCTION myfunc_int RETURNS INTEGER SONAME "udf_example.so";
+mysql&#62; CREATE FUNCTION lookup RETURNS STRING SONAME "udf_example.so";
+mysql&#62; CREATE FUNCTION reverse_lookup
+    -&#62; RETURNS STRING SONAME "udf_example.so";
+mysql&#62; CREATE AGGREGATE FUNCTION avgcost
+    -&#62; RETURNS REAL SONAME "udf_example.so";
+</pre>
+
+<P>
+Функции могут быть удалены с помощью <code>DROP FUNCTION</code>:
+
+</P>
+
+<pre>
+mysql&#62; DROP FUNCTION metaphon;
+mysql&#62; DROP FUNCTION myfunc_double;
+mysql&#62; DROP FUNCTION myfunc_int;
+mysql&#62; DROP FUNCTION lookup;
+mysql&#62; DROP FUNCTION reverse_lookup;
+mysql&#62; DROP FUNCTION avgcost;
+</pre>
+
+<P>
+Команды <code>CREATE FUNCTION</code> и <code>DROP FUNCTION</code> обновляют  системную  таблицу <code>func</code>
+в  базе данных <code>mysql</code>. В таблицу записываются имя функции, ее тип и имя
+разделяемой библиотеки. Для создания и удаления функций необходимо
+обладать привилегиями <code>INSERT</code> и <code>DELETE</code> для базы данных <code>mysql</code>.
+
+</P>
+<P>
+Недопустимо использовать <code>CREATE FUNCTION</code> для добавления функции, которая
+уже была создана. Если необходимо переустановить функцию, ее следует
+удалить с помощью <code>DROP FUNCTION</code> и затем переустановить посредством <code>CREATE
+FUNCTION</code>. Эти действия приходится выполнять, например, когда компилируется
+новая версия данной функции, и надо, чтобы <code>mysqld</code> получил новую версию.
+Иначе сервер будет продолжать пользоваться старой версией.
+
+</P>
+<P>
+Активные функции подгружаются при каждом запуске сервера, за исключением
+случая, когда <code>mysqld</code> запускается с опцией <code>--skip-grant-tables</code>. Тогда
+инициализация UDF пропускается и UDFы недоступны (активная функция - это
+функция, которая была загружена посредством <code>CREATE FUNCTION</code> и не удалена с
+помощью <code>DROP FUNCTION</code>).
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=UDF_compiling">Add your own comment.</a></p><div id="docnav"><a href="UDF_compiling.html#">Top</a> / <a rel="prev" href="UDF_return_values.html" title="9.2.2.4  Возвращаемые значения и обработка ошибок">Previous</a> / <a rel="next" href="Adding_native_function.html" title="9.2.3  Добавление новых родных функции">Next</a> / <a rel="up" href="Adding_UDF.html" title="9.2.2  Добавление новой определяемой пользователем функции">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

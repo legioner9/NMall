@@ -1,0 +1,1444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux: От включения питания до приглашения Bash — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#loading">установка, загрузчики</A> |
+    <A HREF="index.htm#setting">настройка Linux</A> |
+    <A HREF="index.htm#console">консоль</A> |
+    <A HREF="index.htm#filesys">файловые системы</A> |
+    <A HREF="index.htm#proc">процессы</A> |
+    <A HREF="index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="http://jemchujina-kolomna.ru/" target="_blank">там</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://mvcnaks.ru/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Mvcnaks.ru/obuchenie/ </p> <p class='block_links_text'> Каталог курсов повышения квалификации <a href="https://mvcnaks.ru/" target="_blank">mvcnaks.ru/obuchenie/</a>. </p><p class='block_links_url'> mvcnaks.ru </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<H1>От включения питания до приглашения Bash</H1>
+
+<H2>Greg O'Keefe, <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f69195999d93939093b6869985829990909f9593d883829785d8939283d89783">[email&#160;protected]</a></CODE></H2>
+v0.9, Ноябрь 2000
+
+<H2>Перевод WintiX, <CODE><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="14637d7a607d6c54767f3a6661">[email&#160;protected]</a></CODE></H2>
+Январь, 2003
+
+<P><HR>
+<EM>Это краткое описание того, что происходит в системе Linux с момента, когда вы включаете питание до момента
+входа в систему и получения командной строки bash.
+Понимание этих вещей помогает в решении проблем и настройке системы.</EM>
+<HR>
+<P>
+<H2><A NAME="toc1">1.</A> <A HREF="gregokeefe.html#s1">Введение</A></H2>
+
+<P>
+<H2><A NAME="toc2">2.</A> <A HREF="gregokeefe.html#s2">Железо</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss2.1">2.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss2.2">2.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss2.3">2.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc3">3.</A> <A HREF="gregokeefe.html#s3">Lilo</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss3.1">3.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss3.2">3.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss3.3">3.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc4">4.</A> <A HREF="gregokeefe.html#s4">Ядро Linux</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss4.1">4.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss4.2">4.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss4.3">4.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc5">5.</A> <A HREF="gregokeefe.html#s5">Библиотека GNU C</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss5.1">5.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss5.2">5.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss5.3">5.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc6">6.</A> <A HREF="gregokeefe.html#s6">Init</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss6.1">6.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss6.2">6.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss6.3">6.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc7">7.</A> <A HREF="gregokeefe.html#s7">Файловая система</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss7.1">7.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss7.2">7.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss7.3">7.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc8">8.</A> <A HREF="gregokeefe.html#s8">Демоны Ядра</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss8.1">8.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss8.2">8.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss8.3">8.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc9">9.</A> <A HREF="gregokeefe.html#s9">Системный Логгер</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss9.1">9.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss9.2">9.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss9.3">9.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc10">10.</A> <A HREF="gregokeefe.html#s10">Getty и Login</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss10.1">10.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss10.2">10.2 Упражнения</A>
+</UL>
+<P>
+<H2><A NAME="toc11">11.</A> <A HREF="gregokeefe.html#s11">Bash</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss11.1">11.1 Настройка</A>
+<LI><A HREF="gregokeefe.html#ss11.2">11.2 Упражнения</A>
+<LI><A HREF="gregokeefe.html#ss11.3">11.3 Дополнительные сведения</A>
+</UL>
+<P>
+<H2><A NAME="toc12">12.</A> <A HREF="gregokeefe.html#s12">Команды</A></H2>
+
+<P>
+<H2><A NAME="toc13">13.</A> <A HREF="gregokeefe.html#s13">Заключение</A></H2>
+
+<P>
+<H2><A NAME="toc14">14.</A> <A HREF="gregokeefe.html#s14">Официальная часть</A></H2>
+
+<UL>
+<LI><A HREF="gregokeefe.html#ss14.1">14.1 Авторские права</A>
+<LI><A HREF="gregokeefe.html#ss14.2">14.2 Домашняя страница</A>
+<LI><A HREF="gregokeefe.html#ss14.3">14.3 Обратная связь</A>
+<LI><A HREF="gregokeefe.html#ss14.4">14.4 Благодарности</A>
+<LI><A HREF="gregokeefe.html#ss14.5">14.5 История изменений</A>
+<LI><A HREF="gregokeefe.html#ss14.6">14.6 Надо сделать</A>
+</UL>
+<HR>
+<H2><A NAME="s1">1.</A> <A HREF="gregokeefe.html#toc1">Введение</A></H2>
+
+<P>Я нахожу огорчительным существование многих вещей в моей Linux,
+которые я не понимаю. И, если вы, подобно мне, хотите по настоящему
+разбираться в вашей системе, вместо того чтобы просто знать как ею
+пользоваться, этот документ может помочь вам начать. Подобные базовые знания будут
+также необходимымы вам, если вы хотите стать специалистом по решению проблем Linux.
+<P>
+<P>Я буду предполагать, что вы имеете компьютер работающий под Linux,
+и имеете базовые знания системы UNIX и железа PC. Если это не
+так, обратитесь к превосходному документу от Эрика Рэймонда (Eric S.
+Raymond)
+<!--<A HREF="http://www.linuxdoc.org/HOWTO/Unix-and-Internet-Fundamentals-HOWTO.html">-->The Unix and Internet Fundamentals HOWTO<!--</A>-->
+Он краток, понятен и охватывает все основы.
+<P>
+<P>Главная тема этого документа - как Linux себя запускает.
+Однако эта тема попыталась стать несколько шире.
+Я включил упражнения для каждого раздела и, если вы действительно выполните их -
+вы научитесь гораздо большему, чем при простом чтении.
+<P>
+<P>Надеюсь, что некоторые читатели предпочтут лучшее, из известных мне,
+ учебное упражнение, а именно - построение системы из исходного кода.
+Итальянский философ Giambattista Vico (1668-1744) сказал:
+``verum ipsum factum'', что значит: ``понимание приходит через делание''.
+Спасибо Alex'у (см.
+<A HREF="gregokeefe.html#acknowledge">Благодарности</A>)
+за эту цитату.
+<P>
+<P>Так что, если вы предпочитаете настоящую самостоятельность, вам надо обратиться
+к документу Джерарда Бикмана (Gerard Beekmans)
+<!--<A HREF="http://www.linuxfromscratch.org">-->Linux From Scratch HOWTO<!--</A>--> (LFS).
+LFS содержит подробные инструкции по построению полнофункциональной
+системы "с листа". На сайте LFS вы также найдете почтовую рассылку для личностей,
+которые строят системы этим способом.
+Фрагменты более ранних версий документа, посвященные данной теме, сейчас выделены
+в отдельный документ ``Building a Minimal Linux System from Source Code'',
+который может быть найден на странице
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash/">-->From PowerUp to Bash Prompt home page<!--</A>-->.
+Он объясняет, как правильно мучить систему в чисто учебных целях.
+<P>
+<P>Пакеты рассмотрены в порядке их появления при загрузке системы.
+Это означает, что если вы устанавливаете пакеты в этом порядке и перегружаете
+систему после установки очередного пакета, вы каждый раз будете оказываться
+немного ближе к появлению командной строки bash, ощущая неумолимую поступь прогресса.
+<P>
+<P>Рекомендую вам начинать с чтения основного текста каждого раздела, пропуская
+упражнения и ссылки. Затем вы можете решить, насколько глубоко вы хотите
+понять данную тему и какие усилия вы готовы на это потратить, после чего можно
+начинать сначала, выполняя упражнения и изучая дополнительные материалы.
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s2">2.</A> <A HREF="gregokeefe.html#toc2">Железо</A></H2>
+
+<P>Когда вы включаете компьютер, он выполняет самотестирование дабы быть уверенным,
+что всё в порядке. Это называется "Самотестирование при включении" (``Power on
+self test''- POST). Затем начальный загрузчик, размещенный в ROM BIOS, ищет
+загрузочный сектор. Этот сектор является первым сектором диска и содержит небольшую
+программу для загрузки операционной системы. Загрузочные сектора помечаются "волшебным"
+числом 0xAA55 = 43603 в позиции 0x1FE = 510. Это последние два байта сектора.
+Это позволяет компьютеру решить является ли данный диск загрузочным.
+<P>
+<P>Начальный загрузчик имеет список мест для поиска загрузочных секторов.
+Моя старая машина ищет на первом флоппи, затем на первом винчестере. Более современные
+машины могут просматривать CD-ROM. Если он находит загрузочный сектор, он
+загружает его содержимое в оперативную память и передает управление программе,
+которая продолжает процесс загрузки ОС. На типичной Linux-машине это
+будет программа первого шага загрузчика LILO. Существует много способов и
+конфигураций процесса загрузки. Подробности можно почерпнуть в <EM>LILO User's Guide</EM>.
+Ссылки приведены в разделе <A HREF="gregokeefe.html#lilo-links">LILO</A>.
+<P>
+<P>На самом деле о железе PC и его поведении можно рассказать гораздо больше.
+Но здесь не место. На эту тему есть много хороших книг.
+<P>
+<H2><A NAME="ss2.1">2.1 Настройка</A>
+</H2>
+
+<P>Машина хранит информацию о настройках в CMOS. В том числе там хранятся
+сведения о дисках и количестве оперативной памяти. BIOS содержит специальную программу,
+позволяющую вам изменять эти настройки. Следите за сообщениями на экране сразу
+после включения машины чтобы определить какой клавишей прозводится запуск
+этой программы. На моей машине необходимо нажать клавишу Delete до начала загрузки ОС.
+
+<P>
+<H2><A NAME="hardware-ex"></A> <A NAME="ss2.2">2.2 Упражнения</A>
+</H2>
+
+<P>Хорошим способом изучения железа PC являетс самостоятельная сборка компьютера
+из б/у частей. Для запуска Linux нужна машина с процессором от 386. Это не может
+дорого стоить. Расспросите друзей и знакомых - наверняка что-нибудь найдете.
+<P>
+<P>Загрузите, скомпилируйте и создайте загрузочный диск для
+<!--<A HREF="http://www.netspace.net.au/~gok/resources">-->Unios<!--</A>-->.
+(В качестве их домашней страницы значится
+<!--<A HREF="http://www.unios.org">-->http://www.unios.org<!--</A>-->,
+но это не работает)
+Это всего лишь загрузочная программа ``Hello World!'', состоящая из
+немногим более 100 строк ассемблерного кода. Было бы не плохо увидеть её
+преобразованной к формату ассемблера GNU <CODE>as</CODE>.
+<P>
+<P>Откройте образ загрузочного сектора unios в шеснадцатеричном редакторе.
+Этот файл содержит 512 байт - ровно один сектор. Найдите "волшебное число"
+0xAA55. Проделайте тоже самое с загрузочной дискетой или диском вашего компьютера.
+Вы можете использовать команду <CODE>dd</CODE> для копирования сектора в файл:
+<CODE>dd if=/dev/fd0 of=boot.sector</CODE>.
+Будьте <EM>весьма</EM> аккуратны при назначении параметров <CODE>if</CODE>
+ (input file) и <CODE>of</CODE> (output file)!
+<P>Прочитайте исходные тексты загрузчика LILO.
+<P>
+<H2><A NAME="ss2.3">2.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI>
+<!--<A HREF="http://www.linuxdoc.org/HOWTO/Unix-and-Internet-Fundamentals-HOWTO.html">-->The Unix and Internet Fundamentals HOWTO<!--</A>-->
+Эрика Рэймонда (Eric S. Raymond), особенно раздел 3, <EM>What happens when you switch on a computer?</EM>
+</LI>
+<LI>Первая часть <EM>The LILO User's Guide</EM> дает прекрасное представление
+о разбиении дисков и загрузке. Ссылки в разделе <A HREF="gregokeefe.html#lilo-links">LILO</A>.
+</LI>
+<LI><EM>The NEW Peter Norton Programmer's Guide to the IBM PC &amp; PS/2</EM>,
+Питера Нортона и Ричарда Уилтона (Richard Wilton), Microsoft Press 1988
+Это новая книга Нортона, которая хорошо выглядит, но сейчас я не могу себе
+её позволить.
+</LI>
+<LI>Одна из множества книг по апгрейду PC</LI>
+</UL>
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s3">3.</A> <A HREF="gregokeefe.html#toc3">Lilo</A></H2>
+
+<P>Когда компьютер загружает загрузочный сектор на нормальной Linux-машине, то
+что он загружает является частью lilo (LInux LOader), называемой загрузчиком первого
+этапа. Эта крохотная программа имеет единственной целью своего существования
+загрузку и выполнение загрузчика второго этапа.
+<P>
+<P>Загрузчик второго этапа предоставляет вам возможность выполнения команд
+и может загружать ОС по выбору.
+<P>
+<P>Когда система установлена и запущена, вы можете выполнить команду <CODE>lilo</CODE>.
+В этом случае отрабатывает ``map installer''. Он зачитывает файл настроек
+<CODE>/etc/lilo.conf</CODE> и записывает загрузчики на жесткий диск.
+<P>
+<P>Есть множество способов организации загрузки вашей системы. То, что я описал,
+является наиболее очевидным и "нормальным", по крайней мере для машин, где
+главной ОС является Linux. Lilo Users' Guide рассматривает несколько примеров
+стратегий загрузки. С этим стоит ознакомиться, а кое-что и опробовать на практике.
+<P>
+<H2><A NAME="ss3.1">3.1 Настройка</A>
+</H2>
+
+<P>Настройки lilo хранятся в файле <CODE>/etc/lilo.conf</CODE>. По этому файлу
+существует свой ман: наберите в шелле <CODE>man lilo.conf</CODE>.
+Главным содержанием <CODE>lilo.conf</CODE> являются строки описания для всех
+систем, которые мы можем грузить с помощью lilo. Описание для Linux содержит
+сведения о местонахождении ядра системы и о разделе диска, который будет смонтирован
+в качестве корневой файловой системы. Для других ОС основной информацией является
+указание раздела диска, с которого необходимо загрузиться.
+<P>
+<H2><A NAME="ss3.2">3.2 Упражнения</A>
+</H2>
+
+<P><EM>ЭТО ОПАСНО:</EM> будте осторожны с этими упражнениями.
+Здесь легко ошибиться, испортить главную загрузочную запись (MBR) и привести
+систему в нерабочее состояние. Убедитесь, что у вас есть работающая
+загрузочная дискета и вы знаете как с её помощью восстанавливать загрузочные сектора.
+Ниже приведена ссылка на tomsrtbt - спасательный диск, который я использую и
+могу рекомендовать. Лучшая предосторожность - использовать машину на которой
+нет ничего важного.
+<P>
+<P>Установите lilo на дискету. Неважно если там не окажется ничего кроме ядра -
+вы получите ``kernel panic'', когда ядро будет готово загрузить init, но по
+крайней мере вы убедитесь, что lilo работает.
+<P>
+<P>Продолжайте и наблюдайте как много системы вы сможете запихнуть на одну
+дискету. Кажется это второй из лучших способов изучения Linux. За справками
+обращайтесь к Bootdisk HOWTO и tomsrtbt (ссылки приведены ниже).
+<P>
+<P>Заставьте lilo грузить unios (см. раздел
+<A HREF="gregokeefe.html#hardware-ex">железо/упражнения</A>). Будет совсем круто, если вы сможете
+проделать это на дискете.
+<P>
+<P>Создайте загрузочную петлю. Пусть lilo в MBR грузит lilo в одном из загрузочных
+секторов первичных разделов диска. Последнюю надо заставить грузить lilo из MBR...
+Возможно также использовать MBR и все четыре первичных раздела диска для создания
+пятиузлового кольца. Наслаждайтесь!
+<P>
+<H2><A NAME="ss3.3">3.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<A NAME="lilo-links"></A>
+<UL>
+<LI>Страница man lilo. </LI>
+<LI>Пакет Lilo
+(
+<!--<A HREF="ftp://lrcftp.epfl.ch/pub/linux/local/lilo/">-->lilo<!--</A>-->),
+содержит ``LILO User's Guide''
+<CODE>lilo-u-21.ps.gz</CODE> (или более поздний).
+Скорее всего вы уже имеете этот документ. Посмотрите в
+<CODE>/usr/doc/lilo</CODE> или где-то рядом.
+Постскриптовская версия лучше текстовой, поскольку содержит графики и таблицы.
+</LI>
+<LI>
+<!--<A HREF="http://www.toms.net/rb">-->tomsrtbt<!--</A>--> крутейший однодискетный
+Linux. Создаёт прекрасную спасательную дискету.
+</LI>
+<LI>
+<!--<A HREF="http://www.linuxdoc.org/HOWTO/Bootdisk-HOWTO/">-->The Bootdisk HOWTO<!--</A>--> </LI>
+</UL>
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s4">4.</A> <A HREF="gregokeefe.html#toc4">Ядро Linux</A></H2>
+
+<P>
+<P>Ядро выполняет множество полезной работы. Думаю, что правильно охарактеризовать
+его задачу можно так: оно заставляет железо выполнять задания программ
+точно, надежно и эффективно.
+<P>
+<P>Процессор может единовременно выполнять только одну инструкцию, однако
+в системе Linux выполняются одновременно множество вещей. Ядро достигает этого
+быстрым переключением с задачи на задачу. Это приводит к лучшему использованию
+процессора, т.к. ядро отслеживает какие процессы готовы активно выполняться, а какие
+ожидают чего-либо вроде записи в файл или ввода с клавиатуры. Эта задача
+ядра называется scheduling.
+<P>
+<P>Если программа ничего не делает -- её не надо держать в оперативной памяти. Если
+даже она что-то делает, могут найтись части, которые не делают ничего. Адресное
+пространство каждого процесса разделено на страницы. Ядро следит за тем, какие
+страницы каких процессов используются чаще. Редко используемые страницы могут быть
+перемещены в своп-раздел. Когда они понадобятся снова, другие неиспользуемые страницы
+перемещаются в своп, освобождая место в памяти. Это называется управлением
+виртуальной памятью.
+<P>
+<P>Если вы уже компилировали своё собственное ядро, вы должны были заметить
+множество опций для различных устройств. Ядро содержит множество специального кода
+для взаимодействия с разнообразными видами железа и представляет все это для
+приложений достаточно простым и стандартным способом.
+<P>
+<P>Ядро также управляет файловой системой, межпроцессным взаимодействием и всей
+этой сетевой кухней.
+<P>
+<P>Будучи загруженным в память, первой задачей ядра является поиск и запуск
+программы <CODE>init</CODE>.
+<P>
+<H2><A NAME="ss4.1">4.1 Настройка</A>
+</H2>
+
+<P>Большинство настроек ядра выполняется при его построении посредством
+<CODE>make menuconfig</CODE>, или <CODE>make xconfig</CODE> в
+<CODE>/usr/src/linux/</CODE> (или где вы там держите исходники ядра).
+С помощью <CODE>rdev</CODE> вы можете изменить видеомоду по умолчанию,
+корневую файловую систему, раздел для свопа и размер RAM-диска.
+Эти и другие параметры могут быть также переданы ядру через lilo. При этом
+передаваемые параметры могут быть прописаны в lilo.conf или могут быть
+введены в строке подсказки lilo в процессе загрузки. Например, если вам
+понадобилось использовать в качестве корневого раздел hda3 вместо hda2, вы должны
+ввести:
+<P>
+<PRE>
+        LILO: linux root=/dev/hda3
+</PRE>
+<P>
+<P>Если вы строите систему из исходников, вы можете упростить себе жизнь,
+создав "монолитное" ядро. Такое ядро не имеет загружаемых модулей. Следовательно
+вам не понадобится копировать модули ядра на целевую систему.
+<P>
+<P>ВАЖНО: Файл <CODE>System.map</CODE> используется логгером ядра для определения
+имен модулей, посылающих сообщения. Программа <CODE>top</CODE>
+также использует эту информацию. Так что, копируя ядро на целевую систему, не
+забудьте скопировать и <CODE>System.map</CODE>.
+<P>
+<H2><A NAME="ss4.2">4.2 Упражнения</A>
+</H2>
+
+<P>Осмысли следующее: <CODE>/dev/hda3</CODE> является файлом специального типа и
+описывает раздел жесткого диска. Однако он находится в файловой системе подобно
+другим файлам. В момент, когда ядру надо решить который из разделов будет
+смонтирован в качестве корневого, ядро ещё не имеет файловой системы. Как же
+ядру прочитать <CODE>/dev/hda3</CODE> чтобы смонтировать раздел?
+<P>
+<P>Постройте собственное ядро, если вы ещё не сделали этого. Прочтите всю
+документацию по каждой из опций настройки.
+<P>
+<P>Выясните насколько маленькое (работоспособное) ядро вы сможете создать.
+Вы сможете многому научиться избавляясь от ошибок.
+<P>
+<P>Прочтите ``The Linux Kernel'' (URL приведен ниже) и последовательно
+отыскивайте соответствующие части исходного кода. На момент напмсания данного
+документа эта книга описывала ядро версии 2.0.33, которое явно устарело. Возможно
+будет проще скачать исходные тексты для старой версии. Как приятно обнаруживать
+куски C-кода озаглавленные ``process'' и ``page''.
+<P>
+<P>Хакайте! Посмотрим, сможете ли вывести какие-либо дополнительные сообщения
+или что-то ещё.
+<P>
+<P>
+<H2><A NAME="Kernel"></A> <A NAME="ss4.3">4.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI><CODE>/usr/src/linux/README</CODE> и сожержимое
+<CODE>/usr/src/linux/Documentation/</CODE>
+(в вашей системе может находится в ином месте)</LI>
+<LI>
+<!--<A HREF="http://mirror.aarnet.edu.au/linux/LDP/HOWTO/Kernel-HOWTO.html">-->The Kernel HOWTO<!--</A>--> </LI>
+<LI>Система помощи, доступная во время использования
+<CODE>make menuconfig</CODE> или <CODE>make xconfig</CODE> </LI>
+<LI>
+<!--<A HREF="http://mirror.aarnet.edu.au/linux/LDP/LDP/">-->The Linux Kernel (и другие руководства LDP)<!--</A>--></LI>
+<LI>исходные коды, для ссылок смотри
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->Building a Minimal Linux System from Source Code<!--</A>-->
+</LI>
+</UL>
+<P>
+<P>
+<HR>
+<H2><A NAME="s5">5.</A> <A HREF="gregokeefe.html#toc5">Библиотека GNU C</A></H2>
+
+<P>Следующей, после загрузки ядра, вещью, является запуск процесса init. Однако
+init, подобно другим программам, использует вызовы функций из системных библиотек.
+<P>
+<P>Вы наверняка знакомы с демо-программами похожими на эту:
+<P>
+<P>
+<PRE>
+        main() {
+                printf("Hello World!\n");
+        }
+</PRE>
+<P>Программа не содержит определения функции <CODE>printf</CODE>,
+так откуда она её вызывает? Функция берется из стандартной библиотеки C,
+в системе GNU/Linux это glibc. Если вы скомпилируете её под Visual C++,
+функция будет взята из стандартной библиотеки реализации Microsoft.
+Существуют зиллионы стандартных функций для математических и строковых операций,
+манипулирования датой/временем, оперативной памятью и т.д. и т.п.
+Всё в мире Unix (включая Linux) либо написано на C либо старается быть написанным,
+так что всё использует эти функции.
+<P>
+<P>Если вы заглянете в <CODE>/lib</CODE> на вашей Linux машине, вы обнаружите
+множество файлов <CODE>libsomething.so</CODE> или <CODE>libsomething.a</CODE>
+и т.п. Это библиотеки таких функций. Glibc является просто реализацией этих
+функций проектом GNU.
+<P>
+<P>Для программ существует два способа использования библиотечных функций.
+Если программа собирается <EM>статически</EM>, эти функции будут скопированы в
+создаваемый исполняемый код. Код при этом будет взят из библиотеки типа
+<CODE>libsomething.a</CODE>. Если программа собирается <EM>динамически</EM>,
+(что происходит по умолчанию) эти функции будут загружаться при выполнении программы
+по мере надобности. При этом будет использован код из файлов типа <CODE>libsomething.so</CODE>.
+<P>
+<P>Команда <CODE>ldd</CODE> будет вашим помощником, если вам понадобится выяснить
+какие библиотеки нужны для работы некоторой программы. В качестве примера приведу
+список библиотек необходимых для запуска <CODE>bash</CODE>:
+<P>
+<P>
+<PRE>
+        [greg@Curry power2bash]$ ldd /bin/bash
+                libtermcap.so.2 => /lib/libtermcap.so.2 (0x40019000)
+                libc.so.6 => /lib/libc.so.6 (0x4001d000)
+                /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+</PRE>
+<P>
+<H2><A NAME="ss5.1">5.1 Настройка</A>
+</H2>
+
+<P>Некоторые из библиотечных функций зависят от вашего места обитания.
+Например у нас в Австралии дату пишут как dd/mm/yy, а американцы пишут mm/dd/yy.
+Glibc предоставляет специальную программу для настройки национальных особенностей
+ - <CODE>localedef</CODE>.
+<P>
+<H2><A NAME="ss5.2">5.2 Упражнения</A>
+</H2>
+
+<P>Используя <CODE>ldd</CODE>, выясните какие библиотеки использует ваше любимое
+приложение.
+<P>
+<P>Используя <CODE>ldd</CODE>, выясните какие библиотеки использует программа init.
+<P>
+<P>Создайте игрушечную библиотеку с одной - двумя функциями. Для создания библиотек
+используется программа <CODE>ar</CODE>, так что начать следует с чтения
+соответствующего ман(уала). Напишите, скомпилируйте и соберите программу, которая
+будет использовать эту библиотеку.
+<P>
+<P>
+<H2><A NAME="ss5.3">5.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI>исходный код, ссылки в
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->Building a Minimal Linux System from Source Code<!--</A>-->
+</LI>
+</UL>
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s6">6.</A> <A HREF="gregokeefe.html#toc6">Init</A></H2>
+
+<P>Я расскажу вам только о программе init в стиле ``System V'', которая используется
+большинством Linux систем. Существуют и другие варианты. На самом деле вы можете
+поместить любую программу в <CODE>/sbin/init</CODE> и ядро запустит её как только
+закончит загружаться.
+<P>
+<P>Задачей <CODE>init</CODE>'а является запуск всего остального
+нужным образом. Он проверяет состояние файловых систем и монтирует их. Он
+запускает демонов для записи системных сообщений, сетевого взаимодействия,
+обслуживания веб-страниц, обработки сообщений мыши и т.п. Он также запускает
+процессы getty, которые выдают запросы на вход в систему на ваших виртуальных
+терминалах.
+<P>
+<P>Я мог бы расказать вам длинную историю о проблеме переключения "уровней
+запуска" (``run-levels''), однако я пропущу большую её часть, остановившись
+исключительно на моментах связанных с запуском системы.
+<P>
+<P>Init читает файл <CODE>/etc/inittab</CODE>, в котором содержатся инструкции
+для дальнейшей работы. Первой инструкцией, обычно, является запуск скрипта
+инициализации. Программой, которая будет выполнять (интерпретировать) данный
+скрипт, является <CODE>bash</CODE>, та самая программа, которая предоставляет
+вам командную строку. В системах, основанных на Debian, скриптом инициализации будет
+<CODE>/etc/init.d/rcS</CODE>, в Red Hat - <CODE>/etc/rc.d/rc.sysinit</CODE>.
+Это то место где происходит проверка и монтирование файловых систем,
+установка часов системного времени, включение своп-раздела, присвоение имени хоста и т.д.
+<P>
+<P>Далее будет вызван следующий скрипт, который переведёт нас на "уровень запуска"
+по умолчанию. Это подразумевает просто некоторый набор подсистем, которые должны
+быть запущены. Для обслуживания уровней запуска существует набор директорий
+<CODE>/etc/rc.d/rc0.d</CODE>,
+<CODE>/etc/rc.d/rc1.d</CODE>, ..., <CODE>/etc/rc.d/rc6.d</CODE> в Red Hat, или
+<CODE>/etc/rc0.d</CODE>,
+<CODE>/etc/rc1.d</CODE>, ..., <CODE>/etc/rc6.d</CODE> в Debian,
+которые отвечают за соответствующие уровни.
+Когда мы заходим на "уровень запуска" 3 в Debian, этот скрипт будет запускать
+все скрипты в <CODE>/etc/rc3.d</CODE>, начинающиеся на букву `S' (старт).
+Эти скрипты обычно являются символьными ссылками на скрипты расположенные в
+<CODE>init.d</CODE>.
+<P>
+<P>Итак, скрипт "уровня запуска", вызван процессом <CODE>init</CODE> и ищет
+в соответствующей директории скрипты начинающиеся на `S'. Пусть первым обнаруженным
+файлом окажется <CODE>S10syslog</CODE>. Порядок запуска скриптов определяется
+номерами. В нашем случае <CODE>S10syslog</CODE> оказался первым, поскольку
+не нашлось скриптов, начинающихся на S00 ... S09. На самом деле <CODE>S10syslog</CODE>
+является ссылкой на <CODE>/etc/init.d/syslog</CODE>, который и является скриптом,
+отвечающим за запуск и остановку системного логгера. Поскольку ссылка начинается
+на `S', скрипт "уровня запуска" запустит <CODE>syslog</CODE> с параметром
+``start''. Ссылки, названия которых начинаются на `K' (kill, убить) определяют
+порядок действий при останове системы или при переходе на другой "уровень запуска".
+<P>
+<P>Для изменения списка подсистем, запускаемых по умолчанию, вы должны
+установить соответствующие ссылки в директории <CODE>rcN.d</CODE>, где N - "уровень
+запуска" по умолчанию, установленный в вашем <CODE>inittab</CODE>.
+<P>
+<P>Последним важным действием init является запуск некоторого количества
+<CODE>getty</CODE>. Они прописываются как ``respawned'', что означает -
+если данный процесс будет остановлен, <CODE>init</CODE> запустит его снова.
+Большинство дистрибутивов используют шесть виртуальных терминалов. Вы можете
+захотеть уменьшить их количество для экономии памяти, или, наоборот, увеличить,
+что позволит запускать множество приложений одновременно и быстро переключаться
+между ними по мере надобности.
+Также может возникнуть потребность в запуске <CODE>getty</CODE> на текстовом
+терминале или при подключении по модему. В этом случае вам надо будет отредактировать
+файл <CODE>inittab</CODE>.
+<P>
+<P>
+<H2><A NAME="ss6.1">6.1 Настройка</A>
+</H2>
+
+<P>Файлом верхнего уровня настройки init является <CODE>/etc/inittab</CODE>.
+<P>
+<P>Директории <CODE>rcN.d</CODE>, где N = 0, 1, ..., 6 определяют какие
+подсистемы и в каком порядке будут запущены.
+<P>
+<P>В одном из скриптов, вызываемых init, будет использована команда <CODE>mount -a</CODE>.
+Это приказ смонтировать все файловые системы какие должны быть смонтированы.
+Последнее определяется файлом <CODE>/etc/fstab</CODE>. Вы можете отредактировать
+этот файл, если решите изменить список файловых систем, монтируемых при старте
+системы. Синтаксис файла описан в <CODE>man fstab</CODE>.
+<P>
+<H2><A NAME="ss6.2">6.2 Упражнения</A>
+</H2>
+
+<P>Найдите директорию <CODE>rcN.d</CODE> для вашего "уровня запуска" по умолчанию
+и выполните команду <CODE>ls -l</CODE>, чтобы узнать на какие файлы указывают
+ссылки.
+<P>
+<P>Измените количество виртуальных терминалов в системе.
+<P>
+<P>Уберите любую не нужную вам подсистему из "уровня запуска" по умолчанию.
+<P>
+<P>Оцените сколько вам удалось сэкономить на старте.
+<P>
+<P>Создайте загрузочную дискету с lilo, ядром и "статически" собранной
+программой "hello world", причем последнюю назовите <CODE>/sbin/init</CODE>.
+Убедитесь, что система грузится и приветствует вас как положено.
+<P>
+<P>Отследите все сообщения, выдаваемые системой при запуске. Или распечатайте
+содержимое системного журнала <CODE>/var/log/messages</CODE> с момента
+последнего старта. Затем, начиная с <CODE>inittab</CODE>, проследуйте по всем
+выполненным скриптам, отмечая кто что делает. Вы также можете вставить в скрипты
+дополнительные сообщения типа
+<P>
+<PRE>
+        echo "Hello, I am rc.sysinit"
+</PRE>
+<P>Это упражнение помогает также в изучении техники написания скриптов под bash.
+Некоторые из скриптов устроены весьма непросто, поэтому
+справочник по командам bash окажется весьма кстати.
+<P>
+<H2><A NAME="ss6.3">6.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI>Страницы ман для файлов <CODE>inittab</CODE> и <CODE>fstab</CODE>.
+Введите <CODE>man inittab</CODE> для ознакомления.</LI>
+<LI>The Linux System Administrators Guide содержит хороший
+<!--<A HREF="http://mirror.aarnet.edu.au/linux/LDP/LDP/">--> раздел<!--</A>--> по init.</LI>
+<LI>исходные коды, ссылки приведены в
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->Building a Minimal Linux System from Source Code<!--</A>-->
+</LI>
+</UL>
+<P>
+<P>
+<HR>
+<H2><A NAME="s7">7.</A> <A HREF="gregokeefe.html#toc7">Файловая система</A></H2>
+
+<P>В данном разделе я буду использовать терми "файловая система" в двух разных
+смыслах. Есть файловые системы на разделах дисков и других устройствах, и есть
+файловая система как она представлена для вас работающей системой Linux.
+Под Linux вы монтируете дисковые файловые системы в системную файловую систему.
+<P>
+<P>В предыдущем разделе я упомянул, что скрипты загрузки проверяют и монтируют
+файловые системы. Эти действия выполняются соответственно командами
+<CODE>fsck</CODE> и <CODE>mount</CODE>.
+<P>
+<P>Жесткий диск - это просто большое пространство, на котором можно записывать
+единицы и нули. Файловая система предлагает метод структурирования информации
+на диске и представляет нам его в виде файлов, размещенных внутри директорий
+, размещенных внутри директорий, размещенных внутри директорий...
+Каждый файл представлен inode, который знает чей это файл, когда создан и
+где размещено его содержимое. Директории таже представляются inod'ами, которые
+знают где найти inod'ы файлов принадлежащих данной директории. Если система
+хочет прочитать <CODE>/home/greg/bigboobs.jpeg</CODE>, она во-первых должна
+отыскать inode для корневой директории <CODE>/</CODE> в суперблоке, затем
+найти inode для директории <CODE>home</CODE> в содержимом <CODE>/</CODE>,
+затем директорию <CODE>greg</CODE> в содержимом <CODE>/home</CODE>,
+затем inode для <CODE>bigboobs.jpeg</CODE> который скажет какие блоки диска
+следует прочитать.
+<P>
+<P>
+<P>Если мы добавляем некоторые данные в конец файла, может случиться так,
+что данные будут записаны на диск до того как содержание inode для этого
+файла успеет обновиться, или наоборот. Если питание компьютера будет отключено в
+этот момент, файловая система будет попорчена. Это тот случай, который
+должен быть определен командой <CODE>fsck</CODE>, она же предринимает
+попытку восстановления.
+<P>
+<P>Команда <CODE>mount</CODE> берет файловую систему устройства и добавляет
+её в иерархию, которую вы привыкли наблюдать работая в системе. Обычно ядро
+монтирует корневую файловую систему в режиме "только для чтения".
+Команда <CODE>mount</CODE> перемонтирует её в режиме "чтение/запись" после
+того как она проверена <CODE>fsck</CODE>.
+<P>
+<P>Система Linux поддерживает некоторые другие файловые системы: msdos, vfat,
+minix и т.п. Специфические детали этих систем скрыты путем использования
+абстракции виртуальной файловой системы (VFS). Мне бы не хотелось вдаваться в
+детали. Обсуждение этой темы есть в ``The Linux Kernel''. (для ссылок см. раздел
+<A HREF="gregokeefe.html#Kernel">Ядро Linux</A>)
+<P>
+<P>Существенно иной вид файловой системы смонтирован в <CODE>/proc</CODE>.
+Это некоторое представление объектов ядра. Здесь присутствуют директории для
+для каждого запущенного процесса, причем номер процесса используется в качестве
+имени директории. Присутствуют также такие файлы как <CODE>interrupts</CODE>
+и <CODE>meminfo</CODE>, которые могут сообщить информацию об используемом
+железе. Исследуя <CODE>/proc</CODE>, вы можете многому научиться.
+<P>
+<H2><A NAME="ss7.1">7.1 Настройка</A>
+</H2>
+
+<P>Команда <CODE>mke2fs</CODE>, создающая файловую систему типа ext2,
+имеет параметры, управляющие размером блока, числом inode и т.п.
+Прочтите ман для <CODE>mke2fs</CODE>, чтобы уточнить детали.
+<P>
+<P>Всё, что должно быть смонтировано в вашей файловой системе определяется
+файлом <CODE>/etc/fstab</CODE>. По этому файлу также имеется ман.
+<P>
+<H2><A NAME="ss7.2">7.2 Упражнения</A>
+</H2>
+
+<P>Создайте очень маленькую файловую систему и рассмотрите её с помощью
+шестнадцатеричного вьюера. Найдите inod'ы, суперблоки и содержимое файла.
+<P>
+<P>Я верю в существование программ, которые представляют файловую систему
+в графическом виде. Найдите, опробуйте и пришлите мне ссылку и ваши впечатления.
+<P>
+<P>Исследуйте код ядра, относящийся к файловой системе ext2.
+<P>
+<H2><A NAME="ss7.3">7.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI>Превосходное описание файловых систем есть в разделе 9 книги LDP
+ ``The Linux Kernel''. Вы найдете её на Австралийском
+<!--<A HREF="http://mirror.aarnet.edu.au/linux/LDP/LDP/">-->зеркале<!--</A>--> проекта LDP.</LI>
+<LI>Команда <CODE>mount</CODE> является частью пакета util-linux,
+ссылка на него приведена в
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->Building a Minimal Linux System from Source Code<!--</A>--> </LI>
+<LI>Страницы ман для <CODE>mount</CODE>, <CODE>fstab</CODE>, <CODE>fsck</CODE>, <CODE>mke2fs</CODE>
+и <CODE>proc</CODE></LI>
+<LI>Файл <CODE>Documentation/proc.txt</CODE> в исходном коде Linux
+описывает файловую систему <CODE>/proc</CODE>.</LI>
+<LI>Утилиты для файловой системы EXT2:
+<!--<A HREF="http://web.mit.edu/tytso/www/linux/e2fsprogs.html">-->ext2fsprogs<!--</A>--> - домашняя страница и
+<!--<A HREF="ftp://mirror.aarnet.edu.au/pub/linux/metalab/system/filesystems/ext2/">-->ext2fsprogs<!--</A>--> -
+Австралийское зеркало. Здесь также был обзор файловой системы Ext2fs,
+однако он устарел и читается хуже, чем 9-я глава из ``The Linux Kernel''</LI>
+<LI>
+<A NAME="FHS"></A>
+<!--<A HREF="ftp://tsx-11.mit.edu/pub/linux/docs/linux-standards/fsstnd/">-->Unix File System Standard<!--</A>-->
+ и
+<!--<A HREF="http://www.pathname.com/fhs/">-->другая ссылка<!--</A>--> на the Unix File System Standard.
+Стандарт описывает что и где должно находится в файловой системе Unix и почему.
+Сформулированы также минимальные требования к содержимому директорий
+<CODE>/bin</CODE>, <CODE>/sbin</CODE> и т.д.
+Это хороший источник информации если вы поставите себе задачу создания
+минимальной, но полной системы.
+</UL>
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s8">8.</A> <A HREF="gregokeefe.html#toc8">Демоны Ядра</A></H2>
+
+<P>Когда вы используете команду <CODE>ps aux</CODE>, вы видите нечто вроде приведенного ниже:
+<P>
+<P>
+<PRE>
+USER       PID %CPU %MEM  SIZE   RSS TTY STAT START   TIME COMMAND
+root         1  0.1  8.0  1284   536   ? S    07:37   0:04 init [2]
+root         2  0.0  0.0     0     0   ? SW   07:37   0:00 (kflushd)
+root         3  0.0  0.0     0     0   ? SW   07:37   0:00 (kupdate)
+root         4  0.0  0.0     0     0   ? SW   07:37   0:00 (kpiod)
+root         5  0.0  0.0     0     0   ? SW   07:37   0:00 (kswapd)
+root        52  0.0 10.7  1552   716   ? S    07:38   0:01 syslogd -m 0
+root        54  0.0  7.1  1276   480   ? S    07:38   0:00 klogd
+root        56  0.3 17.3  2232  1156   1 S    07:38   0:13 -bash
+root        57  0.0  7.1  1272   480   2 S    07:38   0:01 /sbin/agetty 38400 tt
+root        64  0.1  7.2  1272   484  S1 S    08:16   0:01 /sbin/agetty -L ttyS1
+root        70  0.0 10.6  1472   708   1 R   Sep 11   0:01 ps aux
+</PRE>
+<P>
+<P>Это список процессов, выполняющихся в системе. Информация берется из
+файловой системы <CODE>/proc</CODE>, описанной в предыдущем разделе.
+Заметьте, что <CODE>init</CODE> всегда имеет номер один.
+Процессами номер 2, 3, 4 и 5 являются kflushd, kupdate, kpiod и
+kswapd. Есть в них нечто странное: в обеих колонках виртуального размера (SIZE)
+и реального размера (RSS) стоят нули. Как процесс может не использовать память?
+<P>
+<P>Эти процессы являются демонами ядра. Большая часть функций ядра не проявляется
+в списке процессов, и вы можете оценить объем потребляемой ядром памяти только
+путем вычитания доступной памяти из общего размера памяти компьютера.
+Демоны ядра стартуют после init и, следовательно, получают номера подобно
+другим процессам. Но их код и данные остаются в памяти, принадлежащей ядру.
+<P>
+<P>Имена этих процессов заключены в скобки, поскольку файловая система
+<CODE>/proc</CODE> не имеет информации о командах, которыми эти процессы были запущены.
+<P>
+<P>Так для чего нужны демоны ядра?
+Предыдущие версии документа содержали просьбу о помощи, так как я очень мало знал
+о демонах ядра. Последующее изложение было собрано из нескольких разных
+откликов на эту просьбу, за которые я весьма признателен. Приветствуются
+и будущие советы, ссылки и исправления!
+<P>
+<P>Ввод и вывод выполняются через расположенные в памяти <EM>буферы</EM>.
+Это позволяет программам выполняться быстрее. То, что программа записывает может
+быть сохранено в памяти, в буфере, и записано на диск позднее, более крупной и
+эффективной порцией. Эта работа выполняется демонами <CODE>kflushd</CODE> и <CODE>kupdate</CODE>:
+<CODE>kupdate</CODE> выполняется периодически (5 секунд?)
+проверяя существование "грязных" буферов. Если таковые присутствуют, он командует
+<CODE>kflushd</CODE> записать их на диск.
+<P>
+<P>Процессы часто остаются без работы, а некоторым нет необходимости держать весь
+свой код и данные в памяти. Это значит, что мы могли бы использовать память
+лучшим образом, перемещая неиспользуемые части программ в своп-раздел(ы) на
+жестком диске. Работа по перемещению данных и кода из памяти на диск и обратно
+выполняется демонами <CODE>kpiod</CODE> и <CODE>kswapd</CODE>.
+Каждую секунду или около того <CODE>kswapd</CODE> просыпается чтобы проверить
+обстановку в памяти и, если что-либо требуется загрузить из свопа в память или
+не хватает свободной памяти он вызывает <CODE>kpiod</CODE>.
+<P>
+<P>Если вы настроили использование автоматического управления питанием (APM),
+здесь будет присутствовать и демон <CODE>kapmd</CODE>.
+<P>
+<P>
+<H2><A NAME="ss8.1">8.1 Настройка</A>
+</H2>
+
+<P>Программа <CODE>update</CODE> позволяет настроить <CODE>kflushd</CODE> и
+<CODE>kswapd</CODE>. Для справки наберите <CODE>update -h</CODE>.
+<P>
+<P>Включение свопа происходит по команде <CODE>swapon</CODE>, а выключение
+- по команде <CODE>swapoff</CODE>.
+Скрипт инициализации (<CODE>/etc/rc.sysinit</CODE> или <CODE>/etc/rc.d/rc.sysinit</CODE>)
+обычно вызывает <CODE>swapon</CODE>.
+Использование <CODE>swapoff</CODE> позволяет экономить энергию на ноутбуках.
+<P>
+<H2><A NAME="ss8.2">8.2 Упражнения</A>
+</H2>
+
+<P>Выполните <CODE>update -d</CODE>, и обратите внимание на предупреждение
+в последней строке относительно нарушения границ (?) (``threshold for buffer fratricide'').
+В настоящий момент это не понятно, давайте исследовать!
+<P>
+<P>Перейдите в директорию <CODE>/proc/sys/vm</CODE> выполните <CODE>cat</CODE> для
+файлов этой директории. Посмотрите что с этим можно сделать.
+<P>
+<H2><A NAME="ss8.3">8.3 Дополнительные сведения</A>
+</H2>
+
+<P>``The Linux Kernel'' из LDP (The Linux Documentation Project)
+(для сылок см. раздел
+<A HREF="gregokeefe.html#Kernel">The Linux Kernel</A>)
+<P>
+<P>Исходные тексты ядра Linux, если вы достаточно отважны!
+Код <CODE>kswapd</CODE> обитает в <CODE>linux/mm/vmscan.c</CODE>,
+коды <CODE>kflushd</CODE> и <CODE>kupdate</CODE>
+живут в <CODE>linux/fs/buffer.c</CODE>.
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s9">9.</A> <A HREF="gregokeefe.html#toc9">Системный Логгер</A></H2>
+
+<P>Init запускает демонов <CODE>syslogd</CODE> и <CODE>klogd</CODE>.
+Они занимаются записью сообщений в журналы (логи). Сообщения ядра обрабатывает
+<CODE>klogd</CODE>, а <CODE>syslogd</CODE> обрабатывает сообщения от
+остальных процессов. Главным журналом является <CODE>/var/log/messages</CODE>.
+Это правильное место для поиска неисправностей в системе.
+Часто здесь можно обнаружить решение проблемы.
+<P>
+<P>
+<H2><A NAME="ss9.1">9.1 Настройка</A>
+</H2>
+
+<P>Файл <CODE>/etc/syslog.conf</CODE> разъясняет логгерам какие сообщения
+куда записывать. Сообщения различаются по имени службы, от которой они исходят,
+и уровню приоритета. Строки этого файла содержат информацию о том, что сообщения
+от службы x с приоритетом y следует направлять в z, где z - файл, терминал, принтер,
+удаленный хост или что угодно.
+<P>
+<P>ВАЖНО: Syslog требует присутствия файла <CODE>/etc/services</CODE>.
+Этот файл отвечает за распределение портов. Я не знаю, то ли syslog нуждается
+в портах для выполнения удаленного журналирования, то ли локальное журналирование
+происходит через порт, а может быть syslog просто использует <CODE>/etc/services</CODE>
+для преобразования имени службы которое вы прописали в <CODE>/etc/syslog.conf</CODE>
+к номеру порта.
+<P>
+<H2><A NAME="ss9.2">9.2 Упражнения</A>
+</H2>
+
+<P>Загляните в системный журнал. Найдите непонятное вам сообщение и отыщите
+информацию о том что оно значит.
+<P>
+<P>Направьте все сообщения на терминал (tty). (Потом верните всё обратно).
+<P>
+<P>
+<H2><A NAME="ss9.3">9.3 Дополнительные сведения</A>
+</H2>
+
+<P>Австралийское
+<!--<A HREF="http://mirror.aarnet.edu.au/pub/linux/metalab/system/daemons/">-->зеркало<!--</A>-->
+syslogd
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s10">10.</A> <A HREF="gregokeefe.html#toc10">Getty и Login</A></H2>
+
+<P>Getty - это программа, которая позволяет вам войти в систему через устройство
+последовательного доступа такое как виртуальный терминал, текстовый терминал или
+модем. Она отображает приглашение для регистрации (login prompt).
+Получив от вас имя пользователя getty передает его <CODE>login</CODE>'у,
+который запрашивает пароль, проверяет его и предоставляет вам шелл.
+<P>
+<P>
+<P>Существует много getty. Некоторые дистрибутивы, включая Red Hat, используют
+один из самых маленьких - <CODE>mingetty</CODE>, который поддерживает только
+виртуальные терминалы.
+<P>
+<P>Программа <CODE>login</CODE> является частью пакета util-linux, который также
+включает хорошо работающий getty - <CODE>agetty</CODE>. Этот пакет содержит также
+<CODE>mkswap</CODE>, <CODE>fdisk</CODE>,
+<CODE>passwd</CODE>, <CODE>kill</CODE>, <CODE>setterm</CODE>, <CODE>mount</CODE>,
+<CODE>swapon</CODE>, <CODE>rdev</CODE>, <CODE>renice</CODE>,
+<CODE>more</CODE> (программу) and more (т.е. больше программ).
+<P>
+<H2><A NAME="ss10.1">10.1 Настройка</A>
+</H2>
+
+<P>Сообщение, появляющееся вверху экрана вместе с приглашением ввести имя
+пользователя, прописывается в <CODE>/etc/issue</CODE>. Getty запускаются
+из <CODE>/etc/inittab</CODE>. Login проверяет сведения о пользователе
+в <CODE>/etc/passwd</CODE>, и, если используется механизм теневых паролей,
+в <CODE>/etc/shadow</CODE>.
+<P>
+<H2><A NAME="ss10.2">10.2 Упражнения</A>
+</H2>
+
+<P>Создайте файл <CODE>/etc/passwd</CODE> вручную. Пароли могут быть установлены
+в null и изменены программой <CODE>passwd</CODE> после регистрации.
+Прочтите ман на этот файл. Запустите его командой <CODE>man 5 passwd</CODE> чтобы
+получить информацию о файле, а не о программе.
+<P>
+<P>
+<P>
+<HR>
+<H2><A NAME="s11">11.</A> <A HREF="gregokeefe.html#toc11">Bash</A></H2>
+
+<P>Если вы ввели правильную комбинацию имя пользователя/пароль, <CODE>login</CODE>
+выберет из файла <CODE>/etc/passwd</CODE> шелл, который нужно для вас загрузить.
+Для Linux систем в большинстве случаев это будет <CODE>bash</CODE>.
+Работа <CODE>bash</CODE> заключается в том, чтобы читать ваши команды и следить
+за тем, чтобы они были выполнены. Он является и интерфейсом пользователя
+и интерпретатором командного языка.
+<P>
+<P>Как интерфейс пользователя он читает ваши команды и выполняет их сам (если это
+"внутренние" команды типа <CODE>cd</CODE>) или находит и выполняет программу
+(т.е. "внешнюю" команду типа <CODE>cp</CODE> или <CODE>startx</CODE>). Он также
+проделывает такие приятные вещи как сохранение истории команд и автоматическое
+завершение имени файла.
+<P>
+<P>Мы уже наблюдали работу <CODE>bash</CODE> в качестве интерпретатора языка
+программирования. Скрипты, запускаемые программой <CODE>init</CODE> при старте
+системы являются обычно сценариями оболочки и выполняются при помощи <CODE>bash</CODE>.
+Сочетание удобного языка программирования с обычными системными утилитами,
+доступными из командной строки, представляет очень мощную комбинацию в случае,
+если вы знаете что делаете.
+
+Например (включен режим самодовольства) мне необходимо применить большой набор
+патчей к директории содержащей некоторые исходные тексты. Я могу сделать это,
+набрав единственную команду:
+<P>
+<PRE>
+for f in /home/greg/sh-utils-1.16*.patch; do patch -p0 &lt; $f; done;
+</PRE>
+<P>
+<P>Будут найдены все файлы в моей домашней директории, чьи имена начинаются на
+<CODE>sh-utils-1.16</CODE> и заканчиваются на <CODE>.patch</CODE>.
+Далее в цикле переменной <CODE>f</CODE> будут присваиваться имена этих файлов и
+выполняться команды заключенные между операторами <CODE>do</CODE> и <CODE>done</CODE>.
+В данном случае присутствовало всего 11 файлов-патчей, но это было-бы также просто
+будь их хоть 3000.
+<P>
+<H2><A NAME="ss11.1">11.1 Настройка</A>
+</H2>
+
+<P>Файл <CODE>/etc/profile</CODE> содержит общесистемные настройки bash.
+То что вы здесь напишете повлияет на каждого, кто использует bash в вашей системе.
+Обычно здесь выполняются такие вещи как добавление директорий к переменной
+<CODE>PATH</CODE>, и установка переменных типа <CODE>MAIL</CODE>.
+<P>
+<P>Поведение клавиатуры по умолчанию обычно оставляет желать лучшего. Эти проблемы
+решаются с помощью readline. Readline - это отдельный пакет, который
+поддерживает интерфейс командной строки, предоставляя историю команд и
+автозавершение имен файлов, также как и расширенные возможности редактирования.
+Он вкомпилирован в bash. По умолчанию readline настраивается редактированием
+файла <CODE>.inputrc</CODE> в вашей домашней директории. Переменная bash INPUTRC
+позволяет это изменить. Например в Red Hat 6 <CODE>INPUTRC</CODE> установлена
+в <CODE>/etc/inputrc</CODE> в <CODE>/etc/profile</CODE>.
+Это значит, что клавиши backspace, delete, home и end будут работать для всех
+одинаково хорошо.
+<P>
+<P>Прочтя общесистемный файл настройки, bash ищет ваш персональный файл настройки.
+Он ищет его в вашей домашней директории проверяя имена
+<CODE>.bash_profile</CODE>, <CODE>.bash_login</CODE> и <CODE>.profile</CODE>.
+Выполняется первый из найденных файлов. Если вы хотите изменить поведение bash
+только для себя - делайте это здесь. Например, многие приложения используют
+переменные окружения для контроля собственной работы. Я имею переменную
+<CODE>EDITOR</CODE> установленной в значение <CODE>vi</CODE> и могу
+использовать vi в Midnight Commander'е (превосходный консольный
+файл-менеджер) вместо его встроенного редактора.
+<P>
+<P>
+<H2><A NAME="ss11.2">11.2 Упражнения</A>
+</H2>
+
+<P>Основы bash легки в изучении. Однако вам не следует останавливаться:
+глубины невообразимы. Заведите привычку всегда искать лучшие пути для
+выполнения работы.
+<P>
+<P>Читайте скрипты, найдите вещи которые вы не понимаете.
+<P>
+<H2><A NAME="ss11.3">11.3 Дополнительные сведения</A>
+</H2>
+
+<P>
+<UL>
+<LI>Существует ``Bash Reference Manual'' достаточно понятный, но не слишком
+легкий для чтения.</LI>
+<LI>Есть также книга про Bash издания O'Rielly, не уверен, что хорошая.</LI>
+<LI>Я не знаю ни одного хорошего, свежего и свободного учебника по bash.
+Если вы знаете, пришлите пожалуйста ссылку.</LI>
+<LI>Исходные тексты, ссылки на странице
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->Building a Minimal Linux System from Source Code<!--</A>-->
+</LI>
+</UL>
+<P>
+<P>
+<HR>
+<H2><A NAME="s12">12.</A> <A HREF="gregokeefe.html#toc12">Команды</A></H2>
+
+<P>Большинство работы в bash может быть выполнено с использованием команд
+типа <CODE>cp</CODE>. Большинство из этих команд являются небольшими программами,
+однако некоторые (типа <CODE>cd</CODE>) встроены в шелл.
+<P>
+<P>Команды собраны в пакеты, многие из которых разработаны Фондом Свободного ПО
+(Free Software Foundation or GNU). Вместо перечисления пакетов я направлю вас
+к документу
+<!--<A HREF="http://www.linuxfromscratch.org">-->Linux From Scratch HOWTO<!--</A>-->.
+Там вы найдете полный и свежий перечень пакетов, работающих с Linux, также
+как и инструкции по их сборке.
+<P>
+<P>
+<HR>
+<H2><A NAME="s13">13.</A> <A HREF="gregokeefe.html#toc13">Заключение</A></H2>
+
+<P>Лучшей чертой Linux, по моему скромному мнению, является то, что вы можете
+залезть вовнутрь и разобраться как оно работает. Я надеюсь, что вы сможете
+насладиться этим не менее чем я. Я также надеюсь, что эти небольшие заметки
+помогут вам преуспеть в этом занятии.
+<P>
+<HR>
+<H2><A NAME="s14">14.</A> <A HREF="gregokeefe.html#toc14">Официальная часть</A></H2>
+
+<H2><A NAME="ss14.1">14.1 Авторские права</A>
+</H2>
+
+<P>Авторские права на этот документ принадлежат (c) 1999, 2000 Greg O'Keefe.
+Вы можете использовать, копировать, распространять или изменять этот документ
+не взымая за это денег, следуя соглашениям Общественной Лицензии GNU -
+<!--<A HREF="http://www.gnu.org/copyleft/gpl.html">-->GNU General Public Licence<!--</A>-->.
+Прошу уведомить меня, если вы используете его целиком или частично как
+часть другого документа.
+<P>
+<H2><A NAME="ss14.2">14.2 Домашняя страница</A>
+</H2>
+
+<P>Последнюю версию этого документа можно найти на
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->From Powerup To Bash Prompt<!--</A>-->
+также как и сопутствующий материал ``Building a Minimal Linux System from Source Code''.
+<P>
+<P>Перевод на французский:
+<!--<A HREF="http://www.freenix.fr/unix/linux/HOWTO/From-PowerUp-To-Bash-Prompt-HOWTO.html">-->From Powerup To Bash Prompt<!--</A>--> спасибо Dominique van den Broeck.
+Японский перевод Yuji Senda ожидается, если его ещё нет на
+<!--<A HREF="http://www.linux.or.jp/JF">-->Japanese Documentation and FAQ Project<!--</A>-->
+<P>
+<P>
+<P>
+<P>
+<H2><A NAME="ss14.3">14.3 Обратная связь</A>
+</H2>
+
+<P>Буду признателен за любые комментарии, критику и предложения по улучшению.
+Пожалуйста, присылайте их мне:
+<A HREF="../cdn-cgi/l/email-protection.html#6c0b0f030709090a092c1c031f18030a0a050f094219180d1f42090819420d19">Greg O'Keefe</A><P>
+<P>
+<H2><A NAME="acknowledge"></A> <A NAME="ss14.4">14.4 Благодарности</A>
+</H2>
+
+<P>Названия продуктов являются торговыми марками соответствующих владельцев.
+<P>
+<P>Есть несколько людей, которым я хотел бы сказать спасибо за помощь
+в подготовке этого документа.
+<P>
+<P>
+<DL>
+<P>
+<DT><B>Michael Emery</B><DD><P>За напоминание про Unios.
+<DT><B>Tim Little</B><DD><P>За несколько хороших советов по поводу <CODE>/etc/passwd</CODE>
+<DT><B>sPaKr on #linux in efnet</B><DD><P>Который заметил, что syslogd требует присутствия <CODE>/etc/services</CODE>,
+и подсказал мне выражение ``rolling your own'' применительно к построению системы
+из исходного кода.
+<DT><B>Alex Aitkin</B><DD><P>За привлечение моего внимания к Vico и его ``verum ipsum factum''
+(понимание приходит через делание).
+<DT><B>Dennis Scott</B><DD><P>За исправление моей шеснадцатеричной арифметики.
+<DT><B>jdd</B><DD><P>За указание нескольких опечаток.
+<DT><B>David Leadbeater</B><DD><P>За вклад в тему демонов ядра.
+<DT><B>Dominique van den Broeck </B><DD><P>За перевод этого документа на французский.
+<DT><B>Matthieu Peeters </B><DD><P>За полезную информацию о демонах ядра.
+<DT><B>John Fremlin</B><DD><P>За полезную информацию о демонах ядра.
+<DT><B>Yuji Senda</B><DD><P>За перевод этого документа на японский.
+<DT><B>Antonius de Rozari</B><DD><P>предоставившему версию UNIOS на ассемблере GNU
+(см. раздел ресурсов на домашней странице)
+</DL>
+<P>
+<H2><A NAME="ss14.5">14.5 История изменений</A>
+</H2>
+
+<H3>0.8 -> 0.9 (November 2000)</H3>
+
+<P>
+<UL>
+<LI>Incorporated some information from Matthieu Peeters
+and John Fremlin on
+kernel deamons and the <CODE>/proc</CODE> filesystem.</LI>
+</UL>
+<P>
+<H3>0.7 -> 0.8 (September 2000)</H3>
+
+<P>
+<UL>
+<LI> Removed instructions on how to build a system, placing them in a
+separate document. Adjusted a few links accordingly.</LI>
+<LI> Changed homepage from
+<!--<A HREF="http://learning.taslug.org.au/power2bash">-->learning@TasLUG<!--</A>-->
+to
+<!--<A HREF="http://www.netspace.net.au/~gok/power2bash">-->my own webspace<!--</A>-->.</LI>
+<LI> Completely failed to incorporate a lot of good material
+contributed by various people. Maybe next time :(</LI>
+</UL>
+<P>
+<H3>0.6 -> 0.7</H3>
+
+<P>
+<UL>
+<LI>more emphasis on explanation, less on how to build a system,
+building info gathered together in a separate section
+and the system built is trimmed down,
+direct readers to Gerard Beekmans' ``Linux From Scratch'' doc
+for serious building</LI>
+<LI>added some ramblings contributed by David Leadbeater</LI>
+<LI>fixed a couple of url's, added link to unios download at
+learning.taslug.org.au/resources</LI>
+<LI>tested and fixed url's</LI>
+<LI>generally rewrite, tidy up</LI>
+</UL>
+<P>
+<H3>0.5 -> 0.6</H3>
+
+<P>
+<UL>
+<LI>added change history</LI>
+<LI>added some todos</LI>
+</UL>
+<P>
+<H2><A NAME="ss14.6">14.6 Надо сделать</A>
+</H2>
+
+<P>
+<UL>
+<LI>объяснить работу модулей ядра, depmod, modprobe, insmod и всё такое
+(я буду должен сначала это найти!)</LI>
+<LI>описать файловую систему /proc, возможно добавить упражнений</LI>
+<LI>преобразовать в docbook sgml</LI>
+<LI>добавить упражнений, возможно целый раздел больших упражнений,
+типа создания минимальной системы путём добавления файла за файлом из
+дистрибутивной инсталляции.</LI>
+<LI>add makefile hack to bash build instructions - see easter notes.</LI>
+</UL>
+<P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

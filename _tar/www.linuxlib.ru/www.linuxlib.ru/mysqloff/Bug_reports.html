@@ -1,0 +1,731 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 1.8.1.3  Как отправлять отчеты об ошибках или проблемах — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Bug_reports.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Bug_reports.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Introduction.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1 Общая информация
+</a><ul><li class="gp"><a href="https://www.linuxlib.ru/mysqloff/MySQL_Information_Sources.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.8 Источники информации по MySQL
+</a><ul><li class="p"><a href="Questions.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />1.8.1 Списки рассылки MySQL
+</a><ul class="immediate"><li><a href="Mailing-list.html">1.8.1.1 Списки рассылки MySQL
+</a></li><li><a href="Asking_questions.html">1.8.1.2 Как задавать вопросы и направлять сообщения об ошибках
+</a></li><li class="self">1.8.1.3 Как отправлять отчеты об ошибках или проблемах
+</li><li><a href="Answering_questions.html">1.8.1.4 Рекомендации по ответам на вопросы, направляемые в список рассылки
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Asking_questions.html" title="1.8.1.2  Как задавать вопросы и направлять сообщения об ошибках">Previous</a> / <a rel="next" href="Answering_questions.html" title="1.8.1.4  Рекомендации по ответам на вопросы, направляемые в список рассылки">Next</a> / <a rel="up" href="Questions.html" title="1.8.1  Списки рассылки MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>1.8.1.3  Как отправлять отчеты об ошибках или проблемах</H4>
+
+<P>
+<A NAME="IDX96"></A>
+<A NAME="IDX97"></A>
+<A NAME="IDX98"></A>
+<A NAME="IDX99"></A>
+<A NAME="IDX100"></A>
+
+</P>
+
+<P>
+Чтобы написать хороший отчет об ошибке, потребуется немало терпения.
+Однако лучше сделать все правильно с первой попытки - это сбережет и ваше,
+и наше время. Грамотно составленный отчет об ошибке, содержащий ее
+подробное описание, позволит нам исправить эту ошибку уже в следующей
+версии программы. Включенные в данный раздел рекомендации помогут вам
+правильно написать свой отчет, не тратя времени на описание того, что мало
+чем сможет нам помочь или не потребуется вовсе.
+
+</P>
+<P>
+Мы рекомендуем для создания отчетов об ошибках (или отчетов о любых
+проблемах), всегда, если это возможно, использовать сценарий <code>mysqlbug</code>.
+<code>mysqlbug</code> можно найти в каталоге <tt>`scripts'</tt> раздела распространения исходных
+текстов, или в разделе распространения исполняемых программ, в каталоге
+<tt>`bin'</tt> инсталляционного каталога MySQL. Если же не удается воспользоваться
+<code>mysqlbug</code>, то все равно необходимо указать в своем отчете все данные,
+перечисленные ниже в этом разделе.
+
+</P>
+<P>
+Сценарий <code>mysqlbug</code> помогает сгенерировать отчет путем автоматического
+определения большей части приведенной ниже информации, но если окажется,
+что в сгенерированном отчете отсутствует что-либо важное, обязательно
+включите это в свое сообщение! Внимательно прочитайте данный раздел и
+убедитесь, что в отчет вошли все описанные здесь сведения.
+
+</P>
+<P>
+<A NAME="IDX101"></A>
+Обычно отчеты об ошибках и проблемах направляются в <a HREF="../cdn-cgi/l/email-protection.html#d1bca8a2a0bd91bdb8a2a5a2ffbca8a2a0bdffb2bebc"><span class="__cf_email__" data-cfemail="91fce8e2e0fdd1fdf8e2e5e2bffce8e2e0fdbff2fefc">[email&#160;protected]</span></a>.
+Если же вы можете создать подробное описание, четко определяющее ошибку,
+его можно направить в список рассылки <a HREF="../cdn-cgi/l/email-protection.html#0361766470436f6a7077702d6e7a70726f2d606c6e"><span class="__cf_email__" data-cfemail="345641534774585d4740471a594d4745581a575b59">[email&#160;protected]</span></a>. Обратите
+внимание: в этот список рассылки можно посылать только полный отчет о
+повторяющейся ошибке, составленный при помощи сценария <code>mysqlbug</code>. Если вы
+работаете в Windows, необходимо включить описание операционной системы и
+версии MySQL. Прежде чем направлять отчет, желательно проверить,
+проявляется ли данная проблема при использовании последней окончательной
+или находящейся в стадии разработки версии MySQL! Чтобы любой
+желающий мог воспроизвести эту ошибку, желательно также включить в отчет
+контрольный тестовый пример, который можно было бы запустить при помощи
+``<code>mysql test &#60; script</code>'', либо Perl-сценарий или сценарий оболочки, которые
+можно запустить непосредственно. Все ошибки, сообщения о которых будут
+направлены в список рассылки, будут либо исправлены, либо включены в
+список ошибок в следующей версии MySQL! Если необходимо только небольшое
+изменение кода, мы также отправим исправляющий эту ошибку патч для
+программы.
+
+</P>
+<P>
+Если вы нашли ошибку в системе безопасности MySQL, необходимо отправить
+сообщение по адресу <a HREF="../cdn-cgi/l/email-protection.html#c7b4a2a4b2b5aeb3be87aabeb4b6abe9a4a8aa"><span class="__cf_email__" data-cfemail="1764727462657e636e577a6e64667b3974787a">[email&#160;protected]</span></a>.
+
+</P>
+<P>
+Не забывайте о том, что можно ответить на сообщение, в котором содержится
+слишком много информации, но нельзя ответить на сообщение, в котором
+информации недостаточно. Часто те, кто нам пишет, опускают некоторые
+факты: они считают, что им известна причина возникшей проблемы и поэтому,
+по их мнению, некоторые детали не имеют значения. Необходимо
+придерживаться следующего принципа: если возникают сомнения в отношении
+того, следует или нет приводить в отчете те или иные сведения, - включите
+их в отчет обязательно! Намного быстрее и проще написать несколько
+дополнительных строк в отчете, чем получать уточняющие вопросы и снова
+ждать ответа только потому, что в первый раз были указаны не все данные.
+
+</P>
+<P>
+Чаще всего наши корреспонденты не указывают используемую версию MySQL или
+платформу, на которой установлен сервер MySQL (включая версию платформы).
+Это довольно существенная информация, и в 99 случаях из 100 отчет об
+ошибке без нее будет совершенно бесполезным! Очень часто бывает и так: мы
+получаем вопрос типа: ''Почему это у меня не работает?'', а потом
+оказывается, что указанная функция в данной версии MySQL отсутствует или
+что ошибка, описанная в отчете, уже была исправлена в более новой версии
+MySQL. Иногда ошибка зависит от используемой платформы. В таких случаях
+практически невозможно ничего исправить, не имея информации об
+операционной системе и о версии платформы.
+
+</P>
+<P>
+Не забывайте указывать информацию о своем компиляторе - в тех случаях,
+когда это имеет отношение к возникшей проблеме. Ведь бывает и так:
+пользователь полагает, что проблема связана с MySQL, а на самом деле он
+нашел ошибку в компиляторе. Большинство компиляторов постоянно находятся в
+состоянии разработки и становятся лучше от версии к версии. Чтобы
+определить, зависит ли ваша проблема от компилятора, мы должны знать,
+какой именно используется компилятор. Обратите внимание на то, что все
+проблемы с компиляторами должны рассматриваться как ошибки и по ним должен
+составляться соответствующий отчет.
+
+</P>
+<P>
+Вы окажете нам значительную помощь, включив в отчет об ошибке подробное
+описание проблемы. В качестве хорошего примера подобной информации можно
+привести описание всех действий, которые привели к возникновению проблемы
+и описание самой проблемы. Лучшие отчеты содержат подробные примеры, в
+которых показано, как можно воспроизвести ошибку или проблему.
+section <A HREF="https://www.linuxlib.ru/mysqloff/Reproduceable_test_case.html">E.1.6  Создание контрольного примера при повреждении таблиц</A>.
+
+</P>
+<P>
+Если программа выдает сообщение об ошибке, очень важно точно воспроизвести
+это сообщение в своем отчете! Возможно, нам придется производить поиск в
+архивах - лучше, чтобы указанное в отчете сообщение об ошибке точно
+совпадало с тем, которое выдает программа. Не следует пытаться запомнить
+сообщение об ошибке, имеет смысл просто скопировать его полностью и
+вставить в отчет!
+
+</P>
+<P>
+Если возникли проблемы с <code>MyODBC</code>, необходимо попытаться создать файл
+трассировки <code>MyODBC</code>. See section <A HREF="MyODBC_bug_report.html">8.3.7  Составление отчетов о проблемах с MyODBC</A>.
+
+</P>
+<P>
+Не забывайте, что у большинства людей, которые будут читать ваш отчет,
+экраны дисплеев имеют ширину в 80 символов. При создании отчетов или
+примеров при помощи средств командной строки <code>mysql</code> необходимо использовать
+параметр <code>--vertical</code> (или терминатор оператора <code>\G</code>) для выходных данных,
+которые будут превышать ширину для таких дисплеев (пример для оператора
+<code>EXPLAIN SELECT</code> приведен ниже в данном разделе).
+
+</P>
+<P>
+<A NAME="IDX102"></A>
+В свой отчет вам необходимо включить следующую информацию:
+
+</P>
+
+<ul>
+<LI>
+
+Версию используемого дистрибутива MySQL (например MySQL Version
+3.22.22). Чтобы узнать, какая версия запущена, следует выполнить
+команду <code>mysqladmin version</code>. Программу <code>mysqladmin</code> можно найти в
+каталоге <tt>`bin'</tt> инсталляционного каталога MySQL.
+
+<LI>
+
+Производителя и модель компьютера, на котором вы работаете.
+
+<LI>
+
+Название и версию операционной системы. Для большинства операционных
+систем эту информацию можно получить, выполнив команду Unix <code>uname -a</code>.
+
+<LI>
+
+Иногда важную роль играет количество памяти (реальной и виртуальной).
+Если у вас есть основания считать, что такая информация может
+оказаться полезной, включите в отчет эти значения.
+
+<LI>
+
+Если используется дистрибутив в виде исходных текстов программного
+обеспечения MySQL, необходимо указать версию используемого
+компилятора. Если используется бинарный дистрибутив, необходимо
+указать имя дистрибутива.
+
+<LI>
+
+Если проблема возникает во время компиляции, включите в отчет точное
+сообщение об ошибке (или ошибках), а также несколько строк до и после
+вызывающего ошибку кода в файле, вызвавшем проблему.
+
+<LI>
+
+Если произошло аварийное завершение работы <code>mysqld</code>, необходимо сообщить
+о запросе, который привел к такому завершению. Это можно выяснить,
+запустив <code>mysqld</code> с включенной функцией ведения журнала.
+See section <A HREF="https://www.linuxlib.ru/mysqloff/Using_log_files.html">E.1.5  Использование журналов для определения причин ошибок в mysqld</A>.
+
+<LI>
+
+Если с программой связана какая-либо таблица базы данных, включите в
+отчет выходную информацию команды <code>mysqldump --no-data db_name
+tbl_name1 tbl_name2 ...</code>. Выполняется это очень легко. Таким способом
+можно получить подробную информацию о таблице в базе данных, что
+поможет нам создать ситуацию, соответствующую той, в которой оказались
+вы.
+
+<LI>
+
+Для ошибок, связанных со скоростью выполнения или проблемами с операторами
+<code>SELECT</code>, всегда необходимо включать в отчет выходную информацию команды
+<code>EXPLAIN SELECT ...</code> и, по крайней мере, количество строк, которые выдает
+оператор <code>SELECT</code>. Вы также должны включить вывода <code>SHOW CREATE TABLE
+...</code> для каждой таблицы, задействованной в запросе.  Чем больше информации
+будет предоставлено о сложившейся ситуации, тем больше шансов, что будет
+оказана надлежащая помощь! Например, ниже приведен образец очень хорошего
+отчета об ошибке (он, конечно, должен быть отправлен при помощи сценария
+<code>mysqlbug</code>):
+
+Пример запускается при помощи командной строки <code>mysql</code> (обратите внимание
+на применение терминатора операторов <code>\G</code>, который используется для
+операторов, если ширина выводимой ими информации превышает ширину строки
+80-символьного дисплея):
+
+
+<pre>
+mysql&#62; SHOW VARIABLES;
+mysql&#62; SHOW COLUMNS FROM ...\G
+       &#60;вывод SHOW COLUMNS&#62;
+mysql&#62; EXPLAIN SELECT ...\G
+       &#60;вывод EXPLAIN&#62;
+mysql&#62; FLUSH STATUS;
+mysql&#62; SELECT ...;
+       &#60;Корокая версия вывода SELECT, включая время,
+        затраченное на обработку запроса&#62;
+mysql&#62; SHOW STATUS;
+       &#60;вывод SHOW STATUS&#62;
+</pre>
+
+<LI>
+
+Если ошибка или проблема возникли во время работы <code>mysqld</code>, постарайтесь
+предоставить сценарий, который воспроизведет аномальное поведение
+программы. Сценарий должен включать все необходимые файлы данных. Чем
+точнее сценарий может воспроизвести сложившуюся ситуацию, тем лучше.
+
+Если вы можете создать воспроизводимый контрольный пример, его
+необходимо отправить на <a HREF="../cdn-cgi/l/email-protection.html#e486918397a4888d979097ca899d979588ca878b89"><span class="__cf_email__" data-cfemail="6c0e190b1f2c00051f181f4201151f1d00420f0301">[email&#160;protected]</span></a> для немедленного
+рассмотрения! Если сценарий обеспечить нельзя, необходимо, по крайней
+мере, включить в свое сообщение выходную информацию команды <code>mysqladmin
+variables extended-status processlist</code>, чтобы предоставить данные о
+работе системы!
+
+<LI>
+
+Если не удается создать контрольный пример в несколько строк, или если
+таблица тестирования слишком велика для отправления в список рассылки
+(более 10 строк), необходимо вывести содержимое таблиц при помощи
+команды <code>mysqldump</code> и создать файл <tt>`README'</tt> с описанием вашей проблемы.
+
+Запакуйте файлы при помощи <code>tar</code> и <code>gzip</code> или <code>zip</code>, и по <code>ftp</code> загрузите
+архив на <!--<a HREF="ftp://support.mysql.com/pub/mysql/secret/">-->ftp://support.mysql.com/pub/mysql/secret/<!--</a>-->. Затем отправьте
+краткое описание проблемы на <a HREF="../cdn-cgi/l/email-protection.html#7113041602311d180205025f1c0802001d5f121e1c"><span class="__cf_email__" data-cfemail="b7d5c2d0c4f7dbdec4c3c499dacec4c6db99d4d8da">[email&#160;protected]</span></a>.
+
+<LI>
+
+Если MySQL на ваш запрос выдает странный, на ваш взгляд,
+результат, приведите в отчете не только сам результат, но также и ваше
+мнение о том, каким должен быть результат, и расчеты, подтверждающие
+это мнение.
+
+<LI>
+
+Когда вы приводите пример ситуации, при которой возникает проблема,
+лучше сохранить действительные имена переменных, таблиц и т.п., вместо
+того, чтобы давать им новые имена. Иногда проблема может быть вызвана
+именем переменной или таблицы! Это довольно редкие случаи, но лучше,
+чтобы не терять времени, такую информацию отправить нам сразу. В конце
+концов, вам будет даже легче использовать данные, соответствующие
+реальной ситуации, и это во всех отношениях лучше для нас. Те же, кто
+не хотел бы показывать свои данные другим пользователям, могут
+загрузить файл по <code>ftp</code> на
+<!--<a HREF="ftp://support.mysql.com/pub/mysql/secret/">-->ftp://support.mysql.com/pub/mysql/secret/<!--</a>-->. Если данные действительно
+представляют собой секретную информацию, которую нельзя показывать
+даже нам, тогда можно привести пример, используя другие имена, но этот
+вариант следует оставить на крайний случай.
+
+<LI>
+
+Включите в отчет все параметры, указанные для важных программ, если
+это возможно. Например, приведите параметры, которые вы используете
+как для запуска сервера <code>mysqld</code>, так и для запуска клиентских программ
+MySQL. Параметры таких программ как <code>mysqld</code> и <code>mysql</code>, а также сценарий
+<code>configure</code> часто содержат ответы на многие вопросы и очень важны!
+Включить их в отчет не помешает в любом случае! Если используются
+какие-либо модули, такие как Perl или PHP, также укажите их версии.
+
+<LI>
+
+Если ваш вопрос относится к системе привилегий, укажите выходные
+данные команды <code>mysqlaccess</code>, выходные данные команды <code>mysqladmin reloa</code>d
+и все сообщения об ошибках, которые выдаются при попытке соединения!
+Во время проверки своих привилегий сначала необходимо выполнить
+команду <code>mysqlaccess</code>. После этого запустите <code>mysqladmin reload version</code> и
+попытайтесь соединиться с программой, которая вызывала проблемы.
+Программу <code>mysqlaccess</code> можно найти в каталоге <tt>`bin'</tt> установочного
+каталога MySQL.
+
+<LI>
+
+Если у вас есть патч, который исправляет ошибку, - это хорошо. Но не
+думайте, что одного лишь патча для нас будет достаточно, или что мы
+будем ее использовать, если вы не предоставите необходимую информацию,
+такую как описание ошибки, которую исправляет ваш патч. Ведь мы можем
+найти проблемы в самом патче или попросту в нем не разобраться, что не
+даст нам возможности его применять. Если нам не удастся проверить, для
+чего именно служит этот патч, мы не станем его использовать. В таких
+случаях нам помогут контрольные примеры. Продемонстрируйте, что патч
+исправляет все проблемы, которые могут возникнуть в связи с этой
+ошибкой. Если мы найдем хотя бы один вариант, в котором патч не
+работает, то он может оказаться бесполезным.
+
+<LI>
+
+Попытки угадать, что представляет собой ошибка, почему она возникает
+или от чего зависит, обычно не дают положительного результата. Даже
+члены команды MySQL не могут определить реальную причину ошибки без
+программы отладки.
+
+<LI>
+
+Укажите в своем почтовом сообщении, что вы просмотрели справочное
+руководство и почтовый архив - тогда будет видно, как вы пытались
+решить эту проблему самостоятельно.
+
+<LI>
+
+Если возникла синтаксическая ошибка, внимательно просмотрите свою
+программу! Если не удается найти никаких ошибок, может оказаться, что
+ваша версия MySQL не поддерживает используемый запрос. Если
+используется текущая версия в руководстве на <a HREF="https://www.linuxlib.ru/doc/">http://www.mysql.com/doc/</a>
+не описан синтаксис, который вы используете, MySQL не
+поддерживает ваш запрос. В этом случае вы можете либо самостоятельно
+реализовать такой синтаксис, либо направить сообщение по адресу
+<a HREF="../cdn-cgi/l/email-protection.html#335f5a50565d405a5d54735e4a40425f1d505c5e"><span class="__cf_email__" data-cfemail="deb2b7bdbbb0adb7b0b99eb3a7adafb2f0bdb1b3">[email&#160;protected]</span></a> и попросить либо предложить реализовать его! Если
+в руководстве описан используемый синтаксис, но у вас установлена
+более старая версия MySQL, необходимо проверить журнал
+изменений MySQL, чтобы узнать, когда был реализован данный синтаксис.
+В этом случае вы можете произвести обновление до более новой версии
+MySQL. See section <A HREF="News.html">D  История изменений и обновлений MySQL</A>.
+
+<LI>
+
+Если в результате ошибки ваши данные оказываются поврежденными, или
+возникают ошибки при обращении к какой-либо определенной таблице,
+сначала необходимо проверить, а потом попытаться восстановить таблицы
+при помощи команды <code>myisamchk</code> или <code>CHECK TABLE</code> и <code>REPAIR TABLE</code>.
+See section <A HREF="MySQL_Database_Administration.html">4  Администрирование баз данных</A>.
+
+<LI>
+
+Если повреждения ваших таблиц случаются часто, необходимо выяснить,
+когда и почему это происходит. В этом случае файл
+<tt>`mysql-data-directory/`hostname`.err'</tt> может содержать некоторую
+информацию о происходящем. See section <A HREF="https://www.linuxlib.ru/mysqloff/Error_log.html">4.9.1  Журнал ошибок</A>. Включите в отчет
+об ошибке всю важную информацию из этого файла. Обычно <code>mysqld</code>  никогда
+не должна повреждать данные в таблицах, если не произошло никакого
+сбоя во время обновления! Если вам удалось найти причину ошибки в
+<code>mysqld</code>, нам будет гораздо проще оказать вам помощь в решении этой
+проблемы. See section <A HREF="https://www.linuxlib.ru/mysqloff/What_is_crashing.html">A.1  Как определить, чем вызваны проблемы</A>.
+
+<LI>
+
+Если это возможно, загрузите и установите последнюю версию MySQL
+Server и проверьте, не решена ли в ней ваша проблема. Все версии
+программного обеспечения MySQL проходят тщательное тестирование и
+должны работать без проблем. Мы делаем все возможное, чтобы сохранить
+обратную совместимость, поэтому при переходе с одной версии MySQL на
+другую никаких проблем не должно возникать. See section <A HREF="Which_version.html">2.2.6  Какую версию MySQL использовать</A>.
+</ul>
+
+<P>
+<A NAME="IDX103"></A>
+<A NAME="IDX104"></A>
+<A NAME="IDX105"></A>
+
+</P>
+<P>
+Если вы пользователь, пользующийся официальной поддержкой, направьте отчет
+об ошибке на <a HREF="../cdn-cgi/l/email-protection.html#ddb0a4aeacb1f0aea8adadb2afa99db0a4aeacb1f3beb2b0"><span class="__cf_email__" data-cfemail="026f7b71736e2f717772726d7076426f7b71736e2c616d6f">[email&#160;protected]</span></a>, чтобы его рассмотрели в первую
+очередь, а также в соответствующий список рассылки, чтобы узнать,
+сталкивался ли кто-нибудь еще с этой проблемой (и, возможно, нашел
+решение).
+
+</P>
+<P>
+Чтобы получить информацию по отчетам об ошибках в <code>MyODBC</code>, See section <A HREF="https://www.linuxlib.ru/mysqloff/ODBC_Problems.html">8.3.4  Как сообщать о проблемах с MyODBC</A>.
+
+</P>
+<P>
+Решения для наиболее часто встречающихся проблем можно найти в разделе
+section <A HREF="Problems.html">A  Проблемы и распространенные ошибки</A>.
+
+</P>
+<P>
+Если ответы направляются к вам индивидуально, не попадая в список
+рассылки, хорошим тоном считается составить отчет по полученным ответам и
+отправить его в список рассылки, чтобы другие пользователи смогли получить
+информацию, которая помогла решить вашу проблему!
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1090" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Lester Potter on Saturday September 14 2002, @7:13am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1090&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1090">Edit</a>]</td></tr></table><p class="commenttext">Second paragraph - the 'mysqlbug' script is not in <br />
+the bin directory for an NT binary distribution <br />
+(3.23.52), but you can find the 'mysqlbug.txt' file in <br />
+the 'mysql' base directory and use it as a template.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Bug_reports">Add your own comment.</a></p><div id="docnav"><a href="Bug_reports.html#">Top</a> / <a rel="prev" href="Asking_questions.html" title="1.8.1.2  Как задавать вопросы и направлять сообщения об ошибках">Previous</a> / <a rel="next" href="Answering_questions.html" title="1.8.1.4  Рекомендации по ответам на вопросы, направляемые в список рассылки">Next</a> / <a rel="up" href="Questions.html" title="1.8.1  Списки рассылки MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

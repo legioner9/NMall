@@ -1,0 +1,892 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 17 Серверное программное обеспечение (Сервис баз данных) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch17_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#17">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 17 Серверное программное обеспечение (Сервис баз данных) -
+      PostgreSQL сервер</H2><FONT size=+2>В этой главе</FONT><BR><FONT
+      size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#1">-->OpenLDAP
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#3">-->Организация
+      защиты OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#4">-->Утилиты
+      создания и поддержки OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#5">-->Утилиты
+      пользователя OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#6">-->Netscape
+      Address Book клиент для LDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#7">-->Linux сервер
+      баз данных PostgreSQL<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#8">-->Создание и
+      инсталляция базы данных из-под пользователя Postgres<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#9">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#10">-->Команды<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=205
+      src="ch17_2.files/30.jpg" width=200></TD></TR></TBODY></TABLE>
+<H3><A name=7>Linux сервер баз данных PostgreSQL.</A></H3><B>Краткий обзор.</B>
+<P align=justify>Однажды занявшись обслуживанием и поддержкой сервисов для
+пользователей, вы неизбежно столкнетесь с тем, что вам нужно хранить информацию
+о них в архиве так, чтобы она была доступна и легко модифицировалась в любое
+время. Эти задачи могут быть решение использованием баз данных. Много разных баз
+данных доступно под Linux; выбрать какую-нибудь одну очень трудно, так как она
+должна поддерживать несколько языков программирования, стандарты и широкий
+спектр возможностей. PostgreSQL, оригинально разработанная в UC Berkeley
+Computer Science Department, является пионером многих объектно- реляционных
+концепций сейчас доступных в коммерческих базах данных. Она предоставляет
+поддержку языков SQL92/SQL3, целостность транзакций и расширяемость типов.</P>
+<P align=justify>Как написано на веб сервере PostgreSQL:</P>
+<P align=justify>PostgreSQL &#8211; это изощренная объектно-реляционная система
+управления базами данных DBMS, поддерживающая практически все SQL конструкции,
+включая вложенный select, транзакции, и определяемые пользователем типы и
+функции. Это наиболее продвинутая база данных, доступная в исходных кодах в
+настоящее время.</P><IMG alt="" border=0 height=253 src="ch17_2.files/33.jpg"
+width=455><BR>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>PostgreSQL версии
+6.5.3<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница PostgreSQL: <!--<A
+href="http://www.postgresql.org/"
+target=_blank>-->http://www.postgresql.org/<!--</A>--><BR>FTP сервер PostgreSQL: <!--<A
+href="ftp://216.126.84.28/" target=_blank>-->216.126.84.28<!--</A>--><BR>Вы должны
+скачать: postgresql-6.5.3.tar.gz<BR></P>
+<H3>Предварительные требования.</H3>
+<P align=justify>Перед компиляцией PostgreSQL вам необходимо убедиться, что на
+вашей системе установлен пакет egcs-c++-version.i386.rpm. Этот пакет
+располагается на вашем Red Hat Linux CD-ROM в каталоге &#8220;RedHat/RPMS&#8221;. После
+компиляции и инсталляции PostgreSQL вы можете удалить его из вашей
+системы.<BR>Проверьте, что egcs-c++-version.i386.rpm уже инсталлирован,
+используя команду:</P><FONT color=#008080 size=-1>[root@deep /]# rpm -q
+egcs-c++</FONT>
+<P align=justify>Для инсталляции egcs-c++-version.i386.rpm выполните следующие
+команды:</P><FONT color=#008080><PRE>[root@deep /]# mount /dev/cdrom /mnt/cdrom
+[root@deep /]# cd /mnt/cdrom/RedHat/RPMS
+[root@deep RPMS]# rpm -Uvh egcs-c++-version.i386.rpm
+egcs-c++                ##################################################
+</PRE></FONT>
+<P align=justify>Тарболы. Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции PostgreSQL и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+PostgreSQL1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+PostgreSQL2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff PostgreSQL1 PostgreSQL2 &gt;
+PostgreSQL-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp postgresql-version.tar.gz /var/tmp<BR>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# tar xzpf postgresql-version.tar.gz<BR></FONT>
+<H3>Компиляция и оптимизация.</H3><B>Шаг 1</B>
+<P align=justify>Первое, для уменьшения риска безопасности, мы создадим
+непривилегированный бюджет пользователя &#8220;postgres&#8221;, который должен владеть
+файлами Postgres. Для этого используйте следующую команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# useradd -M -o -r -d /var/lib/pgsql -s
+/bin/bash -c "PostgreSQL Server" -u 40 postgres &gt;/dev/null 2&gt;&amp;1 ||
+:</FONT> <BR><BR><B>Шаг 2</B>
+<P align=justify>Перейдите в новый PosgreSQL каталог, а затем в подкаталог
+&#8220;src&#8221;. Введите следующие команды на вашем терминале:</P><FONT color=#008080
+size=-1>[root@deep /]# cd /var/tmp/postgresql-6.5.3<BR>[root@deep
+postgresql-6.5.3]# cd src<BR>CC="egcs" \<BR>./configure \<BR>--prefix=/usr
+\<BR>--enable-locale<BR></FONT>
+<P align=justify>Редактируйте файл Makefile.global (vi +210 Makefile.global) и
+измените следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>CFLAGS= -I$(SRCDIR)/include
+-I$(SRCDIR)/backend</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>CFLAGS= -I$(SRCDIR)/include -I$(SRCDIR)/backend -O9 -funroll-loops
+-ffast-math -malign-double -mcpu=pentiumpro -march=pentiumpro
+-fomit-frame-pointer -fno-exceptions</FONT><BR></P>
+<P align=justify>Это оптимизационные флаги для сервера PostgreSQL. Конечно, вы
+должны приспособить их под вашу систему и процессор.</P><B>Шаг 3</B>
+<P align=justify>Сейчас, мы должны скомпилировать и инсталлировать PosgreSQL на
+сервере:</P><FONT color=#008080 size=-1>[root@deep src]# make all<BR>[root@deep
+src]# cd ..<BR>[root@deep postgresql-6.5.3]# make -C src install<BR>[root@deep
+postgresql-6.5.3]# make -C src/man install<BR>[root@deep postgresql-6.5.3]#
+mkdir -p /usr/include/pgsql<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/access /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/commands /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/executor /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/lib /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/libpq /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/libpq++ /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/port /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/utils /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/fmgr.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/os.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/config.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/c.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/postgres.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/postgres_ext.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/libpq-fe.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/libpq-int.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/ecpgerrno.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/ecpglib.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/ecpgtype.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mv /usr/include/sqlca.h /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]# mv
+/usr/include/libpq++.H /usr/include/pgsql/<BR>[root@deep postgresql-6.5.3]#
+mkdir -p /usr/lib/pgsql<BR>[root@deep postgresql-6.5.3]# mv /usr/lib/*source
+/usr/lib/pgsql/<BR>[root@deep postgresql-6.5.3]# mv /usr/lib/*sample
+/usr/lib/pgsql/<BR>[root@deep postgresql-6.5.3]# mkdir -p
+/var/lib/pgsql<BR>[root@deep postgresql-6.5.3]# chown -R postgres.postgres
+/var/lib/pgsql/<BR>[root@deep postgresql-6.5.3]# chmod 755
+/usr/lib/libpq.so.2.0<BR>[root@deep postgresql-6.5.3]# chmod 755
+/usr/lib/libecpg.so.3.0.0<BR>[root@deep postgresql-6.5.3]# chmod 755
+/usr/lib/libpq++.so.3.0<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/postgres<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/postmaster<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/ecpg<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/pg_id<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/pg_version<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/pg_dump<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/pg_passwd<BR>[root@deep postgresql-6.5.3]# strip
+/usr/bin/psql<BR>[root@deep postgresql-6.5.3]# rm -f
+/usr/lib/global1.description<BR>[root@deep postgresql-6.5.3]# rm -f
+/usr/lib/local1_template1.description<BR></FONT>
+<P align=justify>Команда &#8220;make&#8221; компилирует все исходные файлы в исполняемые
+двоичные файлы и команды &#8220;make install&#8221; инсталлирует исполняемые и все
+сопутствующие файлы в необходимое место. &#8220;mkdir&#8221; создаст новый каталог &#8220;pgsql&#8221; в
+каталогах &#8220;/usr/include&#8221; и &#8220;/usr/lib&#8221;, и затем мы переместим все подкаталоги и
+файлы, связанные с PostgreSQL из каталогов &#8220;/usr/include&#8221; и &#8220;/usr/lib&#8221; в
+&#8220;/usr/include/pgsql&#8221; и &#8220;/usr/lib/pgsql&#8221; соответственно. Команда "chown"
+установит правильного владельца и группу для каталога &#8220;/var/lib/pgsql&#8221;. Команда
+&#8220;strip&#8221; удалит все символы из объектных файлов. Это приведет к уменьшению
+размеров соответствующих файлов, что улучшит производительность программ.
+Команда &#8220;rm&#8221; удалит файлы &#8220;global1.description&#8221; и
+&#8221;local1_template1.description&#8221;, которые не нужны программе PosgreSQL.</P>
+<H3><A name=8>Создание базы данных инсталлированной из под бюджета
+суперпользователя Postgres</A></H3>
+<P align=justify>После того, как вы проинсталлировали PostgreSQL на сервере,
+необходимо создать базу данных до запуска PostgreSQL сервера.<BR>Для создания
+базы данных используйте следующую команду:</P><FONT color=#008080><PRE>[root@deep /]# su postgres
+[postgres@deep /]$ initdb --pglib=/usr/lib/pgsql --pgdata=/var/lib/pgsql
+
+We are initializing the database system with username postgres (uid=40).
+This user will own all the files and must also own the server process.
+
+Creating Postgres database system directory /var/lib/pgsql/base
+
+Creating template database in /var/lib/pgsql/base/template1
+
+Creating global classes in /var/lib/pgsql/base
+
+Adding template1 database to pg_database...
+
+Vacuuming template1
+Creating public pg_user view
+Creating view pg_rules
+Creating view pg_views
+Creating view pg_tables
+Creating view pg_indexes
+Loading pg_description
+
+[postgres@deep /]$ chmod 640 /var/lib/pgsql/pg_pwd
+[postgres@deep /]$ exit
+exit
+[root@deep /]#
+</PRE></FONT>
+<P align=justify>Опция &#8220;--pglib&#8221; будет задавать месторасположение библиотек
+PostgreSQL, а &#8220;-- pgdata&#8221; определит место, где будут располагаться ваши базы
+данных.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Не создавайте базы данных из под пользователя
+&#8220;root&#8221;! Это создаст большую дыру в безопасности.</P>
+<H3>Очистка после работы</H3><FONT color=#008080 size=-1>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# rm -rf postgresql-version/
+postgresql-version.tar.gz<BR></FONT>
+<P align=justify>Удаление пакета egcs-c++-version.i386.rpm для экономии
+дискового пространства.</P><FONT color=#008080 size=-1>[root@deep /]# rpm -e
+egcs-c++</FONT>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции PostgreSQL. Также будет
+удален сжатый архив PostgreSQL из каталога &#8220;/var/tmp&#8221;.</P>
+<P align=justify>Команда &#8220;rpm -e&#8221; удалит пакет egcs-c++ при помощи которого мы
+компилировали сервер PosgreSQL. Заметим, что пакет egcs-c++ требуется только для
+компиляции программ подобных PostgreSQL и может быть спокойно удален после
+окончания этой процедуры.</P>
+<H3><A name=9>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файлы связанные с PostgreSQL из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса:<BR><!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска PostgreSQL сервера следующие файлы должны быть
+созданы или скопированы в нужный каталог:</P>Копируйте файл postgresql в каталог
+&#8220;/etc/rc.d/init.d/&#8221;.<BR>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Конфигурация скрипта &#8220;/etc/rc.d/init.d/postgresql&#8221;</H3>
+<P align=justify>Настроим скрипт &#8220;/etc/rc.d/init.d/postgresql&#8221;, который будет
+отвечать за запуск и остановку PostgreSQL сервера.<BR>Создадим скрипт postgresql
+(touch /etc/rc.d/init.d/postgresql) и добавьте в него следующие строки:</P><PRE>#! /bin/sh
+# postgresql Это инициализационный скрипт для запуска PostgreSQL сервера
+#
+# chkconfig: 345 85 15
+# описание: запуск и остановка демона PostgreSQL, отвечающего за  обработку
+# всех запросов к базе данных.
+# имя процесса: postmaster
+# pid файл: /var/run/postmaster.pid
+#
+# библиотека исходных функций.
+. /etc/rc.d/init.d/functions
+# Get config.
+. /etc/sysconfig/network
+# Поверка работает ли сеть.
+# это нужно для postmaster.
+[ ${NETWORKING} = "no" ] &amp;&amp; exit 0
+[ -f /usr/bin/postmaster ] || exit 0
+# Этот скрипт немного необычен тем, что имя демона (postmaster)
+# не совпадает с именем подсистемы (postgresql)
+# Смотрите, как мы осуществляем вызов.
+case "$1" in
+  start)
+    echo -n "Checking postgresql installation: "
+    # Проверка структуры PGDATA
+    if [ -f /var/lib/pgsql/PG_VERSION ] &amp;&amp; [ -d /var/lib/pgsql/base/template1 ]
+    then
+      # Проверка версии существующие PGDATA
+      if [ `cat /var/lib/pgsql/PG_VERSION` != '6.5' ]
+      then
+         echo "old version. Need to Upgrade."
+         echo "See /usr/doc/postgresql-6.5.2/README.rpm for more information."
+         exit 1
+      else
+         echo "looks good!"
+      fi
+      # PGDATAне существуе! Нужно выполнить Initdb.
+    else
+      echo "no database files found."
+      if [ ! -d /var/lib/pgsql ]
+      then
+        mkdir -p /var/lib/pgsql
+        chown postgres.postgres /var/lib/pgsql
+      fi
+      su -l postgres -c '/usr/bin/initdb --pglib=/usr/lib/pgsql --pgdata=/var/lib/pgsql'
+    fi
+    # Проверка, запущен ли уже postmaster...
+    pid=`pidof postmaster`
+    if [ $pid ]
+    then
+      echo "Postmaster already running."
+    else
+      # все системы запущены &#8211; удаление старых блокирующих файлов
+      rm -f /tmp/.s.PGSQL.* &gt; /dev/null
+      echo -n "Starting postgresql service: "
+      su -l postgres -c '/usr/bin/postmaster -i -S -D/var/lib/pgsql'
+      sleep 1
+      pid=`pidof postmaster`
+      if [ $pid ]
+      then
+         echo -n "postmaster [$pid]"
+         touch /var/lock/subsys/postgresql
+         echo $pid &gt; /var/run/postmaster.pid
+         echo
+      else
+         echo "failed."
+      fi
+    fi
+  ;;
+  stop)
+     echo -n "Stopping postgresql service: "
+     killproc postmaster
+     sleep 2
+     rm -f /var/run/postmaster.pid
+     rm -f /var/lock/subsys/postgresql
+     echo
+  ;;
+  status)
+     status postmaster
+  ;;
+  restart)
+     $0 stop
+     $0 start
+  ;;
+  *)
+     echo "Usage: postgresql {start|stop|status|restart}"
+     exit 1
+esac
+exit 0
+</PRE>
+<P align=justify>Сейчас, мы должны сделать этот скрипт исполняемым и изменить
+права доступа к нему:</P><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/postgresql</FONT>
+<P align=justify>Создайте символическую rc.d ссылку для PostgreSQL следующей
+командой:</P><FONT color=#008080 size=-1>[root@deep /]# chkconfig --add
+postgresql</FONT>
+<P align=justify>Запустите ваш новый PostgreSQL сервер вручную следующей
+командой:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/postgresql start
+Checking postgresql installation: looks good!
+Starting postgresql service:          postmaster [22401]</PRE></FONT>
+<H3><A name=10>Команды</A></H3>
+<P align=justify>Команды описанные ниже мы будем часто использовать, но на самом
+деле их много больше, и вы должны изучить страницы руководства (man) и
+документацию, чтобы получить более подробную информацию.</P>
+<P align=justify>Для определения нового пользователя в вашей базе данных
+используйте утилиту:</P><FONT color=#008080 size=-1>[root@deep /]# su
+postgres<BR>[postgres@deep /]$ createuser<BR>Enter name of user to add ---&gt;
+admin<BR>Enter user's postgres ID or RETURN to use unix user ID: 500 -&gt;<BR>Is
+user "admin" allowed to create databases (y/n) y<BR>Is user "admin" a superuser?
+(y/n) y<BR>createuser: admin was successfully added<BR></FONT>
+<P align=justify>Для удаления пользователя из базы данных используйте утилиту
+destroyuser:</P><FONT color=#008080 size=-1>[root@deep /]# su
+postgres<BR>[postgres@deep /]$ destroyuser<BR>Enter name of user to delete
+---&gt; admin<BR>destroyuser: delete of user admin was successful.<BR></FONT>
+<P align=justify>Для создания новой базы данных запустите утилиту
+createdb:</P><FONT color=#008080 size=-1>[root@deep /]# su postgres
+[postgres@deep /]$ createdb dbname</FONT> (dbname - это имя создаваемой базы
+данных).
+<P align=justify>Или из терминальной программы Postgres (psql)</P><FONT
+color=#008080 size=-1>[root@deep /]# su admin<BR>[admin@deep /]$ psql
+template1<BR>Welcome to the POSTGRESQL interactive sql monitor:<BR>Please read
+the file COPYRIGHT for copyright terms of POSTGRESQL<BR>[PostgreSQL 6.5.3 on
+i686-pc-linux-gnu, compiled by egcs ]<BR>type \? for help on slash
+commands<BR>type \q to quit<BR>type \g or terminate with semicolon to execute
+query<BR>You are currently connected to the database: template1<BR><BR>template1
+_ &gt; create database foo;<BR>CREATEDB<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Клиентское соединение должно быть разрешено с
+этого IP адреса и/или имени пользователя в файле &#8220;pg_hba.conf&#8221;, расположенного в
+PG_DATA.</P>
+<P align=justify>Другие полезные команды, выполняемые в терминальной программе
+Postgres (psql):</P>
+<P align=justify>Соединение с новой базой данных:</P><FONT color=#008080
+size=-1>template1 _ &gt; \c foo<BR>connecting to new database: foo<BR>foo _
+&gt;<BR></FONT>
+<P align=justify>Создание таблицы:</P><FONT color=#008080 size=-1>foo _ &gt;
+create table bar (i int4, c char(16)); CREATE foo _ &gt;</FONT>
+<P align=justify>Для проверки новой таблицы используйте команду:</P><PRE>foo _ &gt; \d bar
+Table = bar
++----------------------------------+----------------------------------+------------+
+|      Field                       |                 Type             |   Length   |
++----------------------------------+----------------------------------+------------+
+|           I                      |              int4                |      4     |
+|           c                      |              char()              |      16    |
++----------------------------------+----------------------------------+------------+
+foo _ &gt;</PRE>
+<P align=justify>Для уничтожения таблицы, индекса, представления (view)
+используйте команду:</P><FONT color=#008080 size=-1>foo _ &gt; drop table
+table_name;<BR>foo _ &gt; drop index index_name;<BR>foo _ &gt; drop view
+view_name;<BR></FONT>Для вставки данных в: (таблица уже должна быть создана)
+<FONT color=#008080 size=-1>foo _ &gt; insert into table_name (name_of_attr1,
+name_of_attr2, name_of_attr3)<BR>foo _ &gt; values (value1, value2,
+value3);<BR></FONT>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/rc.d/init.d/postgresql
+&gt; /etc/rc.d/rc0.d/K15postgresql
+&gt; /etc/rc.d/rc1.d/K15postgresql
+&gt; /etc/rc.d/rc2.d/K15postgresql
+&gt; /etc/rc.d/rc3.d/S85postgresql
+&gt; /etc/rc.d/rc4.d/S85postgresql
+&gt; /etc/rc.d/rc5.d/S85postgresql
+&gt; /etc/rc.d/rc6.d/K15postgresql
+&gt; /usr/bin/postgres
+&gt; /usr/bin/postmaster
+&gt; /usr/bin/ecpg
+&gt; /usr/bin/pg_id
+&gt; /usr/bin/pg_version
+&gt; /usr/bin/psql
+&gt; /usr/man/manl/begin.l
+&gt; /usr/man/manl/close.l
+&gt; /usr/man/manl/cluster.l
+&gt; /usr/man/manl/commit.l
+&gt; /usr/man/manl/copy.l
+&gt; /usr/man/manl/create_aggregate.l
+&gt; /usr/man/manl/create_database.l
+&gt; /usr/man/manl/create_function.l
+&gt; /usr/man/manl/create_index.l
+&gt; /usr/man/manl/create_language.l
+&gt; /usr/man/manl/create_operator.l
+&gt; /usr/man/manl/create_rule.l
+&gt; /usr/man/manl/create_sequence.l
+&gt; /usr/man/manl/create_table.l
+&gt; /usr/bin/pg_dump
+&gt; /usr/bin/pg_dumpall
+&gt; /usr/bin/pg_upgrade
+&gt; /usr/bin/pg_passwd
+&gt; /usr/bin/cleardbdir
+&gt; /usr/bin/createdb
+&gt; /usr/bin/createlang
+&gt; /usr/bin/createuser
+&gt; /usr/bin/destroydb
+&gt; /usr/bin/destroylang
+&gt; /usr/bin/destroyuser
+&gt; /usr/bin/initdb
+&gt; /usr/bin/vacuumdb
+&gt; /usr/bin/initlocation
+&gt; /usr/bin/ipcclean
+&gt; /usr/include/lib
+&gt; /usr/include/lib/dllist.h
+&gt; /usr/include/pgsql
+&gt; /usr/include/pgsql/access
+&gt; /usr/include/pgsql/access/attnum.h
+&gt; /usr/include/pgsql/commands
+&gt; /usr/include/pgsql/commands/trigger.h
+&gt; /usr/include/pgsql/executor
+&gt; /usr/include/pgsql/executor/spi.h
+&gt; /usr/include/pgsql/libpq
+&gt; /usr/include/pgsql/libpq/pqcomm.h
+&gt; /usr/include/pgsql/libpq/libpq-fs.h
+&gt; /usr/include/pgsql/libpq++
+&gt; /usr/include/pgsql/libpq++/pgconnection.h
+&gt; /usr/include/pgsql/libpq++/pgdatabase.h
+&gt; /usr/include/pgsql/libpq++/pgtransdb.h
+&gt; /usr/include/pgsql/libpq++/pgcursordb.h
+&gt; /usr/include/pgsql/libpq++/pglobject.h
+&gt; /usr/include/pgsql/port
+&gt; /usr/include/pgsql/port/linux
+&gt; /usr/include/pgsql/utils
+&gt; /usr/include/pgsql/utils/geo_decls.h
+&gt; /usr/include/pgsql/utils/elog.h
+&gt; /usr/include/pgsql/utils/palloc.h
+&gt; /usr/include/pgsql/utils/mcxt.h
+&gt; /usr/include/pgsql/fmgr.h
+&gt; /usr/include/pgsql/os.h
+&gt; /usr/include/pgsql/config.h
+&gt; /usr/include/pgsql/c.h
+&gt; /usr/include/pgsql/postgres.h
+&gt; /usr/include/pgsql/postgres_ext.h
+&gt; /usr/include/pgsql/libpq-fe.h
+&gt; /usr/include/pgsql/libpq-int.h
+&gt; /usr/include/pgsql/ecpgerrno.h
+&gt; /usr/include/pgsql/ecpglib.h
+&gt; /usr/include/pgsql/ecpgtype.h
+&gt; /usr/include/pgsql/sqlca.h
+&gt; /usr/include/pgsql/libpq++.H
+&gt; /usr/lib/libpq.a
+&gt; /usr/lib/libpq.so.2.0
+&gt; /usr/lib/libpq.so.2
+&gt; /usr/lib/libpq.so
+&gt; /usr/lib/libecpg.a
+&gt; /usr/lib/libecpg.so.3.0.0
+&gt; /usr/lib/libecpg.so.3
+&gt; /usr/lib/libecpg.so
+&gt; /usr/lib/libpq++.a
+&gt; /usr/lib/libpq++.so.3.0
+&gt; /usr/lib/libpq++.so.3
+&gt; /usr/lib/libpq++.so
+&gt; /usr/lib/plpgsql.so
+&gt; /usr/lib/pgsql
+&gt; /usr/lib/pgsql/global1.bki.source
+&gt; /usr/lib/pgsql/local1_template1.bki.source
+&gt; /usr/lib/pgsql/pg_geqo.sample
+&gt; /usr/man/manl/create_trigger.l
+&gt; /usr/man/manl/create_type.l
+&gt; /usr/man/manl/create_user.l
+&gt; /usr/man/manl/create_version.l
+&gt; /usr/man/manl/create_view.l
+&gt; /usr/man/manl/declare.l
+&gt; /usr/man/manl/delete.l
+&gt; /usr/man/manl/drop.l
+&gt; /usr/man/manl/drop_aggregate.l
+&gt; /usr/man/manl/drop_database.l
+&gt; /usr/man/manl/drop_function.l
+&gt; /usr/man/manl/drop_index.l
+&gt; /usr/man/manl/drop_language.l
+&gt; /usr/man/manl/drop_operator.l
+&gt; /usr/man/manl/drop_rule.l
+&gt; /usr/man/manl/drop_sequence.l
+&gt; /usr/man/manl/drop_table.l
+&gt; /usr/man/manl/drop_trigger.l
+&gt; /usr/man/manl/drop_type.l
+&gt; /usr/man/manl/drop_user.l
+&gt; /usr/man/manl/drop_view.l
+&gt; /usr/man/manl/end.l
+&gt; /usr/man/manl/explain.l
+&gt; /usr/man/manl/fetch.l
+&gt; /usr/man/manl/grant.l
+&gt; /usr/man/manl/insert.l
+&gt; /usr/man/manl/listen.l
+&gt; /usr/man/manl/load.l
+&gt; /usr/man/manl/lock.l
+&gt; /usr/man/manl/move.l
+&gt; /usr/man/manl/notify.l
+&gt; /usr/man/manl/reset.l
+&gt; /usr/man/manl/revoke.l
+&gt; /usr/man/manl/rollback.l
+&gt; /usr/man/manl/select.l
+&gt; /usr/man/manl/set.l
+&gt; /usr/man/manl/show.l
+&gt; /usr/man/manl/sql.l
+&gt; /usr/man/manl/update.l
+&gt; /usr/man/manl/vacuum.l
+&gt; /var/lib/pgsql
+&gt; /var/lib/pgsql/base
+&gt; /var/lib/pgsql/base/template1
+&gt; /var/lib/pgsql/base/template1/pg_proc
+&gt; /var/lib/pgsql/base/template1/pg_type
+&gt; /var/lib/pgsql/base/template1/pg_attribute
+&gt; /var/lib/pgsql/base/template1/pg_class
+&gt; /var/lib/pgsql/base/template1/pg_inherits
+&gt; /var/lib/pgsql/base/template1/pg_index
+&gt; /var/lib/pgsql/base/template1/pg_statistic
+&gt; /var/lib/pgsql/base/template1/pg_operator
+&gt; /var/lib/pgsql/base/template1/pg_opclass
+&gt; /var/lib/pgsql/base/template1/pg_am
+&gt; /var/lib/pgsql/base/template1/pg_amop
+&gt; /var/lib/pgsql/base/template1/pg_amproc
+&gt; /var/lib/pgsql/base/template1/pg_language
+&gt; /var/lib/pgsql/base/template1/pg_aggregate
+&gt; /var/lib/pgsql/base/template1/pg_ipl
+&gt; /var/lib/pgsql/base/template1/pg_inheritproc
+&gt; /var/lib/pgsql/base/template1/pg_rewrite
+&gt; /var/lib/pgsql/base/template1/pg_listener
+&gt; /var/lib/pgsql/base/template1/pg_description
+&gt; /var/lib/pgsql/base/template1/pg_attribute_relid_attnam_index
+&gt; /var/lib/pgsql/base/template1/pg_attribute_relid_attnum_index
+&gt; /var/lib/pgsql/base/template1/pg_attribute_attrelid_index
+&gt; /var/lib/pgsql/base/template1/pg_proc_oid_index
+&gt; /var/lib/pgsql/base/template1/pg_proc_proname_narg_type_index
+&gt; /var/lib/pgsql/base/template1/pg_proc_prosrc_index
+&gt; /var/lib/pgsql/base/template1/pg_type_oid_index
+&gt; /var/lib/pgsql/base/template1/pg_type_typname_index
+&gt; /usr/lib/pgsql/pg_hba.conf.sample
+&gt; /usr/man/man1/cleardbdir.1
+&gt; /usr/man/man1/createdb.1
+&gt; /usr/man/man1/createuser.1
+&gt; /usr/man/man1/destroydb.1
+&gt; /usr/man/man1/destroyuser.1
+&gt; /usr/man/man1/ecpg.1
+&gt; /usr/man/man1/initdb.1
+&gt; /usr/man/man1/initlocation.1
+&gt; /usr/man/man1/ipcclean.1
+&gt; /usr/man/man1/pg_dump.1
+&gt; /usr/man/man1/pg_dumpall.1
+&gt; /usr/man/man1/pg_passwd.1
+&gt; /usr/man/man1/pg_upgrade.1
+&gt; /usr/man/man1/postgres.1
+&gt; /usr/man/man1/postmaster.1
+&gt; /usr/man/man1/psql.1
+&gt; /usr/man/man3/catalogs.3
+&gt; /usr/man/man3/libpq.3
+&gt; /usr/man/man5/pg_hba.conf.5
+&gt; /usr/man/manl
+&gt; /usr/man/manl/abort.l
+&gt; /usr/man/manl/alter_table.l
+&gt; /usr/man/manl/alter_user.l
+&gt; /var/lib/pgsql/base/template1/pg_class_oid_index
+&gt; /var/lib/pgsql/base/template1/pg_class_relname_index
+&gt; /var/lib/pgsql/base/template1/pg_attrdef
+&gt; /var/lib/pgsql/base/template1/pg_attrdef_adrelid_index
+&gt; /var/lib/pgsql/base/template1/pg_relcheck
+&gt; /var/lib/pgsql/base/template1/pg_relcheck_rcrelid_index
+&gt; /var/lib/pgsql/base/template1/pg_trigger
+&gt; /var/lib/pgsql/base/template1/pg_trigger_tgrelid_index
+&gt; /var/lib/pgsql/base/template1/pg_description_objoid_index
+&gt; /var/lib/pgsql/base/template1/PG_VERSION
+&gt; /var/lib/pgsql/base/template1/pg_user
+&gt; /var/lib/pgsql/base/template1/pg_rules
+&gt; /var/lib/pgsql/base/template1/pg_views
+&gt; /var/lib/pgsql/base/template1/pg_tables
+&gt; /var/lib/pgsql/base/template1/pg_indexes
+&gt; /var/lib/pgsql/pg_variable
+&gt; /var/lib/pgsql/pg_database
+&gt; /var/lib/pgsql/pg_shadow
+&gt; /var/lib/pgsql/pg_group
+&gt; /var/lib/pgsql/pg_log
+&gt; /var/lib/pgsql/PG_VERSION
+&gt; /var/lib/pgsql/pg_hba.conf
+&gt; /var/lib/pgsql/pg_geqo.sample
+&gt; /var/lib/pgsql/pg_pwd</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch17_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#17">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

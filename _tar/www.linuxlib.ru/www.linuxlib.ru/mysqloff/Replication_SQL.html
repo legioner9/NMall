@@ -1,0 +1,553 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.10.6  SQL-команды, относящиеся к репликации — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Replication_SQL.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Replication_SQL.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="Replication.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.10 Репликация в MySQL
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/Replication_Intro.html">4.10.1 Введение
+</a></li><li><a href="Replication_Implementation.html">4.10.2 Как реализована репликация: обзор
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Replication_HOWTO.html">4.10.3 Как настроить репликацию
+</a></li><li><a href="Replication_Features.html">4.10.4 Возможности репликации и известные проблемы
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Replication_Options.html">4.10.5 Опции репликации в файле <tt>`my.cnf'</tt>
+</a></li><li class="self">4.10.6 SQL-команды, относящиеся к репликации
+</li><li><a href="Replication_FAQ.html">4.10.7 Часто задаваемые вопросы по репликации
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Replication_Problems.html">4.10.8 Поиск неисправностей репликации
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Replication_Options.html" title="4.10.5  Опции репликации в файле `my.cnf'">Previous</a> / <a rel="next" href="Replication_FAQ.html" title="4.10.7  Часто задаваемые вопросы по репликации">Next</a> / <a rel="up" href="Replication.html" title="4.10  Репликация в MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.10.6  SQL-команды, относящиеся к репликации</H3>
+
+<P>
+<A NAME="IDX807"></A>
+<A NAME="IDX808"></A>
+<A NAME="IDX809"></A>
+
+</P>
+<P>
+Управление репликацией производится командами SQL. Ниже приводится краткое
+описание команд:
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>Команда</strong> </TD><TD> <strong>Описание</strong>
+
+</TD></TR>
+<TR><TD><code>SLAVE START</code> </TD><TD> Запускает поток подчиненного сервера (подчиненный сервер)
+
+</TD></TR>
+<TR><TD><code>SLAVE STOP</code> </TD><TD> Завершает поток подчиненного сервера (подчиненный сервер)
+
+</TD></TR>
+<TR><TD><code>SET SQL_LOG_BIN=0</code> </TD><TD> Блокирует ведение записей в журналах
+обновлений, если пользователь имеет привилегию <code>SUPER</code>. В противном случае ничего
+не выполняет (головной сервер)
+
+</TD></TR>
+<TR><TD><code>SET SQL_LOG_BIN=1</code> </TD><TD> Отменяет блокировку ведения записей в
+журналах обновлений, если пользователь имеет привилегию <code>SUPER</code>. В противном
+случае ничего не выполняет (головной сервер)
+
+</TD></TR>
+<TR><TD><code>SET SQL_SLAVE_SKIP_COUNTER=n</code> </TD><TD> Пропускает последующие n событий
+на головном сервере. Опция допустима, если поток подчиненного сервера не
+запущен, в противном случае будет выдана ошибка. Полезна для восстановления
+после сбоев репликации.
+
+</TD></TR>
+<TR><TD><code>RESET MASTER</code> </TD><TD> Удаляет все двоичные журналы, перечисленные в
+индексном файле, и делает индексный файл двоичных журналов пустым. Для версий
+ниже 3.23.26 используйте команду <code>FLUSH SLAVE</code> (головной сервер)
+
+</TD></TR>
+<TR><TD><code>RESET SLAVE</code> </TD><TD> Заставляет подчиненный сервер "забыть" свою
+точку положения репликации в журналах головного сервера. Для версий ниже
+3.23.26 эта команда называется <code>FLUSH SLAVE</code> (подчиненный сервер)
+
+</TD></TR>
+<TR><TD><code>LOAD TABLE tblname FROM MASTER</code> </TD><TD> Загружает копию таблицы из
+головного на подчиненный сервер. Используется главным образом для отладки
+команды <code>LOAD DATA FROM MASTER</code>, но некоторые "пользователи-гурманы" могут найти
+ей и другие применения. Если вы относите себя к числу обычных, не отягощенных
+хакерскими амбициями пользователей, данную опцию применять не стоит
+(подчиненный сервер).
+
+</TD></TR>
+<TR><TD><code>LOAD DATA FROM MASTER</code> </TD><TD> Присутствует в версиях выше 4.0.0.
+Создает образ головного сервера и копирует его на подчиненный сервер. Обновляет
+значения <code>MASTER_LOG_FILE</code> и <code>MASTER_LOG_POS</code> таким образом, чтобы подчиненный
+сервер начинал репликацию из конкретной позиции. Будет обрабатывать ограничения
+таблиц и баз данных, указанные в опциях <code>replicate-*</code>. При этом, пока происходит
+создание образа, могут использоваться лишь таблицы <code>MyISAM</code> и требуется
+глобальная блокировка чтения на головном сервере. В будущем планируется
+обеспечить работу этой команды с таблицами <code>InnoDB</code> и устранить необходимость
+глобальной блокировки чтения при помощи  интерактивного резервного копирования,
+не требующего блокировки.
+
+</TD></TR>
+<TR><TD><code>CHANGE MASTER TO master_def_list</code> </TD><TD>
+
+Заменяет параметры головного сервера значениями, заданными в списке
+<code>master_def_list</code>, и перезапускает поток подчиненного сервера. <code>master_def_list</code> -
+это список с разделителем-запятой, содержащий значения <code>master_def</code>, где
+<code>master_def</code> - одно из следующих значений: <code>MASTER_HOST, MASTER_USER,
+MASTER_PASSWORD, MASTER_PORT, MASTER_CONNECT_RETRY, MASTER_LOG_FILE,
+MASTER_LOG_POS</code>. Например:
+
+
+<pre>
+CHANGE MASTER TO
+   MASTER_HOST='master2.mycompany.com',
+   MASTER_USER='replication',
+   MASTER_PASSWORD='bigs3cret',
+   MASTER_PORT=3306,
+   MASTER_LOG_FILE='master2-bin.001',
+   MASTER_LOG_POS=4;
+</pre>
+
+Следует указывать только те значения, которые подлежат изменению. Не указанные
+значения останутся неизменными, за исключением тех случаев, когда изменяется
+хост или порт. В этом случае подчиненный сервер считает, что поскольку
+изменяется хост или порт, головной сервер становится другим. Следовательно,
+старые значения и точки положения в журнале будут автоматически заменены на
+значение пустой строки и <code>0</code> соответственно (начальные значения). Обратите
+внимание: если подчиненный сервер перезапускается, он сохраняет "память" о
+своем последнем головном сервере. Если это нежелательно, можно перед
+перезапуском удалить файл <tt>`master.info'</tt> - тогда подчиненный сервер будет
+считывать информацию о своем головном сервере из файла <tt>`my.cnf'</tt> или из командной
+строки. Эта команда используется для настройки подчиненного сервера при наличии
+образа головного сервера, а также записей из журнала и сдвига головного
+сервера, которые соответствуют образу. Можно выполнить команду
+
+
+<pre>
+CHANGE MASTER TO
+   MASTER_LOG_FILE='log_name_on_master',
+   MASTER_LOG_POS=log_offset_on_master
+</pre>
+
+на подчиненном сервере после восстановления образа (подчиненный сервер)
+
+</TD></TR>
+<TR><TD><code>SHOW MASTER STATUS</code> </TD><TD> Выводит информацию о состоянии головного
+сервера, исходя из информации в двоичных журналах (головной сервер)
+
+</TD></TR>
+<TR><TD><code>SHOW SLAVE HOSTS</code> </TD><TD> Присутствует в версии 4.0.0 и выше. Выводит
+список подчиненных серверов, связанных в текущее время с головным сервером
+(подчиненный сервер)
+
+</TD></TR>
+<TR><TD><code>SHOW SLAVE STATUS</code> </TD><TD> Выводит информацию о состоянии существенных
+параметров потока подчиненного сервера (головной сервер)
+
+</TD></TR>
+<TR><TD><code>SHOW MASTER LOGS</code> </TD><TD> Присутствует только начиная с версии
+3.23.28.  Выводит список двоичных журналов головного сервера. Эту команду
+следует использовать перед вызовом команды <code>PURGE MASTER LOGS TO</code> для определения
+того, какие из журналов можно удалить  (головной сервер)
+
+</TD></TR>
+<TR><TD><code>SHOW BINLOG EVENTS [ IN 'logname' ] [ FROM pos ] [LIMIT [offset,] rows ]</code>
+@tab Показывает события в двоичном журнале обновлений. Преимущественно
+применяется для тестирования/отладки, но может также использоваться и для
+обычных клиентов, по какой-либо причине нуждающихся в чтении содержимого
+двоичных журналов (головной сервер).
+
+</TD></TR>
+<TR><TD><code>SHOW NEW MASTER FOR SLAVE
+WITH
+MASTER_LOG_FILE='logfile'
+AND MASTER_LOG_POS=pos AND
+MASTER_LOG_SEQ=log_seq AND
+MASTER_SERVER_ID=server_id</code> </TD><TD>
+Эта команда используется, когда подчиненному
+серверу, связанному с головным сервером,
+который, возможно, является "мертвым" или
+недоступным, нужно отключить репликации на
+другом подчиненном сервере, связанном с тем
+же головным сервером. Команда возвратит
+пересчитанные координаты репликации, и вывод
+этой команды может использоваться в
+последующей команде <code>CHANGE MASTER TO</code>. Обычным
+пользователям данная команда, как правило,
+никогда не понадобится: она главным образом
+служит для внутреннего использования в
+отказобезопасном репликационном коде. В
+будущем возможны изменения синтаксиса опции,
+если будет найден более интуитивно понятный
+способ описания этой операции.
+
+</TD></TR>
+<TR><TD><code>PURGE MASTER LOGS TO 'logname'</code> </TD><TD>
+Присутствует начиная с версии 3.23.28.
+Удаляет все журналы репликации, которые
+перечислены в индексном файле журналов до
+передаваемого журнала, и удаляет их из
+индексного файла журналов. Таким образом
+передаваемый журнал становится первым в
+индексном файле журналов. Пример:
+
+
+<pre>
+PURGE MASTER LOGS TO 'mysql-bin.010'
+</pre>
+
+Эта команда не выполнит никаких действий и
+возвратит ошибку, если имеется активный
+подчиненный сервер, который в текущее время
+читает данные из одного из журналов, который
+должен быть удален. Однако если имеется
+бездействующий подчиненный сервер и
+происходит удаление одного из журналов,
+который он хочет прочитать, то после того,
+как подчиненный сервер "поднимется", он
+станет неспособным к репликации. Команда
+может быть безопасно выполнена на подчиненных
+серверах во время процесса репликации - не
+нужно останавливать процесс. Сначала
+необходимо проверить все подчиненные серверы
+при помощи команды <code>SHOW SLAVE STATUS</code>, чтобы
+увидеть, какой журнал используется, затем
+вывести список журналов головного сервера при
+помощи команды <code>SHOW MASTER LOGS</code>, найти самый
+ранний журнал среди всех подчиненных серверов
+(если все подчиненные серверы получили
+последние обновления, это будет последний
+журнал в списке), сделать резервные копии
+всех журналов, которые должны быть удалены
+(необязательно), и очистить все до целевого
+журнала.
+</TD></TR>
+</TABLE>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c548" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#f793879cb793879cd9999283"><span class="__cf_email__" data-cfemail="bedaced5fedaced590d0dbca">[email&#160;protected]</span></a> on Tuesday July 23 2002, @10:03am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=548&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=548">Edit</a>]</td></tr></table><p class="commenttext">SQL_LOG_BIN = 0 doesn't work in 3.23.51 - binary<br />
+logs continue. Also, the docs on this page only<br />
+apply to 4.0.2. There is no SUPER privilege for<br />
+3.anything from what I can tell. The privilege for<br />
+3.23.x is supposedly PROCESS - but that doesn't<br />
+work either.</p><table id="c750" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#0861647169486b696c7a6d3d266b6765"><span class="__cf_email__" data-cfemail="20494c5941604341445245150e434f4d">[email&#160;protected]</span></a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=750&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=750">Edit</a>]</td></tr></table><p class="commenttext">MySQL ver 3.23.41:<br />
+command &quot;SET SQL_LOG_BIN=0&quot; and the subsequent<br />
+INSERT DELAYED ... result in the insert going <br />
+to the binary log.  Are there any work arounds?<br />
+</p><table id="c1337" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#f196909d9d9896909f98b19f9e9e82df9783">Herve Galligani</a> on Wednesday November 6 2002, @11:50am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1337&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1337">Edit</a>]</td></tr></table><p class="commenttext">SET GLOBAL SQL_SLAVE_SKIP_COUNTER=n doesn't <br />
+work but SET SQL_SLAVE_SKIP_COUNTER=n works</p><table id="c1886" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Massimo Ferrario on Wednesday February 26 2003, @8:14am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1886&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1886">Edit</a>]</td></tr></table><p class="commenttext">SHOW BINLOG EVENTS is not working in version 3.23.54-log<br />
+mysql&gt; SHOW BINLOG EVENTS;<br />
+ERROR 1064: You have an error in your SQL syntax near 'binlog events' at line 1<br />
+<br />
+Is it a 4.0 feature?</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Replication_SQL">Add your own comment.</a></p><div id="docnav"><a href="Replication_SQL.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Replication_Options.html" title="4.10.5  Опции репликации в файле `my.cnf'">Previous</a> / <a rel="next" href="Replication_FAQ.html" title="4.10.7  Часто задаваемые вопросы по репликации">Next</a> / <a rel="up" href="Replication.html" title="4.10  Репликация в MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

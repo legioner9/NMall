@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>H.323: Обзор архитектуры — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>H.323: Обзор архитектуры</h1>
+
+<P class=NormalFont style="FONT-WEIGHT: bold; TEXT-ALIGN: center">Автор: Руслан
+Попов</P>
+<DIV style="TEXT-ALIGN: justify">
+<DIV style="TEXT-ALIGN: right"><FONT style="FONT-FAMILY: arial cyr" size=2><FONT
+size=1>Переводил для себя :)</FONT></FONT><BR></DIV><FONT
+style="FONT-FAMILY: arial cyr" size=2><BR>Рекомендация H.323 описывает
+технические требования для услуг по передачи аудио и видео по сетям не
+гарантирующим качество сервиса. H.323 ссылается на спецификацию T.120 для
+передачи данных. В область рассмотрения H.323 не входят сами сети или
+транспортный уровень, который может быть использован для соединения множества
+сетей. H.323 рассматривает только Switched Circuit Network (SCN). На этом
+рисунке показана система H.323 с её компонентами.</FONT><BR></DIV><FONT
+style="FONT-FAMILY: arial cyr" size=2><BR></FONT>
+<DIV style="TEXT-ALIGN: center"><IMG
+src="h323.files/fig1_large.gif"><BR></DIV><FONT style="FONT-FAMILY: arial cyr"
+size=2><BR></FONT>
+<DIV style="TEXT-ALIGN: justify"><FONT style="FONT-FAMILY: arial cyr"
+size=2>H.323 определяет четыре основных компонента для сетевых систем
+коммуникаций:<BR></FONT>
+<UL>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2>Терминал.</FONT>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2>Шлюз (Gateway).</FONT>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2>Контроллёр зоны
+  (GateKeeper).</FONT>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2>Сервер управления
+  конференциями (MCU).</FONT> </LI></UL></DIV><FONT style="FONT-FAMILY: arial cyr"
+size=2><IMG src="h323.files/fig2_large.gif" align=right><FONT size=4>
+Терминалы</FONT><BR><BR></FONT>
+<DIV style="TEXT-ALIGN: justify"><FONT style="FONT-FAMILY: arial cyr"
+size=2>Терминалы являются клиентскими конечными устройствами в сетях, которые
+предоставляют двунаправленную связь в реальном времени. Рисунок описывает
+компоненты терминала. Все терминалы должны поддерживать передачу голоса и,
+опционально, передачу видео и данных. H.323 определяет режимы работы для
+взаимодействия различных типов терминалов. Он является основным стандартом для
+следующего поколения IP телефонов, терминалов аудиоконференций и технологий
+видоконференций.<BR><BR><SPAN style="FONT-FAMILY: arial cyr">Все H.323 терминалы
+должны поддерживать:<BR></SPAN></FONT>
+<OL style="FONT-FAMILY: arial cyr">
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2><SPAN
+  style="FONT-FAMILY: arial cyr">Протокол H.245 для согласования характеристик
+  канала и его использования.</SPAN></FONT>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2><SPAN
+  style="FONT-FAMILY: arial cyr"></SPAN></FONT><FONT size=2><SPAN
+  style="FONT-FAMILY: arial cyr">Протокол Q.931 для сигнализации и настройки
+  соединения.</SPAN></FONT>
+  <LI><FONT size=2><SPAN style="FONT-FAMILY: arial cyr"></SPAN></FONT><FONT
+  style="FONT-FAMILY: arial cyr" size=2><SPAN
+  style="FONT-FAMILY: arial cyr">Протокол RAS
+  (Registration/Admission/Status)</SPAN></FONT><FONT
+  style="FONT-FAMILY: arial cyr" size=2><SPAN style="FONT-FAMILY: arial cyr">
+  для взаимодействия с контроллёром зоны.</SPAN></FONT>
+  <LI><FONT style="FONT-FAMILY: arial cyr" size=2><SPAN
+  style="FONT-FAMILY: arial cyr">Протокол RTP/RTCP для "нарезки" аудио и видео
+  пакетов.</SPAN><BR></FONT></LI></OL><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr">Опциональными компонентами в H.323 терминалах
+являются видеокодеки, протоколы T.120 обмена данными и возможность работы с
+серверами управления конференциями.<BR><BR><FONT size=4>Шлюзы</FONT><BR><BR>Шлюз
+является необязательным элементом в H.323 соединении. Шлюзы предоставляют много
+услуг, в основном услугу преобразования между конечными устройствами H.323 и
+терминалами других типов. Эта функция включает в себя преобразование между
+форматами передачи (т.е., H.225 в H.221) и между процедурами соединения (т.е.,
+H.245 в H.242). Дополнительно к этому, шлюзы могут выполнять преобразования
+между аудио|видео кодеками, настройку и прекращение соединения на обоих концах
+линии (LAN или SCN). Рисунок даёт представление о шлюзе.</SPAN></FONT><BR>
+<DIV style="TEXT-ALIGN: center"><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr"></SPAN></FONT><IMG
+src="h323.files/fig3_large.gif"><BR><BR></DIV><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr">В общем случае, целью шлюза является отражение
+характеристик конечного LAN устройства на конечное SCN устройство и наоборот.
+Основное назначение шлюза:<BR></SPAN></FONT>
+<OL>
+  <LI><FONT size=2>Установление соединения с аналоговыми PSTN
+  терминалами.</FONT>
+  <LI><FONT size=2>Установление соединения с удаленными H.320-совместимыми
+  терминалами по ISDN.</FONT>
+  <LI><FONT size=2>Установление соединения с удаленными H.324-совместимыми
+  терминалами по PSTN.</FONT> </LI></OL><FONT size=2>Шлюзы не нужны, если
+отсутствует необходимость в соединенях с другими сетями, так как конечные
+устройства могут взаимодействовать напрямую в пределах одной сети. Терминалы
+взаимодействуют с шлюзом по протоколам H.245 и Q.931.<BR><BR>С применением
+соответствующих транскодеров, H.323 терминалы могут поддерживать H.310-, H.321-,
+H.322- и V.70-совместимые терминалы.<BR><BR>Множество функций шлюза "брошены" на
+разработчика. Например, действительное количество H.323 терминалов, которые
+могут работать через шлюз не являются предметом стандартизации. Аналогично,
+количество SCN соединений, количество поддерживаемых одновременных независимых
+соединений, функции преобразования аудио|видео|данных и реализация функций
+многоточечных соединений оставлено на разработчике шлюза. Включив технологию
+шлюза в спецификацию H.323, ITU позиционировала H.323 как основу, которая
+объединяет стандартные конечные устройства.<BR><BR><FONT size=4>Контроллёры
+зон</FONT><BR><BR>Контроллёр зоны является основным компонентом H.323 сети. Он
+обрабатывает все соединения своей зоны и предоставляет услуги по управлению
+соединениями зарегистрированных конечных устройств. Во многих случаях,
+контроллёр зоны работает как виртуальный коммутатор.<BR><BR></FONT>
+<DIV style="TEXT-ALIGN: center"><IMG src="h323.files/fig4_large.gif"></DIV><FONT
+size=2><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> выполняет две
+важные функции управления соединениями. Первая &#8212;</FONT><FONT size=2>
+преобразование адресов (сетевые псевдонимы для терминалов и шлюзов в IP или IPX
+адреса), как указано в спецификации RAS. Вторая </FONT><FONT size=2>&#8212; управление
+полосой пропускания, которое также описано в спецификации RAS. Например, если
+администратор ограничил количество одновременных соединений по сети,
+к</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> может отклонять попытки
+установить дополнительные соединения. Таким образом, остальная полоса
+пропускания отдается для электронной почты, передачи файлов и для других сетевых
+протоколов. Коллекция из терминалов, шлюзов и сервера управления конференциями
+называется H.323 зоной.<BR><BR>Опциональной, но значимой характеристикой
+к</FONT><FONT size=2>онтроллёра зоны</FONT><FONT size=2> является возможность
+маршрутизации H.323 соединений. Маршрутизиция соединений через к</FONT><FONT
+size=2>онтроллёр зоны</FONT><FONT size=2> даёт больший контроль над ними. Данная
+возможность нужна поставщикам услуг для организации биллинга соединений
+проходящих через их сеть. Также это позволяет переключить соединение на другое
+конечное устройство, если оригинальное недоступно. К</FONT><FONT
+size=2>онтроллёр зоны,</FONT><FONT size=2> поддерживающий маршрутизацию H.323,
+поможет при балансировании нагрузки между несколькими шлюзами.<BR><BR>Так как
+к</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> логически разделён с
+конечными устройствами, производители могут встраивать его функциональность в
+физическую реализацию шлюзов и сервера управления
+конференциями.<BR><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> не
+является обязательным элементом H.323 системы. Тем не менее, при его наличии
+терминалы должны использовать предоставляемые им услуги. Спецификация RAS
+определяет их как: преобразование адресов, управление доступом, управление
+полосой пропускания и управление зоной.<BR><BR>К</FONT><FONT size=2>онтроллёр
+зоны</FONT><FONT size=2> также может участвовать в многоточечных конференциях.
+Для этого пользователи должны использовать к</FONT><FONT size=2>онтроллёр
+зоны</FONT><FONT size=2> для работы с H.245 сигнализацией. При переключении
+соединения типа "точка-точка" в многоточечный режим, к</FONT><FONT
+size=2>онтроллёр зоны</FONT><FONT size=2> может перенаправлять H.245
+сигнализацию на сервер управления конференциями (MC). Обратите внимание на то,
+что к</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> не обрабатывает
+H.245 сигнализацию, он просто передаёт её между терминалами и сервером
+управления конференциями.<BR><BR>Сеть с шлюзом может также использовать
+к</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2> для преобразования
+входящие E.164 адреса в транспортные.<BR><BR>Список обязательных
+функций:<BR></FONT>
+<UL>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Преобразование
+  адреса</SPAN><BR>Преобразование псевдонима в транспортный адрес с помощью
+  таблицы, которая обновляется благодаря сообщениям о регистрации. Допустимы
+  другие методы обновления содержимого таблицы.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Управление
+  доступом</SPAN><BR>Авторизация сетевого доступа с помощью сообщений <SPAN
+  style="FONT-STYLE: italic">запроса</SPAN> (Request - ARQ), <SPAN
+  style="FONT-STYLE: italic">подтверждения</SPAN> (Accept - ARC) и<SPAN
+  style="FONT-STYLE: italic"> отклонения</SPAN> (Reject - ARJ). Доступ может
+  основываться на авторизации соединения, полосе пропускания или на других
+  критериях. Также эта функция может быть "заглушкой", которая разрешает все
+  соединения.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Контроль полосы
+  пропускания</SPAN><BR>Поддержка сообщений <SPAN
+  style="FONT-STYLE: italic">запроса</SPAN> (BRQ), <SPAN
+  style="FONT-STYLE: italic">подтверждения</SPAN> (BRC) и <SPAN
+  style="FONT-STYLE: italic">отклонения</SPAN> (BRJ) для полосы пропускания.
+  </FONT><FONT size=2>Также эта функция может быть "заглушкой", которая
+  разрешает все запросы на изменение полосы пропускания.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Управление
+  зоной</SPAN><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2>
+  предоставляет вышеописанные функции для терминалов, серверов управления
+  конференциями и шлюзов, которые зарегистрированы в его зоне.</FONT>
+</LI></UL><FONT size=2>Список необязательных функций:<BR></FONT>
+<UL>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Управление сигнализацией
+  соединения</SPAN><BR>В соединении типа "точка-точка", к</FONT><FONT
+  size=2>онтроллёр зоны</FONT><FONT size=2> может обрабатывать Q.931
+  сигнализацию. Дополнительно, к</FONT><FONT size=2>онтроллёр зоны</FONT><FONT
+  size=2> может пересылать напрямую Q.931 сигнализацию от одного конечного
+  устройства другому.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Авторизация
+  соединения</SPAN><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2>
+  может отклонять соединение от терминала, основываясь на спецификации Q.931.
+  Причинами оклонения могут быть (но не ограничиваются этим) неразрешённый
+  доступ от|к определённому терминалу или шлюзу, неразрешённый доступ в
+  определённый период времени. Критерий определения результата авторизации не
+  входит в область рассмотрения спецификации H.323.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Управление полосой
+  пропускания</SPAN><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2>
+  может отклонять соединения от терминала, если определяет, что требуемая полоса
+  пропускания в настоящий момент недоступна. Данная функция также работает во
+  время активного соединения, если терминал требует определённой полосы
+  пропускания. </FONT><FONT size=2>Критерий определения доступности требуемой
+  полосы пропускания авторизации не входит в область рассмотрения спецификации
+  H.323.</FONT>
+  <LI><FONT size=2><SPAN style="FONT-WEIGHT: bold">Управление
+  соединением</SPAN><BR>К</FONT><FONT size=2>онтроллёр зоны</FONT><FONT size=2>
+  может поддерживать список исходящих H.323 соединений для определения занятости
+  определённого терминала или для предоставления информации для функции
+  управления полосой пропускания.</FONT> </LI></UL><FONT size=2><FONT size=4><SPAN
+style="FONT-FAMILY: arial cyr">Сервер управления конференциями
+(MCU)</SPAN></FONT><BR style="FONT-FAMILY: arial cyr"><BR
+style="FONT-FAMILY: arial cyr"><SPAN style="FONT-FAMILY: arial cyr">Сервер MCU
+поддерживают соединения между тремя и более конечными устройствами. По
+спецификации H.323 с</SPAN></FONT><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr">ервер</SPAN></FONT><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr"> MCU состоит из непосредственно контроллёра (MC)
+и нуля или большего количества процессоров соединений (MP). MC обеспечивает
+H.245 согласование между всеми терминалами для определения общих характеристик
+обработки аудио|видео сигналов. MC также управляет ресурсами соединения,
+определяя, какой аудио и видео поток, если таковой имеется, будет
+многоточечным.<BR><BR>MC напрямую не взаимодействует ни с какими медиа потоками.
+Этим занимается MP, который смешивает, переключает и обрабатывает потоки
+аудио|видео|данных. MC и MP характеристики могут сосуществовать в отдельном
+компоненте или быть частью какого-нибудь H.323 компонента.<BR></SPAN></FONT>
+<DIV style="TEXT-ALIGN: center"><IMG
+src="h323.files/fig5_large.gif"><BR></DIV><FONT size=2><SPAN
+style="FONT-FAMILY: arial cyr"><FONT style="FONT-WEIGHT: bold"
+size=3>Многоточечные соединения</FONT><BR><BR>Возможность установления
+многоточечных конференций обеспечивается множеством методом и конфигураций
+H.323. Рекомендация для этого использует термины <SPAN
+style="FONT-STYLE: italic">централизованных</SPAN> и <SPAN
+style="FONT-STYLE: italic">децентрализованных</SPAN> конференций, как показано
+на рисунки.<BR><BR>Централизованные многоточечные конференции (ЦМК) требуют
+наличия серверов MCU. Все терминалы обмениваются потоком с сервером MCU, как в
+соединении типа "точка-точка". MC обычно управляет соединением с помощью функций
+управления H.245, которые определяют возможности каждого терминала. MP
+производит микширование аудио сигнала, распределение данных и выполняет функции
+переключения|микширования видео, в итоге преобразованный поток отсылается
+конкретному конечному устройству. Также MP может производить преобразование
+между различными кодеками и битрейтами и обеспечивать многоадресную рассылку
+обработанного видео. Обычный сервер MCU, поддерживающий ЦМК, состоит из MC и
+аудио|видео|дата процессоров соединений (MP).<BR><BR>Децентрализованные
+многоточечные конференции (ДМК) используют многоадресную (multicast) технологию.
+Взаимодействующие H.323 терминалы рассылают аудио|видео между собой без
+использования сервера MCU. Следует отметить, что управление данными осуществляет
+сервер MCU, а H.245 сигнализация по прежнему передается в режиме точка-точка на
+MC.<BR><BR>Терминалы, получающие данные, отвечают за обработку одновременных
+аудио|видео потоков. Терминалы используют H.245 сигнализацию для оповещения MC о
+количестве одновременных аудио и видео потоков, которые они могут декодировать.
+Количество одновременных соединений одного терминала не ограничивает количество
+аудио и видео потоков в многоточечном соединении. Также MP может предоставлять
+выбор видеопотока и микширование аудиопотока в ДМК.<BR><BR>Гибридные
+многоточечные соединения используют комбинацию централизованных и
+децентрализованных характеристик. H.245 сигнализация и аудио либо видео потоки
+обрабатываются сервером MCU в виде "точка-точка". Оставшиеся потоки (аудио или
+видео) передаются взаимодействующим H.323 терминалам.<BR><BR>Преимущество
+централизованного соединения заключается в том, что все H.323 терминалы
+поддерживают соединение типа "точка-точка". Сервер MCU просто создает множество
+соединений типа "точка-точка" с участниками конференции и не требует специальной
+поддержки от сети. Аналогично, сервер MCU может принимать множество соединений
+типа "точка-точка", микшировать аудио и переключать видео и выдавать
+мультикастовый поток, сохраняя полосу пропускания сети.<BR><BR>H.323 также
+поддерживает смешанные многоточечные конференции, в которых одни терминалы
+находятся в централизованном соединении, а другие </SPAN>&#8212; </FONT><FONT
+size=2><SPAN style="FONT-FAMILY: arial cyr">в децентрализованном. В этом случае
+сервер MCU становится мостом связывающим эти типы соединений. Терминал не знает
+о смешенной природе соединения, ему важен только режим в котором он
+работает.<BR><BR>Поддерживая уникастовые и мультикастовые подходы, H.323
+разделяет текущее поколение и будущие сетевые технологии. Мультикаст более
+эффективно использует полосу пропускания сети, но накладывает дополнительные
+вычислительные на терминалы. Также для мультикаста требуется поддержка в сетевых
+маршрутизаторах и коммутаторах.<BR><BR>MC может находиться в контроллёре зоны,
+шлюзе, терминале или сервере управления конференциями.</SPAN></FONT>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.8.5  mysqldump, Получение дампов данных и структуры таблицы — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/mysqldump.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/mysqldump.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.8 Клиентские сценарии и утилиты MySQL
+</a><ul class="immediate"><li><a href="Client-Side_Overview.html">4.8.1 Обзор клиентских сценариев и утилит
+</a></li><li><a href="mysql.html">4.8.2 <code>mysql</code>, Утилита командной строки
+</a></li><li><a href="mysqladmin.html">4.8.3 <code>mysqladmin</code>, Администрирование MySQL-сервера.
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Using_mysqlcheck.html">4.8.4 Использование <code>mysqlcheck</code> для сопровождения и аварийного восстановления таблиц.
+</a></li><li class="self">4.8.5 <code>mysqldump</code>, Получение дампов данных и структуры таблицы
+</li><li><a href="mysqlhotcopy.html">4.8.6 <code>mysqlhotcopy</code>, Копирование баз данных и таблиц MySQL
+</a></li><li><a href="mysqlimport.html">4.8.7 <code>mysqlimport</code>, импорт данных из текстовых файлов
+</a></li><li><a href="mysqlshow.html">4.8.8 Просмотр баз данных, таблиц и столбцов
+</a></li><li><a href="perror.html">4.8.9 perror, разъяснение кодов ошибок
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Batch_Commands.html">4.8.10 Как запускать SQL-команды из текстового файла
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="https://www.linuxlib.ru/mysqloff/Using_mysqlcheck.html" title="4.8.4  Использование mysqlcheck для сопровождения и аварийного восстановления таблиц.">Previous</a> / <a rel="next" href="mysqlhotcopy.html" title="4.8.6  mysqlhotcopy, Копирование баз данных и таблиц MySQL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html" title="4.8  Клиентские сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.8.5  <code>mysqldump</code>, Получение дампов данных и структуры таблицы</H3>
+
+<P>
+<A NAME="IDX764"></A>
+<A NAME="IDX765"></A>
+<A NAME="IDX766"></A>
+<A NAME="IDX767"></A>
+
+</P>
+<P>
+Данная утилита позволяет получить дамп (``моментальный снимок'')
+содержимого базы данных или совокупности баз для создания резервной копии
+или пересылки данных на другой SQL-сервер баз данных (не обязательно
+MySQL-сервер). Дамп будет содержать набор команд SQL для создания и/или
+заполнения таблиц.
+
+</P>
+<P>
+Если же резервная копия создается на сервере, то вместо описываемой
+утилиты следует использовать <code>mysqlhotcopy</code>. См.раздел See section <A HREF="mysqlhotcopy.html">4.8.6  <code>mysqlhotcopy</code>, Копирование баз данных и таблиц MySQL</A>.
+
+</P>
+
+<pre>
+shell&#62; mysqldump [OPTIONS] database [tables]
+или  mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...]
+или  mysqldump [OPTIONS] --all-databases [OPTIONS]
+</pre>
+
+<P>
+Если не указывать имена таблиц или использовать параметры <code>--databases</code> или
+<code>--all-databases</code>, то будет получен дамп базы данных в целом (соответственно
+- всех баз данных).
+
+</P>
+<P>
+Перечень опций, поддерживаемых вашей конкретной версией утилиты <code>mysqldump</code>,
+можно получить, выполнив команду <code>mysqldump --help</code>.
+
+</P>
+<P>
+Следует иметь в виду, что утилита <code>mysqldump</code>, используемая без опций
+<code>--quick</code> или <code>--opt</code>, перед тем, как сделать дамп результата выборки
+информации, загрузит весь результат в память. Это может создать проблемы
+при получении дампа большой базы данных.
+
+</P>
+<P>
+Учтите, что не следует применять параметры <code>--opt</code> или <code>-e</code>, если вы
+собираетесь использовать для получения дампа новую копию программы
+<code>mysqldump</code>, а затем воспроизводить его на очень старом MySQL-сервере.
+
+</P>
+<P>
+Утилита <code>mysqldump</code> поддерживает следующие опции:
+
+</P>
+<DL COMPACT>
+
+<DT><code>--add-locks</code>
+<DD>
+Добавить команды <code>LOCK TABLES</code> перед выполнением и <code>UNLOCK TABLE</code> после
+выполнения каждого дампа таблицы (для ускорения доступа к MySQL).
+
+<DT><code>--add-drop-table</code>
+<DD>
+Добавить команду <code>DROP TABLE</code> перед каждой командой <code>CREATE TABLE</code>.
+
+<DT><code>-A, --all-databases</code>
+<DD>
+Произвести дамп всех баз данных. Аналогично опции <code>--databases</code> с указанием
+всех баз данных.
+
+<DT><code>-a, --all</code>
+<DD>
+Включить все опции создания объектов, специфичные для MySQL.
+
+<DT><code>--allow-keywords</code>
+<DD>
+Разрешить создавать имена столбцов, которые совпадают с ключевыми словами.
+Отсутствие конфликтов обеспечивается прибавлением имени таблицы в качестве
+префикса к имени каждого столбца.
+
+<DT><code>-c, --complete-insert</code>
+<DD>
+Использовать полные команды <code>INSERT</code> (с именами столбцов).
+
+<DT><code>-C, --compress</code>
+<DD>
+Использовать сжатие всей информации между клиентом и сервером, если они
+оба поддерживают сжатие.
+
+<DT><code>-B, --databases</code>
+<DD>
+Выполнить дамп нескольких баз данных. Обратите внимание на разницу в
+использовании: в этом случае таблицы не указываются. Все имена аргументов
+рассматриваются как имена баз данных. Оператор <code>USE db_name;</code> включается в
+вывод перед каждой новой базой данных.
+
+<DT><code>--delayed</code>
+<DD>
+Использовать команду <code>INSERT DELAYED</code> при вставке строк.
+
+<DT><code>-e, --extended-insert</code>
+<DD>
+Использовать команду <code>INSERT</code> с новым многострочным синтаксисом (повышает
+компактность и быстродействие операторов ввода).
+
+<DT><code>-#, --debug[=option_string]</code>
+<DD>
+Отслеживать прохождение программы (для отладки).
+
+<DT><code>--help</code>
+<DD>
+Вывести справочную информацию и выйти из программы.
+
+<DT><code>--fields-terminated-by=...</code>
+<DD>
+<DT><code>--fields-enclosed-by=...</code>
+<DD>
+<DT><code>--fields-optionally-enclosed-by=...</code>
+<DD>
+<DT><code>--fields-escaped-by=...</code>
+<DD>
+<DT><code>--lines-terminated-by=...</code>
+<DD>
+Эти опции используются совместно с параметром <code>-T</code> и имеют то же самое
+значение, что и соответствующие операторы для <code>LOAD DATA INFILE</code>. См.
+раздел See section <A HREF="https://www.linuxlib.ru/mysqloff/LOAD_DATA.html">6.4.9  Синтаксис оператора  <code>LOAD DATA INFILE</code></A>.
+
+<DT><code>-F, --flush-logs</code>
+<DD>
+Записать на диск данные системного журнала из буфера MySQL-сервера перед
+началом выполнения дампа.
+
+<DT><code>-f, --force,</code>
+<DD>
+Продолжать даже при получении ошибки SQL при выполнении дампа таблицы.
+
+<DT><code>-h, --host=..</code>
+<DD>
+Выполнить дамп данных MySQL сервера на указанном хосте. Значение хоста по
+умолчанию - <code>localhost</code>.
+
+<DT><code>-l, --lock-tables.</code>
+<DD>
+Заблокировать все таблицы перед началом выполнения дампа. Таблицы
+блокируются оператором <code>READ LOCAL</code>, чтобы разрешить параллельные записи
+для <code>MyISAM</code>-таблиц. Следует отметить, что при выполнении дампа совокупности
+баз данных опция <code>--lock-tables</code> блокирует таблицы каждой базы по
+отдельности. Таким образом, использование этого параметра не гарантирует,
+что таблицы будут логически непротиворечивы в пределах этих баз данных. В
+различных базах данных при выполнении дампа таблицы могут находиться в
+совершенно разных состояниях.
+
+<DT><code>-K, --disable-keys</code>
+<DD>
+Добавляет выражение
+<code>/*!40000 ALTER TABLE tb_name DISABLE KEYS */;</code>
+и <code>/*!40000 ALTER TABLE tb_name ENABLE KEYS */;</code>
+в выводе результата. Это
+ускорит загрузку данных на сервер MySQL 4.0, так как индексы создаются
+после внесения всех данных.
+
+<DT><code>-n, --no-create-db</code>
+<DD>
+В выводе результата выражение <code>CREATE DATABASE /*!32312 IF NOT EXISTS*/
+db_name;</code> будет отсутствовать. Данная строка будет добавлена в любом случае
+при использовании опций <code>--databases</code> или <code>--all-databases</code>.
+
+<DT><code>-t, --no-create-info</code>
+<DD>
+Не записывать информацию о создании таблицы (команда <code>CREATE TABLE</code>).
+
+<DT><code>-d, --no-data</code>
+<DD>
+Не записывать информацию из строк таблицы. Это очень полезно для получения
+дампа структуры таблицы!
+
+<DT><code>--opt</code>
+<DD>
+То же, что и <code>--quick --add-drop-table --add-locks --extended-insert
+--lock-tables</code>. Должно дать наиболее быстрый дамп для чтения на
+MySQL-сервере.
+
+<DT><code>-pyour_pass, --password[=your_pass]</code>
+<DD>
+Используемый пароль при подключении к серверу. Если аргумент <code>=your_pass</code> не
+введен, <code>mysqldump</code> предложит ввести пароль.
+
+<DT><code>-P port_num, --port=port_num</code>
+<DD>
+Номер порта TCP/IP, используемого для подключения к хосту (применяется при
+подсоединении к хостам, отличным от <code>localhost</code>, для которого используются
+сокеты Unix ).
+
+<DT><code>-q, --quick</code>
+<DD>
+Выводить дамп непосредственно на стандартный вывод <code>stdout</code> без буферизации
+запроса. Для этого используется функция <code>mysql_use_result()</code>.
+
+<DT><code>-Q, --quote-names</code>
+<DD>
+Взять в кавычки имена таблиц и столбцов без символов <samp>``'</samp>.
+
+<DT><code>-r, --result-file=...</code>
+<DD>
+Прямой вывод указанного файла. Этот опцию следует использовать в MS DOS,
+так как она предотвращает преобразование символа новой строки '\n' в
+последовательность '\n\r' (новая строка + возврат каретки).
+
+<DT><code>--single-transaction</code>
+<DD>
+Данная опция выдает SQL-команду <code>BEGIN</code> перед выполнением дампа данных с
+сервера. Наиболее часто используется с <code>InnoDB</code>-таблицамии и уровнем
+изоляции транзакций <code>READ_COMMITTED</code>, так как именно в этом режиме можно
+получить дамп с непротиворечивым состоянием базы данных после выполнения
+команды <code>BEGIN</code> без блокирования каких-либо приложений. Используя эту опцию,
+необходимо помнить, что при выполнении дампа только транзакционные таблицы
+будут находиться в непротиворечивом состоянии, т.е. некоторые <code>MyISAM</code>- или
+<code>HEAP</code>-таблицы при использовании данной опции могут все же изменить свое
+состояние. Опция <code>--single-transaction</code> добавлена в версии 4.0.2. Она
+является взаимоисключающей по отношению к опции <code>--lock-tables</code>, так как
+команда <code>LOCK TABLES</code> прерывает выполнение предыдущей транзакции.
+
+<DT><code>-S /path/to/socket, --socket=/path/to/socket</code>
+<DD>
+Файл сокета для подсоединения к <code>localhost</code> (значение хоста по умолчанию).
+
+<DT><code>--tables</code>
+<DD>
+Перекрывает параметр --databases (-B).
+
+<DT><code>-T, --tab=path-to-some-directory</code>
+<DD>
+Для каждой заданной таблицы создает файл a <tt>`table_name.sql'</tt>, содержащий
+SQL <code>CREATE</code> команды для создания таблицы, и файл <tt>`table_name.txt'</tt> с данными
+таблицы. Файл <tt>`.txt'</tt> имеет формат в соответствии с параметрами <code>--fields-xxx</code>
+и <code>--lines--xxx</code>. <strong>Примечание</strong>: Этот параметр работает только при условии,
+что утилита <code>mysqldump</code> запущена на том же компьютере, что и демон <code>mysqld</code>,
+причем пользователь/группа, запустившие данный поток <code>mysqld</code> (обычно это
+пользователь <code>mysql</code> и группа <code>mysql</code>), должны иметь право
+создавать/записывать файл по указанному адресу.
+
+<DT><code>-u user_name, --user=user_name</code>
+<DD>
+Имя пользователя MySQL-сервера, используемое при подключении к серверу.
+Значением по умолчанию является имя пользователя Unix.
+
+<DT><code>-O var=option, --set-variable var=option</code>
+<DD>
+Установить значения переменных. Доступные для использования переменные
+перечислены ниже.
+
+<DT><code>-v, --verbose</code>
+<DD>
+Расширенный режим вывода. Вывод более детальной информации о работе
+программы.
+
+<DT><code>-V, --version</code>
+<DD>
+Вывести информацию о версии и выйти из программы.
+
+<DT><code>-w, --where='where-condition'</code>
+<DD>
+Выполнить дамп только выбранных записей. Обратите внимание, что кавычки
+обязательны.
+
+
+<pre>
+"--where=user='jimf'" "-wuserid&#62;1" "-wuserid&#60;1"
+</pre>
+
+<DT><code>-X, --xml</code>
+<DD>
+Представляет дамп базы данных в виде XML.
+
+<DT><code>-x, --first-slave</code>
+<DD>
+Блокирует все таблицы во всех базах данных.
+
+<DT><code>-O net_buffer_length=#, where # &#60; 16M</code>
+<DD>
+При создании многострочных операторов ввода (как и в случаях применения
+параметров <code>--extended-insert</code> или <code>--opt</code>) утилита <code>mysqldump</code> будет создавать
+строки длиной вплоть до указанной в <code>net_buffer_length</code>. При увеличении
+значения этой переменной необходимо также убедиться в том, что в
+MySQL-сервере для переменной <code>max_allowed_packet</code> указано значение больше,
+чем величина <code>net_buffer_length</code>.
+</DL>
+
+<P>
+Чаще всего утилита <code>mysqldump</code> используется для получения резервной копии
+всех баз данных. See section <A HREF="Backup.html">4.4.1  Резервное копирование баз данных</A>.
+
+</P>
+
+<pre>
+mysqldump --opt database &#62; backup-file.sql
+</pre>
+
+<P>
+Можно, наоборот, прочитать этот файл на MySQL-сервере посредством команды:
+
+</P>
+
+<pre>
+mysql database &#60; backup-file.sql
+</pre>
+
+<P>
+или
+
+<pre>
+mysql -e "source /patch-to-backup/backup-file.sql" database
+</pre>
+
+<P>
+Данная утилита достаточно часто используется и для переноса информации из
+базы данных на другой MySQL-сервер:
+
+</P>
+
+<pre>
+mysqldump --opt database | mysql --host=remote-host -C database
+</pre>
+
+<P>
+Вполне возможно получить дамп нескольких баз данных с помощью одной
+команды:
+
+</P>
+
+<pre>
+mysqldump --databases database1 [database2 ...] &#62; my_databases.sql
+</pre>
+
+<P>
+Если необходим дамп всех баз данных, можно использовать:
+
+</P>
+
+<pre>
+mysqldump --all-databases &#62; all_databases.sql
+</pre>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c270" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jeff Armstrong on Thursday June 27 2002, @8:14am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=270&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=270">Edit</a>]</td></tr></table><p class="commenttext">On my system - mysqldump  Ver 8.16 Distrib <br />
+3.23.46, for pc-linux-gnu (i686)<br />
+<br />
+mysqldump -u root -p -A<br />
+<br />
+only dumps the FIRST database, if the user <br />
+specified is not same as the current unix user. <br />
+<br />
+In the above example, you must actually be <br />
+logged in as root to really get all the <br />
+subsequent databases. </p><table id="c476" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Karl Katzke on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=476&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=476">Edit</a>]</td></tr></table><p class="commenttext">Note that if you include the -F option (Flush <br />
+tables) with the -A option (All databases), and <br />
+you are using logging, your logs will be cycled <br />
+each time mysqldump starts another database. So <br />
+if you've got six databases, your logs will be <br />
+flushed six times in rapid succession as <br />
+mysqldump reads from each one. Not sure if it's a <br />
+bug or a feature. (MySQL 3.23.46)</p><table id="c508" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#d6bcb9b896b8a5a7baf8b9a4b1">Jon Benson</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=508&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=508">Edit</a>]</td></tr></table><p class="commenttext">If you'd like a quick example example of how to <br />
+dump to a local machine (with the mysqldump <br />
+binary locally) from a remote server this is how <br />
+i did it (windows machine):<br />
+<br />
+&gt;mysqldump -C -h SERVERADDRESS -u USER -pPASSWORD <br />
+DATABASE [table] &gt; c:\localpath.sql<br />
+<br />
+</p><table id="c629" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#b7d3d6c1d299d5d6c3d2dad6d986f7d9c3dbc0d8c5dbd399d4d8da">Dave Bateman</a> on Monday July 29 2002, @4:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=629&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=629">Edit</a>]</td></tr></table><p class="commenttext">how do i get the mysqldump to write the file with <br />
+the owner set to my username, not as 'nobody'</p><table id="c676" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#492420222c6725262620232428273a09283a2425672a2624">Mike Looijmans</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=676&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=676">Edit</a>]</td></tr></table><p class="commenttext">Workaround for the -F -A problem is to use 'mysql <br />
+-u root -e &quot;FLUSH LOGS&quot;' before running mysqldump,<br />
+but this makes the flush and backup less 'atomic'. <br />
+Not a problem on our system, since no one will be <br />
+running updates at 2:00am</p><table id="c707" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=707&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=707">Edit</a>]</td></tr></table><p class="commenttext">In older versions, mysqldump dump table structure<br />
+and data but nothing about indexes.<br />
+Recent versions dump index information too.</p><table id="c724" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday July 12 2002, @1:51am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=724&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=724">Edit</a>]</td></tr></table><p class="commenttext">Sorry the documentation and examples is very small <br />
+here. This is not very good. There is a lot of <br />
+errormessages to read until you get a dump. And if <br />
+youre in the situation to do some more dedicated <br />
+stuff (e.g. dumping only some tables) there is no <br />
+more help than the stuff i read if i use the dump on <br />
+my shell. <br />
+So there is no need for this here ?<br />
+</p><table id="c765" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=765&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=765">Edit</a>]</td></tr></table><p class="commenttext">Okay, here is my problem..im using phpMyAdmin and <br />
+the MySQL server is hosted by Ausgamers. And i <br />
+need to dump everything in my database, can <br />
+someone please tell me how to do it??<br />
+<br />
+I wanna save it to my space or my HDD</p><table id="c796" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#6f042f091a041b410d1b07411c0a">Anders Kronquist</a> on Monday July 1 2002, @3:00am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=796&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=796">Edit</a>]</td></tr></table><p class="commenttext">To restore a complete backup of all your <br />
+databases, use &quot;mysql <br />
+&lt; /path/to/all_databases_backup.sql&quot;</p><table id="c823" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#2e5b42486e434b5a4b4103495c4f5e46474d5d004a4b">Ulf KЭъner</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=823&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=823">Edit</a>]</td></tr></table><p class="commenttext">mysqldump is a bit tricky to use, yet not a bad <br />
+tool for backups. Esp. the pipe right into <br />
+another servers db is a nice thing. I wonder if <br />
+it would be possible to add a replace syntax, <br />
+instead of only an insert. That would make <br />
+incremental backups right into another db  much <br />
+easier (a new timestamp triggers a backup of an <br />
+updated row) . Now one has to dump a csv file on <br />
+one server, transfer it to another and then use <br />
+load data infile replace into table ...<br />
+OK, one could also use the server/slave variant - <br />
+problems with that is, I keep hearing it is not <br />
+as easy to use and understand as I'd like. ;-)</p><table id="c826" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=826&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=826">Edit</a>]</td></tr></table><p class="commenttext">How can I mysqldump.exe a database with table <br />
+create options when there is fields with a % <br />
+character? And how to import that with mysql.exe? <br />
+Removing % is not a option, and I dont want to <br />
+manually add ` characters to the dumped file. Im <br />
+using innodb.</p><table id="c860" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=860&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=860">Edit</a>]</td></tr></table><p class="commenttext">How can I use mysqldump to select some data from <br />
+Tables..<br />
+mysqldump -u root -p DB_Name Table_Name --<br />
+where='where Name='SIM'' doesn't work<br />
+how can I use quote in where quote...<br />
+</p><table id="c876" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#741d1a1c1519011111341d1d00065a11061a11005a1d1a"><span class="__cf_email__" data-cfemail="a7cec9cfc6cad2c2c2e7ceced3d589c2d5c9c2d389cec9">[email&#160;protected]</span></a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=876&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=876">Edit</a>]</td></tr></table><p class="commenttext">mysql database &lt; backup-file.sql<br />
+<br />
+what is the syntax of this command when multiple <br />
+databases are backed up into one file with<br />
+mysqldump --all-databases &gt; bkp.sql<br />
+how are he databases retrieved?</p><table id="c927" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Saturday August 10 2002, @11:56am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=927&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=927">Edit</a>]</td></tr></table><p class="commenttext">If you want to compress your backups directly even<br />
+without hitting your HD. You can try this command:<br />
+#mysqldump --opt -u user --password=&quot;password&quot;<br />
+database | bzip2 -c &gt; database.sql.bz2</p><table id="c952" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Thursday August 15 2002, @8:56pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=952&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=952">Edit</a>]</td></tr></table><p class="commenttext">hi,i use mysqldump --opt DB1 -p &gt;DB1.sql,then i use <br />
+the command &quot;mysqldump --delay DB2 -p <br />
+&lt;DB1.sql&quot;,but i found no data imported at DB2.<br />
+<br />
+any ideas?</p><table id="c1274" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Sunday October 27 2002, @1:33pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1274&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1274">Edit</a>]</td></tr></table><p class="commenttext">I'm using the following script as daily cron, it works.<br />
+<br />
+#!/bin/sh<br />
+date=`date -I`<br />
+mysqldump --opt --all-databases | bzip2 -c <br />
+&gt; /var/backup/databasebackup-$date.sql.bz2</p><table id="c1628" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Eduard Gailis on Wednesday January 22 2003, @5:39am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1628&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1628">Edit</a>]</td></tr></table><p class="commenttext">Problem!!!<br />
+mysqldump and MERGE tables<br />
+<br />
+no need to dump data<br />
+need to generate &quot;CREATE TABLE ....&quot; at end of sql script, after all merged tables<br />
+<br />
+also don't work BACKUP TABLE with MERGE tables</p><table id="c1660" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Sunday January 26 2003, @4:42am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1660&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1660">Edit</a>]</td></tr></table><p class="commenttext">To dump specific rows from a table:<br />
+<br />
+C:\&gt;mysqldump &quot;--where=cat='1'&quot; -t database table &gt; dump.sql.txt</p><table id="c1832" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Kamal Siddiqi on Thursday February 20 2003, @12:11am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1832&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1832">Edit</a>]</td></tr></table><p class="commenttext">Hi,<br />
+<br />
+Plz tell the exact syntax of the command to be executed on telnet prompt to dump a &quot;.sql&quot; file into a DB on Linux.<br />
+<br />
+Example:<br />
+DB Name: testdb<br />
+User: testuser<br />
+Pass: testpass<br />
+<br />
+Thanks!</p><table id="c1856" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by P J on Friday February 21 2003, @4:17pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1856&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1856">Edit</a>]</td></tr></table><p class="commenttext">To dump only select records into a file based on a timestamp field you can use this (last_modified is the timestamp field).  This is used in a shell script to be used as a cron to take records that are more than a month old and dump them into an archive file (then the dumped records are deleted).<br />
+/yourpath/mysqldump &quot;--where=(month(last_modified)+year(last_modified)*12 &lt; <br />
+month(current_date)+(year(current_date)*12)-1)&quot; database table &gt; archive.sql</p><table id="c1859" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Saturday February 22 2003, @6:21pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1859&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1859">Edit</a>]</td></tr></table><p class="commenttext">I'm looking for an example that would give me a CSV type file using mysqldump. I do not understand the differance between --option and -option nor can I find any information on the format of an option file and any 'groups' clauses inside of an option file. Not that I don't enjoy spending an afternoon trying to firure out cryptic examples....<br />
+And yes I can cron a job that dumps all records created between two dates but I need CSV output. That is why I need to use mysqldump, I can not access mysql via a shell.<br />
+Thanks<br />
+</p><table id="c1961" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Thursday March 6 2003, @2:47pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1961&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1961">Edit</a>]</td></tr></table><p class="commenttext">does anyone know why I would be getting the following error:<br />
+<br />
+virga 15&gt; mysqldump weather &gt; weather.sql<br />
+mysqldump: option `--databases' doesn't allow an argument<br />
+<br />
+no matter what I do with mysqldump I get that same error. I checked &quot;alias&quot; and it's not aliased to anything. Does anyone know where else this error might be coming from?<br />
+</p><table id="c1962" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Thursday March 6 2003, @2:48pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1962&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1962">Edit</a>]</td></tr></table><p class="commenttext">does anyone know why I would be getting the following error:<br />
+<br />
+virga 15&gt; mysqldump weather &gt; weather.sql<br />
+mysqldump: option `--databases' doesn't allow an argument<br />
+<br />
+no matter what I do with mysqldump I get that same error. I checked &quot;alias&quot; and it's not aliased to anything. Does anyone know where else this error might be coming from?<br />
+</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=mysqldump">Add your own comment.</a></p><div id="docnav"><a href="mysqldump.html#">Top</a> / <a rel="prev" href="https://www.linuxlib.ru/mysqloff/Using_mysqlcheck.html" title="4.8.4  Использование mysqlcheck для сопровождения и аварийного восстановления таблиц.">Previous</a> / <a rel="next" href="mysqlhotcopy.html" title="4.8.6  mysqlhotcopy, Копирование баз данных и таблиц MySQL">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html" title="4.8  Клиентские сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 8 Сетевой брандмауэр с поддержкой маскарадинга и форвардинга — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch7_3.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#8">Оглавление</A></TD>
+    <TD align=right><A href="ch9.html">Вперед</A></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 8 Сетевой брандмауэр с поддержкой маскарадинга и
+      форвардинга</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><A
+      href="ch8.html#1">Маскарадинг и форвардинг в Linux</A><BR><A href="ch8.html#2">Создание
+      ядра с поддержкой маскарада и форвардинга.</A><BR><A
+      href="ch8.html#3">Конфигурация скрипта "/etc/rc.d/init.d/firewall"
+      шлюза.</A><BR><A href="ch8.html#4">Запрещение доступа к некоторым
+      адресам</A><BR><A href="ch8.html#5">Административная утилита
+      IPCHAINS</A><BR></FONT></TD>
+    <TD></TD></TR></TBODY></TABLE>
+<H3><A name=1>Маскарадинг и форвардинг в Linux</A></H3><B>Краткий обзор.</B>
+<P align=justify>Конфигурирование Linux сервера на маскарадинг и форвардинг
+трафика из внутренней локальной сети, имеющей приватные адреса (192.168.1.0/24),
+в Интернет требует специальных настроек ядра и вашего конфигурационного скрипта
+брандмауэра. Этот вид установок известен как Шлюз. Данная конфигурация должна
+быть установлена, только если у вас возникнет в этом необходимость, поэтому ей
+посвящена отдельная глава.</P>
+<H3><A name=2>Создание ядра с поддержкой маскарада и форвардинга.</A></H3>
+<P align=justify>Первое о чем вы должны подумать, это чтобы ваше ядро было
+создано с поддержкой файрвола и файрволинга. Помните, что все сервера должны
+быть настроены на блокирование неиспользуемых портов, даже если они не выступают
+в роли брандмауэра. В ядре 2.2.14 вам нужно ответить Yes на следующие
+вопросы:</P><FONT color=#008080 size=-1>Networking options:<BR>Network firewalls
+(CONFIG_FIREFALL) [N] Y<BR>IP:Firewalling (CONFIG_IP_FIREWALL) [N] Y<BR>IP:TCP
+syncookie support (CONFIG_SYN_COOKIES) [N] Y<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Если при создание ядра вы использовали
+материалы из главы 3, то все необходимые опции ("Network firewalls,
+IP:Firewalling и IP:TCP syncookie support") были отмечены.</P>
+<P align=justify>IP маскарадинг и IP ICMP маскарадинг требуются только для
+шлюза.</P><FONT color=#008080 size=-1>IP:Masquerading (CONFIG_IP_MASQUERADE) [N]
+Y<BR>IP:ICMP Masquerading (CONFIG_IP_MASQUERADE_ICMP) [N] Y<BR></FONT>
+<P align=justify>Маскарадинг необходим, если один из компьютеров вашей локальной
+сети, для которой вашей Linux сервер (или Шлюз) является брандмауэром, пытается
+послать пакеты в Интернет и шлюз "притворяется" этим компьютером. Другими
+словами, при пересылке всех пакетов из внутренней сети во внешнюю, шлюз делает
+вид, что все пакеты идут от него. Это работает в обе стороны, если внешний хост
+отвечает, то шлюз будет пересылать все пакеты во внутреннюю сеть нужному
+компьютеру. В результате все внутренние компьютеры полностью не видимы для
+внешнего мира, но при этом имеют туда доступ и могут получать оттуда ответы.
+</P>
+<P align=justify>IP маскарадинг работает только если у вас включен IP
+форвардинг. Эта возможность по умолчанию отключена и что бы включить ее
+используйте следующие команды:</P>
+<P align=justify>Под Red Hat 6.1</P><FONT color=#008080 size=-1>[root@deep /]#
+echo "1" &gt; /proc/sys/net/ipv4/ip_forward</FONT>
+<P align=justify>Вы можете добавить эту команду в /etc/rc.d/rc.local, чтобы она
+выполнялась каждый раз при загрузке компьютера. В Red Hat 6.1 это можно также
+сделать внеся изменения в файл "/etc/sysconfig/network":</P><FONT color=#008080
+size=-1>FORWARD_IPV4="false"</FONT>
+<P align=justify>Должен читаться:</P><FONT color=#008080
+size=-1>FORWARD_IPV4="yes"</FONT>
+<P align=justify>Вы должны перезагрузить ваши сетевые настройки, чтобы изменения
+вступили в силу.</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Bringing up interface lo	[ OK ]
+Bringing up interface eth0	[ OK ]
+Bringing up interface eth1	[ OK ]</PRE></FONT>
+<P align=justify>Лично я предпочитаю второй способ включения форвардинга.</P>
+<P align=justify>Под Red Hat 6.2:</P>
+<P align=justify>Редактируйте файл "/etc/sysctl.conf" и добавьте следующую
+строку:</P><FONT color=#008080 size=-1># Enable packet
+forwarding<BR>net.ipv4.ip_forward = 1<BR></FONT>
+<P align=justify>Вы должны перезагрузить ваши сетевые установки, чтобы изменения
+вступили в силу.</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Setting network parameters	[ OK ]
+Bringing up interface lo	[ OK ]
+Bringing up interface eth0	[ OK ]
+Bringing up interface eth1	[ OK ]</PRE></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Строка IP forwarding, введенная выше, нужна
+только если вы ответили "Yes" на вопрос "IP:Masquerading (CONFIG_IP_MASQUERADE)"
+при конфигурировании ядра и решили сделать из сервера шлюз с маскарадингом для
+вашей внутренней сети.</P>
+<P align=justify>Если вы включили IP Masquerading, тогда будут автоматически
+скомпилированы модули ip_masq_ftp.o (для обмена файлов по протоколу ftp),
+ip_masq_irc.o (для irc чатов), ip_masq_quake.o (догадайтесь сами для чего он),
+ip_masq_vdolive.o (для VDOLive видео), ip_masq_cuseeme.o (для CU-SeeMe
+broadcasts) и ip_masq_raudio.o (для RealAudio). Они нужны, чтобы работал
+маскарадинг для этих протоколов. Вам нужно будет создать модульное ядро, ответив
+Yes на вопрос "Enable loadable module support (CONFIG_MODULES)", вместо
+монолитного, чтобы разрешить использование функции маскарадинга и модулей
+подобных ip_masq_ftp.o. </P>
+<P align=justify>Основной код маскарадинга, включаемый опцией "IP:
+masquerading", обрабатывает только TCP или UDP пакеты (и ICMP ошибки для
+существующих соединений). Опция IP:ICMP Masquerading включает дополнительную
+поддержку для маскарадинга ICMP пакетов, таких как ping или исследований
+проводимых программой tracer из Windows 95.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Помните, что у других серверов, например, Веб
+или почтового, эти опции включать не надо, так как они имеют постоянно
+присвоенный им IP адрес или не выступают в роли Шлюза для внутренней
+сети.</P><B>Некоторые моменты для обсуждения.</B>
+<P align=justify>Вы можете спокойно предполагать, что находитесь в постоянной
+опасности, если подключены к Интернет. Ваш шлюз в Интернет - основной источник
+тревоги, так что я рекомендую следующее:</P>
+<OL>
+  <LI>На шлюзе должны быть запущены только самые необходимые приложения;
+  <LI>Шлюз должен строго ограничивать типы и число протоколов проходящих через
+  него (протоколы потенциально опасные, например, telnet и ftp);
+  <LI>К любым системам, хранящим конфиденциальную информацию, не должно быть
+  прямого доступа из Интернет. </LI></OL>
+<H3><A name=3>Конфигурация скрипта "/etc/rc.d/init.d/firewall" для
+Шлюза.</A></H3>
+<P align=justify>Это конфигурационный скрипт для шлюза. Он позволяет
+неограниченный трафик через Loopback интерфейс, ICMP, DNS сервер и клиент (53),
+SSH сервер и клиент (22), HTTP сервер и клиент (80), HTTPS сервер и клиент
+(443), POP клиент (110), NNTP NEWS клиент (119), SMTP сервер и клиент (25), IMAP
+сервер (143), IRC клиент (6667), ICQ клиент (4000), FTP клиент (20, 21),
+RealAudio / QuickTime клиент и исходящий TRACEROUTE.</P>
+<P align=justify>Если вы не хотите использовать какие-нибудь сервисы открытые в
+этом файле по умолчанию, закомментируйте их, добавив в начало строки символ "#".
+Если же вы хотите использовать сервисы, которые я запретил - удалите символ
+комментария "#". Если вы настраиваете на сервере маскарадинг, не забудьте
+раскомментировать модули необходимые для маскарадинга нужных вам сервисов
+(ip_masq_irc.o, ip_masq_raudio.o и т.д) в секции "MODULES MASQUERADING".</P>
+<P align=justify>Создайте скрипт firewall (touch /etc/rc.d/init.d/firewall) на
+шлюзе:</P><FONT size=-1><PRE>#!/bin/sh
+#
+# ----------------------------------------------------------------------------
+# Last modified by Gerhard Mourani: 04-25-2000
+# ----------------------------------------------------------------------------
+# Copyright (C) 1997, 1998, 1999 Robert L. Ziegler
+#
+# Permission to use, copy, modify, and distribute this software and its
+# documentation for educational, research, private and non-profit purposes,
+# without fee, and without a written agreement is hereby granted.
+# This software is provided as an example and basis for individual firewall
+# development. This software is provided without warranty.
+#
+# Any material furnished by Robert L. Ziegler is furnished on an
+# "as is" basis. He makes no warranties of any kind, either expressed
+# or implied as to any matter including, but not limited to, warranty
+# of fitness for a particular purpose, exclusivity or results obtained
+# from use of the material.
+# ----------------------------------------------------------------------------
+#
+# Invoked from /etc/rc.d/init.d/firewall.
+# chkconfig: - 60 95
+# description: Starts and stops the IPCHAINS Firewall \
+# used to provide Firewall network services.
+# Source function library.
+. /etc/rc.d/init.d/functions
+# Source networking configuration.
+. /etc/sysconfig/network
+# Check that networking is up.
+if [ ${NETWORKING} = "no" ]
+then
+exit 0
+fi
+if [ ! -x /sbin/ipchains ]; then
+exit 0
+fi
+# See how we were called.
+case "$1" in
+start)
+echo -n "Starting Firewalling Services: "
+# Некоторые определения для упрощения управления.
+# ----------------------------------------------------------------------------
+# EDIT THESE TO SUIT YOUR SYSTEM AND ISP.
+EXTERNAL_INTERFACE="eth0" # Интерфейс подключенный к Интернет
+LOCAL_INTERFACE_1="eth1" # Внутренний LAN интерфейс
+LOOPBACK_INTERFACE="lo" # loopback интерфейс
+IPADDR="my.ip.address" # Ваш  IP адрес
+LOCALNET_1="192.168.1.0/24" # Диапазон внутренних адресов, которые вы используете
+IPSECSG="my.ipsecsg.address" # разделяемый пробелами список удаленных VPN шлюзов
+FREESWANVI="ipsec0" # разделяемый пробелам список виртуальных интерфейсов
+ANYWHERE="any/0" # Совпадает с любыми  IP адресами
+NAMESERVER_1="my.name.server.1" # 1-й DNS сервер
+NAMESERVER_2="my.name.server.2" # 2-й DNS сервер
+MY_ISP="my.isp.address.range/24" # диапазон адресов ISP &amp; NOC
+SMTP_SERVER="my.smtp.server" # Ваш сервер концентратор почты.
+POP_SERVER="my.pop.server" # Внешний pop сервер, если любой
+NEWS_SERVER="my.news.server" # Внешний news сервер, если любой
+SYSLOG_SERVER="syslog.internal.server" # Ваш внутренний сервер syslog
+LOOPBACK="127.0.0.0/8" # Зарезервированный диапазон loopback адресов
+CLASS_A="10.0.0.0/8" # Приватная сеть класса A
+CLASS_B="172.16.0.0/12" # Приватная сеть класса B
+CLASS_C="192.168.0.0/16" # Приватная сеть класса C
+CLASS_D_MULTICAST="224.0.0.0/4" # Широковещательные адреса класса D
+CLASS_E_RESERVED_NET="240.0.0.0/5" # Зарезервированные адреса класса E
+BROADCAST_SRC="0.0.0.0" # Широковещательный адрес источника
+BROADCAST_DEST="255.255.255.255" # Широковещательный адрес получателя
+PRIVPORTS="0:1023" # Диапазон привилегированных портов
+UNPRIVPORTS="1024:65535" # Диапазон непривилегированных портов
+# ----------------------------------------------------------------------------
+# SSH стартует на 1023 и работает до 513 для
+# каждого дополнительного одновременно входящего соединения.
+SSH_PORTS="1022:1023" # диапазон привилегированных портов для SSH
+# traceroute обычно использует -S 32769:65535 -D 33434:33523
+TRACEROUTE_SRC_PORTS="32769:65535"
+TRACEROUTE_DEST_PORTS="33434:33523"
+# ----------------------------------------------------------------------------
+# Политика по умолчанию DENY
+# Явно разрешаются входящие и исходящие соединения
+# Удаления всех существующих правил принадлежащих этому фильтру
+ipchains -F
+# Очистка всех существующих правил и пользовательских цепочек
+ipchains -X
+# Установка политики по умолчанию deny.
+# Don't even bother sending an error message back.
+ipchains -P input DENY
+ipchains -P output DENY
+ipchains -P forward DENY
+# установка таймаута для маскарадинга в 10 часов для tcp соединений
+ipchains -M -S 36000 0 0
+# Не перенаправлять фрагменты. Предварительно их собирать.
+ipchains -A output -f -i $LOCAL_INTERFACE_1 -j DENY
+# ----------------------------------------------------------------------------
+# MODULES MASQUERADING
+# Раскомментируйте все необходимые вам модули перечисленные ниже
+# Эти модели нужны для маскарадинга их собственных сервисов.
+/sbin/modprobe ip_masq_ftp
+/sbin/modprobe ip_masq_raudio ports=554,7070,7071,6970,6971
+/sbin/modprobe ip_masq_irc
+#/sbin/modprobe ip_masq_vdolive
+#/sbin/modprobe ip_masq_cuseeme
+#/sbin/modprobe ip_masq_quake
+# ----------------------------------------------------------------------------
+# LOOPBACK
+# Неограниченный трафик на loopback интерфейсe.
+ipchains -A input -i $LOOPBACK_INTERFACE -j ACCEPT
+ipchains -A output -i $LOOPBACK_INTERFACE -j ACCEPT
+# ----------------------------------------------------------------------------
+# Сетевые вампиры
+# Запрещение доступа jerks
+# /etc/rc.d/rc.firewall.blocked содержит список
+# ipchains -A input -i $EXTERNAL_INTERFACE -s address -j DENY
+# правил для блокирования любого доступа.
+# Сброс любых соединений от проблемных сайтов
+#if [ -f /etc/rc.d/rc.firewall.blocked ]; then
+# . /etc/rc.d/rc.firewall.blocked
+#fi
+# ----------------------------------------------------------------------------
+# SPOOFING &amp; BAD ADDRESSES
+# Сброс поддельных пакетов.
+# Игнорирование заведомо неправильных адресов отправителя.
+# Защита вас от отправки пакетов с плохими адресами.
+# Блокирование поддельных пакетов имеющих ваш адрес, как адрес отправителя.
+ipchains -A input -i $EXTERNAL_INTERFACE -s $IPADDR -j DENY -l
+# Блокирование пакетов идущих как бы в или из приватной сети класса A
+ipchains -A input -i $EXTERNAL_INTERFACE -s $CLASS_A -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -d $CLASS_A -j DENY -l
+ipchains -A output -i $EXTERNAL_INTERFACE -s $CLASS_A -j REJECT -l
+ipchains -A output -i $EXTERNAL_INTERFACE -d $CLASS_A -j REJECT -l
+# Блокирование пакетов идущих как бы в или из приватной сети класса B
+ipchains -A input -i $EXTERNAL_INTERFACE -s $CLASS_B -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -d $CLASS_B -j DENY -l
+ipchains -A output -i $EXTERNAL_INTERFACE -s $CLASS_B -j REJECT -l
+ipchains -A output -i $EXTERNAL_INTERFACE -d $CLASS_B -j REJECT -l
+# Блокирование пакетов идущих как бы в или из приватной сети класса C
+# ipchains -A input -i $EXTERNAL_INTERFACE -s $CLASS_C -j DENY -l
+# ipchains -A input -i $EXTERNAL_INTERFACE -d $CLASS_C -j DENY -l
+# ipchains -A output -i $EXTERNAL_INTERFACE -s $CLASS_C -j REJECT -l
+# ipchains -A output -i $EXTERNAL_INTERFACE -d $CLASS_C -j REJECT -l
+# Блокирование пакетов идущих как из loopback интерфейса
+ipchains -A input -i $EXTERNAL_INTERFACE -s $LOOPBACK -j DENY -l
+ipchains -A output -i $EXTERNAL_INTERFACE -s $LOOPBACK -j REJECT -l
+# Блокирование пакетов с широковещательным адресом в качестве адреса отправителя
+ipchains -A input -i $EXTERNAL_INTERFACE -s $BROADCAST_DEST -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -d $BROADCAST_SRC -j DENY -l
+# Блокирование широковещательных адресов класса D (in.h) (NET-3-HOWTO)
+# Широковещательный адрес не может быть адресом отправителя.
+# Широковещание использует UDP.
+ipchains -A input -i $EXTERNAL_INTERFACE -s $CLASS_D_MULTICAST -j DENY -l
+# Блокирование зарезервированных адресов класса E
+ipchains -A input -i $EXTERNAL_INTERFACE -s $CLASS_E_RESERVED_NET -j DENY -l
+# Блокирование адресов определенных как зарезервированные IANA
+# 0.*.*.*, 1.*.*.*, 2.*.*.*, 5.*.*.*, 7.*.*.*, 23.*.*.*, 27.*.*.*
+# 31.*.*.*, 37.*.*.*, 39.*.*.*, 41.*.*.*, 42.*.*.*, 58-60.*.*.*
+# 65-95.*.*.*, 96-126.*.*.*, 197.*.*.*, 201.*.*.* (?), 217-223.*.*.*
+ipchains -A input -i $EXTERNAL_INTERFACE -s 1.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 2.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 5.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 7.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 23.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 27.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 31.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 37.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 39.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 41.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 42.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 58.0.0.0/7 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 60.0.0.0/8 -j DENY -l
+#65: 01000001 - /3 includes 64 - need 65-79 spelled out
+ipchains -A input -i $EXTERNAL_INTERFACE -s 65.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 66.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 67.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 68.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 69.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 70.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 71.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 72.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 73.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 74.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 75.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 76.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 77.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 78.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 79.0.0.0/8 -j DENY -l
+#80: 01010000 - /4 masks 80-95
+ipchains -A input -i $EXTERNAL_INTERFACE -s 80.0.0.0/4 -j DENY -l
+# 96: 01100000 - /4 makses 96-111
+ipchains -A input -i $EXTERNAL_INTERFACE -s 96.0.0.0/4 -j DENY -l
+#126: 01111110 - /3 includes 127 - need 112-126 spelled out
+ipchains -A input -i $EXTERNAL_INTERFACE -s 112.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 113.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 114.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 115.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 116.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 117.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 118.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 119.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 120.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 121.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 122.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 123.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 124.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 125.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 126.0.0.0/8 -j DENY -l
+#217: 11011001 - /5 includes 216 - need 217-219 spelled out
+ipchains -A input -i $EXTERNAL_INTERFACE -s 217.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 218.0.0.0/8 -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -s 219.0.0.0/8 -j DENY -l
+#223: 11011111 - /6 masks 220-223
+ipchains -A input -i $EXTERNAL_INTERFACE -s 220.0.0.0/6 -j DENY -l
+# ----------------------------------------------------------------------------
+# ICMP
+# Предотвращение denial of service атак, базирующихся на  ICMP bombs, filter
+# incoming Redirect (5) и outgoing Destination Unreachable (3).
+# Заметим, что отключение Destination Unreachable (3), обычно, не целесообразно
+# так как он используется при согласовании размера фрагмента пакета.
+# Для двунаправленного ping.
+# Типы сообщений: Echo_Reply (0), Echo_Request (8)
+# Для предотвращения атак ограничьте адрес отправителя диапазоном Ip адресов вашего ISP.
+#
+# Для исходящих traceroute.
+# Типы сообщений: INCOMING Dest_Unreachable (3), Time_Exceeded (11)
+# default UDP base: 33434 to base+nhops-1
+#
+# Для входящих traceroute.
+# Типы сообщений: OUTGOING Dest_Unreachable (3), Time_Exceeded (11)
+# Для блокирования этого, запретите  OUTGOING 3 и 11
+# 0: echo-reply (pong)
+# 3: destination-unreachable, port-unreachable, fragmentation-needed, etc.
+# 4: source-quench
+# 5: redirect
+# 8: echo-request (ping)
+# 11: time-exceeded
+# 12: parameter-problem
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 0 -d $IPADDR -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 3 -d $IPADDR -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 4 -d $IPADDR -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 11 -d $IPADDR -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 12 -d $IPADDR -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $MY_ISP 8 -d $IPADDR -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 0 -d $MY_ISP -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 3 -d $MY_ISP -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 4 -d $ANYWHERE -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 8 -d $ANYWHERE -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 12 -d $ANYWHERE -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p icmp \
+-s $IPADDR 11 -d $MY_ISP -j ACCEPT
+# ----------------------------------------------------------------------------
+# UDP INCOMING TRACEROUTE
+# traceroute обычно использует -S 32769:65535 -D 33434:33523
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $MY_ISP $TRACEROUTE_SRC_PORTS \
+-d $IPADDR $TRACEROUTE_DEST_PORTS -j ACCEPT -l
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $ANYWHERE $TRACEROUTE_SRC_PORTS \
+-d $IPADDR $TRACEROUTE_DEST_PORTS -j DENY -l
+# ----------------------------------------------------------------------------
+# DNS сервер
+# ----------
+# DNS: полный сервер
+# сервер/клиент к серверу запросы и ответы
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $ANYWHERE $UNPRIVPORTS \
+-d $IPADDR 53 -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR 53 \
+-d $ANYWHERE $UNPRIVPORTS -j ACCEPT
+# DNS клиент (53)
+# ---------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $NAMESERVER_1 53 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR $UNPRIVPORTS \
+-d $NAMESERVER_1 53 -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $NAMESERVER_2 53 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR $UNPRIVPORTS \
+-d $NAMESERVER_2 53 -j ACCEPT
+# TCP запросы от клиентов разрешены если UDP закончились
+# ошибкой. Это случается очень редко. Обычно, клиенты используют
+# TCP для пересылки зон от первичного к вторичному серверу
+# или хакером.
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $NAMESERVER_1 53 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $NAMESERVER_1 53 -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $NAMESERVER_2 53 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $NAMESERVER_2 53 -j ACCEPT
+# ----------------------------------------------------------------------------
+# Принимаем TCP только для избранных портов
+# ---------------------------------
+# ------------------------------------------------------------------
+# SSH сервер (22)
+# ---------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp \
+-s $ANYWHERE $UNPRIVPORTS \
+-d $IPADDR 22 -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $IPADDR 22 \
+-d $ANYWHERE $UNPRIVPORTS -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp \
+-s $ANYWHERE $SSH_PORTS \
+-d $IPADDR 22 -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $IPADDR 22 \
+-d $ANYWHERE $SSH_PORTS -j ACCEPT
+# SSH клиент (22)
+# ---------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 22 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 22 -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 22 \
+-d $IPADDR $SSH_PORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $SSH_PORTS \
+-d $ANYWHERE 22 -j ACCEPT
+# ------------------------------------------------------------------
+# HTTP клиент (80)
+# ----------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 80 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 80 -j ACCEPT
+# ------------------------------------------------------------------
+# HTTPS клиент (443)
+# ------------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 443 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 443 -j ACCEPT
+# ------------------------------------------------------------------
+# POP клиент (110)
+# ----------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $POP_SERVER 110 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $POP_SERVER 110 -j ACCEPT
+# ------------------------------------------------------------------
+# NNTP NEWS клиент (119)
+# ----------------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $NEWS_SERVER 119 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $NEWS_SERVER 119 -j ACCEPT
+# ------------------------------------------------------------------
+# FINGER клиент (79)
+# ------------------
+# ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+# -s $ANYWHERE 79 \
+# -d $IPADDR $UNPRIVPORTS -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+# -s $IPADDR $UNPRIVPORTS \
+# -d $ANYWHERE 79 -j ACCEPT
+# ------------------------------------------------------------------
+# SYSLOG клиент (514)
+# -----------------
+# ipchains -A output -i $LOCAL_INTERFACE_1 -p udp \
+# -s $IPADDR 514 \
+# -d $SYSLOG_SERVER 514 -j ACCEPT
+# ------------------------------------------------------------------
+# AUTH сервер (113)
+# -----------------
+# Reject лучше чем deny, для пакетов входящих на порт auth. (NET-3-HOWTO)
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp \
+-s $ANYWHERE \
+-d $IPADDR 113 -j REJECT
+# AUTH клиент (113)
+# -----------------
+# ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+# -s $ANYWHERE 113 \
+# -d $IPADDR $UNPRIVPORTS -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+# -s $IPADDR $UNPRIVPORTS \
+# -d $ANYWHERE 113 -j ACCEPT
+# ------------------------------------------------------------------
+# SMTP клиент (25)
+# ----------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 25 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 25 -j ACCEPT
+# ------------------------------------------------------------------
+# IRC клиент (6667)
+# -----------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 6667 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 6667 -j ACCEPT
+# ------------------------------------------------------------------
+# ICQ клиент (4000)
+# -----------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 2000:4000 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 2000:4000 -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $ANYWHERE 4000 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 4000 -j ACCEPT
+# ------------------------------------------------------------------
+# FTP клиент (20, 21)
+# -------------------
+# исходящий запрос
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 21 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 21 -j ACCEPT
+# NORMAL режим, канал данных
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp \
+-s $ANYWHERE 20 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+# NORMAL mode, ответ канал данных
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 20 -j ACCEPT
+# PASSIVE mode, создание канала данных
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE $UNPRIVPORTS -j ACCEPT
+# PASSIVE mode, ответ канала данных
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE $UNPRIVPORTS \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+# ------------------------------------------------------------------
+# RealAudio / QuickTime клиент
+# ----------------------------
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 554 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 554 -j ACCEPT
+# TCP - более безопасный метод: 7070:7071
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+-s $ANYWHERE 7070:7071 \
+-d $IPADDR $UNPRIVPORTS -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE 7070:7071 -j ACCEPT
+# UDP предпочтительный метод: 6970:6999
+# Для машин из LAN, UDP требует модуля маскарадинга RealAudio и
+# программу  ipmasqadm.
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $ANYWHERE $UNPRIVPORTS \
+-d $IPADDR 6970:6999 -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR $UNPRIVPORTS \
+-d $ANYWHERE $UNPRIVPORTS -j ACCEPT
+# ------------------------------------------------------------------
+# WHOIS клиент (43)
+# -----------------
+# ipchains -A input -i $EXTERNAL_INTERFACE -p tcp ! -y \
+# -s $ANYWHERE 43 \
+# -d $IPADDR $UNPRIVPORTS -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p tcp \
+# -s $IPADDR $UNPRIVPORTS \
+# -d $ANYWHERE 43 -j ACCEPT
+# ------------------------------------------------------------------
+# OUTGOING TRACEROUTE
+# -------------------
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-s $IPADDR $TRACEROUTE_SRC_PORTS \
+-d $ANYWHERE $TRACEROUTE_DEST_PORTS -j ACCEPT
+# ----------------------------------------------------------------------------
+# Неограниченный трафик с локальной сетью.
+# Все внутренние машины имеют доступ к firewall-у.
+ipchains -A input -i $LOCAL_INTERFACE_1 -s $LOCALNET_1 -j ACCEPT
+ipchains -A output -i $LOCAL_INTERFACE_1 -d $LOCALNET_1 -j ACCEPT
+# ----------------------------------------------------------------------------
+# FreeS/WAN IPSec VPN
+# -------------------
+# Если вы используете FreeSWAN IPSec VPN, вам нужно заполнить адреса
+# адреса шлюзов в IPSECSG и виртуальные интерфейсы для
+# FreeS/Wan IPSEC в параметрах FREESWANVI. Смотрите начало
+# этого firewall скрипта для установки параметров.
+# IPSECSG это список удаленных шлюзов разделенных пробелами. FREESWANVI это
+# список виртуальных интерфейсов для FreeS/Wan IPSEC, разделенных пробелами
+# Включите только те, которые фактически используются
+# Позволяем IPSEC протокол от удаленных шлюзов на внешний интерфейс
+# IPSEC использует три основных типа пакетов:
+# IKE использует UDP протокол и 500 порт,
+# ESP испоьзует протол номер 50, и
+# AH использует протокол номер 51
+# ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+# -s $IPSECSG -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+# -d $IPSECSG -j ACCEPT
+# ipchains -A input -i $EXTERNAL_INTERFACE -p 50 \
+# -s $IPSECSG -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p 50 \
+# -d $IPSECSG -j ACCEPT
+# ipchains -A input -i $EXTERNAL_INTERFACE -p 51 \
+# -s $IPSECSG -j ACCEPT
+# ipchains -A output -i $EXTERNAL_INTERFACE -p 51 \
+# -d $IPSECSG -j ACCEPT
+# Разрешаем весь трафик к виртуальному интерфейсу FreeS/WAN
+# ipchains -A input -i $FREESWANVI \
+# -s $ANYWHERE \
+# -d $ANYWHERE -j ACCEPT
+# ipchains -A output -i $FREESWANVI \
+# -s $ANYWHERE \
+# -d $ANYWHERE -j ACCEPT
+# Пересылка  всего из виртуального интерфейса в IPSEC тунель
+# ipchains -A forward -i $FREESWANVI \
+# -s $ANYWHERE \
+# -d $ANYWHERE -j ACCEPT
+# Отключение защиты от IP spoofing, чтобы IPSEC работал правильно
+# echo 0 &gt; /proc/sys/net/ipv4/conf/ipsec0/rp_filter
+# echo 0 &gt; /proc/sys/net/ipv4/conf/eth0/rp_filter
+# ----------------------------------------------------------------------------
+# Маскарадинг внутреннего трафика.
+# Весь внутренний трафик маскарадится.
+ipchains -A forward -i $EXTERNAL_INTERFACE -s $LOCALNET_1 -j MASQ
+# ----------------------------------------------------------------------------
+# Включение регистрации выбранных запрещенных пакетов
+ipchains -A input -i $EXTERNAL_INTERFACE -p tcp \
+-d $IPADDR -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-d $IPADDR $PRIVPORTS -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-d $IPADDR $UNPRIVPORTS -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 5 -d $IPADDR -j DENY -l
+ipchains -A input -i $EXTERNAL_INTERFACE -p icmp \
+-s $ANYWHERE 13:255 -d $IPADDR -j DENY -l
+# ----------------------------------------------------------------------------
+;;
+stop)
+echo -n "Shutting Firewalling Services: "
+# Remove all existing rules belonging to this filter
+ipchains -F
+# Delete all user-defined chain to this filter
+ipchains -X
+# Reset the default policy of the filter to accept.
+ipchains -P input ACCEPT
+ipchains -P output ACCEPT
+ipchains -P forward ACCEPT
+;;
+status)
+status firewall
+;;
+restart|reload)
+$0 stop
+$0 start
+;;
+*)
+echo "Usage: firewall {start|stop|status|restart|reload}"
+exit 1
+esac
+exit 0
+</PRE></FONT>
+<P align=justify>Сделайте этот скрипт исполняемым и измените права
+доступа</P><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/firewall<BR>[root@deep /]# chown 0.0
+/etc/rc.d/init.d/firewall<BR></FONT>
+<P align=justify>Создайте символическую rc.d ссылку для вашего Firewall
+следующей командой:</P><FONT color=#008080 size=-1>[root@deep /]# chkconfig
+--add firewall<BR>[root@deep /]# chkconfig --level 345 firewall on<BR></FONT>
+<P align=justify>Сейчас ваши правила для firewall готовы к использованию с
+System V init (System V init запускает все нормальные процессы, которые надо
+стартовать во время загрузки системы) и будут автоматически стартовать при
+каждой загрузке сервера. </P>
+<P align=justify>Ручная остановка firewall:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/firewall stop
+Shutting Firewalling Services: 	[ OK ]</PRE></FONT>
+<P align=justify>Запуск firewall вручную:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/firewall start
+Starting Firewalling Services: 	[ OK ]</PRE></FONT>
+<H3><A name=4>Запрещение доступа с некоторых адресов.</A></H3>
+<P align=justify>Иногда, вы можете встретить адреса с которых вы бы хотели
+закрыть весь доступ на все ваши сервера. Вы можете создать файл
+rc.firewall.blocked в каталоге "/etc/rc.d/" и раскомментировать следующие строки
+в скрипте firewall:</P><FONT color=#008080 size=-1>if [ -f
+/etc/rc.d/rc.firewall.blocked ]; then<BR>.
+/etc/rc.d/rc.firewall.blocked<BR>fi<BR></FONT>
+<P align=justify>Создайте файл rc.firewall.blocked (touch
+/etc/rc.d/rc.firewall.blocked) и добавьте в него все IP адреса, доступ с которых
+вы хотите заблокировать. Например,</P><FONT color=#008080
+size=-1>204.254.45.9<BR>187.231.11.5<BR></FONT>
+<H3>Дополнительная документация.</H3>
+<P align=justify>Для получения большей информации, Вы можете прочитать следующие
+man-ы:</P>
+<P align=justify><B>$ ipchains (8)</B> - управление IP firewall-ом<BR><B>$
+ipchains-restore (8)</B> - восстановление цепочек IP firewall-а из stdin<BR><B>$
+ipchains-save (8)</B> - запись цепочек IP firewall-а в stdout<BR></P>
+<H3><A name=5>Административная утилита Ipchains.</A></H3>
+<P align=justify>Опции, описываемые ниже, лишь некоторые из существующих,
+которые наиболее часто используются. Для получения полной информации обо всех
+параметрах запуска ipchains читайте страницы руководства (man) и
+документацию.</P><B>ipchains</B><BR><BR>Утилита ipchains используется для
+администрирования firewall-а на Linux. Мы можем использовать ее для установки
+правил firewall-а, так как мы уже делали в этой книге. Когда правила созданы, мы
+можем, используя ряд команд, поддерживать и контролировать их.
+<P align=justify> Для просмотра всех правил в выбранной цепочке используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ipchains -L</FONT>
+<P align=justify>Если название цепочки не определено, то выводятся все
+правила.</P>
+<P align=justify> Для получения всех правил в цепочке input используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ipchains -L input</FONT>
+<P align=justify> Для получения всех правил в цепочке output используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ipchains -L output</FONT>
+
+<P align=justify> Для получения всех правил в цепочке forward используйте
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ipchains -L
+forward</FONT>
+<P align=justify>Это, конечно, работает только, если вы настроили маскарадинг на
+вашем сервере.</P>
+<P align=justify> Для получения списка всех правил маскарадинга в выбранной
+цепочке используйте команду:</P><FONT color=#008080 size=-1>[root@deep /]#
+ipchains -ML</FONT>
+<P align=justify>Эта опция позволяет просматривать текущие маскарадные
+соединения. Чтобы эта команда работала, вам надо на сервере иметь настроенный
+маскарадинг.</P>
+<P align=justify> Для получения списка правил в цифровом формате (выводятся
+адреса, а не имена) в выбранной цепочке используйте команду:</P><FONT
+color=#008080 size=-1>[root@deep /]# ipchains -nL</FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><A href="ch7_3.html">Назад</A></TD>
+    <TD align=middle><A href="index.html#8">Оглавление</A></TD>
+    <TD align=right><A href="ch9.html">Вперед</A></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center> <AHREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache= " + rndnum + "'target=
+  '_top'>"); document.write("<IMGSRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0></A><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

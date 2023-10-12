@@ -1,0 +1,1042 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 17 Серверное программное обеспечение (Сервис баз данных) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#17">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 17 Серверное программное обеспечение (Сервис баз данных) -
+      OpenLDAP сервер</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#1">-->OpenLDAP
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#3">-->Организация
+      защиты OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#4">-->Утилиты
+      создания и поддержки OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#5">-->Утилиты
+      пользователя OpenLDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html#6">-->Netscape
+      Address Book клиент для LDAP<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#7">-->Linux сервер
+      баз данных PostgreSQL<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#8">-->Создание и
+      инсталляция базы данных из-под пользователя Postgres<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#9">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html#10">-->Команды<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=205
+      src="ch17_1.files/30.jpg" width=200></TD></TR></TBODY></TABLE>
+<H3>Linux OpenLDAP сервер</H3><B>Краткий обзор.</B>
+<P align=justify>Если мы говорим в этой книге о безопасности и оптимизации, то
+почему вдруг возникает глава посвященная OpenLDAP? Сервер каталогов OpenLDAP
+расширит ваши горизонты за счет использования его возможностей. Мы можем
+использовать ее возможности дублирования для централизации и объединения
+различной информации на одном сервере для всех других серверов нашей сети.
+Представьте себе возможности добавления и отключения учетных записей Unix или
+NT, установка доступа к Веб серверу для служебного использования, добавление
+почтовых адресов и псевдонимов, все с единственной операцией доступной как NIS
+сервис, с добавлением возможности SSL шифрования и скоростью
+объектно-ориентированных иерархий. Другое интересное использование – это
+создание надежного списка разработчиков на одном или более LDAP серверов, доступ
+к которому может быть открыт из приватной сети или из Интернет.</P>
+<P align=justify>Как сказано на веб сервере OpenLDAP:</P>
+<P align=justify>LDAP (Lightweight Directory Access Protocol) – это открытый
+протокол для доступа к информационным сервисам. Он работает через транспортные
+протоколы Интернет, такие как TCP, и может быть использован для доступа к
+автономным серверам каталогов или каталогам X.500.</P><IMG alt="" border=0
+height=224 src="ch17_1.files/31.jpg" width=353><BR><BR>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам “/var/tmp” (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем “root”.<BR>OpenLDAP версии
+1.2.10<BR></P>
+<P align=justify><B>Пакеты.</B><BR>Домашняя страница OpenLDAP: <!--<A
+href="http://www.openldap.org/"
+target=_blank>-->http://www.openldap.org/<!--</A>--><BR>FTP сервер OpenLDAP: <!--<A
+href="ftp://204.152.186.57/" target=_blank>-->204.152.186.57<!--</A>--><BR>Вы должны
+скачать: openldap-1.2.10.tgz<BR></P>
+<P align=justify>Тарболы.<BR>Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции OpenLDAP и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+OpenLDAP1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+OpenLDAP2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff OpenLDAP1 OpenLDAP2 &gt;
+OpenLDAP-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:</P><FONT color=#008080 size=-1>[root@deep /]#
+cp openldap-version.tgz /var/tmp<BR>[root@deep /]# cd /var/tmp/<BR>[root@deep
+tmp]# tar xzpf openldap-version.tgz<BR></FONT>
+<H3>Компиляция и оптимизация.</H3>
+<P align=justify>Перейдите в новый OpenLDAP каталог и введите следующие команды
+на вашем терминале:</P><B>Шаг 1</B>
+<P align=justify>Важно заметить, что вы можете настроить три различных вида баз
+данных на использование с LDAP. Высокопроизводительная, с памятью на диске база
+данных “LDBM”; интерфейс базы данных к произвольным UNIX командам или shell
+скриптам, называемый “SHELL”; и простейшая база данных используемая в файле
+паролей “PASSWD”.</P>
+<P align=justify>По умолчанию OpenLDAP подразумевает использование базы данных
+LDBM,так что если вы хотите настроиться на другой тип базы данных, вы должны при
+инсталляции определить ее. Для SHELL вы должны добавить опцию “--enable-shell”,
+а для PASSWD (используется как замена сервису NIS) - “--enable-passwd”.</P><FONT
+color=#008080 size=-1>CC="egcs" \<BR>CFLAGS="-O9 -funroll-loops -ffast-math
+-malign-double -mcpu=pentiumpro -march=pentiumpro -fomit-frame-pointer
+-fno-exceptions -D_REENTRANT" \<BR>./configure \<BR>--prefix=/usr
+\<BR>--libexecdir=/usr/sbin \<BR>--localstatedir=/var/run \<BR>--sysconfdir=/etc
+\<BR>--enable-dns \<BR>--enable-shared \<BR>--with-gnu-ld
+\<BR>--disable-debug<BR></FONT>
+<P align=justify>Эти опции настраивают OpenLDAP на следующее:</P>
+<UL>
+  <LI>включить поддержку dns.
+  <LI>создавать совместно используемые библиотеки.
+  <LI>предполагаем, что компилятор C использует GNU ld. </LI></UL>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Опции компиляции предложенные выше
+предполагают использование базы данных LDBM. Для других типов баз данных
+используйте соответствующие опции, описанные выше.</P><B>Шаг 2</B>
+<P align=justify>Сейчас мы должны скомпилировать и инсталлировать OpenLDAP на
+сервере:</P><FONT color=#008080 size=-1>[root@deep openldap-1.2.10]# make
+depend<BR>[root@deep openldap-1.2.10]# make<BR>[root@deep openldap-1.2.10]# cd
+tests/<BR>[root@deep tests]# make<BR>[root@deep tests]# cd ..<BR>[root@deep
+openldap-1.2.10]# make install<BR></FONT>
+<P align=justify>Команда "make depend" будет создавать необходимые зависимости
+для различных файлов, “make” компилирует все файлы с исходными кодами в
+исполняемые двоичные файлы и затем “make install” инсталлирует исполняемые файлы
+и файлы поддержки в необходимые каталоги. Команда “make” в подкаталоге “/test”
+будет делать некоторые важные тесты для проверки функциональности вашего LDAP
+сервера перед инсталляцией. Если некоторые тесты закончатся ошибкой, вам
+необходимо исправить их перед продолжением инсталляции.</P><FONT color=#008080
+size=-1>[root@deep openldap-1.2.10]# install -d -m 700 /var/ldap<BR>[root@deep
+openldap-1.2.10]# echo localhost &gt; /etc/openldap/ldapserver<BR>[root@deep
+openldap-1.2.10]# strip /usr/lib/liblber.so.1.0.0<BR>[root@deep
+openldap-1.2.10]# strip /usr/lib/libldap.so.1.0.0<BR>[root@deep
+openldap-1.2.10]# strip /usr/lib/libldap.a<BR>[root@deep openldap-1.2.10]# strip
+/usr/lib/liblber.a<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/in.xfingerd<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/go500<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/go500gw<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/mail500<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/rp500<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/rcpt500<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/fax500<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/slapd<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/slurpd<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldif<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldif2ldbm<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldif2index<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldif2id2entry<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldif2id2children<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldbmcat<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/ldbmtest<BR>[root@deep openldap-1.2.10]# strip
+/usr/sbin/centipede<BR>[root@deep openldap-1.2.10]# strip
+/usr/bin/ud<BR>[root@deep openldap-1.2.10]# strip /usr/bin/ldapadd<BR>[root@deep
+openldap-1.2.10]# strip /usr/bin/ldapsearch<BR>[root@deep openldap-1.2.10]#
+strip /usr/bin/ldapmodify<BR>[root@deep openldap-1.2.10]# strip
+/usr/bin/ldapmodrdn<BR>[root@deep openldap-1.2.10]# strip
+/usr/bin/ldappasswd<BR>[root@deep openldap-1.2.10]# strip
+/usr/bin/ldapdelete</FONT><BR>
+<P align=justify>Команда “install” будет создавать новый каталог с именем “ldap”
+в каталоге “/var” и установит режим доступа к нему чтение, запись и исполнение
+только для суперпользователя “root” (700) из соображений безопасности. Команда
+“strip” будет удалять все символы из объектных файлов. Это необходимо, чтобы
+сделать исполняемые файлы меньшего размера.</P>
+<P align=justify><B>Очистка после работы</B><BR><FONT color=#008080
+size=-1>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# rm -rf openldap-version/
+openldap-version.tgz<BR></FONT>Команды “rm” будет удалять все файлы с исходными
+кодами, которые мы использовали при компиляции и инсталляции OpenLDAP. Также
+будет удален сжатый архив OpenLDAP из каталога “/var/tmp”.</P>
+<H3><A name=2>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве “floppy.tgz”, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файлы связанные с OpenLDAP из архива, измените их под
+свои требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с адреса:<BR><!--<A
+href="http://www.openna.com/books/floppy.tgz">-->http://www.openna.com/books/floppy.tgz<!--</A>--></P>
+<P align=justify>Для запуска OpenLDAP сервера следующие файлы должны быть
+созданы или скопированы в нужный каталог:</P>
+<P align=justify>Копируйте файл slapd.conf в каталог
+“/etc/openldap/”.<BR>Копируйте файл ldap в каталог “/etc/rc.d/init.d/”.<BR></P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz. </P>
+<H3>Конфигурация файла “/etc/ldap/slapd.conf”</H3>
+<P align=justify>Файл “/etc/openldap/slapd.conf” это основной конфигурационный
+файл для автономного LDAP демона. Все опции: права доступа, пароль, тип базы
+данных, месторасположение базы данных и прочие могут быть настроены в нем и
+применены к демону “slapd”. Нижеприведенный пример настраивает файл “slapd.conf”
+на использование базы данных LDBM.</P>
+<P align=justify>Редактируйте файл slapd.conf (vi /etc/openldap/slapd.conf) и
+добавьте/измените следующую информацию:</P><PRE>#
+# Смотрите slapd.conf(5) для деталей о конфигурационных опциях.
+# Этот файл не должен быть доступен для чтения всем пользователям.
+#
+include /etc/openldap/slapd.at.conf
+include /etc/openldap/slapd.oc.conf
+schemacheck off
+#referral ldap://ldap.itd.umich.edu
+pidfile /var/run/slapd.pid
+argsfile /var/run/slapd.args
+#####################################################################
+##
+# определения базы данных ldbm
+#####################################################################
+##
+database ldbm
+suffix "o=openna, c=com"
+directory /var/ldap
+rootdn "cn=admin, o=openna, c=com"
+rootpw secret
+# избегайте использование пароля записанного открытым текстом, особенно
+# для пользователя rootdn. Смотрите slapd.conf(5) для деталей.
+# определение индексируемых атрибутов ldbm
+index cn,sn,uid
+index objectclass pres,eq
+index default none
+# определение прав доступа к ldbm
+defaultaccess read
+access to attr=userpassword
+                by self write
+                by dn="cn=admin, o=openna, c=com" write
+                by * compare</PRE>
+<P align=justify>Вы должны убедиться, что установили следующие опции в вашем
+файле “slapd.conf” перед запуском демона slapd:</P>
+<P align=justify><B>suffix “o=openna, c=com”</B><BR>Эта опция определяет DN
+(отличительное имя) корня поддерева, которое вы пытаетесь создать. Другими
+словами, это показывает какие элементы должны храниться в этой базе данных.</P>
+<P align=justify><B>directory /var/ldap</B><BR>Эта опция определяет каталог, где
+должны размещаться база данных и соответствующие индексные файлы LDAP. Мы должны
+установить этот параметр в “/var/ldap”, потому что мы создали этот каталог на
+более ранней стадии инсталляции специально для этих целей.</P>
+<P align=justify><B>rootdn "cn=admin, o=openna, c=com"</B><BR>Эта опция
+определяет DN (отличительное имя) элемента, которому разрешено делать все, что
+угодно в каталоге LDAP. Имя введенное здесь может фактически не существовать в
+файле “/etc/passwd”.</P>
+<P align=justify><B>rootpw secret</B><BR>Эта опция определяет пароль, который
+может использоваться для аутентификации элемента "super-user" базы данных. Это
+пароль для опции rootdn определенной выше. Важно не использовать пароли,
+записанные открытым текстом, а использовать вместо них шифрованные пароли.</P>
+<P align=justify><B>index cn,sn,uid | index objectclass pres,eq | index default
+none</B><BR>Эти опции определяет индексные определения, которые вы хотите
+создать и управлять в определении базы данных. Параметры, которые мы определили
+в нашем “slapd.conf” файле, указывают поддерживать индексы для атрибутов cn, sn
+и uid (index cn,sn,uid), индексы наличия и эквивалентности для атрибута
+objectclass (index objectclass pres,eq), и не создавать индексы для всех
+остальных атрибутов (index default none). Смотрите руководство пользователя для
+большей информации.</P>
+<P align=justify>Последние опции в файле “slapd.conf” связаны с контролем
+доступа к каталогу LDAP.</P><PRE>defaultaccess read
+access to attr=userpassword
+                by self write
+                by dn="cn=admin, o=openna, c=com" write
+                by * compare</PRE>
+<P align=justify>Этот пример применяется для элементов в поддереве "o=openna,
+c=com". Доступ на чтение разрешается всем, и сам элемент может записывать все
+свои атрибуты, исключая userpassword. Атрибут userpassword может быть записан
+только определенным элементом (admin), и сопоставим всеми. Смотрите ваше
+руководство пользователя для получения большей информации.</P>
+<H3>Конфигурация скрипта “/etc/rc.d/init.d/ldap”</H3>
+<P align=justify>Настроим ваш скрипт “/etc/rc.d/init.d/ldap” для старта и
+остановки LDAP сервера. Создайте скрипт ldap (touch /etc/rc.d/init.d/ldap) и
+добавьте в него:</P><PRE>#!/bin/sh
+#
+# ldap Это shell скрипт script заботящийся о запуске и остановке
+# сервера ldap (slapd и slurpd).
+#
+# chkconfig: - 70 40
+# описание: LDAP (Lightweight Directory Access Protocol) используется
+# для реализации индустриального стандарта службы каталогов.
+# имя процесса: slapd
+# конфигурационный файл: /etc/openldap/slapd.conf
+# pid файл: /var/run/slapd.pid
+# библиотека исходных функций.
+. /etc/rc.d/init.d/functions
+# Исходная сетевая конфигурация.
+. /etc/sysconfig/network
+# Проверка, что сеть работает.
+[ ${NETWORKING} = "no" ] &amp;&amp; exit 0
+[ -f /usr/sbin/slapd ] || exit 0
+[ -f /usr/sbin/slurpd ] || exit 0
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+   # Запуск демонов.
+   echo -n "Starting ldap: "
+   daemon slapd
+   RETVAL=$?
+   if [ $RETVAL -eq 0 ]; then
+     if grep -q "^replogfile" /etc/openldap/slapd.conf; then
+       daemon slurpd
+       RETVAL=$?
+       [ $RETVAL -eq 0 ] &amp;&amp; pidof slurpd | cut -f 1 -d " " &gt; /var/run/slurpd
+     fi
+   fi
+   echo
+   [ $RETVAL -eq 0 ] &amp;&amp; touch /var/lock/subsys/ldap
+  ;;
+  stop)
+    # Остановка демонов.
+    echo -n "Shutting down ldap: "
+    killproc slapd
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+      if grep -q "^replogfile" /etc/openldap/slapd.conf; then
+        killproc slurpd
+        RETVAL=$?
+      fi
+    fi
+    echo
+    if [ $RETVAL -eq 0 ]; then
+       rm -f /var/lock/subsys/ldap
+       rm -f /var/run/slapd.args
+    fi
+  ;;
+  status)
+     status slapd
+     RETVAL=$?
+     if [ $RETVAL -eq 0 ]; then
+       if grep -q "^replogfile" /etc/openldap/slapd.conf; then
+         status slurpd
+         RETVAL=$?
+       fi
+     fi
+  ;;
+  restart)
+    $0 stop
+    $0 start
+    RETVAL=$?
+  ;;
+  reload)
+    killproc -HUP slapd
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+      if grep -q "^replogfile" /etc/openldap/slapd.conf; then
+        killproc -HUP slurpd
+        RETVAL=$?
+      fi
+    fi
+  ;;
+  *)
+   echo "Usage: $0 start|stop|restart|status}"
+   exit 1
+esac
+exit $RETVAL</PRE>
+<P align=justify>Сейчас, сделаем этот скрипт исполняемым и изменим права
+доступа:<BR><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/ldap</FONT></P>
+<P align=justify>Создадим символическую rc.d ссылку для OpenLDAP
+командой:<BR><FONT color=#008080 size=-1>[root@deep /]# chkconfig --add
+ldap</FONT></P>
+<P align=justify>Скрипт OpenLDAP не будет автоматически стартовать демон slapd,
+когда вы перезагружаете сервер. Вы можете изменить это выполнив
+команду:<BR><FONT color=#008080 size=-1>[root@deep /]# chkconfig --level 345
+ldap on</FONT></P>
+<P align=justify>Запустите сервер OpenLDAP вручную следующей командой:<BR><FONT
+color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/ldap start
+Starting ldap:                  [ OK ]</PRE></FONT>
+<P></P>
+<H3><A name=3>Организация защиты OpenLDAP</A></H3><B>Иммунизация важнейших
+конфигурационных файлов</B>
+<P align=justify>Бит постоянства может быть использован для предотвращения
+случайного удаления или переписывания защищаемых файлов. Он также предотвращает
+возможность создания символических ссылок к этим файлам. После того как ваш файл
+“slapd.conf” настроен, можно его иммунизировать следующей командой:</P><FONT
+color=#008080 size=-1>[root@deep /]# chattr +i /etc/openldap/slapd.conf</FONT>
+<H3>Дополнительная документация</H3>
+<P align=justify>Для получения большей информации, вы можете прочитать несколько
+страниц руководства:</P>
+<P align=justify>$ man ldapd (8) – демон LDAP X.500 протокла<BR>$ man ldapdelete
+(1) – утилита для удаления элементов ldap<BR>$ man ldapfilter.conf (5) –
+конфигурационный файл для LDAP осуществляющий фильтр операций<BR>$ man
+ldapfriendly (5) – файл данных для дружественных операций LDAP<BR>$ man
+ldapmodify, ldapadd (1) – утилита для изменения и добавления элементов ldap<BR>$
+man ldapmodrdn (1) - RDN утилита для модификации элементов ldap<BR>$ man
+ldappasswd (1) – изменения пароля элементов LDAP<BR>$ man ldapsearch (1) –
+утилита поиска ldap<BR>$ man ldapsearchprefs.conf (5) – конфигурационный файл
+для поиска предпочтительных операций LDAP<BR>$ man ldaptemplates.conf (5) –
+конфигурационный файл для операций отображения образцов LDAP<BR>$ man ldif (5) -
+LDAP Data Interchange Format<BR>$ man slapd (8) – автономный демон LDAP<BR>$ man
+slapd.conf (5) – конфигурационный файл для slapd, автономного демона LDAP<BR>$
+man slurpd (8) – автономный LDAP Update Replication Daemon<BR>$ man ud (1) –
+интерактивная программа запросов к серверу каталогов LDAP<BR></P>
+<H3><A name=4>Утилиты создания и поддержки OpenLDAP</A></H3><FONT
+size=+1>Создание базы данных LDMB</FONT>
+<P align=justify>Есть два метода создания базы данных для LDAP, первый
+оффлайновый с помощью утилиты “ldif2ldbm” и второй онлайновый при помощи утилиты
+“ldapadd”. Обычно, вы будете использовать оффлайновый метод, когда вы хотите
+добавить несколько тысяч элементов в вашу базу данных и онлайновый, когда надо
+добавить небольшое число элементов. Также важно заметить, что оффлайновый метод
+требует, чтобы ваш “slapd” демон не был запущен, а онлайновый требует работы
+“slapd” демона.</P><B>Создание базы данных LDMB оффлайновым методом при помощи
+утилиты “ldif2ldbm”</B>
+<P align=justify>Первое, что вы должны сделать это создать входной файл LDIF
+содержащий текстовое представление ваших элементов. Текстовый файл, именуемый
+“my- data-file”, может быть использован как пример (конечно, ваш реальный
+входной LDIF файл будет содержать много больше информации). Когда вы
+инсталлируете OpenLDAP первый раз и имеете много элементов, которые нужно
+положить в базу данных, всегда будет хорошей идеей положить всю эту информацию в
+текстовый файл и добавить ее в вашу базу данных при помощи утилиты
+“ldif2ldbm”.</P><B>Шаг 1</B>
+<P align=justify>Создайте файл my-data-file (touch /tmp/my-data-file) и добавьте
+в него, например, следующие строки:</P><FONT color=#008080><PRE>dn: o=openna, c=com
+o: openna
+objectclass: organization
+
+dn: cn=Gerhard Mourani, o=openna, c=com
+cn: Gerhard Mourani
+sn: Mourani
+mail: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="66010b09131407080f26100f02030912140908480507">[email&#160;protected]</a>
+title: Author
+objectclass: person
+
+dn: cn=Anthony Bay, o=openna, c=com
+cn: Anthony Bay
+sn: Bay
+homephone: (444) 111-2233
+mobile: (444) 555-6677
+mail: <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="18797a79615877687d767679367b7775">[email&#160;protected]</a>
+objectclass: person
+
+dn: cn=George Parker, o=openna, c=com
+cn: George Parker
+sn: Parker
+telephonenumber: (555) 234-5678
+fax: (543) 987-6543
+mobile: (543) 321-4354
+description: E-Commerce
+objectclass: person
+</PRE></FONT>
+<P align=justify>Вышеприведенный пример показывает вам как конвертирует вашу
+информацию в LDIF файлы перед добавлением ее в ваш новый каталог.
+Консультируйтесь с вашей OpenLDAP документацией или книгой для получения большей
+информации.</P><B>Шаг 2</B>
+<P align=justify>Как только входной LDIF файл содержащий все элементы создан, мы
+можем добавить их в наш LDAP сервер каталогов. Для этого используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep tmp]# ldif2ldbm -i
+&lt;inputfile&gt; -f &lt;slapdconfigfile&gt;<BR>[root@deep tmp]# ldif2ldbm -i
+my-data-file -f /etc/openldap/slapd.conf<BR></FONT>
+<P align=justify>Опция “-i” с опцией &lt;inputfile&gt; оперделяет
+месторасположения LDIF файла. Опция &lt;slapdconfigfile&gt; задает
+месторасположение конфигурационного файла slapd, который определяет где
+создавать индексы, какие индексы создавать и т.д.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Важно заметить, что при этом режиме создания
+демон “slapd”не должен быть запущен.</P><B>Создание базы данных LDMB онлайновым
+методом при помощи утилиты “ldapadd”</B>
+<P align=justify>Если элементы в вашем сервере каталогов уже созданы или вы
+хотите добавить небольшое количество информации в вашу базу данных, то вы можете
+предпочесть использовать утилиту “ldapadd”, чтобы выполнить вашу работу онлайн.
+Например, чтобы добавить элемент “Europe Mourani” используя утилиту “ldapadd”,
+вы должны создать файл, называемый “newentry” в каталоге “/tmp”.</P><B>Шаг 1</B>
+
+<P align=justify>Создайте файл newentry (touch /tmp/newentry) и добавьте в него
+следующие строки:</P><FONT color=#008080 size=-1>cn=Europe Mourani, o=openna,
+c=com<BR>cn=Europe
+Mourani<BR>sn=Mourani<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="630e020a0f5e060e0c1611020d0a230c0f074d000c0e">[email&#160;protected]</a><BR>description=Marketing
+relation<BR>objectClass=person<BR></FONT><BR><B>Шаг 2</B>
+<P align=justify>После того, как файл “newentry” создан, мы должны добавить
+элемены в сервер каталогов LDAP. Для этого используйте следующую
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ldapadd -f /tmp/newentry
+-D "cn=admin, o=openna, c=com" -W<BR>Enter LDAP Password :<BR></FONT>
+<P align=justify>Вышеприведенная команда подразумевает что вы установили rootdn
+в "cn=admin, o=openna, c=com" и rootpw в "secret". Вам будет предложено ввести
+пароль.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Важно заметить, что во время использования
+этой утилиты демон “slapd” должен быть запущен.</P><FONT
+size=+1>ldapmodify</FONT>
+<P align=justify>В отличие от реляционных баз данных, где данные постоянно
+изменяются, сервер каталогов содержит информацию, которая единожды введенная
+изменяется редко. Но иногда, вам все же приходится модифицировать данные, и в
+этом вам может помочь утилита “ldapmodify”. Она позволяет вам добавлять и
+модифицировать элементы хранящиеся на сервере каталогов. Допустим что мы хотим
+заменить содержимое элемента “Europe Mourani” атрибут почты на новое значение
+“<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="4d282022383f2c23240d23283a632e2220">[email&#160;protected]</a>”, для этого нам понадобятся следующие шаги:</P><B>Шаг 1</B>
+<P align=justify>Создаем файл modifyentry (touch /tmp/modifyentry) и добавляем в
+него следующее содержимое:</P><FONT color=#008080 size=-1>cn=Europe Mourani,
+o=openna, c=com<BR>- <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c4a9a5ada8f9a1a9abb1b6a5aaad84aba8a0eaa7aba9">[email&#160;protected]</a> # будет удален старый почтовый адрес
+для Europe Mourani из базы данных.<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f9d294989095c49c94968c8b989790b9979c8ed79a9694">[email&#160;protected]</a> # будет добавлен
+новый почтовый адрес для Europe Mourani в базу данных.<BR><BR></FONT><B>Шаг
+2</B>
+<P align=justify>После создания файла “modifyentry”, мы должны заменить элемнты
+каталога LDAP сервера в соответствии с содержимым этого файла. Это делается
+следующей командой:</P><FONT color=#008080 size=-1>[root@deep /]# ladpmodify -D
+‘cn=Admin, o=openna, c=com’ -W -f &lt;inputfile&gt;<BR>[root@deep /]# ladpmodify
+-D ‘cn=Admin, o=openna, c=com’ -W -f modifyentry<BR></FONT>
+<P align=justify>где &lt;inputfile&gt; - имя файла “modifyentry”, который был
+создан на шаге 1.</P>
+<H3><A name=5>Утилиты пользователя OpenLDAP</A></H3><FONT size=+1>Поиск элемента
+на сервере каталогов LDAP</FONT>
+<P align=justify>Утилита ldapsearch ищет в базе данных каталога LDAP информацию,
+которую вы запрашиваете.<BR>Искать в каталоге LDAP элемент, используя
+команду:</P><FONT color=#008080 size=-1>[root@deep /]# ldapsearch -b ‘dn’
+‘attrs’<BR>[root@deep /]# ldapsearch -b ‘o=openna, c=com’
+‘cn=europe*’<BR>cn=Europe Mourani, o=openna, c=com<BR>cn=Europe
+Mourani<BR>sn=Mourani<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5c313d353061393133292e3d32351c333038723f3331">[email&#160;protected]</a><BR>description=Marketing
+relation<BR>objectClass=person<BR></FONT>
+<P align=justify>Эта команда будет возвращать все элементы и значения с именем
+europe и будет выводить результаты в стандартный вывод вашего терминала.</P>
+<H3>Некоторые возможны варианты использования OpenLDAP</H3>
+<P align=justify>OpenLDAP может использоваться как:</P>
+<OL>
+  <LI>Сервер веб каталога.
+  <LI>Сервер белых страниц.
+  <LI>Сертификационный сервер.
+  <LI>Сервер контроля доступа.
+  <LI>Сетевой сервер имен. </LI></OL>
+<H3><A name=6>Клиент Netscape Address Book для LDAP</A></H3>
+<P align=justify>Если вы имеете Netscape проинсталлированный на вашей Linux
+системе или любой другой операционной системе, то вы можете использовать его
+возможности Address Book для доступа к серверу каталогов LDAP, только что
+установленной на вашем Linux и запросить ваш сервер каталогов об информации
+подобной той, что вы получали используя команду “ldapsearch”. Если вы
+интересуетесь как сделать это, то следуйте по шагам описанным ниже:</P>
+<OL>
+  <LI>Открыть Netscape Communicator
+  <LI>Перейти в меню Communicator
+  <LI>Открыть Address Book
+  <LI>Перейти в меню File
+  <LI>Кликнуть на New Directory …
+  <LI>Заполнить поля вашей информацией о сервере </LI></OL>
+<P align=justify>Например:</P>
+<UL>
+  <LI>Описание: Open Network Architecture
+  <LI>LDAP сервер: 208.164.186.3
+  <LI>Корень сервера: o=openna, c=com </LI></UL>
+<P align=justify>Сейчас вы сделаи все, что нужно, чтобы иметь возможность
+создавать запросы к вашему серверу каталогов LDAP на Linux, используя блок с
+именем “Show names Containing:” для запуска поиска и кликните на кнопке “Search
+For:” для получения результатов.</P><IMG alt="" border=0 height=405
+src="ch17_1.files/32.jpg" width=519><BR>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/openldap
+&gt; /etc/openldap/ldap.conf
+&gt; /etc/openldap/ldap.conf.default
+&gt; /etc/openldap/ldapfilter.conf
+&gt; /etc/openldap/ldapfilter.conf.default
+&gt; /etc/openldap/ldaptemplates.conf
+&gt; /etc/openldap/ldaptemplates.conf.default
+&gt; /etc/openldap/ldapsearchprefs.conf
+&gt; /etc/openldap/ldapsearchprefs.conf.default
+&gt; /etc/openldap/slapd.conf
+&gt; /etc/openldap/slapd.conf.default
+&gt; /etc/openldap/slapd.at.conf
+&gt; /etc/openldap/slapd.at.conf.default
+&gt; /etc/openldap/slapd.oc.conf
+&gt; /etc/openldap/slapd.oc.conf.default
+&gt; /etc/openldap/ldapserver
+&gt; /etc/rc.d/init.d/ldap
+&gt; /etc/rc.d/rc0.d/K40ldap
+&gt; /etc/rc.d/rc1.d/K40ldap
+&gt; /etc/rc.d/rc2.d/K40ldap
+&gt; /etc/rc.d/rc3.d/S70ldap
+&gt; /etc/rc.d/rc4.d/S70ldap
+&gt; /etc/rc.d/rc5.d/S70ldap
+&gt; /etc/rc.d/rc6.d/K40ldap
+&gt; /usr/bin/ud
+&gt; /usr/bin/ldapsearch
+&gt; /usr/bin/ldapmodify
+&gt; /usr/bin/ldapdelete
+&gt; /usr/bin/ldapmodrdn
+&gt; /usr/bin/ldappasswd
+&gt; /usr/bin/ldapadd
+&gt; /usr/include/ldap.h
+&gt; /usr/include/lber.h
+&gt; /usr/include/ldap_cdefs.h
+&gt; /usr/include/disptmpl.h
+&gt; /usr/include/srchpref.h
+&gt; /usr/lib/liblber.so.1.0.0
+&gt; /usr/lib/liblber.so.1
+&gt; /usr/lib/liblber.so
+&gt; /usr/lib/liblber.la
+&gt; /usr/lib/liblber.a
+&gt; /usr/lib/libldap.so.1.0.0
+&gt; /usr/lib/libldap.so.1
+&gt; /usr/lib/libldap.so
+&gt; /usr/lib/libldap.la
+&gt; /usr/lib/libldap.a
+&gt; /usr/man/man1/ud.1
+&gt; /usr/man/man1/ldapdelete.1
+&gt; /usr/man/man1/ldapmodify.1
+&gt; /usr/man/man1/ldapadd.1
+&gt; /usr/man/man1/ldapmodrdn.1
+&gt; /usr/man/man1/ldappasswd.1
+&gt; /usr/man/man1/ldapsearch.1
+&gt; /usr/man/man3/cldap_close.3
+&gt; /usr/man/man3/cldap_open.3
+&gt; /usr/man/man3/cldap_search_s.3
+&gt; /usr/man/man3/cldap_setretryinfo.3
+&gt; /usr/man/man3/lber-decode.3
+&gt; /usr/man/man3/lber-encode.3
+&gt; /usr/man/man3/ldap_open.3
+&gt; /usr/man/man3/ldap_errlist.3
+&gt; /usr/man/man3/ldap_err2string.3
+&gt; /usr/man/man3/ldap_first_attribute.3
+&gt; /usr/man/man3/ldap_next_attribute.3
+&gt; /usr/man/man3/ldap_first_entry.3
+&gt; /usr/man/man3/ldap_next_entry.3
+&gt; /usr/man/man3/ldap_count_entries.3
+&gt; /usr/man/man3/ldap_friendly.3
+&gt; /usr/man/man3/ldap_friendly_name.3
+&gt; /usr/man/man3/ldap_free_friendlymap.3
+&gt; /usr/man/man3/ldap_get_dn.3
+&gt; /usr/man/man3/ldap_explode_dn.3
+&gt; /usr/man/man3/ldap_explode_dns.3
+&gt; /usr/man/man3/ldap_dn2ufn.3
+&gt; /usr/man/man3/ldap_is_dns_dn.3
+&gt; /usr/man/man3/ldap_get_values.3
+&gt; /usr/man/man3/ldap_get_values_len.3
+&gt; /usr/man/man3/ldap_value_free.3
+&gt; /usr/man/man3/ldap_value_free_len.3
+&gt; /usr/man/man3/ldap_count_values.3
+&gt; /usr/man/man3/ldap_count_values_len.3
+&gt; /usr/man/man3/ldap_getfilter.3
+&gt; /usr/man/man3/ldap_init_getfilter.3
+&gt; /usr/man/man3/ldap_init_getfilter_buf.3
+&gt; /usr/man/man3/ldap_getfilter_free.3
+&gt; /usr/man/man3/ldap_getfirstfilter.3
+&gt; /usr/man/man3/ldap_getnextfilter.3
+&gt; /usr/man/man3/ldap_setfilteraffixes.3
+&gt; /usr/man/man3/ldap_build_filter.3
+&gt; /usr/man/man3/ldap_modify.3
+&gt; /usr/man/man3/ldap_modify_s.3
+&gt; /usr/man/man3/ldap_mods_free.3
+&gt; /usr/man/man3/ldap_modrdn.3
+&gt; /usr/man/man3/ldap_modrdn_s.3
+&gt; /usr/man/man3/ldap_modrdn2.3
+&gt; /usr/man/man3/ldap_modrdn2_s.3
+&gt; /usr/man/man3/ldap_init.3
+&gt; /usr/man/man3/ldap_result.3
+&gt; /usr/man/man3/ldap_msgfree.3
+&gt; /usr/man/man3/ldap_search.3
+&gt; /usr/man/man3/ldap_search_s.3
+&gt; /usr/man/man3/ldap_search_st.3
+&gt; /usr/man/man3/ldap_searchprefs.3
+&gt; /usr/man/man3/ldap_init_searchprefs.3
+&gt; /usr/man/man3/ldap_init_searchprefs_buf.3
+&gt; /usr/man/man3/ldap_free_searchprefs.3
+&gt; /usr/man/man3/ldap_first_searchobj.3
+&gt; /usr/man/man3/ldap_next_searchobj.3
+&gt; /usr/man/man3/ldap_sort.3
+&gt; /usr/man/man3/ldap_sort_entries.3
+&gt; /usr/man/man3/ldap_sort_values.3
+&gt; /usr/man/man3/ldap_sort_strcasecmp.3
+&gt; /usr/man/man3/ldap_ufn.3
+&gt; /usr/man/man3/ldap_ufn_search_s.3
+&gt; /usr/man/man3/ldap_ufn_search_c.3
+&gt; /usr/man/man3/ldap_ufn_search_ct.3
+&gt; /usr/man/man3/ldap_ufn_setprefix.3
+&gt; /usr/man/man3/ldap_ufn_setfilter.3
+&gt; /usr/man/man3/ldap.3
+&gt; /usr/man/man3/cldap.3
+&gt; /usr/man/man3/ldap_abandon.3
+&gt; /usr/man/man3/ldap_add.3
+&gt; /usr/man/man3/ldap_add_s.3
+&gt; /usr/man/man3/ldap_bind.3
+&gt; /usr/man/man3/ldap_bind_s.3
+&gt; /usr/man/man3/ldap_simple_bind.3
+&gt; /usr/man/man3/ldap_simple_bind_s.3
+&gt; /usr/man/man3/ldap_kerberos_bind_s.3
+&gt; /usr/man/man3/ldap_kerberos_bind1.3
+&gt; /usr/man/man3/ldap_kerberos_bind1_s.3
+&gt; /usr/man/man3/ldap_kerberos_bind2.3
+&gt; /usr/man/man3/ldap_kerberos_bind2_s.3
+&gt; /usr/man/man3/ldap_unbind.3
+&gt; /usr/man/man3/ldap_unbind_s.3
+&gt; /usr/man/man3/ldap_set_rebind_proc.3
+&gt; /usr/man/man3/ldap_cache.3
+&gt; /usr/man/man3/ldap_enable_cache.3
+&gt; /usr/man/man3/ldap_disable_cache.3
+&gt; /usr/man/man3/ldap_destroy_cache.3
+&gt; /usr/man/man3/ldap_flush_cache.3
+&gt; /usr/man/man3/ldap_uncache_entry.3
+&gt; /usr/man/man3/ldap_uncache_request.3
+&gt; /usr/man/man3/ldap_set_cache_options.3
+&gt; /usr/man/man3/ldap_charset.3
+&gt; /usr/man/man3/ldap_set_string_translators.3
+&gt; /usr/man/man3/ldap_enable_translation.3
+&gt; /usr/man/man3/ldap_translate_from_t61.3
+&gt; /usr/man/man3/ldap_translate_to_t61.3
+&gt; /usr/man/man3/ldap_t61_to_8859.3
+&gt; /usr/man/man3/ldap_8859_to_t61.3
+&gt; /usr/man/man3/ldap_compare.3
+&gt; /usr/man/man3/ldap_compare_s.3
+&gt; /usr/man/man3/ldap_delete.3
+&gt; /usr/man/man3/ldap_delete_s.3
+&gt; /usr/man/man3/ldap_disptmpl.3
+&gt; /usr/man/man3/ldap_init_templates.3
+&gt; /usr/man/man3/ldap_init_templates_buf.3
+&gt; /usr/man/man3/ldap_free_templates.3
+&gt; /usr/man/man3/ldap_first_disptmpl.3
+&gt; /usr/man/man3/ldap_next_disptmpl.3
+&gt; /usr/man/man3/ldap_oc2template.3
+&gt; /usr/man/man3/ldap_tmplattrs.3
+&gt; /usr/man/man3/ldap_first_tmplrow.3
+&gt; /usr/man/man3/ldap_next_tmplrow.3
+&gt; /usr/man/man3/ldap_first_tmplcol.3
+&gt; /usr/man/man3/ldap_next_tmplcol.3
+&gt; /usr/man/man3/ldap_entry2text.3
+&gt; /usr/man/man3/ldap_entry2text_search.3
+&gt; /usr/man/man3/ldap_vals2text.3
+&gt; /usr/man/man3/ldap_entry2html.3
+&gt; /usr/man/man3/ldap_entry2html_search.3
+&gt; /usr/man/man3/ldap_vals2html.3
+&gt; /usr/man/man3/ldap_error.3
+&gt; /usr/man/man3/ldap_perror.3
+&gt; /usr/man/man3/ld_errno.3
+&gt; /usr/man/man3/ldap_result2error.3
+&gt; /usr/man/man3/ldap_ufn_timeout.3
+&gt; /usr/man/man3/ldap_url.3
+&gt; /usr/man/man3/ldap_is_ldap_url.3
+&gt; /usr/man/man3/ldap_url_parse.3
+&gt; /usr/man/man3/ldap_free_urldesc.3
+&gt; /usr/man/man3/ldap_url_search.3
+&gt; /usr/man/man3/ldap_url_search_s.3
+&gt; /usr/man/man3/ldap_url_search_st.3
+&gt; /usr/man/man5/ldap.conf.5
+&gt; /usr/man/man5/ldapfilter.conf.5
+&gt; /usr/man/man5/ldapfriendly.5
+&gt; /usr/man/man5/ldapsearchprefs.conf.5
+&gt; /usr/man/man5/ldaptemplates.conf.5
+&gt; /usr/man/man5/ldif.5
+&gt; /usr/man/man5/slapd.conf.5
+&gt; /usr/man/man5/slapd.replog.5
+&gt; /usr/man/man5/ud.conf.5
+&gt; /usr/man/man8/centipede.8
+&gt; /usr/man/man8/chlog2replog.8
+&gt; /usr/man/man8/edb2ldif.8
+&gt; /usr/man/man8/go500.8
+&gt; /usr/man/man8/go500gw.8
+&gt; /usr/man/man8/in.xfingerd.8
+&gt; /usr/man/man8/ldapd.8
+&gt; /usr/man/man8/ldbmcat.8
+&gt; /usr/man/man8/ldif.8
+&gt; /usr/man/man8/ldif2ldbm.8
+&gt; /usr/man/man8/ldif2index.8
+&gt; /usr/man/man8/ldif2id2entry.8
+&gt; /usr/man/man8/ldif2id2children.8
+&gt; /usr/man/man8/mail500.8
+&gt; /usr/man/man8/fax500.8
+&gt; /usr/man/man8/rcpt500.8
+&gt; /usr/man/man8/slapd.8
+&gt; /usr/man/man8/slurpd.8
+&gt; /usr/sbin/ldif
+&gt; /usr/sbin/in.xfingerd
+&gt; /usr/sbin/go500
+&gt; /usr/sbin/go500gw
+&gt; /usr/sbin/mail500
+&gt; /usr/sbin/rp500
+&gt; /usr/sbin/fax500
+&gt; /usr/sbin/xrpcomp
+&gt; /usr/sbin/rcpt500
+&gt; /usr/sbin/slapd
+&gt; /usr/sbin/ldif2ldbm
+&gt; /usr/sbin/ldif2index
+&gt; /usr/sbin/ldif2id2entry
+&gt; /usr/sbin/ldif2id2children
+&gt; /usr/sbin/ldbmcat
+&gt; /usr/sbin/centipede
+&gt; /usr/sbin/ldbmtest
+&gt; /usr/sbin/slurpd
+&gt; /usr/share/openldap
+&gt; /usr/share/openldap/ldapfriendly
+&gt; /usr/share/openldap/go500gw.help
+&gt; /usr/share/openldap/rcpt500.help
+&gt; /var/ldap</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_3.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#17">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

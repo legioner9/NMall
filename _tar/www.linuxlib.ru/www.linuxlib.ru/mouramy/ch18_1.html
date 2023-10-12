@@ -1,0 +1,874 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 18 Серверное программное обеспечение (Прокси сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch17_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#18">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 18 Серверное программное обеспечение (Прокси сервис) (Часть
+      1)</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#1">-->Прокси сервер
+      Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#2">-->Использование
+      библиотеки GNU malloc для улучшения производительности Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#3">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#4">-->Организация
+      защиты Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#5">-->Оптимизация
+      Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#6">-->Утилита
+      cachemgr.cgi<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#7">-->Конфигурация
+      Netscape для работы с прокси сервером Squid<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=250
+      src="ch18_1.files/34.jpg" width=151></TD></TR></TBODY></TABLE>
+<H2><A name=1>Прокси сервер Squid</A></H2><B>Краткий обзор.</B>
+<P align=justify>Прокси сервера, с их способностью к экономии полосы
+пропускания, улучшения безопасности, улучшения скорости веб-серфинга, становятся
+все более и более популярными. В настоящее время на рынке есть только несколько
+программных прокси-серверов. Они имеют два основных недостатка: они коммерческие
+и не поддерживают ICP (ICP используется для обмена информации о наличии URL в
+соседнем кэше). Squid &#8211; это лучший выбор для кэширующего прокси-сервера, так как
+он надежный, бесплатный и поддерживает ICP.</P>
+<P align=justify>Производный от &#8220;кэширующего&#8221; программного обеспечения
+ARPA-funded Harvest research project, разработанного в National Laboratory for
+Applied Network Research and funded by the National Science Foundation, Squid
+предлагает высокопроизводительное кэширование для веб клиентов, он также
+поддерживает FTP, Gopher и HTTP объекты данных. Squid хранит часто используемые
+объекты в RAM, поддерживает надежную базу данных объектов на диске, имеет
+комплексных механизм контроля доступа и поддерживает SSL протокол для
+посредничества в безопасных соединениях. В дополнение к этому, он поддерживает
+иерархические связи с другими прокси-серверами, базирующимися на Squid.</P>
+<P align=justify>В нашем случае мы настроим Squid на запуск, как
+httpd-акселератора для лучшей производительности нашего веб-сервера. В режиме
+акселератора, Squid выступает как обратный кэширующий прокси: он принимает
+запросы клиентов, если это возможно, то удовлетворяет их из кэша, а если не
+возможно, то организует запросы к оригинальному серверу для которого выступает
+как обратный прокси. Также, мы покажем конфигурацию Squid, как кэширующего
+прокси-сервера, которая позволит всем пользователям вашей корпоративной сети
+использовать Squid для доступа в Интернет.</P>
+<P align=justify><B>Эти инструкции предполагают.</B><BR>Unix-совместимые
+команды.<BR>Путь к исходным кодам &#8220;/var/tmp&#8221; (возможны другие
+варианты).<BR>Инсталляция была проверена на Red Hat Linux 6.1 и 6.2.<BR>Все шаги
+инсталляции осуществляются суперпользователем &#8220;root&#8221;.<BR>Squid версии
+2.3.STABLE2<BR></P>
+<P align=justify><B>Пакеты</B>.<BR>Домашняя страница Squid: <!--<A
+href="http://www.squid-cache.org/"
+target=_blank>-->http://www.squid-cache.org/<!--</A>--><BR>FTP сервер Squid: <!--<A
+href="ftp://204.144.128.89/" target=_blank>-->204.144.128.89<!--</A>--><BR>Вы должны
+скачать: squid-2.3.STABLE2-src.tar.gz<BR></P>
+<P align=justify><B>Тарболы.</B><BR>Хорошей идеей будет создать список файлов
+установленных в вашей системе до инсталляции Squid и после, в результате, с
+помощью утилиты diff вы сможете узнать какие файлы были установлены.
+Например,<BR>До инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Squid1</FONT></P>
+<P align=justify>После инсталляции:<BR><FONT color=#008080 size=-1>find /* &gt;
+Squid2</FONT></P>
+<P align=justify>Для получения списка установленных файлов:<BR><FONT
+color=#008080 size=-1>diff Squid1 Squid2 &gt; Squid-Installed</FONT></P>
+<P align=justify>Раскройте тарбол:<BR><FONT color=#008080 size=-1>[root@deep /]#
+cp squid-version.STABLEz-src.tar.gz /var/tmp<BR>[root@deep /]# cd
+/var/tmp<BR>[root@deep tmp]# tar xzpf
+squid-version.STABLEz-src.tar.gz</FONT><BR></P>
+<H3>Настройка и оптимизация.</H3><B>Шаг 1</B>
+<P align=justify>Прокси-сервер Squid не должен запускаться из под пользователя
+root, и по этой причине мы создаем специального пользователя, не имеющего
+оболочки, для запуска Squid.</P><FONT color=#008080 size=-1>[root@deep /]#
+useradd -d /cache/ -r -s /dev/null squid &gt;/dev/null 2&gt;&amp;1<BR>[root@deep
+/]# mkdir /cache/<BR>[root@deep /]# chown -R squid.squid /cache/<BR></FONT>
+<P align=justify>Первое, мы добавляем пользователя &#8220;squid&#8221;. Затем создаем
+каталог &#8220;/cache&#8221;, если этот каталог не существует. В заключении, мы изменяем
+владельца каталога &#8220;cache&#8221; на &#8220;squid&#8221;.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Обычно мы не нуждаемся в выполнении команды
+(mkdir /cache/), потому что мы уже создали этот каталог, когда разбивали наш
+жесткий диск при инсталляции Linux. Если этот раздел не существует, мы должны
+выполнить эту команду для создания каталога.</P>
+<P align=justify><B>Шаг 2</B></P>
+<P align=justify>Переместитесь в новый каталог Squid и выполните следующие
+команды на вашем терминале:</P>
+<P align=justify>Редактируйте файл Makefile.in (vi +18 icons/Makefile.in) и
+измените следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_ICON_DIR =
+$(sysconfdir)/icons</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_ICON_DIR = $(libexecdir)/icons</FONT><BR></P>
+<P align=justify>Мы изменили переменную (sysconfdir) на (libexecdir). Благодаря
+этому, каталог &#8220;icons&#8221; будет размещаться в &#8220;/usr/lib/squid&#8221;.</P>
+<P align=justify>Редактируйте файл Makefile.in (vi +34 src/Makefile.in) и
+измените следующие строки:</P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_CACHE_LOG =
+$(localstatedir)/logs/cache.log</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_CACHE_LOG = $(localstatedir)/log/squid/cache.log</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_ACCESS_LOG =
+$(localstatedir)/logs/access.log</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_ACCESS_LOG =
+$(localstatedir)/log/squid/access.log</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_STORE_LOG =
+$(localstatedir)/logs/store.log</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_STORE_LOG = $(localstatedir)/log/squid/store.log</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_PID_FILE =
+$(localstatedir)/logs/squid.pid</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_PID_FILE = $(localstatedir)/run/squid.pid</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_SWAP_DIR =
+$(localstatedir)/cache</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_SWAP_DIR = /cache</FONT><BR></P>
+<P align=justify><FONT color=#008080 size=-1>DEFAULT_ICON_DIR =
+$(sysconfdir)/icons</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>DEFAULT_ICON_DIR = $(libexecdir)/icons</FONT><BR></P>
+<P align=justify>Мы изменили месторасположение принятое по умолчанию для файлов
+&#8220;cache.log&#8221;, &#8220;access.log&#8221; и &#8220;store.log&#8221; на каталог &#8220;/var/log/squid&#8221;. Затем, мы
+разместили pid файл для Squid в каталоге &#8220;/var/run&#8221;, и в заключении, разместили
+каталог &#8220;icons&#8221; в &#8220;/usr/lib/squid/icons&#8221;.</P>
+<H3><A name=2>Использование библиотеки GNU malloc для улучшения
+производительности Squid</A></H3>
+<P align=justify>Если вы страдаете от ограничения памяти на вашей системе, то
+производительность кэша Squid будет пониженной. Для решения этой проблемы, вы
+можете связать Squid с внешней библиотекой malloc, такой как GNU malloc. Чтобы
+Squid использовал GNU malloc как внешнюю библиотеку выполните следующие
+шаги:</P>
+<P align=justify><B>Пакеты</B><BR>Домашняя страница GNU malloc: <!--<A
+href="http://www.gnu.org/order/ftp.html"
+target=_blank>-->http://www.gnu.org/order/ftp.html<!--</A>--><BR>Вы должны скачать:
+malloc.tar.gz<BR></P><FONT color=#008080 size=-1>[root@deep /]# cp malloc.tar.gz
+/var/tmp<BR>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# tar xzpf
+malloc.tar.gz<BR></FONT><BR><B>Шаг 1</B>
+<P align=justify>Компилируйте и инсталлируйте GNU malloc на вашей системе
+выполнив следующие команды:</P><FONT color=#008080 size=-1>[root@deep tmp]# cd
+malloc<BR>[root@deep malloc]# export CC=egcs<BR>[root@deep malloc]#
+make<BR></FONT><BR><B>Шаг 2</B>
+<P align=justify>Копируйте файл &#8220;libmalloc.a&#8221; в каталог с вашими системными
+библиотеками под именем &#8220;libgnumalloc.a&#8221;.</P><FONT color=#008080
+size=-1>[root@deep malloc]# cp libmalloc.a
+/usr/lib/libgnumalloc.a<BR><BR></FONT><B>Шаг 3</B>
+<P align=justify>Копируйте файл &#8220;malloc.h&#8221; в каталог с системными заголовочными
+файлами под именем gnumalloc.h&#8221;.</P><FONT color=#008080 size=-1>[root@deep
+malloc]# cp malloc.h /usr/include/gnumalloc.h<BR></FONT><BR>
+<P align=justify>Squid автоматически определит файлы &#8220;libgnumalloc.a&#8221; и
+&#8220;gnumalloc.h&#8221; и будет использовать их для улучшения производительности кэша.</P>
+<H3>Компиляция и оптимизация</H3><B>Шаг 1</B>
+<P align=justify>Перейдите в каталог с исходными кодами Squid и введите
+следующие команды на вашем терминале:</P><FONT color=#008080 size=-1>CC="egcs"
+\<BR>CFLAGS="-O9 -funroll-loops -ffast-math -malign-double -mcpu=pentiumpro
+-march=pentiumpro -fomit-frame-pointer -fno-exceptions" \<BR>./configure
+\<BR>--prefix=/usr \<BR>--exec-prefix=/usr \<BR>--bindir=/usr/sbin
+\<BR>--libexecdir=/usr/lib/squid \<BR>--localstatedir=/var
+\<BR>--sysconfdir=/etc/squid \<BR>--enable-delay-pools
+\<BR>--enable-cache-digests \<BR>--enable-poll \<BR>--disable-ident-lookups
+\<BR>--enable-truncate \<BR>--enable-heap-replacement<BR></FONT>
+<P align=justify>Эти опции говорят Squid:</P>
+<UL>
+  <LI>Использовать delay pools для ограничения и контроля использования полосы
+  пропускания пользователями.
+  <LI>Использовать Cache Digests для улучшения времени ответа клиентам и
+  использования сети.
+  <LI>Использовать poll() вместо select(), так как это предпочтительней чем
+  select.
+  <LI>Отключить ident-lookups для удаления кодов, которые выполняют Ident (RFC
+  931) lookups и уменьшить возможность denial-of-service.
+  <LI>Разрешить усекание, чтобы осуществить некоторое улучшение в
+  производительности при удалении файлов.
+  <LI>Использовать возможность Squid, называемую heap-replacement, чтобы иметь
+  возможность выбора различных вариантов алгоритма замены кэша вместо
+  стандартного алгоритма LRU для улучшения производительности. Смотрите ниже для
+  более детального объяснения. </LI></UL><B>Шаг 2</B>
+<P align=justify>Сейчас, мы должны скомпилировать и инсталлировать Squid на
+сервере:</P><FONT color=#008080 size=-1>[root@deep squid-2.3.STABLE2]# make -f
+makefile<BR>[root@deep squid-2.3.STABLE2]# make install<BR>[root@deep
+squid-2.3.STABLE2]# mkdir -p /var/log/squid<BR>[root@deep squid-2.3.STABLE2]# rm
+-rf /var/logs/<BR>[root@deep squid-2.3.STABLE2]# chown squid.squid
+/var/log/squid/<BR>[root@deep squid-2.3.STABLE2]# chmod 750
+/var/log/squid/<BR>[root@deep squid-2.3.STABLE2]# chmod 750
+/cache/<BR>[root@deep squid-2.3.STABLE2]# rm -f /usr/sbin/RunCache<BR>[root@deep
+squid-2.3.STABLE2]# rm -f /usr/sbin/RunAccel<BR>[root@deep squid-2.3.STABLE2]#
+strip /usr/sbin/squid<BR>[root@deep squid-2.3.STABLE2]# strip
+/usr/sbin/client<BR>[root@deep squid-2.3.STABLE2]# strip
+/usr/lib/squid/dnsserver<BR>[root@deep squid-2.3.STABLE2]# strip
+/usr/lib/squid/unlinkd<BR>[root@deep squid-2.3.STABLE2]# strip
+/usr/lib/squid/cachemgr.cgi<BR></FONT>
+<P align=justify>Команда &#8220;make -f&#8221; будет компилировать все исходные файлы в
+исполняемые двоичные, &#8220;make install&#8221; будет инсталлировать все исполняемые и
+сопутствующие им файлы в необходимые места. Команда &#8220;mkdir&#8221; создаст новый
+каталог &#8220;squid&#8221; под каталогом &#8220;/var/log&#8221;. Команда &#8220;rm -rf&#8221; удалит каталог
+&#8220;/var/logs&#8221;, так как этот каталог был создан для храннеия файлов регистрации,
+связанных со Squid, которые были перемещены в каталог &#8220;/var/log/squid&#8221;. Команда
+&#8220;chown&#8221; изменит владельца &#8220;/var/log/squid&#8221; на пользователя squid, и &#8220;chmod&#8221;
+изменит права доступа к каталогам &#8220;squid&#8221; и &#8220;cache&#8221; (0750/drwxr-x---) из
+соображений безопасности. Заметим, что мы удаляем небольшие скрипты &#8220;RunCache&#8221; и
+&#8220;RunAccel&#8221;, которые запускают Squid в режиме кэширования или акселератора, так
+как мы используем лучший скрипт &#8220;squid&#8221; расположенный в каталоге
+&#8220;/etc/rc.d/init.d/&#8221;. Команда &#8220;strip&#8221; уменьшит размер двоичных файлов для
+оптимизации их производительности.</P><B>Очистка после работы</B><BR><FONT
+color=#008080 size=-1>[root@deep /]# cd /var/tmp<BR>[root@deep tmp]# rm -rf
+squid-version/ squid-version.STABLEz-src.tar.gz<BR>[root@deep tmp]# rm -rf
+malloc/ malloc.tar.gz</FONT> (если вы используете внешнюю библиотеку GNU
+malloc)<BR>
+<P align=justify>Команды &#8220;rm&#8221; будет удалять все файлы с исходными кодами,
+которые мы использовали при компиляции и инсталляции Squid и GNU malloc. Также
+будут удалены сжатые архивы Squid и GNU malloc из каталога &#8220;/var/tmp&#8221;.</P>
+<H3><A name=3>Конфигурации.</A></H3>
+<P align=justify>Все программное обеспечение, описанное в книге, имеет
+определенный каталог и подкаталог в архиве &#8220;floppy.tgz&#8221;, включающей все
+конфигурационные файлы для всех программ. Если вы скачаете этот файл, то вам не
+нужно будет вручную воспроизводить файлы из книги, чтобы создать свои файлы
+конфигурации. Скопируйте файлы связанные с Squid из архива, измените их под свои
+требования и поместите в нужное место так, как это описано ниже. Файл с
+конфигурациями вы можете скачать с
+адреса:<BR>http://www.openna.com/books/floppy.tgz</P>
+<P align=justify>Для запуска Squid в режиме httpd-акселератора следующие файлы
+должны быть созданы или скопированы на ваш сервер.</P>
+<P align=justify>Копируйте squid.conf в каталог &#8220;/etc/squid/&#8221;.<BR>Копируйте
+squid в каталог &#8220;/etc/rc.d/init.d/&#8221;.<BR>Копируйте squid в каталог
+&#8220;/etc/logrotate.d/&#8221;.<BR></P>
+<P align=justify>Для запуска Squid в режиме кэширующего прокси-сервера следующие
+файлы должны быть созданы или скопированы на ваш сервер.</P>
+<P align=justify>Копируйте squid.conf в каталог &#8220;/etc/squid/&#8221;.<BR>Копируйте
+squid в каталог &#8220;/etc/rc.d/init.d/&#8221;.<BR>Копируйте squid в каталог
+&#8220;/etc/logrotate.d/&#8221;.<BR></P>
+<P align=justify>Вы можете взять эти файлы из нашего архива floppy.tgz.</P>
+<H3>Конфигурация файла &#8220;/etc/squid/squid.conf&#8221; для режима
+httpd-акселератора</H3>
+<P align=justify>Файл &#8220;squid.conf&#8221; используется для установки и конфигурирования
+всех опций для вашего прокси-сервера Squid. В конфигурационном файле приведенном
+ниже, мы будем настраивать Squid на работу в режиме httpd- акселератора. В этом
+режиме, если Веб сервер запущен на том же сервере где Squid, то вы должны
+настроить демон на порт 81. В случае с веб сервером Apache, вы можете сделать
+это назначив вместо 80 порта 81 в файле &#8220;httpd.conf&#8221;. Если Веб-сервер запущен на
+других серверах вашей сети, вы можете оставить тот же номер порта (80) для
+Apache, так как Squid подключен на другом IP адресе, где порт (80) не
+используется.</P><IMG alt="" border=0 height=209 src="ch18_1.files/35.jpg"
+width=435><BR>
+<P align=justify>Редактируйте файл squid.conf (vi /etc/squid/squid.conf) и
+добавьте/измените следующие опции:</P><PRE>http_port 80
+icp_port 0
+acl QUERY urlpath_regex cgi-bin \?
+no_cache deny QUERY
+cache_mem 16 MB
+cache_dir ufs /cache 200 16 256
+emulate_httpd_log on
+redirect_rewrites_host_header off
+replacement_policy GDSF
+acl all src 0.0.0.0/0.0.0.0
+http_access allow all
+cache_mgr <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ea8b8e878384aa859a8f84848bc4898587">[email&#160;protected]</a>
+cache_effective_user squid
+cache_effective_group squid
+httpd_accel_host 208.164.186.3
+httpd_accel_port 80
+log_icp_queries off
+cachemgr_passwd my-secret-pass all
+buffered_logs on</PRE>
+<P align=justify>Эти опции обозначают следующее:</P>
+<P align=justify><B>http_port 80</B><BR>Опция &#8220;http_port&#8221; определяет номер порта
+на котором Squid слушает HTTP запросы клиентов. Если вы установите его в 80, у
+клиента будет создаваться иллюзия, что он соединяется с веб сервером Apache. Так
+как мы запускаем Squid в режиме акселератора, мы должны слушать 80 порт.</P>
+<P align=justify><B>icp_port 0</B><BR>Опция &#8220;icp_port&#8221; определяет номер порта на
+который Squid будет посылать и принимать ICP запросы от соседних кэшей. Мы
+должны установить эту опцию в 0, чтобы отключить эту возможность, так как мы
+настраиваем Squid для работы в режиме акселератора для Веб сервера. Возможность
+ICP нужна только в многоуровневых кэш окружениях с несколькими братскими и
+родительскими кэшами. Использование ICP в режиме акселератора будет добавлять
+нежелательные издержки в работе Squid.</P>
+<P align=justify><B>acl QUERY urlpath_regex cgi-bin \? и no_cache deny
+QUERY</B><BR>Опции &#8220;acl QUERY urlpath_regex cgi-bin \? и no_cache deny QUERY&#8221;
+используются для того, чтобы некоторые объекты никогда не кэшировались, например
+файлы и каталога &#8220;cgi-bin&#8221;. Эта функция безопасности.</P>
+<P align=justify><B>cache_mem 16 MB</B><BR>Опция &#8220;cache_mem&#8221; определяет
+количество памяти (RAM) используемое для кэширования таких вызовов: In-Transit
+objects, Hot Objects, Negative-Cached objects. Это оптимизационная возможность.
+Важно заметить, что Squid может использовать намного больше памяти, чем значение
+этого параметра, и из этих соображений, если вы имеете для Squid 48 MB, вы
+должны здесь выделить 48/3 = 16 MB.</P>
+<P align=justify><B>cache_dir ufs /cache 200 16 256</B><BR>Опция &#8220;cache_dir&#8221;
+определяет по порядку: тип используемой системы хранения (ufs), имя каталога для
+кэша (/cache), объем дискового пространства выделяемый под этот каталог (200
+Mbytes), число подкаталогов первого уровня, создаваемых в каталоге кэша (16
+Level-1), и число подкаталогов второго уровня создаваемых под каждым
+подкаталогом первого уровня (256 Level-2). В режиме акселератора, эта опция
+напрямую связана с размером и количеством файлов, которое вы хотите обслуживать
+вашим Веб сервером Apache.</P>
+<P align=justify><B>emulate_httpd_log on</B><BR>Опция &#8220;emulate_httpd_log&#8221;, если
+установлена в &#8220;ON&#8221;, определяет, что Squid должен эмулировать формат файлов
+регистраций веб сервера Apache. Это очень полезно если вы хотите использовать
+программы третьих разработчиков, подобные Webalizer, для анализа файлов
+регистраций веб сервера (httpd).</P>
+<P align=justify><B>redirect_rewrites_host_header off</B><BR>Опция
+&#8220;redirect_rewrites_host_header&#8221;, если установлена в &#8220;OFF&#8221;, говорит Squid не
+переписывать любые хосты: заголовки в перенаправленных пакетах. Здесь
+рекомендуется установить значение &#8220;OFF&#8221;, если вы запускаете Squid в режиме
+акселератора.</P>
+<P align=justify><B>replacement_policy GDSF</B><BR>Опция &#8220;replacement_policy&#8221;
+определяет политику кэша Squid, используемую для определения, какие объекты в
+кэше должны быть заменены, когда прокси нужно освободить дисковое пространство.
+Политика Squid LRU используется по умолчанию, если вы во время компиляции не
+определили опцию &#8220;--enable- heap-replacement&#8221;. В нашей конфигурации, мы выбрали
+GDSF (Greedy-Dual Size Frequency), как политику по умолчанию. Смотрите <!--<A
+href="http://www.hpl.hp.com/techreports/1999/hpl-1999-69.html"
+target=_blank>-->http://www.hpl.hp.com/techreports/1999/HPL-1999-69.html<!--</A>--> и <!--<A
+href="http://fog.hpl.external.hp.com/techreports/98/hpl-98-173.html"
+target=_blank>-->http://fog.hpl.external.hp.com/techreports/98/HPL-98-173.html<!--</A>-->
+для большей информации.</P>
+<P align=justify><B>acl all src 0.0.0.0/0.0.0.0 and http_access allow
+all</B><BR>Опции &#8220;acl&#8221; и &#8220;http_access&#8221; определяют списки доступа применяемые на
+прокси сервере Squid. Наш &#8220;acl&#8221; и &#8220;http_access&#8221; не ограничивающие, они позволяют
+всем соединяться с прокси сервером, так как мы используем его для ускорения
+работы публичного веб сервера Apache. Смотрите вашу документацию по Squid для
+получения большей информации об использовании Squid в режиме кэширования.</P>
+<P align=justify><B>cache_mgr admin</B><BR>Опция &#8220;cache_mgr&#8221; определяет почтовый
+адрес администратора отвечающего за работоспособность прокси сервера Squid. Этот
+человек будет получать почту, если при работе Squid возникнут проблемы. Вы
+можете задать имя или полный почтовый адрес.</P>
+<P align=justify><B>cache_effective_user squid и cache_effective_group
+squid</B><BR>Опции &#8220;cache_effective_user&#8221; и &#8220;cache_effective_group&#8221; определяют
+UID/GID, под которыми будет запущен кэш. Не забудьте, никогда не запускайте
+Squid как &#8220;root&#8221;. В нашей конфигурации мы используем UID &#8220;squid&#8221; и GID
+&#8220;squid&#8221;.</P>
+<P align=justify><B>httpd_accel_host 208.164.186.3 и httpd_accel_port
+80</B><BR>Опции &#8220;httpd_accel_host&#8221; и &#8220;httpd_accel_port&#8221; определяют IP адрес и
+номер порта реального HTTP сервера (например, Apache). В нашей конфигурации,
+реальный HTTP Веб сервер имеет адрес 208.164.186.3 (www.openna.com) и порт (80).
+&#8220;www.openna.com&#8221; это другой сервер в нашей сети, и так как прокси сервер Squid
+не находится на одном компьютере с Веб сервером Apache, мы используем порт (80)
+для нашего прокси сервера и порт (80) для Apache веб сервера.</P>
+<P align=justify><B>log_icp_queries off</B><BR>Опция &#8220;log_icp_queries&#8221;
+определяет хотите ли вы регистрировать ICP (ICP используется для обмена
+информации о наличии в соседних кэшах URL-ов) запросы в файл &#8220;access.log&#8221; или
+нет. Так как мы не используем ICP в режиме акселератора, мы можем спокойно
+установить ее в &#8220;OFF&#8221;.</P>
+<P align=justify><B>cachemgr_passwd my-secret-pass all</B><BR>Опция
+&#8220;cachemgr_passwd&#8221; определяет пароль, который будет требоваться для доступа к
+операциям из утилиты &#8220;cachemgr.cgi&#8221;. Эта CGI утилита создана для запуска через
+веб интерфейс и вывода статистических данных о конфигурации и работе Squid.
+&lt;my-secret-pass&gt; - это пароль, который вы выбрали, ключевое слово
+&lt;all&gt; определяет, что он будет один и тот же для всех действий доступных
+из этой программы. Смотрите раздел &#8220;Утилита cachemgr.cgi&#8221;, приведенный ниже в
+этой главе для получения большей информации.</P>
+<P align=justify><B>buffered_logs on</B><BR>Опция &#8220;buffered_logs&#8221;, если
+установлена в &#8220;ON&#8221;, может немного увеличить скорость записи некоторых файлов
+регистрации. Это оптимизационная возможность.</P>
+<H3>Конфигурация файла &#8220;/etc/squid/squid.conf&#8221; для режима кэширующего
+прокси</H3>
+<P align=justify>Внеся небольшие изменения в файл &#8220;squid.conf&#8221;, используемый для
+запуска Squid как http-акселератор, мы запустим его как кэширующий прокси
+сервер. Если Squid запущен как кэширующий прокси сервер, все пользователи вашей
+корпоративной сети смогут использовать его для доступа в интернет. В этой
+конфигурации, мы будем иметь полный контроль над проходящим трафиком и сможем
+определять политику просмотра, доступа и выкачивания. Вы также сможете
+контролировать использование полосы пропускания, времени соединения и т.д.
+Кэширующий прокси сервер может быть настроен на запуск как автономный сервер
+вашей корпорации или использование разделяемой иерархии кэшей с другими
+серверами в Интернет.</P>
+<P align=justify>В первом примере, приведенном ниже, мы покажем как настроить
+Squid как автономный сервер, а затем немного поговорим о конфигурации
+иерархических кэшей, где два или более серверов кооперируются для предоставления
+документов друг другу.</P><IMG alt="" border=0 height=209
+src="ch18_1.files/36.jpg" width=483><BR>
+<P align=justify>Редактируйте файл squid.conf (vi /etc/squid/squid.conf) и
+добавьте/измените следующие опции для запуска кэширующего прокси сервера, как
+автономного сервера:</P><PRE>http_port 8080
+icp_port 0
+acl QUERY urlpath_regex cgi-bin \?
+no_cache deny QUERY
+cache_mem 16 MB
+cache_dir ufs /cache 200 16 256
+redirect_rewrites_host_header off
+replacement_policy GDSF
+acl localnet src 192.168.1.0/255.255.255.0
+acl localhost src 127.0.0.1/255.255.255.255
+acl Safe_ports port 80 443 210 119 70 21 1025-65535
+acl CONNECT method CONNECT
+acl all src 0.0.0.0/0.0.0.0
+http_access allow localnet
+http_access allow localhost
+http_access deny !Safe_ports
+http_access deny CONNECT
+http_access deny all
+cache_mgr <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="39585d5450577956495c575758175a5654">[email&#160;protected]</a>
+cache_effective_user squid
+cache_effective_group squid
+log_icp_queries off
+cachemgr_passwd my-secret-pass all
+buffered_logs on
+</PRE>
+<P align=justify>Большие отличия от конфигурации для режима httpd-акселератора
+вносит использование списков контроля доступа (ACL). Эта возможность позволяет
+ограничивать доступ базируясь на исходном IP адресе (src), IP адресе получателя
+(dst), исходном домене, домене назначения, времени и т.д. Много типов контроля
+существует благодаря этой возможности и вы должны посмотреть оригинальный файл
+&#8220;Squid.conf&#8221; для получения полного списка. Ниже приведены четыре основных
+типа:</P><PRE>acl    имя    тип     данные
+|       |      |         |
+acl some-name src a.b.c.d/e.f.g.h # ACL на основе IP адреса отправителя
+acl some-name dst a.b.c.d/e.f.g.h # ACL на основе IP адреса получателя
+acl some-name srcdomain foo.com # ACL на основе имени домена отправителя
+acl some-name dstdomain foo.com # ACL на основе имени домена назначения
+</PRE>
+<P align=justify>Как пример, ограничим доступ к вашему прокси серверу только
+вашими внутренними клиентами и определим диапазон портов к которым можно
+обращаться:</P><FONT color=#008080 size=-1>acl localnet src
+192.168.1.0/255.255.255.0<BR>acl localhost src 127.0.0.1/255.255.255.255<BR>acl
+Safe_ports port 80 443 210 119 70 21 1025-65535<BR>acl CONNECT method
+CONNECT<BR>acl all src 0.0.0.0/0.0.0.0<BR>http_access allow
+localnet<BR>http_access allow localhost<BR>http_access deny
+!Safe_ports<BR>http_access deny CONNECT<BR>http_access deny all<BR></FONT>
+<P align=justify>Эти acl будут разрешать доступ всем внутренним клиентам из
+диапазона приватных адресов класса C 192.168.1.0; также разрешается доступ с IP
+адреса localhost (специальный IP адрес используемый для доступа к самому себе).
+Затем мы выбираем диапазон портов (80=http, 443=https, 210=wais, 119=nntp,
+70=gopher и 21=ftp), к которым внутренние клиенты могут обращаться, мы запрещаем
+метод CONNECT для предотвращения попыток подключения внешних пользователей к
+прокси серверу, и в заключении мы запрещаем доступ со всех IP адресов.</P>
+<H3>Многоуровневое Веб кэширование</H3>
+<P align=justify>Второй метод работы кэширующего прокси это так называемый
+&#8220;Multi-level Web Caching&#8221;, при котором вы сотрудничаете с большим числом других
+кэшей в Интрнет. В этом случае ваша организация использует кэши других прокси
+серверов и другие сервера используют ваш кэш. Следует заметить, что в этой
+ситуации, кэширующие прокси играют две различные роли в иерархии. Они могут быть
+настроены, как кэши, имеющие одного &#8220;родителя&#8221; (sibling) и иметь возможность
+выдавать документы, которые уже имеют, или настроены как родительские сервера и
+иметь возможность брать документы из других кэшей или непосредственно с
+серверов.</P><IMG alt="" border=0 height=377 src="ch18_1.files/37.jpg"
+width=477><BR>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Хорошей стратегией для предотвращения
+большого сетевого трафика при отсутствии веб кэширования будет настройка
+несколько sibling кэшей и только небольшого числа родительских кэшей.</P>
+<H3>Настройка скрипта &#8220;/etc/rc.d/init.d/squid&#8221; для всех типов конфигураций</H3>
+<P align=justify>Настроим ваш скрипт &#8220;/etc/rc.d/init.d/squid&#8221; для запуска и
+остановки кэширующего прокси сервера Squid. Это скрипт изменит установки кэша
+подкачки на &#8220;/cache&#8221; вместо &#8220;/var/spool/squid&#8221;.</P>
+<P align=justify>Создайте скрипт squid (touch /etc/rc.d/init.d/squid) и добавьте
+в него:</P><PRE>#!/bin/bash
+# squid Этот скрипт отвечает за запуск и остановку
+# Squid Internet Object Cache
+#
+# chkconfig: - 90 25
+# описание: Squid - Internet Object Cache. Internet object caching &#8211; это путь
+# для хранения запрошенных объектов из Интернет (например, данные
+# доступные через протоколы HTTP, FTP и gopher) на системах находящихся
+# ближе к требуемым серверам, чем организатор запроса. Веб броузеры могут
+# затем использовать локальный кэш как прокси HTTP сервер, сокращая
+# время доступа и сохраняя полосу пропускания.
+# pid файл: /var/run/squid.pid
+# конфигурационный файл: /etc/squid/squid.conf
+PATH=/usr/bin:/sbin:/bin:/usr/sbin
+export PATH
+# Библиотека исходных функций.
+. /etc/rc.d/init.d/functions
+# Исходная сетевая конфигурация.
+. /etc/sysconfig/network
+# Проверка, что сеть работает.
+[ ${NETWORKING} = "no" ] &amp;&amp; exit 0
+# проверка наличия конфигурационного файла squid
+[ -f /etc/squid/squid.conf ] || exit 0
+# определения имени двоичного файла squid
+[ -f /usr/sbin/squid ] &amp;&amp; SQUID=squid
+[ -z "$SQUID" ] &amp;&amp; exit 0
+# определения cache_swap каталога
+CACHE_SWAP=`sed -e 's/#.*//g' /etc/squid/squid.conf | \
+grep cache_dir | sed -e 's/cache_dir//' | \
+cut -d ' ' -f 2`
+[ -z "$CACHE_SWAP" ] &amp;&amp; CACHE_SWAP=/cache
+# опции squid по умолчанию
+# -D отключение проверки dns при инициализации. Если вы скорее всего
+# не будете иметь соединения с Интернет во время старта squid,
+# раскомментируйте это
+#SQUID_OPTS="-D"
+RETVAL=0
+case "$1" in
+  start)
+    echo -n "Starting $SQUID: "
+    for adir in $CACHE_SWAP; do
+      if [ ! -d $adir/00 ]; then
+        echo -n "init_cache_dir $adir... "
+        $SQUID -z -F 2&gt;/dev/null
+      fi
+    done
+    $SQUID $SQUID_OPTS &amp;
+    RETVAL=$?
+    echo $SQUID
+    [ $RETVAL -eq 0 ] &amp;&amp; touch /var/lock/subsys/$SQUID
+  ;;
+  stop)
+    echo -n "Stopping $SQUID: "
+    $SQUID -k shutdown &amp;
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ] ; then
+      rm -f /var/lock/subsys/$SQUID
+      while : ; do
+        [ -f /var/run/squid.pid ] || break
+        sleep 2 &amp;&amp; echo -n "."
+      done
+      echo "done"
+    else
+      echo
+    fi
+  ;;
+  reload)
+    $SQUID $SQUID_OPTS -k reconfigure
+    exit $?
+  ;;
+  restart)
+   $0 stop
+   $0 start
+  ;;
+  status)
+   status $SQUID
+   $SQUID -k check
+   exit $?
+  ;;
+  probe)
+    exit 0;
+  ;;
+  *)
+     echo "Usage: $0 {start|stop|status|reload|restart}"
+     exit 1
+esac
+exit $RETVAL
+</PRE>
+<P align=justify>Сейчас, сделайте этот скрипт исполняемым и измените права
+доступа:</P><FONT color=#008080 size=-1>[root@deep /]# chmod 700
+/etc/rc.d/init.d/squid</FONT>
+<P align=justify>Создайте символическую rc.d ссылку для Squid следующей
+командой:</P><FONT color=#008080 size=-1>[root@deep /]# chkconfig --add
+squid</FONT>
+<P align=justify>По умолчанию скрипт squid не будет автоматически запускать
+прокси сервер на Red Hat Linux, когда перезагружаете сервер. Вы можете изменить
+это следующей командой:</P><FONT color=#008080 size=-1>[root@deep /]# chkconfig
+--level 345 squid on</FONT>
+<P align=justify>Запустите ваш новый прокси сервер Squid вручную:</P><FONT
+color=#008080 size=-1>[root@deep /]# /etc/rc.d/init.d/squid start<BR>Starting
+squid: init_cache_dir ufs... squid<BR></FONT>
+<H3>Конфигурация файла &#8220;/etc/logrotate.d/squid&#8221;</H3>
+<P align=justify>Настроим ваш файл &#8220;/etc/logrotate.d/squid&#8221; для автоматической
+ротации файлов регистраций каждую неделю.</P>
+<P align=justify>Создайте файл squid (touch /etc/logrotate.d/squid) и добавьте в
+него:</P><PRE>/var/log/squid/access.log {
+    weekly
+    rotate 5
+    copytruncate
+    compress
+    notifempty
+    missingok
+}
+/var/log/squid/cache.log {
+    weekly
+    rotate 5
+    copytruncate
+    compress
+    notifempty
+    missingok
+}
+/var/log/squid/store.log {
+    weekly
+    rotate 5
+    copytruncate
+    compress
+    notifempty
+    missingok
+# This script asks squid to rotate its logs on its own.
+# Restarting squid is a long process and it is not worth
+# doing it just to rotate logs
+    postrotate
+    /usr/sbin/squid -k rotate
+    endscript
+}
+</PRE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch17_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#18">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

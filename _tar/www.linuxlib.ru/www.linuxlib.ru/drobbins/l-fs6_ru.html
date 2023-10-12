@@ -1,0 +1,593 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 6 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 6</h2><br>
+<h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs6.html">-->http://www-106.ibm.com/developerworks/library/l-fs6.html<!--</a>--></h3><br>
+<h2>Переход на devfs (с использованием init wrapper)</h2>
+<p><a href="l-fs6_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#6602140904040f08152601030812090948091401"><span class="__cf_email__" data-cfemail="6206100d00000b0c112205070c160d0d4c0d1005">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>October 2001</p>
+<blockquote>С выходом релиза 2.4 Linux появилась возможность использования filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и
+других. Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно они могут делать, насколько они хороши и
+насколько оправдано их использование в промышленной Linux среде. В этой статье Daniel демонстрирует использование init wrapper
+и конвертацию системы на использование "devfs mode".</blockquote>
+<h3>А все ли у вас подготовлено?</h3>
+<p>Эта статья завершает описание конвертации Linux под использование devfs или Device Filesystem. Для тех, кто только что начал
+чтение, будут полезны ссылки. В <!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->части 4<!--</a>--> этой серии статей объяснялось, как devfs решает проблему
+регистрации устройств на уровне ядра. В <!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->части 5<!--</a>--> я описал все шаги, необходимые для придания вашей
+Linux системе свойства devfs-совместимости (без этого переход на devfs невозможен).</p>
+<p><b>Если вы не читали часть 5, очень важно сделать это теперь, прежде чем выполнить описанные ниже команды.</b> Если не сделать
+предварительную подготовку, есть гарантия, что init wrapper, который будет инсталлирован, правильно работать не сможет. В таком
+случае вы останетесь с системой, которая не может загружаться и требует больших усилий для своей "реанимации". Однако если вы
+прочли и сделали все, о чем писалось в части 5, можно двигаться дальше.</p>
+<h2>The init wrapper</h2>
+<h3>Первые строки.</h3>
+<p>Часть 5 этой серии статей завершилась описанием концепции init wrapper с объяснением, почему именно таким способом удобно
+решать проблему инициализации devfs. Без углубления в детали, все же по шагам "пройдемся" по полной версии init wrapper и
+"вникнем" в ее части. Начнем с вершины:</p>
+<p><b>The init wrapper, top portion</b></p>
+<pre><code>
+#!/bin/bash
+# Copyright 2001 Daniel Robbins &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0165736e6363686f724166646f756e6e2f6e7366">[email&#160;protected]</a>&gt;, Gentoo Technologies, Inc.
+# Distributed under the GNU General Public License, version 2.0 or later.
+
+trap ":" INT QUIT TSTP
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+umask 022
+
+if [ $$ -ne 1 ]
+then
+    exec /sbin/init.system $*
+fi
+</code></pre>
+
+<p>Как можно заметить, init wrapper - "правильный" <code>bash script</code>, что следует из "магической" первой строки
+<code>#!/bin/bash</code>. Самое время заметить, что этот init wrapper требует версию bash 2.0 или современней. Введите
+<code>/bin/bash --version</code>, чтобы узнать, какая версия инсталлирована на вашей системе. В системе может быть установлено
+несколько версий интерпретатора. При этом может иметься отдельный исполняемый файл <code>/bin/bash2</code>. В таком случае
+скорректируйте первую строку сценария. </p>
+<p>Теперь смотрим ниже. Команда <code>trap</code> защищает сценарий от прерывания пользователем (например, комбинации CRTL-C в
+процессе начальной загрузки), если его выполнение уже началось. Далее, экспортируется path по умолчанию и устанавливается (по
+умолчанию) umask 022. Явное назначение umask для использования в процессе начальной загрузки не помешает, тем более что на
+ранних ядрах серии 2.4 имелся дефект, приводивший к установке по умолчанию umask 0.</p>
+<p>Ниже - первая условная инструкция, <code>if [ $$ -ne 1 ]</code>. Интерпретатор разворачивает <code>$$</code> в process ID
+(текущего процесса). Инструкция читается как "отличается ли ИДЕНТИФИКАТОР текущего процесса от 1?" Что за этим скрывается?
+Первый процесс, запущенный ядром при загрузке, всегда получает PID 1. Именно этот номер зарезервирован для процесса
+<code>init</code>. Если PID не равен 1, можно уверенно сказать, что сценарий запущен из командной строки уже после загрузки
+системы. Заметим, второе вполне нормально, так как команда <code>/sbin/init</code> имеет двойное назначение и при запуске
+суперпользователем на загруженной машине используется для смены runlevel. Во втором случае сценарий просто запустит через
+<code>exec</code> оригинальный <code>/sbin/init</code>, на нашей системе переименованный в <code>/sbin/init.system</code>.
+Используя переменную <code>$*</code> можно любой из параметров, введенный в командной строке, передать программе init.system.</p>
+<h3>Kernel boot options</h3>
+<p>В случае, когда wrapper запускается ядром при начальной загрузке, сценарий получает PID равный 1. Первая условная
+конструкция будет пропущена, а <code>bash</code> продолжит выполнение wrapper. Просмотрим следующие строки:</p>
+<p><b>More of the init wrapper</b></p>
+<pre><code>
+mount -n /proc
+devfs="yes"
+for copt in `cat /proc/cmdline`
+do
+    if [ "${copt%=*}" = "wrapper" ]
+    then
+            parms=${copt##*=}
+            #parse wrapper option
+            if [ "${parms/nodevfs//}" != "${parms}" ]
+            then
+                devfs="no"
+            fi
+    fi
+done
+</code></pre>
+<p>Если отрабатывается эта часть кода, значит, идет процесс начальной загрузки. Первое действие - монтирование /proc к файловой
+системе root, которая все еще установлена в режиме read-only. После этого следует большой и сложный кусок <code>bash</code>
+кода, который использует выгоды одной очень удобной особенности Linux. Вы могли этого и не знать, но ядро позволяет увидеть,
+какие опции были ему переданы через LILO или GRUB по содержимому <code>/proc/cmdline</code>. На моем development box содержимое
+/proc/cmdline следующее:</p>
+<p><b>Contents of /proc/cmdline</b></p>
+<pre><code>
+# cat /proc/cmdline
+root=/dev/hda6 hda=89355,16,63 mem=524224K
+</code></pre>
+<p>Мы воспользуемся преимуществом существования <code>/proc/cmdline</code>, сканируя этот файл для поиска опции начальной
+загрузки с именем <code>wrapper</code>. Если среди kernel boot options появится <code>wrapper=nodevfs</code>, то сценарий не
+станет делать enabled devfs. В случае если такая переменная отсутствует в <code>/proc/cmdline</code>, то <code>wrapper bash
+script</code> продолжит devfs инициализацию. Мораль этой истории - вы можете легко отключать инициализацию devfs, передав ядру
+в паузе LILO или GRUB параметр <code>wrapper=nodevfs</code>. Если сделано так, сценарий переопределит значение переменной devfs
+в <code>no</code>, иначе - оставит <code>yes</code>.</p>
+
+<h3>Wrapping как он есть.</h3>
+<p>Теперь оставшаяся часть wrapper:</p>
+<p><b>Rest of the init wrapper</b></p>
+<pre><code>
+if [ "$devfs" = "yes" ]
+then
+ if [ -e /dev/.devfsd ]
+ then
+    clear
+    echo
+    echo "The init wrapper has detected that /dev has been automatically mounted by"
+    echo "the kernel. This will prevent devfs from automatically saving and"
+    echo "restoring device permissions. While not optimal, your system will still"
+    echo "be able to boot, but any perm/ownership changes or creation of new compat."
+    echo "device nodes will not be persistent across reboots until you fix this"
+    echo "problem."
+    echo
+    echo "Fortunately, the fix for this problem is quite simple; all you need to"
+    echo "do is pass the \"devfs=nomount\" boot option to the kernel (via GRUB"
+    echo "or LILO) the next time you boot.  Then /dev will not be auto-mounted."
+    echo "The next time you compile your kernel, be sure that you do not"
+    echo "enable the \"Automatically mount filesystem at boot\" devfs kernel"
+    echo "configuration option.  Then the \"devfs=nomount\" hack will no longer be"
+    echo "needed."
+    echo
+    read -t 15 -p "(hit Enter to continue or wait 15 seconds...)"
+ else
+    mount -n /dev /dev-state -o bind
+    mount -n -t devfs none /dev
+    if [ -d /dev-state/compat ]
+    then
+        echo Copying devices from /dev-state/compat to /dev
+        cp -ax /dev-state/compat/* /dev
+    fi
+ fi
+ /sbin/devfsd /dev &gt;/dev/null 2&gt;&amp;1;
+fi
+
+exec /sbin/init.system $*
+</code></pre>
+<p>Перед нами большая условная инструкция, которая выполняется только тогда, когда переменная devfs установлена в <code>yes</code>.
+Иначе, инициализация devfs пропускается полностью, а devfs не пытается монтироваться. В таком случае произойдет традиционная
+non-devfs boot.</p>
+<p>Однако если выбрана установка devfs, сценарий входит внутрь условного выражения. В этой инструкции выясняется, была ли devfs
+уже смонтирована ядром. Делается это через простой "визуальный" контроль наличия символьного устройства <code>/dev/.devfsd</code>.
+При монтировании devfs ядром это устройство создается автоматически, а будущий devfsd процесс будет использовать его для связи с
+ядром. Если devfs уже смонтирована (пользователь выбрал опцию <i>"Automatically mount devfs at boot"</i> перед компиляцией ядра),
+происходит распечатка информационного сообщения. В сообщении говорится, что невозможно повторно установить features of devfs,
+так как сделать это можно через wrapper только тогда, когда это еще не сделано самим ядром.</p>
+<h3>Device persistence</h3>
+<p>Если все OK, мы выполняем установку devfs, которая была описана в конце прошлой статьи. При этом /dev is bind-mounted к
+/dev-state, а файловая система devfs монтируется к /dev. Теперь о том, что было пропущено в прошлой статье. Мы проверяем
+существование каталога <code>/dev-state/compat</code> и рекурсивно копируем его содержимое в /dev. Такая процедура может
+показаться избыточной (мы ведь собираемся пользоваться преимуществами devfsd, не так ли?), но как выясняется необходимая и
+полезная. Причина, по которой необходим каталог compat в том, что devfsd's persistence features работают <i>только с
+devfs-enabled drivers</i>.</p>
+<p>Что случиться, если в системе используется non-devfs kernel module? Казалось бы, достаточно создать device node в /dev
+вручную. Проблема в том, что созданный вручную new device node будет проигнорирован <code>devfsd</code>, а это означает, что
+после очередной перезагрузки он исчезнет и его придется "пересоздавать". Решение проблемы в том, чтобы иметь каталог
+<code>/dev-state/compat</code>. Если имеется non-devfs module, просто создаете old-style device nodes в <code>/dev-state/compat</code>,
+и они будут добавлены к devfs при начальной загрузке. Все это благодаря "внимательности" нашего init wrapper.</p>
+<p>Осталось запустить <code>devfsd</code> и выйти из условного выражения. Как последний штрих, через <code>exec</code>
+запускается реальный <code>init</code>, или, как он теперь называется, <code>/sbin/init.system</code>. Происходит стандартный
+процесс загрузки системы. Ну, не совсем стандартный. Мы теперь имеем devfs-enabled system!</p>
+<h3>Инсталляция init wrapper.</h3>
+<p>Теперь приступим к инсталляции init wrapper. Сначала напишите
+исходный wrapper.sh и сохраните его где-нибудь в вашей системе.
+Сделайте следующее:</p>
+<p><b>Installing the init wrapper</b></p>
+<pre><code>
+# cd /sbin
+# cp init init.system
+# cp /path/to/wrapper.sh init
+# chmod +x init</code></pre>
+<p>Теперь init wrapper на месте.</p>
+<h3>Tweaking umount</h3>
+<p>Используя init wrapper, мы уходим от использования сложного компилированного initscript. Однако полностью избежать всех
+проблем нам не удастся. Если не предпринять дополнительных мер, то <code>rc scripts</code> будут очень много времени тратить на
+размонтирование корневой файловой системы (после инсталляции devfs). Имеется простое решение проблемы. Профильтруйте через
+<code>grep</code> ваши <code>rc scripts</code> на наличие команд <code>umount</code>, например, <code>cd /etc/rc.d; grep -r
+umount *</code>, или <code>cd /etc/init.d; grep -r umount *</code> (в зависимости, где инсталлированы ваши rc scripts). Далее,
+в каждом сценарии, где имеется команда <code>umount</code>, убедитесь, что она вызывается с ключом <code>-r</code>.</p>
+<p>Ключ <code>-r</code> для <code>umount</code> выполняет remount в режим read-only (при повторной попытке), если unmounting
+завершился неудачей. Это достаточно для приведения корневой файловой системы в непротиворечивое состояние, после чего
+перезагрузка произойдет без проблем. "Чистое" размонтирование может не произойти из-за существующего монтирования к /dev, а
+/dev, в свою очередь, может оказаться не размонтированным, если открыт какой-либо device node.</p>
+<p>Теперь перезагрузка практически подготовлена. Но, прежде, посмотрим на <code>devfsd</code> и <code>/etc/devfsd.conf</code>
+с позиции, чтобы compatibility devices и device persistence были
+enabled. Не волнуйтесь, мы всего лишь в одном шаге от завершения
+перехода на devfs.</p>
+<h3>devfsd.conf</h3>
+<p>Загрузите <code>/etc/devfsd.conf</code> в ваш любимый редактор. Посмотрите на первые четыре строки рекомендованного мною devfsd.conf:</p>
+<p><b>devfsd.conf, top portion</b></p>
+<pre><code>
+REGISTER        .*              MKOLDCOMPAT
+UNREGISTER      .*              RMOLDCOMPAT
+REGISTER        .*              MKNEWCOMPAT
+UNREGISTER      .*              RMNEWCOMPAT
+</code></pre>
+<p>Каждая из этих четырех строк состоит из <i>event</i> (<code>REGISTER</code> или <code>UNREGISTER</code>), регулярного
+выражения (<code>.*</code>) и action (строки <code>*COMPAT</code>). Что они означают? Первая строка указывает devfsd исполнять
+<code>MKOLDCOMPAT</code> action, когда любое устройство регистрируется в ядре (регулярное выражение <code>.*</code> match любому
+устройству). <code>MKOLDCOMPAT</code> action встроенная функция <code>devfsd</code> и означает "создавать любые old compatibility
+devices, соответствующие регулярному выражению, при его регистрации через devfs". Как несложно догадаться, <code>RM*COMPAT</code>
+actions работают при device unregistration, заставляя эти special compatibility devices волшебно исчезать. В целом, эти четыре
+строки указывают <code>devfsd</code> создавать compatibility devices (if any) когда устройство регистрируется и удалять
+compatibility devices при unregistered. Благодаря таким строкам, когда регистрируется драйвер IDE device как
+<code>/dev/ide/host0/bus0/target0/lun0/disc</code> (в devfs-style) самой системой, то devfs автоматически создает
+соответствующее <code>/dev/hda</code> compatibility-style device. Это очень полезно для таких команд, как <code>mount</code> и
+<code>fsck</code>, которые могут читать /etc/fstab, содержащий имена old-style device. Вообще, создание compatibility devices
+делает переход на devfs "бес проблемным". Следующая строка из моего devfsd.conf:</p>
+
+<p>Module auto-loading</p>
+<p><b>devfsd.conf, continued</b></p>
+<pre><code>
+LOOKUP          .*              MODLOAD
+</code></pre>
+<p>Эта запись сообщает <code>devfsd</code> выполнять <code>MODLOAD</code> action всякий раз, когда любое устройство (смотри на
+регулярное выражение) "looked up". Такое случается, когда приложение ищет конкретное device node. <code>MODLOAD</code> action
+заставит выполнить команду <code>modprobe /dev/mydev</code> (/dev/mydev - имя устройства, которое внешний процесс пытается
+найти). Благодаря этой feature (в сочетании с правильно конфигурированным /etc/modules.conf), становится возможной автозагрузка
+драйверов по требованию, например, звуковой карточки, и другие подобные вещи.</p>
+<h3>Device persistence</h3>
+<p>Продолжим разбор строк из devfsd.conf:</p>
+<p><b>devfsd.conf, continued</b></p>
+<pre><code>
+REGISTER        ^pt[sy]/.*      IGNORE
+CHANGE          ^pt[sy]/.*      IGNORE
+REGISTER        .*              COPY    /dev-state/$devname $devpath
+CHANGE          .*              COPY    $devpath /dev-state/$devname
+CREATE          .*              COPY    $devpath /dev-state/$devname
+</code></pre>
+<p>В этих нескольких строках предписывается <code>devfsd</code> использование /dev-state как архива для любых device permission
+или ownership изменений, а также любых new compatibility devices, которые пользователь может создать. В двух первых строках
+явно сообщается <code>devfsd</code> не выполнять специальных действий при регистрации или смены атрибутов для любых
+pseudo-terminal devices. Если такие строки не использовать, то permissions и ownership таких pseudo-terminals сохранялись бы
+после перезагрузок. Это не оптимально, так как мы всегда должны устанавливать новые значения perms для pseudo-terminal devices
+после загрузки системы.</p>
+<p>Следующие три строки включают /dev-state persistence для всех остальных устройств. Восстановятся любые атрибуты из
+/dev-state, когда устройство регистрируется или стартует сам <code>devfsd</code> (а также копирование атрибутов для любых
+совместимых устройств). Кроме этого, будут немедленно копироваться любые изменения в атрибутах, а также любые записи для
+только что созданных совместимых устройств к /dev-state.</p>
+<h3>CFUNCTION and symlinks</h3>
+<p>Заканчивается мой devfsd.conf следующими строками:</p>
+<p><b>devfsd.conf, end</b></p>
+<pre><code>
+REGISTER        ^cdrom/cdrom0$          CFUNCTION GLOBAL symlink cdroms/cdrom0 cdrom
+UNREGISTER      ^cdrom/cdrom0$          CFUNCTION GLOBAL unlink cdrom
+REGISTER        ^misc/psaux$            CFUNCTION GLOBAL symlink misc/psaux mouse
+UNREGISTER      ^misc/psaux$            CFUNCTION GLOBAL unlink mouse
+</code></pre>
+<p>Эти четыре строки необязательные, но они достойны упоминания. В то время как /dev-state persistence работает чудесно для
+device nodes, к символическим ссылкам это не относится. Возникает вопрос: как обеспечить, чтобы символические ссылки, например
+/dev/mouse или /dev/cdrom, не просто существовали, но и автоматически "воссоздавались" после перезагрузок? В конфигурациях
+<code>devfsd</code> такая возможность предусмотрена. Последние четыре строки (или подобные, все зависит от специфики
+настраиваемой системы) решают проблему. Первые две указывают <code>devfsd</code> создавать символическую ссылку /dev/cdrom,
+когда регистрируется устройство /dev/cdrom/cdrom0. Реализовано это через dynamic call функций libc, которые в данном случае
+специфицированы как <code>symlink()</code> и <code>unlink()</code>. Последние две строки конфигурационного файла используют
+аналогичный подход для создания символических ссылок /dev/mouse, когда устройство /dev/misc/psaux (в этом примере PS/2 мышь)
+регистрируется в devfs. "Подгоните" строки к вашей системе и сохраните конфигурационный файл devfsd.conf.</p>
+<h3>Предупреждение перед перезагрузкой.</h3>
+<p>Перед перезагрузкой можно посмотреть Richard Gooch's devfs FAQ. По этой ссылке можно найти информацию о devfs naming scheme,
+особенно полезную, когда вы только знакомитесь с именами устройств нового стиля (смотри <a href="l-fs6_ru.html#resources">Resources</a> ниже).
+Я также рекомендую распечатать на принтере из части 5 порядок действий при "emergency bash rescue", если это для вас новость.
+Помните, если по каким то причинам init wrapper script создаст проблему, вы всегда можете удалить его следующей
+последовательностью спасательных команд. Загрузитесь "emergency bash rescue", выполните remounting корневой файловой системы в
+режим read-write и последовательно сделайте:</p>
+<p><b>Откат к статусу pre-wrapper, если необходимо.</b></p>
+<pre><code>
+# cd /sbin
+# mv init wrapper.sh
+# mv init.system init
+</code></pre>
+<p>Выполнив эти команды, перемонтируйте файловую систему в режим read-only и перезагрузите систему. Система откатится в
+pre-wrapper state. Исправьте ошибки, снова перезагрузитесь и наслаждайтесь devfs!</p>
+
+<h3>Resources</h3>
+<ul>
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul><br>
+<br></li>
+
+<li>Download the most recent version of the <!--<a href="ftp://ftp.atnf.csiro.au/pub/people/rgooch/linux/daemons/devfsd/">-->devfsd
+tarball<!--</a>-->, currently version 1.3.16.</li>
+<li>O'Reilly's <!--<a href="http://www.oreilly.com/catalog/linuxdrive2/">-->Linux Device Drivers, 2nd Edition<!--</a>--> is an excellent book
+and a great resource for learning more about device registration, and Linux device driver programming in general.</li>
+<li>Be sure to read the <!--<a href="http://www.atnf.csiro.au/%7Ergooch/linux/docs/devfs.html">-->Linux Devfs FAQ<!--</a>--> by Richard Gooch,
+the creator of Linux devfs. You may find the <!--<a href="http://www.atnf.csiro.au/%7Ergooch/linux/docs/devfs.html#kernel-names">-->
+information about the devfs naming scheme<!--</a>--> particularly helpful. You may also want to visit <!--<a href="http://www.atnf.csiro.au/%7Ergooch/linux/">-->Richard Gooch's main page<!--</a>-->;
+it contains devfs as well as other neat things.</li>
+<li>Subscribe to the devfs mailing list by sending an e-mail to <a href="../cdn-cgi/l/email-protection.html#0c616d66637e686361634c637f7f227f6b65226f6361"><span class="__cf_email__" data-cfemail="4b262a2124392f2426240b24383865382c2265282426">[email&#160;protected]</span></a> with the word
+<b>subscribe</b> in the body of the message.  View the <!--<a href="http://oss.sgi.com/projects/devfs/archive/">-->devfs list archives<!--</a>-->.
+</li>
+<li>Find out more about GRUB at the <!--<a href="http://www.gnu.org/software/grub/">-->GNU GRUB project page<!--</a>-->.
+Even better, check out <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/0F1731DC664023B7862569D0005C44AF?OpenDocument">-->Daniel's
+<i>developerWorks</i> tutorial on installing and using GRUB<!--</a>-->.</li>
+<li>Are you a LILO user?  It's OK; we still love you.  Grab the <!--<a href="ftp://brun.dyndns.org/pub/linux/lilo/">-->most recent
+version of LILO<!--</a>-->.</li>
+<li><!--<a href="http://www.lwn.net/">-->Linux Weekly News<!--</a>--> is a great resource for keeping up with the latest kernel developments.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-124.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on <i>developerWorks</i>.</li>
+</ul>
+
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs6_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel
+Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of </a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->,
+an advanced Linux for the
+ PC, and the <b>Portage</b> system, a next-generation ports system for
+ Linux. He has also served as a
+contributing author for the Macmillan books
+ <i>Caldera OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba
+Unleashed</i>. Daniel has been involved with computers in some
+ fashion since the second grade, when he was first exposed to the
+Logo
+ programming language as well as a potentially dangerous dose of Pac Man.
+ This probably explains why he has since served as
+a Lead Graphic Artist at
+ <b>SONY Electronic Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his
+new baby daughter,
+ Hadassah. You can contact Daniel at <a href="../cdn-cgi/l/email-protection.html#c6a2b4a9a4a4afa8b586a1a3a8b2a9a9e8a9b4a1"><span class="__cf_email__" data-cfemail="197d6b767b7b70776a597e7c776d767637766b7e">[email&#160;protected]</span></a>.
+
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#afd9c4c7c0c3c2efdfc6c1c0ccc7cadb81ccc6dbd6c3c6c1ca81ddda">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

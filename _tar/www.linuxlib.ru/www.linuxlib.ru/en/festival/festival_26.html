@@ -1,0 +1,585 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Festival Speech Synthesis System - 26  Building models from databases — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+Go to the <A HREF="festival_1.html">first</A>, <A HREF="festival_25.html">previous</A>, <A HREF="festival_27.html">next</A>, <A HREF="festival_35.html">last</A> section, <A HREF="https://www.linuxlib.ru/en/festival/festival_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC116" HREF="https://www.linuxlib.ru/en/festival/festival_toc.html#TOC116">26  Building models from databases</A></H1>
+
+<P>
+<A NAME="IDX331"></A>
+Because our research interests tend towards creating statistical
+models trained from real speech data, Festival offers various support
+for extracting information from speech databases, in a way suitable
+for building models.
+
+</P>
+<P>
+Models for accent prediction, F0 generation, duration, vowel
+reduction, homograph disambiguation, phrase break assignment and
+unit selection have been built using Festival to extract and process
+various databases.
+
+</P>
+
+
+
+<H2><A NAME="SEC117" HREF="https://www.linuxlib.ru/en/festival/festival_toc.html#TOC117">26.1  Labelling databases</A></H2>
+
+<P>
+<A NAME="IDX332"></A>
+<A NAME="IDX333"></A>
+In order for Festival to use a database it is most useful to build
+utterance structures for each utterance in the database.  As discussed
+earlier, utterance structures contain relations of items.  Given such a
+structure for each utterance in a database we can easily read in the
+utterance representation and access it, dumping information in a
+normalised way allowing for easy building and testing of models.
+
+</P>
+<P>
+Of course the level of labelling that exists, or that you are willing to
+do by hand or using some automatic tool, for a particular database will
+vary.  For many purposes you will at least need phonetic labelling.
+Hand labelled data is still better than auto-labelled data, but that
+could change.  The size and consistency of the data is important too.
+
+</P>
+<P>
+For this discussion we will assume labels for: segments, syllables, words,
+phrases, intonation events, pitch targets.  Some of these can be
+derived, some need to be labelled.  This would not fail with less
+labelling but of course you wouldn't be able to extract as much
+information from the result.
+
+</P>
+<P>
+In our databases these labels are in Entropic's Xlabel format,
+though it is fairly easy to convert any reasonable format.
+
+</P>
+<DL COMPACT>
+
+<DT><EM>Segment</EM>
+<DD>
+<A NAME="IDX334"></A>
+These give phoneme labels for files.  Note the these labels <EM>must</EM>
+be members of the phoneset that you will be using for this database.
+Often phone label files may contain extra labels (e.g. beginning
+and end silence) which are not really part of the phoneset.  You
+should remove (or re-label) these phones accordingly.
+<DT><EM>Word</EM>
+<DD>
+<A NAME="IDX335"></A>
+Again these will need to be provided.  The end of the word should
+come at the last phone in the word (or just after).  Pauses/silences
+should not be part of the word.
+<DT><EM>Syllable</EM>
+<DD>
+<A NAME="IDX336"></A>
+There is a chance these can be automatically generated from
+Word and Segment files given a lexicon.  Ideally these should
+include lexical stress.
+<DT><EM>IntEvent</EM>
+<DD>
+<A NAME="IDX337"></A>
+These should ideally mark accent/boundary tone type for each syllable,
+but this almost definitely requires hand-labelling.  Also given that
+hand-labelling of accent type is harder and not as accurate, it is
+arguable that anything other than accented vs. non-accented can be used
+reliably.
+<DT><EM>Phrase</EM>
+<DD>
+<A NAME="IDX338"></A>
+This could just mark the last non-silence phone in each utterance, or
+before any silence phones in the whole utterance.
+<DT><EM>Target</EM>
+<DD>
+<A NAME="IDX339"></A>
+This can be automatically derived from an F0 file and the Segment files.
+A marking of the mean F0 in each voiced phone seem to give adequate
+results.
+</DL>
+<P>
+Once these files are created an utterance file can be automatically
+created from the above data.   Note it is pretty easy to get the
+streams right but getting the relations between the streams is
+much harder.  Firstly labelling is rarely accurate and small windows of
+error must be allowed to ensure things line up properly.  The second
+problem is that some label files identify point type information
+(IntEvent and Target) while others identify segments (e.g. Segment,
+Words etc.).  Relations have to know this in order to get it right.
+For example is not right for all syllables between two
+IntEvents to be linked to the IntEvent, only to the Syllable
+the IntEvent is within.
+
+</P>
+<P>
+<A NAME="IDX340"></A>
+The script <TT>`festival/examples/make_utts'</TT> is an example Festival script
+which automatically builds the utterance files from the above labelled
+files.
+
+</P>
+<P>
+The script, by default assumes, a hierarchy in an database directory
+of the following form.  Under a directory <TT>`festival/'</TT> where
+all festival specific database ifnromation can be kept, a directory
+<TT>`relations/'</TT> contains a subdirectory for each basic relation
+(e.g. <TT>`Segment/'</TT>, <TT>`Syllable/'</TT>, etc.)  Each of which contains
+the basic label files for that relation.
+
+</P>
+<P>
+The following command will build a set of utterance structures (including
+building hte relations that link between these basic relations).
+
+<PRE>
+make_utts -phoneset radio festival/relation/Segment/*.Segment
+</PRE>
+
+<P>
+This will create utterances in <TT>`festival/utts/'</TT>.  There are
+a number of options to <TT>`make_utts'</TT> use <TT>`-h'</TT> to find
+them.  The <TT>`-eval'</TT> option allows extra scheme code to be
+loaded which may be called by the utterance building process.
+The function <CODE>make_utts_user_function</CODE> will be called on all
+utterance created.  Redefining that in database specific loaded
+code will allow database specific fixed to the utterance.
+
+</P>
+
+
+<H2><A NAME="SEC118" HREF="https://www.linuxlib.ru/en/festival/festival_toc.html#TOC118">26.2  Extracting features</A></H2>
+
+<P>
+<A NAME="IDX341"></A>
+<A NAME="IDX342"></A>
+The easiest way to extract features from a labelled database
+of the form described in the previous section is by loading
+in each of the utterance structures and dumping the desired features.
+
+</P>
+<P>
+Using the same mechanism to extract the features as will eventually be
+used by models built from the features has the important advantage of
+avoiding spurious errors easily introduced when collecting data.  For
+example a feature such as <CODE>n.accent</CODE> in a Festival utterance will
+be defined as 0 when there is no next accent.  Extracting all the
+accents and using an external program to calculate the next accent may
+make a different decision so that when the generated model is used a
+different value for this feature will be produced.  Such mismatches
+in training models and actual use are unfortunately common, so using
+the same mechanism to extract data for training, and for actual
+use is worthwhile.
+
+</P>
+<P>
+The recommedn method for extracting features is using the
+festival script <TT>`dumpfeats'</TT>.  It basically takes a list
+of feature names and a list of utterance files and dumps the desired
+features.
+
+</P>
+<P>
+Features may be dumped into a single file or into separate files
+one for each utterance.  Feature names may be specified on the
+command line or in a separate file.  Extar code to define new features
+may be loaded too.
+
+</P>
+<P>
+For example suppose we wanted to save the features for a set of
+utterances include the duration, phone name, previous and next phone names
+for all segments in each utterance.
+
+<PRE>
+dumpfeats -feats "(segment_duration name p.name n.name)" \
+          -output feats/%s.dur -relation Segment \
+          festival/utts/*.utt
+</PRE>
+
+<P>
+This will save these features in files named for the utterances they come
+from in the directory <TT>`feats/'</TT>.  The argument to <TT>`-feats'</TT> is
+treated as literal list only if it starts with a left parenthesis, otherwise
+it is treated as a filename contain named features (unbracketed).
+
+</P>
+<P>
+Extra code (for new feature definitions) may be loaded through the
+<TT>`-eval'</TT> option.  If the argument to <TT>`-eval'</TT> starts
+with a left parenthesis it is trated as an s-expression rather than
+a filename and is evaluated.  If argument <TT>`-output'</TT> contains
+"%s" it will be filled in with the utterance's filename, if it
+is a simple filename the features from all utterances will be saved
+in that same file.  The features for each item in the named
+relation are saved on a single line.
+
+
+<H2><A NAME="SEC119" HREF="https://www.linuxlib.ru/en/festival/festival_toc.html#TOC119">26.3  Building models</A></H2>
+
+<P>
+<A NAME="IDX343"></A>
+This section describes how to build models from data extracted from
+databases as described in the previous section.  It uses the CART
+building program, <TT>`wagon'</TT> which is available in the speech tools
+distribution.  But the data is suitable for many other types of model
+building techniques, such as linear regression or neural networks.
+
+</P>
+<P>
+Wagon is described in the speech tools manual, though we will
+cover simple use here.  To use Wagon you need a datafile and a
+data description file.
+
+</P>
+<P>
+A datafile consists of a number of vectors one per line each containing
+the same number of fields.  This, not coincidentally, is exactly the
+format produced by <TT>`dumpfeats'</TT> described in the previous
+section.  The data description file describes the fields in the datafile
+and their range.  Fields may be of any of the following types: class (a
+list of symbols), floats, or ignored.  Wagon will build a classification
+tree if the first field (the predictee) is of type class, or a
+regression tree if the first field is a float.  An example
+data description file would be
+
+<PRE>
+(
+( duration float )
+( name # @ @@ a aa ai au b ch d dh e e@ ei f g h i i@ ii jh k l m n
+    ng o oi oo ou p r s sh t th u u@ uh uu v w y z zh )
+( n.name # @ @@ a aa ai au b ch d dh e e@ ei f g h i i@ ii jh k l m n
+    ng o oi oo ou p r s sh t th u u@ uh uu v w y z zh )
+( p.name # @ @@ a aa ai au b ch d dh e e@ ei f g h i i@ ii jh k l m n
+    ng o oi oo ou p r s sh t th u u@ uh uu v w y z zh )
+( R:SylStructure.parent.position_type 0 final initial mid single )
+( pos_in_syl float )
+( syl_initial 0 1 )
+( syl_final 0 1)
+( R:SylStructure.parent.R:Syllable.p.syl_break 0 1 3 )
+( R:SylStructure.parent.syl_break 0 1 3 4 )
+( R:SylStructure.parent.R:Syllable.n.syl_break 0 1 3 4 )
+( R:SylStructure.parent.R:Syllable.p.stress 0 1 )
+( R:SylStructure.parent.stress 0 1 )
+( R:SylStructure.parent.R:Syllable.n.stress 0 1 )
+)
+</PRE>
+
+<P>
+The script <TT>`speech_tools/bin/make_wagon_desc'</TT> goes some way
+to helping.  Given a datafile and a file containing the field names, it
+will construct an approximation of the description file.  This file
+should still be edited as all fields are treated as of type class by
+<TT>`make_wagon_desc'</TT> and you may want to change them some of them to
+float.
+
+</P>
+<P>
+The data file must be a single file, although we created a number of
+feature files by the process described in the previous section.  From a
+list of file ids select, say, 80% of them, as training data and cat them
+into a single datafile.  The remaining 20% may be catted together as
+test data.
+
+</P>
+<P>
+To build a tree use a command like
+
+<PRE>
+wagon -desc DESCFILE -data TRAINFILE -test TESTFILE
+</PRE>
+
+<P>
+The minimum cluster size (default 50) may be reduced using the
+command line option <CODE>-stop</CODE> plus a number.
+
+</P>
+<P>
+Varying the features and stop size may improve the results.
+
+</P>
+<P>
+Building the models and getting good figures is only one part
+of the process.  You must integrate this model into Festival
+if its going to be of any use.  In the case of CART trees generated
+by Wagon, Festival supports these directly.  In the case of
+CART trees predicting zscores, or factors to modify duration averages,
+ees can be used as is.
+
+</P>
+<P>
+Note there are other options to Wagon which may help build
+better CART models.  Consult the chapter in the speech tools manual
+on Wagon for more information.
+
+</P>
+<P>
+Other parts of the distributed system use CART trees, and linear
+regression models that were training using the processes described in
+this chapter.  Some other parts of the distributed system use CART trees
+which were written by hand and may be improved by properly applying
+these processes.
+
+</P>
+<P><HR><P>
+Go to the <A HREF="festival_1.html">first</A>, <A HREF="festival_25.html">previous</A>, <A HREF="festival_27.html">next</A>, <A HREF="festival_35.html">last</A> section, <A HREF="https://www.linuxlib.ru/en/festival/festival_toc.html">table of contents</A>.
+
+  </div>
+</div>
+</body>
+</html>

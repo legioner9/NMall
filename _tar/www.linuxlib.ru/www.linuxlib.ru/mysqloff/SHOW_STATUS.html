@@ -1,0 +1,584 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.5.6.3  SHOW STATUS — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/SHOW_STATUS.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/SHOW_STATUS.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="gp"><a href="https://www.linuxlib.ru/mysqloff/Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.5 Справочник по языку администрирования баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/SHOW.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.5.6 Синтаксис команды <code>SHOW</code>
+</a><ul class="immediate"><li><a href="SHOW_DATABASE_INFO.html">4.5.6.1 Получение  информации  по  базам  данных, таблицам, столбцам  и  индексам
+</a></li><li><a href="SHOW_TABLE_STATUS.html">4.5.6.2 <code>SHOW TABLE STATUS</code>
+</a></li><li class="self">4.5.6.3 <code>SHOW STATUS</code>
+</li><li><a href="SHOW_VARIABLES.html">4.5.6.4 <code>SHOW VARIABLES</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/SHOW_LOGS.html">4.5.6.5 <code>SHOW LOGS</code>
+</a></li><li><a href="SHOW_PROCESSLIST.html">4.5.6.6 <code>SHOW PROCESSLIST</code>
+</a></li><li><a href="SHOW_GRANTS.html">4.5.6.7 <code>SHOW GRANTS</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/SHOW_CREATE_TABLE.html">4.5.6.8 <code>SHOW CREATE TABLE</code>
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="SHOW_TABLE_STATUS.html" title="4.5.6.2  SHOW TABLE STATUS">Previous</a> / <a rel="next" href="SHOW_VARIABLES.html" title="4.5.6.4  SHOW VARIABLES">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/SHOW.html" title="4.5.6  Синтаксис команды SHOW">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>4.5.6.3  <code>SHOW STATUS</code></H4>
+
+<P>
+<A NAME="IDX604"></A>
+
+</P>
+<P>
+Команда <code>SHOW STATUS</code> предоставляет информацию по состоянию сервера (как
+<code>mysqladmin extended-status</code>). Пример выходных данных приведен ниже (формат
+и числа могут иметь некоторые отличия):
+
+</P>
+
+<pre>
++--------------------------+------------+
+| Variable_name            | Value      |
++--------------------------+------------+
+| Aborted_clients          | 0          |
+| Aborted_connects         | 0          |
+| Bytes_received           | 155372598  |
+| Bytes_sent               | 1176560426 |
+| Connections              | 30023      |
+| Created_tmp_disk_tables  | 0          |
+| Created_tmp_tables       | 8340       |
+| Created_tmp_files        | 60         |
+| Delayed_insert_threads   | 0          |
+| Delayed_writes           | 0          |
+| Delayed_errors           | 0          |
+| Flush_commands           | 1          |
+| Handler_delete           | 462604     |
+| Handler_read_first       | 105881     |
+| Handler_read_key         | 27820558   |
+| Handler_read_next        | 390681754  |
+| Handler_read_prev        | 6022500    |
+| Handler_read_rnd         | 30546748   |
+| Handler_read_rnd_next    | 246216530  |
+| Handler_update           | 16945404   |
+| Handler_write            | 60356676   |
+| Key_blocks_used          | 14955      |
+| Key_read_requests        | 96854827   |
+| Key_reads                | 162040     |
+| Key_write_requests       | 7589728    |
+| Key_writes               | 3813196    |
+| Max_used_connections     | 0          |
+| Not_flushed_key_blocks   | 0          |
+| Not_flushed_delayed_rows | 0          |
+| Open_tables              | 1          |
+| Open_files               | 2          |
+| Open_streams             | 0          |
+| Opened_tables            | 44600      |
+| Questions                | 2026873    |
+| Select_full_join         | 0          |
+| Select_full_range_join   | 0          |
+| Select_range             | 99646      |
+| Select_range_check       | 0          |
+| Select_scan              | 30802      |
+| Slave_running            | OFF        |
+| Slave_open_temp_tables   | 0          |
+| Slow_launch_threads      | 0          |
+| Slow_queries             | 0          |
+| Sort_merge_passes        | 30         |
+| Sort_range               | 500        |
+| Sort_rows                | 30296250   |
+| Sort_scan                | 4650       |
+| Table_locks_immediate    | 1920382    |
+| Table_locks_waited       | 0          |
+| Threads_cached           | 0          |
+| Threads_created          | 30022      |
+| Threads_connected        | 1          |
+| Threads_running          | 1          |
+| Uptime                   | 80380      |
++--------------------------+------------+
+</pre>
+
+<P>
+Приведенные выше переменные состояния имеют следующие значения:
+
+</P>
+<P>
+<A NAME="IDX605"></A>
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>Переменная</strong> </TD><TD> <strong>Значение</strong>
+</TD></TR>
+<TR><TD><code>Aborted_clients</code> </TD><TD> Количество соединений, отмененных по причине отключения клиента без надлежащего закрытия соединения. See section <A HREF="Communication_errors.html">A.2.9  Коммуникационные ошибки / Оборванные соединения</A>.
+</TD></TR>
+<TR><TD><code>Aborted_connects</code> </TD><TD> Количество неудачных попыток подсоединения к серверу MySQL. See section <A HREF="Communication_errors.html">A.2.9  Коммуникационные ошибки / Оборванные соединения</A>.
+</TD></TR>
+<TR><TD><code>Bytes_received</code> </TD><TD> Количество байтов, полученных от всех клиентов.
+</TD></TR>
+<TR><TD><code>Bytes_sent</code> </TD><TD> Количество байтов, отправленных всем клиентам.
+</TD></TR>
+<TR><TD><code>Com_xxx</code> </TD><TD> Количество запусков каждой команды xxx.
+</TD></TR>
+<TR><TD><code>Connections</code> </TD><TD> Количество попыток подсоединения к серверу MySQL.
+</TD></TR>
+<TR><TD><code>Created_tmp_tables</code> </TD><TD> Количество неявных временных таблиц на диске, созданных во время выполнения операторов.
+</TD></TR>
+<TR><TD><code>Created_tmp_tables</code> </TD><TD> Количество неявных временных таблиц в памяти, созданных во время выполнения операторов.
+</TD></TR>
+<TR><TD><code>Created_tmp_files</code> </TD><TD> Количество созданных временных файлов <code>mysqld</code>.
+</TD></TR>
+<TR><TD><code>Delayed_insert_threads</code> </TD><TD> Количество используемых потоков вставки данных в режиме <code>insert delayed</code>.
+</TD></TR>
+<TR><TD><code>Delayed_writes</code> </TD><TD> Количество строк, вставленных при помощи команды <code>INSERT DELAYED</code>.
+</TD></TR>
+<TR><TD><code>Delayed_errors</code> </TD><TD> Количество записанных при помощи команды <code>INSERT DELAYED</code> строк, в которых произошли какие-либо ошибки (возможно, <code>duplicate key</code>).
+</TD></TR>
+<TR><TD><code>Flush_commands</code> </TD><TD> Количество запущенных команд <code>FLUSH</code>.
+</TD></TR>
+<TR><TD><code>Handler_commit</code> </TD><TD> Количество внутренних команд <code>COMMIT</code>.
+</TD></TR>
+<TR><TD><code>Handler_delete</code> </TD><TD> Количество удалений строки из таблицы.
+</TD></TR>
+<TR><TD><code>Handler_read_first</code> </TD><TD> Количество считываний из индекса первой записи. Если это значение высокое, то, по всей вероятности, сервер осуществляет много полных индексных сканирований, например, <code>SELECT col1 FROM foo</code>, предполагая, что <code>col1</code> проиндексирован.
+</TD></TR>
+<TR><TD><code>Handler_read_key</code> </TD><TD> Количество запросов на чтение строки, основанных на ключе. Высокое значение переменной говорит о том, что ваши запросы и таблицы проиндексированы надлежащим образом.
+</TD></TR>
+<TR><TD><code>Handler_read_next</code> </TD><TD> Количество запросов на чтение следующей строки в порядке расположения ключей. Это значение будет увеличиваться, если производится запрос индексного столбца с ограничением по размеру. Значение также увеличивается во время проведения индексного сканирования.
+</TD></TR>
+<TR><TD><code>Handler_read_prev</code> </TD><TD> Количество запросов на чтение предыдущей строки в порядке расположения ключей. В большинстве случаев используется для оптимизации <code>ORDER BY ... DESC</code>.
+</TD></TR>
+<TR><TD><code>Handler_read_rnd</code> </TD><TD> Количество запросов на чтение строки, основанных на фиксированной позиции. Значение будет высоким, если выполняется много запросов, требующих сортировки результатов.
+</TD></TR>
+<TR><TD><code>Handler_read_rnd_next</code> </TD><TD> Количество запросов на чтение следующей строки из файла данных. Данное значение будет высоким, если производится много сканирований таблиц. Обычно это означает, что ваши таблицы не проиндексированы надлежащим образом или ваши запросы не используют преимущества индексов.
+</TD></TR>
+<TR><TD><code>Handler_rollback</code> </TD><TD> Количество внутренних команд <code>ROLLBACK</code>.
+</TD></TR>
+<TR><TD><code>Handler_update</code> </TD><TD> Количество запросов на обновление строки в таблице.
+</TD></TR>
+<TR><TD><code>Handler_write</code> </TD><TD> Количество запросов на вставку строки в таблицу.
+</TD></TR>
+<TR><TD><code>Key_blocks_used</code> </TD><TD> Количество используемых блоков в кэше ключей.
+</TD></TR>
+<TR><TD><code>Key_read_requests</code> </TD><TD> Количество запросов на чтение блока ключей из кэша.
+</TD></TR>
+<TR><TD><code>Key_reads</code> </TD><TD> Количество физических считываний блока ключей с диска.
+</TD></TR>
+<TR><TD><code>Key_write_requests</code> </TD><TD> Количество запросов на запись блока ключей в кэш.
+</TD></TR>
+<TR><TD><code>Key_writes</code> </TD><TD> Количество физических записей блоков ключей на диск.
+</TD></TR>
+<TR><TD><code>Max_used_connections</code> </TD><TD> Максимальное количество одновременно используемых соединений.
+</TD></TR>
+<TR><TD><code>Not_flushed_key_blocks</code> </TD><TD> Блоки ключей в кэше ключей, которые были изменены, но еще не записаны на диск.
+</TD></TR>
+<TR><TD><code>Not_flushed_delayed_rows</code> </TD><TD> Количество строк, стоящих в очереди на запись в запросах <code>INSERT DELAY</code>.
+</TD></TR>
+<TR><TD><code>Open_tables</code> </TD><TD> Количество открытых таблиц.
+</TD></TR>
+<TR><TD><code>Open_files</code> </TD><TD> Количество открытых файлов.
+</TD></TR>
+<TR><TD><code>Open_streams</code> </TD><TD> Количество открытых потоков (в основном используется для журналирования).
+</TD></TR>
+<TR><TD><code>Opened_tables</code> </TD><TD> Количество открывавшихся таблиц.
+</TD></TR>
+<TR><TD><code>Rpl_status</code> </TD><TD> Статус отказобезопасной репликации (еще не используется).
+</TD></TR>
+<TR><TD><code>Select_full_join</code> </TD><TD> Количество соединений без ключей (если это значение равно 0, необходимо внимательно проверить индексы своих таблиц).
+</TD></TR>
+<TR><TD><code>Select_full_range_join</code> </TD><TD> Количество соединений, где был использован поиск по диапазону в справочной таблице.
+</TD></TR>
+<TR><TD><code>Select_range</code> </TD><TD> Количество соединений, в которых использовались диапазоны в первой таблице. (Обычно это значение не критично, даже если оно велико)
+</TD></TR>
+<TR><TD><code>Select_scan</code> </TD><TD> Количество соединений, в которых проводилось первое сканирование первой таблицы.
+</TD></TR>
+<TR><TD><code>Select_range_check</code> </TD><TD> Количество соединений без ключей, в которых проверка использования ключей производится после каждой строки (если это значение равно 0, необходимо внимательно проверить индексы своих таблиц).
+</TD></TR>
+<TR><TD><code>Questions</code> </TD><TD> Количество запросов, направленных на сервер.
+</TD></TR>
+<TR><TD><code>Slave_open_temp_tables</code> </TD><TD> Количество временных таблиц, открытых в настоящий момент потоком подчиненного компьютера.
+</TD></TR>
+<TR><TD><code>Slave_running</code> </TD><TD> Содержит значение <code>ON</code>, если это подчиненный компьютер, подключенный к головному компьютеру.
+</TD></TR>
+<TR><TD><code>Slow_launch_threads</code> </TD><TD> Количество потоков, создание которых заняло больше, чем указано в <code>slow_launch_time</code>.
+</TD></TR>
+<TR><TD><code>Slow_queries</code> </TD><TD> Количество запросов, обработка которых заняла больше времени, чем <code>long_query_time</code>. See section <A HREF="Slow_query_log.html">4.9.5  Журнал медленных запросов</A>.
+</TD></TR>
+<TR><TD><code>Sort_merge_passes</code> </TD><TD> Количество объединений, осуществленных алгоритмом сортировки. Если это значение велико, следует увеличить <code>sort_buffer</code>.
+</TD></TR>
+<TR><TD><code>Sort_range</code> </TD><TD> Количество сортировок, которые осуществлялись в диапазонах.
+</TD></TR>
+<TR><TD><code>Sort_rows</code> </TD><TD> Количество отсортированных строк.
+</TD></TR>
+<TR><TD><code>Sort_scan</code> </TD><TD> Количество сортировок, осуществленных путем сканирования таблицы.
+</TD></TR>
+<TR><TD><code>ssl_xxx</code> </TD><TD> Переменные, используемые SSL; еще не реализовано.
+</TD></TR>
+<TR><TD><code>Table_locks_immediate</code> </TD><TD> Количество запросов на немедленную блокировку таблицы. Доступно начиная с версии 3.23.33.
+</TD></TR>
+<TR><TD><code>Table_locks_waited</code> </TD><TD> Количество запросов, когда немедленная блокировка не могла быть осуществлена и требовалось время на ожидание. Если это значение велико, и у вас есть проблемы с производительностью, сначала необходимо оптимизировать свои запросы, а затем либо разделить таблицы, либо использовать репликацию. Доступно начиная с версии 3.23.33.
+</TD></TR>
+<TR><TD><code>Threads_cached</code> </TD><TD> Количество потоков в кэше потоков.
+</TD></TR>
+<TR><TD><code>Threads_connected</code> </TD><TD> Количество открытых в настоящий момент соединений.
+</TD></TR>
+<TR><TD><code>Threads_created</code> </TD><TD> Количество потоков, созданных для управления соединениями.
+</TD></TR>
+<TR><TD><code>Threads_running</code> </TD><TD> Количество не простаивающих потоков.
+</TD></TR>
+<TR><TD><code>Uptime</code> </TD><TD> Время в секундах, в течение которого сервер находится в работе.
+</TD></TR>
+</TABLE>
+
+<P>
+Некоторые примечания к приведенной выше информации:
+
+</P>
+
+<ul>
+<LI>
+
+Если значение <code>Opened_tables</code> велико, возможно, что значение переменной
+<code>table_cache</code> слишком мало.
+
+<LI>
+
+Если значение <code>Key_reads</code> велико, возможно, что значение переменной
+<code>key_buffer_size</code> слишком мало. Частоту успешных обращений к кэшу можно
+вычислить при помощи <code>Key_reads</code>/<code>Key_read_requests</code>.
+
+<LI>
+
+Если значение <code>Handler_read_rnd</code> велико, возможно, поступает слишком
+много запросов, требующих от MySQL полного сканирования таблиц или у
+вас есть соединения, которые не используют ключи надлежащим образом.
+
+<LI>
+
+Если значение <code>Threads_created</code> велико, возможно, необходимо увеличить
+значение переменной <code>thread_cache_size</code>. Частоту успешных обращений к
+кэшу можно вычислить при помощи <code>Threads_created</code>/<code>Connections</code>.
+
+<LI>
+
+Если значение <code>Created_tmp_disk_tables</code> велико, возможно, необходимо
+увеличить значение переменной <code>tmp_table_size</code>, чтобы временные таблицы
+располагались в памяти, а не на жестком диске.
+</ul>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1356" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Sebastian Busch on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1356&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1356">Edit</a>]</td></tr></table><p class="commenttext">You state for example &amp;quot;if ... is big,<br />
+then ...&amp;quot;. But: what is big? Relative to<br />
+what? It is good that you describe these<br />
+conditions, but we should know how these numbers<br />
+relate to get an idea of big/large/huge...</p><table id="c1550" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jan Smid on Thursday January 9 2003, @10:39am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1550&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1550">Edit</a>]</td></tr></table><p class="commenttext">Thank you Sebastian, this is exactly what I thought when reading this part. What is &quot;big&quot;. I hope someone out there has an answer to this. Jan</p><table id="c1578" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Rich Lafferty on Tuesday January 14 2003, @9:03am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1578&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1578">Edit</a>]</td></tr></table><p class="commenttext">There are no absolutes for &quot;big&quot;. Slashdot's &quot;normal&quot; will be a lot larger than Bob's Trout Forum's &quot;big&quot;, for instance. <br />
+<br />
+For the most part, if you're not trying to solve a particular performance problem, you probably don't need to lose sleep over the values; once you have a performance problem to debug, you can use the performance statistics along with slow query logging, no-index query logging, and EXPLAIN to track down the bottleneck queries in your application.<br />
+<br />
+For example, if everything using a table seems to take too long to return, seeing a large Table_locks_waited compared to Table_locks_immediate suggests that waiting for locks is a performance problem; from there you can look at the Handler_read_* figures to see what sort of pathological behavior might be holding locks open, and then compare that to EXPLAINs of the queries in the slow query log to see which queries are causing the problem vs. which are just being slowed down as a result, from which you can start tuning individual queries and indices.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=SHOW_STATUS">Add your own comment.</a></p><div id="docnav"><a href="SHOW_STATUS.html#">Top</a> / <a rel="prev" href="SHOW_TABLE_STATUS.html" title="4.5.6.2  SHOW TABLE STATUS">Previous</a> / <a rel="next" href="SHOW_VARIABLES.html" title="4.5.6.4  SHOW VARIABLES">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/SHOW.html" title="4.5.6  Синтаксис команды SHOW">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Переполнения буфера — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Руководство FreeBSD для
+          разработчиков</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "secure-philosophy.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">Chapter 3.
+          Безопасное программирование</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "x1260.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="AEN1169">3.3. Переполнения
+      буфера</a></h1>
+
+      <p>Переполнения буфера появились вместе с появление
+      архитектуры Фон-Неймана <a href="appendices.html#COD">1</a>.
+      Впервые широкую известность они получили в 1988 году вместе с
+      Интернет-червем Мурса (Moorse). К сожалению, точно такая же
+      атака повторилась и в наши дни. Из 17 бюллетеней безопасности
+      CERT за 1999 год, 10 были непосредственно вызваны ошибкам в
+      программном обеспечении, связанным с переполнениями буфера.
+      Самые распространенные типы атак с использованием
+      переполнения буфера основаны на разрушении стека.</p>
+
+      <p>Самые современные вычислительные системы используют стек
+      для передачи аргументов процедурам и сохранения локальных
+      переменных. Стек является буфером типа LIFO (последним вошел
+      первым вышел) в верхней части области памяти процесса. Когда
+      программа вызывает функцию, создается новая "граница стека".
+      Эта граница состоит из аргументов, переданных в функцию, а
+      также динамического количества пространства локальных
+      переменных. "Указатель стека" является регистром, хранящим
+      текущее положение вершины стека. Так как это значение
+      постоянно меняется вместе с помещением новых значений на
+      вершину стека, многие реализации также предусматривают
+      "указатель границы", который расположен около начала стека,
+      так что локальные переменные можно легко адресовать
+      относительно этого значения. <a href=
+      "appendices.html#COD">1</a> Адрес возврата из функции также
+      сохраняется в стеке, и это является причиной нарушений
+      безопасности, связанных с переполнением стека, так как
+      перезаписывание локальной переменной в функции может изменить
+      адрес возврата из этой функции, потенциально позволяя
+      злоумышленнику выполнить любой код.</p>
+
+      <p>Хотя атаки с переполнением стека являются замыми
+      распространенными, стек можно также перезаписать при помощи
+      атаки, основанной на выделении памяти (malloc/free) из
+      "кучи".</p>
+
+      <p>Как и во многих других языках программирования, в C не
+      выполняется автоматической проверки границ в массивах или
+      указателях. Кроме того, стандартная библиотека C полна очень
+      опасных функций.</p>
+
+      <div class="INFORMALTABLE">
+        <a name="AEN1177"></a>
+
+        <table border="1" class="CALSTABLE">
+          <tbody>
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">strcpy</tt>(char *dest, const char
+              *src)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить целевой буфер</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">strcat</tt>(char *dest, const char
+              *src)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить целевой буфер</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">getwd</tt>(char *buf)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить буфер buf</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">gets</tt>(char *s)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить буфер s</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">[vf]scanf</tt>(const char *format,
+              ...)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить свои аргументы.</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">realpath</tt>(char *path, char
+              resolved_path[])</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить буфер path</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="LEFT" valign="TOP"><tt class=
+              "FUNCTION">[v]sprintf</tt>(char *str, const char
+              *format, ...)</td>
+
+              <td align="LEFT" valign="TOP">
+                <p>Может переполнить буфер str.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN1215">3.3.1. Пример
+        переполнения буфера</a></h2>
+
+        <p>В следующем примере кода имеется ошибка переполнения
+        буфера, предназначенная для перезаписи адреса возврата и
+        обхода инструкции, следующей непосредственно за вызовом
+        функции. (По мотивам <a href=
+        "appendices.html#PHRACK">4</a>)</p>
+<pre class="PROGRAMLISTING">
+    #include <tt class="SGMLTAG">&#60;stdio.h&#62;</tt>
+
+    void manipulate(char *buffer) {
+      char newbuffer[80];
+      strcpy(newbuffer,buffer);
+    }
+
+    int main() {
+      char ch,buffer[4096];
+      int i=0;
+
+      while ((buffer[i++] = getchar()) != '\n') {};
+
+      i=1;
+      manipulate(buffer);
+      i=2;
+      printf("The value of i is : %d\n",i);
+      return 0;
+    }
+
+</pre>
+
+        <p>Давайте посмотрим, как будет выглядеть образ процесса,
+        если в нашу маленькую программу мы введем 160 пробелов.</p>
+
+        <p>[XXX figure here!]</p>
+
+        <p>Очевидно, что для выполнения реальных инструкций (таких,
+        как exec(/bin/sh)), может быть придуман более вредоносный
+        ввод.</p>
+      </div>
+
+      <div class="SECT2">
+        <h2 class="SECT2"><a name="AEN1224">3.3.2. Как избежать
+        переполнений буфера</a></h2>
+
+        <p>Самым прямолинейным решением проблемы переполнения стека
+        является использование только памяти фиксированного размера
+        и функций копирования строк. Функции <tt class=
+        "FUNCTION">strncpy</tt> и <tt class="FUNCTION">strncat</tt>
+        являются частью стандартной библиотеки C. Эти функции будут
+        копировать не более указанного количества байт из исходной
+        строки в целевую. Однако у этих функций есть несколько
+        проблем. Ни одна из них не гарантирует наличие символа NUL,
+        если размер входного буфера больше, чем целевого. Параметр
+        длины также по-разному используется в strncpy и strncat,
+        так что для программистов легко запутаться в правильном
+        использовании. Есть также и значительная потеря
+        производительности по сравнению с <tt class=
+        "FUNCTION">strcpy</tt> при копировании короткой строки в
+        большой буфер, потому что <tt class="FUNCTION">strncpy</tt>
+        заполняет символами NUL пространство до указанной
+        длины.</p>
+
+        <p>Для избежания этих проблем в OpenBSD была сделана другая
+        реализация копирования памяти. Функции <tt class=
+        "FUNCTION">strlcpy</tt> и <tt class="FUNCTION">strlcat</tt>
+        гарантируют, что они они всегда терминируют целевую строку
+        нулевым символом, если им будет передан аргумент ненулевой
+        длины. Более подробная информация об этом находится здесь
+        <a href="appendices.html#OPENBSD">6</a>. Инструкции OpenBSD
+        <tt class="FUNCTION">strlcpy</tt> и <tt class=
+        "FUNCTION">strlcat</tt> были во FreeBSD начиная с 3.5.</p>
+
+        <div class="SECT3">
+          <h3 class="SECT3"><a name="AEN1237">3.3.2.1.
+          Вкомпилированная проверка границ во время
+          выполнения</a></h3>
+
+          <p>К несчастью, все еще широко используется очень большой
+          объем кода, который слепо копирует память без
+          использования только что рассмотренных функций с
+          проверкой границ. Однако есть другое решение. Существует
+          несколько расширений к компилятору и библиотекам C/C++
+          для выполнения контроля границ во время выполнения.</p>
+
+          <p>Одним из таких добавлений является StackGuard, который
+          реализован как маленький патч к генератору кода gcc.
+          Согласно сайту StackGuard,
+          http://immunix.org/stackguard.html: <a name=
+          "AEN1241"></a></p>
+
+          <blockquote class="BLOCKQUOTE">
+            <p>"StackGuard распознает и защищает стек от атак, не
+            позволяя изменять адрес возврата в стеке. При вызове
+            функции StackGuard помещает вслед за адресом возврата
+            сигнальное слово. Если после возврата из функции оно
+            оказывается измененным, то была попытка выполнить атаку
+            на стек, и программа отвечает на это генерацией
+            сообщения о злоумышленнике в системном журнале, а затем
+            прекращает работу."</p>
+          </blockquote>
+          <a name="AEN1243"></a>
+
+          <blockquote class="BLOCKQUOTE">
+            <p>"StackGuard реализован в виде маленького патча к
+            генератору кода gcc, а именно процедур
+            function_prolog() и function_epilog().
+            function_prolog() усовершенствована для создания
+            пометок в стеке при начале работы функции, а
+            function_epilog() проверяет челостность пометки при
+            возврате из функции. Таким образом, любые попытки
+            изменения адреса возврата определяются до возврата из
+            функции."</p>
+          </blockquote>
+          <br>
+          <br>
+
+          <p>Перекомпиляция вашего приложения со StackGuard
+          является эффективным способом остановить большинство атак
+          переполнений буфера, но все же полностью это проблемы не
+          решает.</p>
+        </div>
+
+        <div class="SECT3">
+          <h3 class="SECT3"><a name="AEN1246">3.3.2.2. Проверка
+          границ во время выполнения с использованием
+          библиотек.</a></h3>
+
+          <p>Механизмы на основе компилятора полностью бесполезны
+          для программного обеспечения, поставляемого в двоичном
+          виде, которое вы не можете перекомпилировать. В этих
+          ситуациях имеется некоторое количество библиотек, в
+          которых реализованы небезопасные функции библиотеки C
+          (<tt class="FUNCTION">strcpy</tt>, <tt class=
+          "FUNCTION">fscanf</tt>, <tt class="FUNCTION">getwd</tt>,
+          и так далее..), обеспечивающие невозможность записи после
+          указателя стека.</p>
+
+          <ul>
+            <li>
+              <p>libsafe</p>
+            </li>
+
+            <li>
+              <p>libverify</p>
+            </li>
+
+            <li>
+              <p>libparnoia</p>
+            </li>
+          </ul>
+
+          <p>К сожалению, эти защиты имеют некоторое количество
+          недостатков. Эти библиотеки могут защитить только против
+          малого количества проблем, и не могут исправить реальные
+          проблемы. Эти защиты могут не сработать, если приложение
+          скомпилировано с параметром -fomit-frame-pointer. К тому
+          же переменные окружения LD_PRELOAD и LD_LIBRARY_PATH
+          могут быть переопределены/сняты пользователем.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "secure-philosophy.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "x1260.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Методология
+          обеспечения безопасности</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "secure.html" accesskey="U">Up</a></td>
+
+          <td width="33%" align="right" valign="top">Проблемы с
+          установленным битом UID</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Configuring the Sendmail E-mail Daemon — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Administration Made Easy</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="squid-upgrades.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Upgrading Linux and Other Applications</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="enterprise-computing.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SENDMAIL-UPGRADES"
+>10.10. Configuring the Sendmail E-mail Daemon</A
+></H1
+><P
+>I use the Sendmail package to provide e-mail services.  Sendmail is
+<EM
+>the</EM
+> definitive mail handler; in fact it is so popular
+that it is estimated that over 80% of e-mail passing over the Internet
+will be handled at one or both ends by it.  It does just about anything
+and I couldn't imagine running an Internet server without it (another
+e-mail server package called Qmail seems to be quite popular as well --
+but I haven't had a reason yet to give it a try).</P
+><P
+>To keep up with new features and bug-fixes, and most importantly,
+for reasons of security, it is a probably a good idea to upgrade Sendmail
+from time to time.  In addition, the very latest versions of Sendmail
+include powerful anti-spam features which can help prevent your mail
+server being abused by unauthorized users.</P
+><P
+>This section will discuss some of the things you should do if you
+wish to use Sendmail as an incoming e-mail server.  This would be the
+likely scenario for server systems.  If, instead, you have no need to use
+it for incoming mail and wish to only use it as an outgoing mail queue,
+you should ((need some info here)).</P
+><P
+>For this section, it is assumed that you are using the very latest
+version of Sendmail (8.9.3 at the time of this writing), have it installed
+and running.</P
+><P
+>As packaged with the Red Hat distribution, Sendmail usually
+contains appropriate configuration information to operate correctly in
+the majority of server setups.  Nonetheless, you may find it necessary to
+edit the ``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/sendmail.cf</TT
+></TT
+>''
+file and customize some settings as required.  This, however, is beyond
+the scope of this document.</P
+><P
+>One thing I find helpful, however, is to make a couple of changes to
+the configuration file to thwart off spammers.  These include:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+><FONT
+COLOR="RED"
+>O PrivacyOptions=authwarnings</FONT
+>
+<EM
+>change to:</EM
+>
+O PrivacyOptions=authwarnings,noexpn,novrfy
+
+<FONT
+COLOR="RED"
+>O SmtpGreetingMessage=$j Sendmail $v/$Z; $b</FONT
+>
+<EM
+>change to:</EM
+>
+O SmtpGreetingMessage=$j Sendmail $v/$Z; $b  NO UCE  C=xx L=xx</PRE
+></TD
+></TR
+></TABLE
+><P
+>(The first change prevents spammers from using the
+``<TT
+CLASS="LITERAL"
+>EXPN</TT
+>'' and ``<TT
+CLASS="LITERAL"
+>VRFY</TT
+>'' commands in
+sendmail.  I find that these commands are too often abused by unethical
+individuals.  The second change modifies the banner which Sendmail
+displays upon receiving a connection.  You should replace the
+``<EM
+>xx</EM
+>'' in the ``<TT
+CLASS="LITERAL"
+>C=xx L=xx</TT
+>''
+entries with your country and location codes.  For example, in my case, I
+would use ``<TT
+CLASS="LITERAL"
+>C=CA L=ON</TT
+>'' for Ontario, Canada.  (The
+latter change doesn't actually affect anything, but was recommended by
+folks in the <!--<A
+HREF="news:news.admin.net-abuse.email"
+TARGET="_top"
+>-->news.admin.net-abuse.email<!--</A
+>--> newsgroup as a legal
+precaution.</P
+><P
+>Next, if your mail server will have a different host name than the
+actual machine it is running on, you can add one or more aliases in the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/sendmail.cw</TT
+></TT
+>'' file.  For
+example, if you have a system called
+<SPAN
+CLASS="QUOTE"
+>"<EM
+>kirk.mydomain.name</EM
+>"</SPAN
+> which is set up as
+the mail exchanger for mydomain.name, but want incoming mail addressed in
+the format ``<EM
+><a href="../../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e792948295a78a9e83888a868e89c989868a82">[email&#160;protected]</a></EM
+>'' to be delivered to
+your users on <SPAN
+CLASS="QUOTE"
+>"<EM
+>kirk</EM
+>"</SPAN
+>, simply add this
+alias as follows:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>mydomain.name</PRE
+></TD
+></TR
+></TABLE
+><P
+>Finally, If you need to restrict a domain (or subdomain) from
+connecting to your sendmail service, you can edit the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/mail/access</TT
+></TT
+>'' and add the
+domain information as well as type of restriction.  For example:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>some.domain             REJECT
+hax0r.another.domain    550 Contact site administrator at (555) 555-1234.</PRE
+></TD
+></TR
+></TABLE
+><P
+>The above examples would reject all e-mail connections from the
+``<EM
+>some.domain</EM
+>'' site, as well as reject the specific
+machine name ``<EM
+>hax0r.another.domain</EM
+>'' with a
+descriptive message.</P
+><P
+>After making changes to this file, you will need to update the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>access.db</TT
+></TT
+>'' file, and then
+restart sendmail as follows:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>/usr/sbin/makemap hash /etc/mail/access.db &#60; /etc/mail/access</B
+></TT
+>
+<TT
+CLASS="USERINPUT"
+><B
+>/etc/rc.d/init.d/sendmail restart</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>Tip: </B
+>Tip: If you are concerned with e-mail abuse, you can get some
+very helpful information from the <SPAN
+CLASS="QUOTE"
+>"Mail Abuse Prevention
+System"</SPAN
+> (<SPAN
+CLASS="ACRONYM"
+>MAPS</SPAN
+>) project on dealing with such
+abuse; see the web pages at <!--<A
+HREF="http://www.mail-abuse.org/"
+TARGET="_top"
+>-->http://www.mail-abuse.org/<!--</A
+>--></P
+><P
+>If you're using Sendmail version 8.9 or above, RBL support is
+already built in, but not enabled by default.  To enable this support, add
+the following to your sendmail.mc file:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>        FEATURE(rbl)</PRE
+></TD
+></TR
+></TABLE
+><P
+>Then, reconfigure and restart the Sendmail daemon.</P
+><P
+>For more detailed information, including configuration instructions
+for other mail transport agents, see <!--<A
+HREF="http://www.mail-abuse.org/rbl/usage.html"
+TARGET="_top"
+>-->http://www.mail-abuse.org/rbl/usage.html<!--</A
+>-->.</P
+><P
+>Sometimes, a domain may end up in the RBL list with which you wish
+to continue communications with.  Perhaps it is vital for you to
+communicate with certain users at the black-listed domain.  In this case,
+Sendmail allows you to override these domains to allow their e-mail to be
+received.  Simply edit the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/mail/access</TT
+></TT
+>'' file in the
+manner described above with the appropriate domain information.  For
+example:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>blacklisted.domain      OK</PRE
+></TD
+></TR
+></TABLE
+><P
+>Don't forget to rebuild your access.db file (described above)!</P
+><P
+>If you do decide to subscribe to the RBL, it is probably a wise idea
+to inform your mail users, if applicable, so they can make other service
+arrangements if they disagree with your decision.</P
+></BLOCKQUOTE
+></DIV
+><P
+>For more information on Sendmail, see the FAQ document located at
+<!--<A
+HREF="http://www.sendmail.org/faq/"
+TARGET="_top"
+>-->http://www.sendmail.org/faq/<!--</A
+>-->.</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="squid-upgrades.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="enterprise-computing.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring the Squid HTTP Caching Proxy Daemon</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="upgrading-linux.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Enterprise Computing with Linux</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 16 Серверное программное обеспечение (Сетевой сервис шифрования)
+      - FreeS/WAN VPN (часть 2)</H2><FONT size=+2>В этой главе</FONT><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#1">-->Linux OPENSSL
+      сервер<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#2">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#3">-->Команды<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_1.html#4">-->Организация
+      защиты Openssl<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#5">-->Linux
+      FreeS/WAN VPN<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_2.html#6">-->Настройка RSA
+      private keys secrets<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#7">-->Требования по
+      настройке сети для IPSec<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch16_3.html#8">-->Тестирование
+      инсталляции<!--</A>--><BR><FONT size=+1></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=163
+      src="ch16_3.files/27.jpg" width=210></TD></TR></TBODY></TABLE>
+<H3><A name=7>Требования по настройке сети для IPSec</A></H3>
+<P align=justify>Здесь приводятся некоторые вещи, которые вы должны проверить
+для корректной работы FreeS/WAN. Они важны, если вы не хотите получить сообщения
+об ошибке при запуске VPN.</P><B>Шаг 1</B>
+<P align=justify>Вам нужно включить TCP/IP forwarding на обоих шлюзах. В Red Hat
+Linux, это в зависимости от версии делается так:</P>
+<P align=justify>Для Red Hat Linux 6.1</P>
+<P align=justify>Редактируйте файл network (vi /etc/sysconfig/network) и
+измените следующую строку:<BR><FONT color=#008080
+size=-1>FORWARD_IPV4="false&#8221;</FONT><BR>Должна быть:<BR><FONT color=#008080
+size=-1>FORWARD_IPV4="yes"</FONT></P>
+<P align=justify>Вы должны перезапустить настройки сети, чтобы изменения
+вступили в силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Bringing up interface lo       [ OK ]
+Bringing up interface eth0     [ OK ]
+Bringing up interface eth1     [ OK ]</PRE></FONT>
+<P align=justify>Для Red Hat Linux 6.2</P>
+<P align=justify>Редактируйте файл &#8220;/etc/sysctl.conf&#8221; и добавьте следующую
+строку:</P><FONT color=#008080 size=-1># Enable packet
+forwarding<BR>net.ipv4.ip_forward = 1<BR></FONT>
+<P align=justify>Вы должны перезапустить настройки сети, чтобы изменения
+вступили в силу:</P><FONT color=#008080><PRE>[root@deep /]# /etc/rc.d/init.d/network restart
+Bringing up interface lo       [ OK ]
+Bringing up interface eth0     [ OK ]
+Bringing up interface eth1     [ OK ]</PRE></FONT><BR><B>Шаг 2</B>
+<P align=justify>Помниту, что соединения с автоматическим снабжением ключами
+использует ключи автоматически созданные демоном согласования ключей Pluto. Этот
+демон стартуя устанавливает соединение с Pluto демоном на другом конце туннеля.
+Из этих соображений шлюх IPSEC должен иметь правила фильтра пакетов разрешающие
+следующие протоколы:</P>
+<UL>
+  <LI>UDP порт 500 для IKE реализации демона Pluto
+  <LI>Протокол 50 для ESP шифрования и аутентификации
+  <LI>Протокол 51 для аутентификации на уровне пакетов AH </LI></UL>
+<P align=justify>Редактируйте скрипт firewall (vi /etc/rc.d/init.d/firewall) на
+обоих шлюзах и добавьте следующие строки, чтобы разрешить IPSEC пакетам
+перемещаться между обоими концами туннеля:</P><PRE># FreeS/WAN IPSec VPN
+# -------------------
+# Если вы используете FreeSWAN IPSec VPN, вы должны заполнить
+# адреса шлюзов в IPSECSG и виртуальных интурфейсов для
+# FreeS/Wan IPSEC в параметре FREESWANVI. Смотрите начало
+# этого скрипта для определения этих параметров.
+# IPSECSG это разделенный пробелами список удаленных шлюзов.
+# FREESWANVI это разделенный пробелами список виртуальных
+# интерфейсов для реализации FreeS/Wan IPSEC.
+# Включите только те, которые фактически используются.
+# Разрешите протокол IPSEC из удаленных шлюзов на внешнем интерфейсе
+# IPSEC использует три основных типа пакетов:
+# IKE использует UDP протокол и порт 500,
+# ESP использует протокол номер 50 и
+# AH использует протокол номер 51
+ipchains -A input -i $EXTERNAL_INTERFACE -p udp \
+-s $IPSECSG -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p udp \
+-d $IPSECSG -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p 50 \
+-s $IPSECSG -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p 50 \
+-d $IPSECSG -j ACCEPT
+ipchains -A input -i $EXTERNAL_INTERFACE -p 51 \
+-s $IPSECSG -j ACCEPT
+ipchains -A output -i $EXTERNAL_INTERFACE -p 51 \
+-d $IPSECSG -j ACCEPT
+# Разрешите весь трафик к виртуальному интерфейсу FreeS/WAN
+ipchains -A input -i $FREESWANVI \
+-s $ANYWHERE \
+-d $ANYWHERE -j ACCEPT
+ipchains -A output -i $FREESWANVI \
+-s $ANYWHERE \
+-d $ANYWHERE -j ACCEPT
+# Пересылка всего из виртуального интерфейса FreeS/WAN IPSEC туннеля
+ipchains -A forward -i $FREESWANVI \
+-s $ANYWHERE \
+-d $ANYWHERE -j ACCEPT</PRE>
+<P align=justify>где EXTERNAL_INTERFACE="eth0" # Ваш внешний интерфейс к
+Интернет.<BR>где ANYWHERE="any/0" # имеет значение все 0.0.0.0/0.<BR>где
+IPSECSG=&#8221;208.164.186.2&#8221; # разделенный пробелами список удаленных VPN
+шлюзов.<BR>где FREESWANVI=&#8221;ipsec0&#8221; # разделенный пробелами список виртуальных
+интерфейсов для FreeS/Wan.<BR></P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Смотрите главу 7, &#8220;Сетевой брандмауэр&#8221; для
+большей информации. Не забудьте добавить эти правила на других шлюзах.</P><B>Шаг
+3</B>
+<P align=justify>Подсистема rp_filter (связанная с защитой от IP spoofing)
+должна быть выключена на обоих шлюзах для корректной работы IPSEC. Это
+достигается проверкой значения содержащегося в файлах
+&#8220;/proc/sys/net/ipv4/conf/ipsec0/rp_filter и
+&#8220;/proc/sys/net/ipv4/conf/eth0/rp_filter&#8221;.<BR>Оно должно быть равно 0:</P><FONT
+color=#008080 size=-1>[root@deep /]# cat
+/proc/sys/net/ipv4/conf/ipsec0/rp_filter<BR>0<BR>[root@deep /]# cat
+/proc/sys/net/ipv4/conf/eth0/rp_filter<BR>0<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Подкаталог &#8220;ipsec0&#8221; в нашем примере будет
+создан только после перезагрузки системы. Так, что проверить значение файла
+&#8220;rp_filter&#8221; в каталоге &#8220;ipsec0&#8221; можно будет только когда система
+перезагрузится.</P>
+<P align=justify>Для установки значения 0 (off) в оба файла вручную используйте
+команды:</P><FONT color=#008080 size=-1>[root@deep /]# echo 0 &gt;
+/proc/sys/net/ipv4/conf/ipsec0/rp_filter<BR>[root@deep /]# echo 0 &gt;
+/proc/sys/net/ipv4/conf/eth0/rp_filter<BR></FONT>
+<P align=justify>Также можно добавить эти строки в скрипт файл firewall
+(/etc/rc.d/init.d/firewall) на обоих шлюзах, чтобы значение 0 (off)
+устанавливалось автоматически при каждой загрузке системы:</P><FONT
+color=#008080 size=-1># Disable IP spoofing protection to allow IPSEC to work
+properly<BR>echo 0 &gt; /proc/sys/net/ipv4/conf/ipsec0/rp_filter<BR>echo 0 &gt;
+/proc/sys/net/ipv4/conf/eth0/rp_filter<BR></FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> В нашем примере мы предполагаем что для
+установления соединений используется интерфейс eth0. Конечно, если вы
+используете eth1 вам надо просто заменить eth0 на eth1.</P>
+<P align=justify>Если вы забудете сделать этот шаг, то получите на вашем
+терминале следующие сообщения об ошибках при запуске FreeSWAN IPSEC:</P><FONT
+color=#008080 size=-1>ipsec_setup: WARNING: ipsec0 has route filtering turned
+on, KLIPS may not work<BR>ipsec_setup: (/proc/sys/net/ipv4/conf/ipsec0/rp_filter
+= `1', should be 0)<BR>ipsec_setup: WARNING: eth0 has route filtering turned on,
+KLIPS may not work<BR>ipsec_setup: (/proc/sys/net/ipv4/conf/eth0/rp_filter =
+`1', should be 0)<BR></FONT><B>Шаг 4</B>
+<P align=justify>Важно заметить, что любые правила маскарадинга для внутренней
+сети, которая использует IPSEC, должны находится после правил разрешающих трафик
+связанный с IPSEC (шаги 2 и 3 выше), или машина будет маскарадить трафик вместо
+пропускания его через IPSEC.</P>
+<P align=justify>Редактируйте скрипт firewall (vi /etc/rc.d/init.d/firewall) на
+обоих шлюзовых машинах и добавьте следующие строки позволяющие маскарадить
+пакеты направляемые на удаленный шлюз и обратно:</P><FONT color=#008080
+size=-1># Маскарадинг внутреннего трафика.<BR># Весь внутренний трафик будет
+выглядеть.<BR>ipchains -A forward -i $EXTERNAL_INTERFACE -s $LOCALNET_1 -j
+MASQ<BR></FONT>
+<P align=justify>где EXTERNAL_INTERFACE="eth0" # Ваш внешний интерфейс в
+Интернет.<BR>где LOCALNET_1=" 192.168.1.0/24" # диапазон внутренних адресов
+который вы используете.</P>
+<P align=justify><B>ЗАМЕЧАНИЕ.</B> Смотрите главу 8 &#8220;Сетевой брандмауэр с
+поддержкой маскарадинга и форвардингом&#8221; для большей информации.</P>
+<P align=justify>Сейчас, вы можете перезагрузить вашу систему, и машины за
+шлюзом A должны без проблем обмениваться информацией с машинами за шлюзом B.</P>
+<H3><A name=8>Тестирование инсталляции</A></H3>Перезагрузите оба шлюза для
+запуска FreeS/WAN.<BR>Просмотрите файл &#8220;/var/log/messages&#8221; для выявления
+сообщений о возникших трудностях. Если все хорошо, то вы должны увидеть что-то
+подобное:<BR><FONT color=#008080 size=-1>Feb 2 05:22:35 deep ipsec_setup:
+Starting FreeS/WAN IPSEC snap2000jan31b...<BR>Feb 2 05:22:35 deep ipsec_setup:
+KLIPS debug `none'<BR>Feb 2 05:22:35 deep ipsec_setup: KLIPS ipsec0 on eth0
+192.168.1.1/255.255.255.0 <BR>broadcast 192.168.1.255<BR>Feb 2 05:22:36 deep
+ipsec_setup: Disabling core dumps:<BR>Feb 2 05:22:36 deep ipsec_setup: Starting
+Pluto (debug `none'):<BR>Feb 2 05:22:37 deep ipsec_setup: Loading Pluto database
+`deep-mail':<BR>Feb 2 05:22:37 deep ipsec_setup: Enabling Pluto
+negotiation:<BR>Feb 2 05:22:37 deep ipsec_setup: Routing for Pluto conns
+`deep-mail':<BR>Feb 2 05:22:37 deep ipsec_setup: Initiating Pluto tunnel
+`deep-mail':<BR>Feb 2 05:22:39 deep ipsec_setup: 102 "deep-mail" #1:
+STATE_MAIN_I1: initiate<BR>Feb 2 05:22:39 deep ipsec_setup: 104 "deep-mail" #1:
+STATE_MAIN_I2: from <BR>STATE_MAIN_I1; sent MI2, expecting MR2<BR>Feb 2 05:22:39
+deep ipsec_setup: 106 "deep-mail" #1: STATE_MAIN_I3: from <BR>STATE_MAIN_I2;
+sent MI3, expecting MR3<BR>Feb 2 05:22:39 deep ipsec_setup: 004 "deep-mail" #1:
+STATE_MAIN_I4: SA <BR>established<BR>Feb 2 05:22:39 deep ipsec_setup: 110
+"deep-mail" #2: STATE_QUICK_I1: initiate<BR>Feb 2 05:22:39 deep ipsec_setup: 004
+"deep-mail" #2: STATE_QUICK_I2: SA <BR>established<BR>Feb 2 05:22:39 deep
+ipsec_setup: ...FreeS/WAN IPSEC started<BR></FONT>
+<P align=justify>Изучите файл &#8220;/var/log/secure&#8221; для выявления возникших
+трудностей. Если все хорошо, то вы должны увидеть нечто подобное:</P><FONT
+color=#008080 size=-1>Feb 21 14:45:42 deep Pluto[432]: Starting Pluto (FreeS/WAN
+Version 1.3)<BR>Feb 21 14:45:43 deep Pluto[432]: added connection description
+"deep-mail"<BR>Feb 21 14:45:43 deep Pluto[432]: listening for IKE
+messages<BR>Feb 21 14:45:43 deep Pluto[432]: adding interface ipsec0/eth0
+192.168.1.1<BR>Feb 21 14:45:43 deep Pluto[432]: loading secrets from
+"/etc/ipsec.secrets"<BR>Feb 21 14:45:43 deep Pluto[432]: "deep-mail" #1:
+initiating Main Mode<BR>Feb 21 14:45:44 deep Pluto[432]: "deep-mail" #1: ISAKMP
+SA established<BR>Feb 21 14:45:44 deep Pluto[432]: "deep-mail" #2: initiating
+Quick
+Mode<BR>POLICY_RSASIG+POLICY_ENCRYPT+POLICY_AUTHENTICATE+POLICY_T<BR>UNNEL+POLICY_PFS<BR>Feb
+21 14:45:46 deep Pluto[432]: "deep-mail" #2: sent QI2, IPsec SA
+established<BR>Feb 21 14:45:47 deep Pluto[432]: "deep-mail" #3: responding to
+Main Mode<BR>Feb 21 14:45:49 deep Pluto[432]: "deep-mail" #3: sent MR3, ISAKMP
+SA <BR>established<BR>Feb 21 14:45:49 deep Pluto[432]: "deep-mail" #4:
+responding to Quick Mode<BR>Feb 21 14:45:50 deep Pluto[432]: "deep-mail" #4:
+IPsec SA established<BR></FONT>На обоих шлюзах, должны существовать следующие
+элементы в каталоге &#8220;/proc/net/&#8221;:
+<P></P><FONT color=#008080 size=-1>[root@deep /]# ls -l
+/proc/net/ipsec_*<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_eroute<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_klipsdebug<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_spi<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_spigrp<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_spinew<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_tncfg<BR>-r--r--r-- 1 root root 0 Feb 2 05:30
+/proc/net/ipsec_version<BR></FONT>
+<P align=justify>Интерфейсы IPSEC должны быть подключены поверх определенных
+физических интерфейсов.<BR>Проверьте что:</P><FONT color=#008080
+size=-1>[root@deep /]# cat /proc/net/ipsec_tncfg<BR>ipsec0 -&gt; eth0 mtu=16260
+-&gt; 1500<BR>ipsec1 -&gt; NULL mtu=0 -&gt; 0<BR>ipsec2 -&gt; NULL mtu=0 -&gt;
+0<BR>ipsec3 -&gt; NULL mtu=0 -&gt; 0<BR></FONT>
+<P align=justify>Сейчас выполните следующую команду для получения минимальной
+отладочной информации и проверьте, что полученный результат выглядит примерно
+так:</P><FONT color=#008080 size=-1>[root@deep /]# ipsec look<BR>deep.openna.com
+Fri Feb 4 17:25:17 EST 2000<BR>============-============<BR>192.168.1.1/32 -&gt;
+192.168.1.2/32 =&gt; <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="f286879cc28ac3c2c4b2c3cbc0dcc3c4cadcc3dcc0">[email&#160;protected]</a>
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="ea8f999ada92dededfdad2d3de8eaadbd3d8c4dbdcd2c4dbc4d8">[email&#160;protected]</a><BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="79181149014d4d4c4941404d1a3948404b57484f415748574b">[email&#160;protected]</a><BR>------------=------------<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="3b5a530b4308080e0b5d0e0e0a7b0a0209150a0d03150a150a">[email&#160;protected]</a>
+AH_HMAC_MD5: dir=in ooowin=32 seq=115 bit=0xffffffff alen=128<BR>aklen=16
+life(c,s,h)=bytes(16140,0,0)add(51656,0,0)use(54068,0,0)packets(115,0,0)
+idle=499<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="cbaaa3fbb3fffffefbf3f2ffa88bfaf2f9e5fafdf3e5fae5f9">[email&#160;protected]</a> AH_HMAC_MD5: dir=out ooowin=32 seq=2828
+alen=128
+aklen=16<BR>life(c,s,h)=bytes(449488,0,0)add(51656,0,0)use(51656,0,0)packets(2828,0,0)
+idle=6<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0f6a7c7f3f773c3c3a3f693a3a3d4f3e363d213e3937213e213e">[email&#160;protected]</a> ESP_3DES: dir=in ooowin=32 seq=115
+bit=0xffffffff
+eklen=24<BR>life(c,s,h)=bytes(13380,0,0)add(51656,0,0)use(54068,0,0)packets(115,0,0)
+idle=499<BR>esp0x44<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="586d6860616c3c1869616a76696e607669766a">[email&#160;protected]</a> ESP_3DES: dir=out ooowin=32 seq=2828
+eklen=24<BR>life(c,s,h)=bytes(381616,0,0)add(51656,0,0)use(51656,0,0)packets(2828,0,0)
+idle=6<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="37434259074f06070277060e051906010f19061906">[email&#160;protected]</a> IPIP: dir=in 192.168.1.2 -&gt; 192.168.1.1
+life(c,s,h)=add(51656,0,0)<BR><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bdc9c8d38dc58c8d8bfd8c848f938c8b85938c938f">[email&#160;protected]</a> IPIP: dir=out 192.168.1.1
+-&gt;
+192.168.1.2<BR>life(c,s,h)=bytes(327581,0,0)add(51656,0,0)use(51656,0,0)packets(2828,0,0)
+idle=6<BR>192.168.1.0 0.0.0.0 255.255.255.0 U 0 0 0 eth0<BR>192.168.1.0 0.0.0.0
+255.255.255.0 U 0 0 0 ipsec0<BR>192.168.1.1 0.0.0.0 255.255.255.255 UH 0 0 0
+eth0<BR>192.168.1.2 192.168.1.2 255.255.255.255 UGH 0 0 0 ipsec0<BR>Destination
+Gateway Genmask Flags MSS Window irtt Iface<BR></FONT>
+<P align=justify>Выполните команду ping 192.168.1.2 из 192.168.1.1. Если она
+работает, тогда вы все установили корректно. Если не работает, то проверьте, что
+с машины 208.164.186.1 видна 208.164.186.2, что включен TCP-IP forwarding, и что
+на вашем брандмауэре нет правил блокирующих пакеты и правила маскарадинга
+находятся после правил, связанных с трафиком IPSec.</P><PRE>208.164.186.1 ---- 205.151.222.250 ---- 205.151.222.251 ---- 208.164.186.2
+|                                                                 |
+192.168.1.0/24                                               192.168.1.0/24
+|                                                                 |
+192.168.1.1                                                  192.168.1.2</PRE>
+<P align=justify>Последнее замечание об инсталляции FreeSWAN IPSEC, если вы
+столкнулись с проблемами с которыми не можете разобраться, то вы можете
+использовать следующую команду для просмотра отладочной информации, связанной с
+системой шифрования/аутентификации IPSEC, которую вы можете послать в список
+рассылки Linux-IPSEC (<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="eb8782859e93c6829b988e88ab888782858e9fc58d82">[email&#160;protected]</a>) с просьбой помочь вам:</P><FONT
+color=#008080 size=-1>[root@deep /]# ipsec barf &gt; result</FONT>
+<P align=justify>Эта команда первично предоставляла возможность удаленной
+отладки; единичная команда упаковывает (и помечает) всю информацию, которая
+могла бы быть уместна для диагностирования проблем в IPSEC.</P>
+<H3>Дополнительная документация</H3>
+<P align=justify>Для получения большей информации вы можете ознакомиться со
+страницами руководства перечисленными ниже:</P>
+<P align=justify>$ man ipsec (8) &#8211; вызов утилит IPSEC<BR>$ man ipsec atoaddr,
+addrtoa (3) &#8211; конвертирование Интернет адресов в и из ASCII<BR>$ man ipsec
+atoasr (3) &#8211; конвертирование ASCII в Интернет адреса, подсети и диапазоны<BR>$
+man ipsec atobytes, bytestoa (3) &#8211; конвертирование байтов двоичных данных в и из
+ASCII формат<BR>$ man ipsec atodata, datatoa (3) &#8211; конвертирование двоичных
+данных из и в ASCII формат<BR>$ man ipsec atosa, satoa (3) &#8211; конвертирует IPSEC
+Security Association IDs в и из ASCII<BR>$ man ipsec atosubnet, subnettoa (3) &#8211;
+конвертирует подсеть/маска в ASCII форме в и из адрес<BR>$ man ipsec atoul,
+ultoa (3) &#8211; конвертирует unsigned-long числа в и из ASCII<BR>$ man ipsec auto
+(8) &#8211; контролирует автоматическое снабжение ключами соединений IPSEC<BR>$ man
+ipsec barf (8) &#8211; выделение набора отладочной информации IPSEC<BR>$ man ipsec
+bitstomask (3) &#8211; конвертирование набора единиц и нулей в маску подсети
+Интернет<BR>$ man ipsec eroute (8) &#8211; манипулирование таблицами маршрутизации
+IPSEC<BR>$ man ipsec goodmask (3) &#8211; является ли эта маска правильной?<BR>$ man
+ipsec hostof (3) &#8211; получает Интернет адрес и маску подсети и возвращает часть
+связанную с хостом<BR>$ man ipsec klipsdebug (8) &#8211; устанавливает отладочные
+возможности и уровень Klips (ядерная поддержка IPSEC)<BR>$ man ipsec look (8) &#8211;
+выводит минимальную отладочную информацию <BR>$ man ipsec manual (8) &#8211; поднимает
+и опускает IPSEC соединения с ручным снабжением ключами<BR>$ man ipsec
+masktobits (3) &#8211; конвертирует маску подсети Интернет в набор нолей и единиц<BR>$
+man ipsec optionsfrom (3) &#8211; читает дополнительные опции командной строки из
+файла<BR>$ man ipsec pluto (8) &#8211; демон манипуляции ключами IPsec IKE<BR>$ man
+ipsec ranbits (8) &#8211; генератор случайного набора битов в виде ASCII<BR>$ man
+ipsec rangetoa (3) &#8211; конвертирует диапазон Интернет адресов в ASCII<BR>$ man
+ipsec rsasigkey (8) &#8211; создает сигнатурный ключ RSA<BR>$ man ipsec setup (8) &#8211;
+контролирует подсистему IPSEC<BR>$ man ipsec spi (8) &#8211; управляет IPSEC Security
+Associations<BR>$ man ipsec spigrp (8) - группирует/расгруппирует IPSEC Security
+Associations<BR>$ man ipsec subnetof (3) &#8211; получает Интернет адрес и маску
+подсети и вохвращает часть связанную с подсетью<BR>$ man ipsec tncfg (8) -
+ассоциирует виртуальный интерфейс IPSEC с реальным интерфейсом<BR>$ man ipsec
+whack (8) &#8211; контролирует интерфейс для демона управления ключами IPSEC<BR>$ man
+ipsec.conf (5) &#8211; конфигурация и соединения IPSEC<BR>$ man ipsec.secrets (5) &#8211;
+секреты для IKE/Ipsec аутентификации<BR></P>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/rc.d/init.d/ipsec
+&gt; /etc/rc.d/rc0.d/K68ipsec
+&gt; /etc/rc.d/rc1.d/K68ipsec
+&gt; /usr/man/man3/ipsec_atoasr.3
+&gt; /usr/man/man3/ipsec_rangetoa.3
+&gt; /usr/man/man3/ipsec_atodata.3
+&gt; /etc/rc.d/rc2.d/S47ipsec
+&gt; /etc/rc.d/rc3.d/S47ipsec
+&gt; /etc/rc.d/rc4.d/S47ipsec
+&gt; /etc/rc.d/rc5.d/S47ipsec
+&gt; /etc/rc.d/rc6.d/K68ipsec
+&gt; /etc/ipsec.conf
+&gt; /etc/ipsec.secrets
+&gt; /usr/lib/ipsec
+&gt; /usr/lib/ipsec/spi
+&gt; /usr/lib/ipsec/eroute
+&gt; /usr/lib/ipsec/spigrp
+&gt; /usr/lib/ipsec/tncfg
+&gt; /usr/lib/ipsec/klipsdebug
+&gt; /usr/lib/ipsec/pluto
+&gt; /usr/lib/ipsec/whack
+&gt; /usr/lib/ipsec/ipsec
+&gt; /usr/lib/ipsec/barf
+&gt; /usr/lib/ipsec/manual
+&gt; /usr/lib/ipsec/auto
+&gt; /usr/lib/ipsec/look
+&gt; /usr/lib/ipsec/showdefaults
+&gt; /usr/lib/ipsec/_include
+&gt; /usr/lib/ipsec/_confread
+&gt; /usr/lib/ipsec/_keycensor
+&gt; /usr/lib/ipsec/_secretcensor
+&gt; /usr/lib/ipsec/_updown
+&gt; /usr/lib/ipsec/ranbits
+&gt; /usr/lib/ipsec/rsasigkey
+&gt; /usr/lib/ipsec/setup
+&gt; /usr/man/man3/ipsec_atoaddr.3
+&gt; /usr/man/man3/ipsec_addrtoa.3
+&gt; /usr/man/man3/ipsec_atosubnet.3
+&gt; /usr/man/man3/ipsec_subnettoa.3
+&gt; /usr/man/man3/ipsec_atobytes.3
+&gt; /usr/man/man3/ipsec_bytestoa.3
+&gt; /usr/man/man3/ipsec_datatoa.3
+&gt; /usr/man/man3/ipsec_atosa.3
+&gt; /usr/man/man3/ipsec_satoa.3
+&gt; /usr/man/man3/ipsec_atoul.3
+&gt; /usr/man/man3/ipsec_ultoa.3
+&gt; /usr/man/man3/ipsec_goodmask.3
+&gt; /usr/man/man3/ipsec_masktobits.3
+&gt; /usr/man/man3/ipsec_bitstomask.3
+&gt; /usr/man/man3/ipsec_optionsfrom.3
+&gt; /usr/man/man3/ipsec_subnetof.3
+&gt; /usr/man/man3/ipsec_hostof.3
+&gt; /usr/man/man3/ipsec_broadcastof.3
+&gt; /usr/man/man5/ipsec.secrets.5
+&gt; /usr/man/man5/ipsec.conf.5
+&gt; /usr/man/man8/ipsec_spi.8
+&gt; /usr/man/man8/ipsec.8
+&gt; /usr/man/man8/ipsec_eroute.8
+&gt; /usr/man/man8/ipsec_spigrp.8
+&gt; /usr/man/man8/ipsec_tncfg.8
+&gt; /usr/man/man8/ipsec_klipsdebug.8
+&gt; /usr/man/man8/ipsec_pluto.8
+&gt; /usr/man/man8/ipsec_whack.8
+&gt; /usr/man/man8/ipsec_barf.8
+&gt; /usr/man/man8/ipsec_look.8
+&gt; /usr/man/man8/ipsec_manual.8
+&gt; /usr/man/man8/ipsec_auto.8
+&gt; /usr/man/man8/ipsec_setup.8
+&gt; /usr/man/man8/ipsec_ranbits.8
+&gt; /usr/man/man8/ipsec_rsasigkey.8
+&gt; /usr/sbin/ipsec</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch16_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#16">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch17_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

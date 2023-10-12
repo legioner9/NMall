@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Управление контентом с помощью Procmail — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h1>Управление контентом с помощью Procmail</h1>
+<p>Авторы: (C) <A href="../cdn-cgi/l/email-protection.html#7e0e210e1f1a1f121f3e071f161111501d1113">Прадип Падала [Pradeep Padala]</A> и <A href="../cdn-cgi/l/email-protection.html#c4b4a6f684a7adb7a1eab1a2a8eaa1a0b1">Пракаш Булусу [Prakash Bulusu]</A> <BR>Перевод:
+(C) Сергей Скороходов</p>
+<HR noShade SIZE=2>
+
+<BLOCKQUOTE><I>"Прекрасное -- в малом"
+  <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- философия
+  Unix</I> </BLOCKQUOTE>
+<H2>Введение</H2>
+<P>Когда-нибудь задавались вопросом, трудно ли создать веб-сайт, которым можно
+"рулить" исключительно по e-mail? Вы -- фанат электронной почты, который хотел
+бы все на свете делать через "емелю"? Вы как раз тот парень, который хочет
+сделать что-то иначе, не так, как все? Если вы ответили "да" хотя бы на один
+вопрос, то читайте дальше... </P>
+<P>Вам интересно, как специальный корреспондент CNN посылает репортаж из
+отдаленнейшей точки Земли и заставляет веб-страницу отразить его последние
+сообщения? Или как "дот-ком" газеты ежедневно обновляют и изменяют сотни HTML
+страниц? Это достигается благодаря концепции под названием Система Управления
+Содержанием (или, как теперь принято говорить по отношению к веб-сайтам и т.д.
+-- Система Управления Контентом) [Content Management System или CMS].</P>
+<P>Управление контентом -- одна из самых серьезных проблем, которую приходится
+решать каждому веб-сайту, от маленьких сайтов с крохотной нагрузкой до так
+называемых "интенсивно-содержательных" [ content-intensive], сайтов со
+значительным количеством постоянно и часто меняющейся информации-контента.
+Минимальное требование к системе управления содержанием -- "дружелюбный"
+интерфейс для изменения веб-контента. Развитая CMS может гораздо больше: не
+только предоставляет возможности по созданию, модификации и удалению содержания
+сайта, но и выполняет функцию системы контроля версий, ролевой иерархии,
+многоканальных управления и доставки контента и т.д. В этой статье мы поговорим
+об относительно новом канале управления веб-контентом, который, тем не менее,
+прекрасно известен читателям: об электронной почте! Хотя этот канал используется
+такими коммерческими CMS, как Vignette, эти решения довольно дороги и продаются
+с оплатой каждой отдельной функции.</P>
+<P>Если только что прочитанные абзацы были для вас <I>китайской грамотой</I>, то
+это значит -- вы Подходящий Читатель для этой статьи. Вперед и вы узнаете о
+самой простой из всех возможных реализации системы управления веб-контентом,
+основанной на электронной почте. Эта реализация использует Procmail. </P>
+<P>Мы покажем, что веб-страницу можно обновить, просто послав электронное
+сообщение на определенный адрес. Мы воспользуемся для примера страницей <!--<A
+href="http://www.cise.ufl.edu/%7Eppadala/procmail.html">-->http://www.cise.ufl.edu/~ppadala/procmail.html<!--</A>-->
+(для того, чтобы увидеть ее в браузере как надо, нужно разрешить Javascript).
+Весь ее "контент" -- бегущая строка. Мы будем обновлять текст этой бегущей
+строки по получению электронного сообщение с правильным полем subject!!!</P>
+<BLOCKQUOTE>
+  <P><I>Я посмотрел эту страницу в Opera и в Mozilla 0.9.7. В Oper'е бегущая
+  строка "не бежала", но, по крайней мере, была видна (т.е. был ее текст был
+  виден целиком и сразу). В Mozill'е бегущей строки просто не было видно,
+  возможно, я что-то неверно настроил и такие бегущие строки "подавлялись"
+  браузером. И только в IE5.5 все было нормально:( -- прим.
+пер.</I></P></BLOCKQUOTE>
+<H2>procmail </H2>
+<P>А при чем здесь Procmail? Procmail следует философии UNIX: <I>одна программа
+выполняет одну задачу, и делает это эффективно</I>. По своей сути Procmail
+является удивительно мощной утилитой фильтрации почты. Все, что надо сделать --
+написать рецепты, которые будут выполняться по прибытии электронной почты
+определенного типа. Обычно Procmail используют для того, чтобы раскладывать
+входящую почту по отдельным директориям. Говоря словами разработчиков:</P>
+<BLOCKQUOTE>
+  <P>Procmail можно использовать для создания почтовых серверов, списков
+  рассылки, сортировки входящей почты по папкам или файлам (большое удобство для
+  тех,кто подписан на один или несколько списков рассылки или для того, кто
+  хочет рассортировать почту в соответствии с какими-либо приоритетами),
+  предварительной обработки почты, запуска программ по прибытии почты (т.е.
+  создания на вашей рабочей станции разных "звонков", оповещающих о прибытии
+  разного вида электронной почты) или избирательно направлять определенную почту
+  куда-либо.</P></BLOCKQUOTE>
+<P>Если вы не все поняли из сказанного -- не паникуйте. Просто откиньтесь на
+спинку стула и расслабьтесь. Вскоре мы приведем элементарные примеры того, как
+это работаем и объясним изящный способ обновления бегущей строки на вашей
+веб-странице.</P>
+<H2>Лиха беда начало</H2>
+<P>Как уже говорилось, Procmail -- утилита фильтрации электронной почты. Он
+может запускаться по прибытии каждого сообщения и соответствующим образом его
+обрабатывать. Скажем, вы хотите, чтобы каждое сообщение с темой <I>discuss</I>
+сохранялось в папке по имени discuss. Тогда вам надо сделать так:</P>
+<P>Создайте в своей домашней директории файл <CODE>.forward</CODE> следующей
+строкой:</P><PRE>"|IFS=' ';exec /usr/local/bin/procmail USER=&lt;username&gt;"
+</PRE>
+<P>Замените <CODE>usrname</CODE> вашим регистрационным именем и убедитесь, что
+путь к procail'у указан верно. Не беспокойтесь о деталях. В следующей секции мы
+в них вникнем подробнее.</P>
+<P>Создайте в вашей домашней директории файл <CODE>.procmailrc</CODE> и
+поместите в него следующие сроки:</P><PRE> :0
+ * ^Subject:.*discuss
+ discuss
+</PRE>
+<P>Для писем с темой <I>discuss</I> создайте в своей домашней директории папку
+discuss.</P>
+<P>Теперь попробуйте послать себе письмо, в котором будет содержаться по крайней
+мере слово "discuss" в поле темы. Это сообщение будет автоматически помещено в
+директорию discuss.</P>
+<P>Давайте попытаемся понять, что происходит. Когда почта посылается серверу
+smtp он, с помощью MDA (Mail Delivery Agent -- Агент Доставки Почты, например
+sendmail) доставит ее соответствующему ползователью. Эта программа ищет файл с
+имененем <CODE>.forward</CODE>: если он существует, то она пытается выполнить
+указанные там правила. Обычно в <CODE>.forward</CODE> содержится адрес, на
+которую должна пересылаться вся почта. В этом файле можно писать команды для
+запуска программ, таких как Procmail. Именно это и делает строка в приведенном
+примере файла <CODE>.forward</CODE>. Более подробное изложение того, что можно
+помещать в <I>.forward</I> можно посмотреть на <!--<A
+href="http://www.ling.helsinki.fi/users/reriksso/procmail/mini-faq.html#forward">-->http://www.ling.helsinki.fi/users/reriksso/procmail/mini-faq.html#forward<!--</A>-->.
+При запуске Procmail ищет файл <CODE>.procmailrc</CODE>, содержащий инструкции
+по обработке почты -- какие действия надо произвести над сообщениями различного
+типа.</P>
+<H2>Файл .procmailrc</H2>
+<P>Этот файл содержит правила, по которым фильтруется почта. В примере,
+показанном выше, правило говорит, что вся почта с темой discuss направляется в
+директорию по имени discuss. Общий синтаксис для написания правил (называемых на
+жаргоне Procmail рецептами) таков: <PRE> :0 [флаги] [ : [locallockfile] ]
+ &lt;ноль или более условий (по одному на каждой строке)&gt;
+ &lt;в точности одна команда&gt;
+</PRE>
+<P>Первую строку можно пока проигнорировать. Начиная со второй строки вы можете
+вставлять условия. Условие, начинающееся с '*' указывает на расширенное
+регулярное выражение, соответствие которому будет искаться. В случае
+соответствия быдет выполнена команда в последней строке [action line]. Для того,
+чтобы перенаправить сообщение на другой адрес, используйте символ '!'. Если
+строка с командой не начинается ни с этих двух символов, ни с символа '{', то
+предполагается, что это имя директории или файла, в которые должно быть
+доставлено сообщение, как это показано в примере.</P>
+<P>Еще один пример рассеет туман. <PRE> :0 c
+ * ^Subject:.*discuss
+ discuss
+
+ :0
+ * ^Subject:.*discuss
+ ! <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bdc4d2c8cfd3dcd0d8fdced2d0d8cad5d8cfd893ded2d0">[email&#160;protected]</a>
+</PRE>
+<P>Этот рецепт "форвардит" почту на адрес <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="9ce5f3e9eef2fdf1f9dceff3f1ebf4f9eef9b2fff3f1">[email&#160;protected]</a> и сохраняет
+копию в директории discuss. Флаг 'c' в первой строфе указывает Procmail'у
+продолжить чтение рецептов даже после нахождения соответствия. Обычно Procmail
+прекращает обработку после нахождения первого соответствия. Руководство по
+procmailrc сообщает, что 'c' создает копию [carbon copy] сообщения, но легче
+думать, что 'c' означает "continue" -- продолжить. И то и другое приводит к
+одинаковому результату. Еще один полезный, но неверно названный флаг -- 'D',
+который указывает, что поиск соответствия должно быть чуствительно к
+регистру.</P>
+<P>Следующий пример показывает использование '|': <PRE> :0
+ * ^Subject:.*discuss
+ | formail -I "" &gt;&gt; index.html
+</PRE>
+<P>Если поступает сообщение с темой discuss, выполняется formail: небольшая
+утилита, используемая для форматирования почты. Приведенная action line выделяет
+из сообщения тело и добавляет его к файлу index.html.</P>
+<H2>Готовы приступить? </H2>
+<P>Вы увидели несколько основных примеров. В Сети можно найти множество
+информации по рецептам Procmail. Ссылки можно найти в секции, посвещенной
+дополнительным ресурсам. В следующих абзацах мы покажем, как можно использовать
+Procmail для обновления бегущей строки на веб-странице. </P>В
+<CODE>.procmailrc</CODE> мы добавим следующие строки. В текстовом формате этот
+файл можно взять на <!--<A
+href="http://gazette.linux.ru.net/lg73/articles/misc/padala/procmailrc.txt">-->http://gazette.linux.ru.net/lg73/articles/misc/padala/procmailrc.txt<!--</A>-->.
+<PRE> SHELL=/bin/sh
+ PATH=/bin:/usr/bin:/usr/local/bin
+
+ :0
+ * ^Subject:.*announce
+ | formail -s parse.pl announce;
+
+ :0
+ * ^Subject:.*notice
+ | formail -s parse.pl notice;
+</PRE>
+<P>Первые строки устанавливают некоторые переменные для того, чтобы Procmail
+правильно работал. За деталями обращайтесь к <!--<A
+href="http://linux.ctyme.com/man/man2115.htm">-->руководству по procmail<!--</A>-->.</P>
+<P>Сообщения, содержащие "announce" или "notice" в поле subject,
+перенаправляются formail, который проводит разбор сообщений и каждое отдельное
+сообщение передается скрипту <CODE>parse.pl</CODE>. Скрипт на Perl заменяет
+текст бегущей строки на строку из тела сообщения. Сам скрипт можно взять на <!--<A
+href="http://gazette.linux.ru.net/lg73/articles/misc/padala/parse.pl.txt">-->http://gazette.linux.ru.net/lg73/articles/misc/padala/parse.pl.txt<!--</A>-->.</P>
+<TABLE bgColor=#c5c5c5 width=450>
+  <TBODY>
+  <TR>
+    <TD><PRE>#!/bin/perl
+
+$option = $ARGV[0];                                 # Получим опцию
+$my_html_dir = "/cise/homes/ppadala/public_html";   # Моя веб-директория
+$tmp_file = "/tmp/tmp.out";
+$start = 0;     #start равняется false(0) до того момента, пока мы не достигнем начала сообщения
+$line = "";     #Текст бегущей строки
+
+if($option eq "announce") {
+    $line = "ANNOUNCEMENTS:";
+}
+elsif($option eq "notice") {
+    $line = "NOTICE:";
+}
+else {
+    exit(1);
+}
+
+#Читаем вход. В данном случае это сообщения
+#Находим тело сообщения и добавляем его тело к строке
+
+while(<STDIN>)
+{ chomp;
+
+ if(/From.*/) {
+  $start = 0;
+ }
+ if($start == 1) {
+  chomp;
+  $line = $line . $_;
+ }
+ if($_ eq "") {
+  $start = 1;
+ }
+}
+
+#Открываем веб-страницу с бегущей строкой
+#и обновляем ее
+
+$my_homepage_file = $my_html_dir . "/procmail.html";
+open(MY_FILE, "&lt;$my_homepage_file") || die("Cannot open input file");
+open(TMP, "&gt;$tmp_file");
+
+$replace = 0;
+
+#Замена производится сразу после строки
+# //Replace strStreamer .....
+
+while(<MY_FILE>)
+{ if($replace == 1) {
+  print TMP "var strStreamer = '${line}';\n";
+  $replace = 0;
+  next;
+ }
+
+ if(/\/\/Replace str.*/) {
+  $replace = 1;
+  print TMP $_;
+ }
+ else  {
+  print TMP $_;
+ }
+}
+
+close(TMP);
+close(MY_FILE);
+system("mv $tmp_file $my_homepage_file");
+system("chmod go+r $my_homepage_file");
+</PRE></TD></TR></TBODY></TABLE>
+<P>Все, что делает скрипт -- обновление на веб-странице переменной
+<CODE>strStreamer</CODE>. Страница содержит бегущую строку, реализованную на
+javascript. Вы можете проверить это, послав сообщение <A href="../cdn-cgi/l/email-protection.html#8fffffeeebeee3eecfece6fceaa1fae9e3a1eaebfab0fcfaede5eaecfbb2eee1e1e0fae1eceab0ede0ebf6b2c3e6e1faf7c8eef5eafbfbeadbeafcfb">mailto:<span class="__cf_email__" data-cfemail="93e3e3f2f7f2fff2d3f0fae0f6bde6f5ffbdf6f7e6">[email&#160;protected]</span>?subject=announce?body=LinuxGazetteTest</A>.
+Это можно будет увидеть на <!--<A
+href="http://www.cise.ufl.edu/~ppadala/procmail.html">-->http://www.cise.ufl.edu/~ppadala/procmail.html<!--</A>-->.
+Страница волшебным образом обновится, как только вы <A href="../cdn-cgi/l/email-protection.html#dfafafbebbbeb3be9fbcb6acbaf1aab9b3f1babbaae0acaabdb5babcabe2beb1b1b0aab1bcbae0bdb0bba6e293b6b1aaa798bea5baababba8bbaacab">mailto:<span class="__cf_email__" data-cfemail="a7d7d7c6c3c6cbc6e7c4ced4c289d2c1cb89c2c3d2">[email&#160;protected]</span>?subject=announce?body=LinuxGazetteTest</A>
+с темой "annonce" или "notice". Текст тела сообщения станет бегущей строкой.</P>
+<H2>Заключение</H2>
+<P>Мы показали маленький пример Управления Контентом. Собственно, управление
+содержанием [content management] -- это очень обширная тема с множеством
+направлений и ответвлений. Для обновления веб-страниц требуются хорошо
+спланированные процедуры, сохраняющие нетронутыми таблицы стилей и т.д. Пример
+лишь показывает, насколько легко создать элементарную систему управления
+контентом с помощью Procmail. Возможности изменений и развития этой схемы
+безграничны. Как сказал Декарт: "<B>Недостаточно иметь хороший ум. Главное --
+хорошо его использовать</B>".</P>
+<H2>Дополнительные ресурсы</H2>
+<UL>
+  <LI><!--<A href="http://www.procmail.org/">-->Веб-сайт http://www.procmail.org/<!--</A>-->
+  <LI><!--<A href="http://pm-doc.sourceforge.net/">-->Проект документации по Procmail
+  на http://pm-doc.sourceforge.net/<!--</A>-->: Очень много чего
+  <LI><!--<A href="http://pm-doc.sourceforge.net/pm-tips.html">-->Страница советов по
+  Procmail на http://pm-doc.sourceforge.net/pm-tips.html<!--</A>-->: Эту страницу
+  обязательно надо посмотреть! </LI></UL>
+<HR noShade SIZE=2>
+
+<H4>Прадип Падала [Pradeep Padala]</H4>
+<P><I>Я учусь на мастерской программе в Флоридском Университете. Я люблю
+"хачить" и обожаю Linux. Еще я люблю разгадывать головоломки и играть в шахматы
+и т.д. Связаться со мной можно по адресу <A href="../cdn-cgi/l/email-protection.html#364669465752575a57764f575e59591855595b"><span class="__cf_email__" data-cfemail="770728071613161b16370e161f18185914181a">[email&#160;protected]</span></A> или через мою <!--<A
+href="http://www.cise.ufl.edu/%7Eppadala">-->веб-страницу<!--</A>-->. </I></P><I><SPACER
+size="30" type="vertical"></I>
+<H4>Пракаш Булусу [Prakash Bulusu]</H4>
+<P><EM>Я тоже учусь на мастерской программе во Флоридском Университете.</EM></P>
+<HR noShade SIZE=2>
+
+<H5 align=center>Copyright (C) 2001, Pradeep Padala and Prakash
+Bulusu.<BR>Copying license <!--<A
+href="http://www.linuxgazette.com/copying.html">-->http://www.linuxgazette.com/copying.html<!--</A>--><BR>Published
+in Issue 73 of <I>Linux Gazette</I>, December 2001</H5>
+<HR noShade SIZE=2>
+
+<H4>Команда переводчиков:</H4>
+<P><I>Владимир Меренков, Александр Михайлов, Иван Песин, Сергей Скороходов,
+Александр Саввин, Роман Шумихин</I></P>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

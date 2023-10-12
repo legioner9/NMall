@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Глава 18 Серверное программное обеспечение (Прокси сервис) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV align=center>
+<TABLE border=2 width="100%">
+  <TBODY>
+  <TR>
+    <TD align=middle bgColor=#c8fbe6 vAlign=center><FONT color=#0000ff
+      face=fantasy size=+3
+      style="COLOR: #000000; FONT-FAMILY: fantasy; FONT-STYLE: normal; FONT-WEIGHT: bold">L&nbsp;
+      i&nbsp; n&nbsp; u&nbsp; x&nbsp; &nbsp; P&nbsp; a&nbsp; r&nbsp;
+      k</FONT><BR><FONT color=#000000 size=+1 style="FONT-WEIGHT: normal"><I>при
+      поддержке ВебКлуба</I></FONT></B> </TD></TR></TBODY></TABLE></DIV>
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch18_1.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#18">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch19_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top>
+      <H2>Глава 18 Серверное программное обеспечение (Прокси сервис) (Часть
+      2)</H2><FONT size=+2>В этой главе</FONT><BR><FONT size=+1><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#1">-->Прокси сервер
+      Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#2">-->Использование
+      библиотеки GNU malloc для улучшения производительности Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_1.html#3">-->Конфигурации<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#4">-->Организация
+      защиты Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#5">-->Оптимизация
+      Squid<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#6">-->Утилита
+      cachemgr.cgi<!--</A>--><BR><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch18_2.html#7">-->Конфигурация
+      Netscape для работы с прокси сервером Squid<!--</A>--><BR></FONT></TD>
+    <TD vAlign=bottom><IMG alt="" border=0 height=250
+      src="ch18_2.files/34.jpg" width=151></TD></TR></TBODY></TABLE>
+<H3><A name=4>Организация защиты Squid</A></H3><FONT size=+1>Больший контроль
+над смонтированным кэш-каталогом Squid</FONT>
+<P align=justify>Если вы создаете кэш-каталог для Squid в независимом разделе
+вашей Linux системы (например, /cache), подобно тому как мы делали во время
+инсталляции, тогда вы можете использовать опции noexec, nodev и nosuid для
+улучшения и укрепления безопасности кэша. Эти параметры могут быть установлены в
+файле &#8220;/etc/fstab&#8221; и дают указания системе не исполнять любые двоичные файлы
+(noexec), не интерпретировать символьные и блочные специальные устройства
+(nodev) и не позволять действовать битам set-user-identifier или set-group-
+identifier (nosuid) на монтированной файловой системе (/cache, например).
+Примените эту процедуру на раздел, где располагается кэш Squid, чтобы
+предотвратить возможность DEV, SUID/SGID и выполнения любых двоичных файлов.</P>
+<P align=justify>Например, предположим на разделе &#8220;/dev/sda8&#8221; располагается
+каталог &#8220;/cache&#8221;. Вы должны редактировать файл fstab (vi /etc/fstab) и изменить
+строку, связанную с &#8220;/dev/sda8&#8221;:</P>
+<P align=justify><FONT color=#008080 size=-1>/dev/sda8 /cache ext2 defaults 1
+2</FONT><BR>должна быть:<BR><FONT color=#008080 size=-1>/dev/sda8 /cache ext2
+noexec,nodev,nosuid 1 2</FONT><BR></P>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Вы должны перезагрузить систему, чтобы
+изменения вступили в силу.</P><FONT size=+1>Иммунизация важных конфигурационных
+файлов</FONT>
+<P align=justify>Как мы знаем, бит &#8220;постоянства&#8221; может быть использован для
+предотвращения удаления, переписывания или создания символической ссылки к
+файлу. Так как файл &#8220;squid.conf&#8221; уже настроен, хорошей идеей будет
+иммунизировать его:</P><FONT color=#008080 size=-1>[root@deep /]# chattr +i
+/etc/squid/squid.conf</FONT>
+<H3><A name=5>Оптимизация Squid</A></H3><FONT size=+1>Атрибуты atime и
+noatime</FONT>
+<P align=justify>Атрибуты atime и noatime могут быть использованы, чтобы немного
+улучшить производительность кэша Squid. Смотрите главу 4 в этой книге, &#8220;Общая
+системная оптимизация&#8221;, для большей информации по этой теме.</P><FONT
+size=+1>Физическая память</FONT>
+<P align=justify>Наиболее важный ресурс для Squid это физическая память. Вам не
+нужен очень быстрый процессор. Ваша дисковая система будет основным узким
+местом, так что быстрые диски важны для кэша. Не используйте IDE дисков, есди
+это возможно.</P>
+<H3><A name=6>Утилита cachemgr.cgi</A></H3>
+<P align=justify>Утилита cachemgr.cgi, доступная по умолчанию, когда вы
+скомпилировали и инсталлировали Squid на вашей системе, создана для запуска
+через веб интерфейс, и выводит различную статистику о конфигурации и работе
+Squid. Эта программа располагается в каталоге &#8220;/usr/lib/squid&#8221;, и вы должны
+переместить ее в ваш каталог &#8220;cgi-bin&#8221; (например, /home/httpd/cgi-bin).
+Следующие шаги помогут вам настроить программу для использования.</P><B>Шаг
+1</B>
+<P align=justify>Переместите программу &#8220;cachemgr.cgi&#8221; в ваш каталог
+&#8220;cgi-bin&#8221;:</P><FONT color=#008080 size=-1>[root@deep /]# mv
+/usr/lib/squid/cachemgr.cgi /home/httpd/cgi-bin</FONT>
+<P align=justify><B>ЗАМЕЧАНИЕ</B>. Я подразумеваю, что ваш каталог &#8220;cgi-bin&#8221;
+расположен в каталоге &#8220;/home/httpd/cgi-bin&#8221;; возможны и другие пути. Этот
+&#8220;cgi-bin&#8221; будет существовать если вы инсталлировали веб сервер Apache.</P><B>Шаг
+2</B>
+<P align=justify>После того, как вы переместили &#8220;cachemgr.cgi&#8221; в &#8220;cgi-bin&#8221;, вы
+можете обратится к ней введя в вашем броузере следующий адрес (<FONT
+color=#008080>http://my-web-server/cgi- bin/cachemgr.cgi</FONT>).</P>
+<P align=justify>&lt;my-web-server&gt; это адрес вашего веб сервера Apache, а
+&lt;cachemgr.cgi&gt; это утилита, которую вы только, что переместили в каталог
+&#8220;cgi-bin&#8221; для получения информации и конфигурации прокси сервера Squid.</P><IMG
+alt="" border=0 height=387 src="ch18_2.files/38.jpg" width=493><BR>
+<P align=justify>Если вы настраивали файл &#8220;squid.conf&#8221;, то используйте парольную
+аутентификацию для доступа к &#8220;cachemgr.cgi&#8221;, вам будет предложено ввести имя
+кэша (Cache Host), порт кэша (Cache Port), имя администратора (Manager name) и
+пароль (Password) перед тем, как допустят к программе &#8220;cachemgr.cgi&#8221;. Смотрите
+конфигурационный файл &#8220;/etc/squid/squid.conf&#8221;, приведенный выше, для большей
+информации.</P><IMG alt="" border=0 height=391 src="ch18_2.files/39.jpg"
+width=507><BR>
+<P align=justify>После того как вы прошли аутентификацию на сервере, вы увидите
+в вашем броузере интерфейс Cache Manager menu, где вы сможете изучать и
+анализировать различные опции связанные с прокси сервером Squid.</P>
+<H3><A name=7>Конфигурация Netscape для работы с прокси сервером Squid</A></H3>
+<P align=justify>Если вы решили использовать Squid как кэширующий прокси сервер
+и позволять всем пользователям использовать его для доступа в Интернет, вы
+должны настроить соответствующим образом броузеры пользователей, чтобы они брали
+информацию со Squid, вместо прямого обращения в Интернет.</P>
+<P align=justify>Для Netscape Communicator, выполните следующие шаги:</P>
+<OL>
+  <LI>Откройте Netscape Communicator
+  <LI>Перейдите в меню Edit
+  <LI>Щелкните на Preferences &#8230;
+  <LI>Двойной щелчок мыши на Advanced category слевой стороны
+  <LI>Щелкните на подкатегории Proxies
+  <LI>Выберите с правой стороны радио кнопку Manual proxy configuration
+  <LI>Щелкните на кнопке View
+  <LI>Заполните поля с информацией о вашем прокси сервере<BR>Например:
+  <UL>
+    <LI>HTTP: 208.164.186.1 Port: 8080
+    <LI>Security: 208.164.186.1 Port: 8080
+    <LI>FTP: 208.164.186.1 Port: 8080
+    <LI>Gopher: 208.164.186.1 Port: 8080
+    <LI>WAIS: 208.164.186.1 Port: 8080 </LI></UL></LI></OL><IMG alt="" border=0
+height=407 src="ch18_2.files/40.jpg" width=397><BR>
+<H3>Инсталлированные файлы</H3><FONT size=-1><PRE>&gt; /etc/squid
+&gt; /etc/squid/mib.txt
+&gt; /etc/squid/squid.conf.default
+&gt; /etc/squid/squid.conf
+&gt; /etc/squid/mime.conf.default
+&gt; /etc/squid/mime.conf
+&gt; /etc/squid/errors
+&gt; /etc/squid/errors/ERR_ACCESS_DENIED
+&gt; /etc/squid/errors/ERR_CACHE_ACCESS_DENIED
+&gt; /etc/squid/errors/ERR_CACHE_MGR_ACCESS_DENIED
+&gt; /etc/squid/errors/ERR_CANNOT_FORWARD
+&gt; /etc/squid/errors/ERR_CONNECT_FAIL
+&gt; /etc/squid/errors/ERR_DNS_FAIL
+&gt; /etc/squid/errors/ERR_FORWARDING_DENIED
+&gt; /etc/squid/errors/ERR_FTP_DISABLED
+&gt; /etc/squid/errors/ERR_FTP_FAILURE
+&gt; /etc/squid/errors/ERR_FTP_FORBIDDEN
+&gt; /etc/squid/errors/ERR_FTP_NOT_FOUND
+&gt; /etc/squid/errors/ERR_FTP_PUT_CREATED
+&gt; /etc/squid/errors/ERR_FTP_PUT_ERROR
+&gt; /etc/squid/errors/ERR_FTP_PUT_MODIFIED
+&gt; /etc/squid/errors/ERR_FTP_UNAVAILABLE
+&gt; /etc/squid/errors/ERR_INVALID_REQ
+&gt; /etc/squid/errors/ERR_INVALID_URL
+&gt; /etc/squid/errors/ERR_LIFETIME_EXP
+&gt; /etc/squid/errors/ERR_NO_RELAY
+&gt; /etc/squid/errors/ERR_ONLY_IF_CACHED_MISS
+&gt; /etc/squid/errors/ERR_READ_ERROR
+&gt; /etc/squid/errors/ERR_READ_TIMEOUT
+&gt; /etc/rc.d/rc4.d/S90squid
+&gt; /etc/rc.d/rc5.d/S90squid
+&gt; /etc/rc.d/rc6.d/K25squid
+&gt; /etc/logrotate.d/squid
+&gt; /usr/lib/squid
+&gt; /usr/lib/squid/dnsserver
+&gt; /usr/lib/squid/unlinkd
+&gt; /usr/lib/squid/cachemgr.cgi
+&gt; /usr/lib/squid/icons
+&gt; /usr/lib/squid/icons/anthony-binhex.gif
+&gt; /usr/lib/squid/icons/anthony-bomb.gif
+&gt; /usr/lib/squid/icons/anthony-box.gif
+&gt; /usr/lib/squid/icons/anthony-box2.gif
+&gt; /usr/lib/squid/icons/anthony-c.gif
+&gt; /usr/lib/squid/icons/anthony-compressed.gif
+&gt; /usr/lib/squid/icons/anthony-dir.gif
+&gt; /usr/lib/squid/icons/anthony-dirup.gif
+&gt; /usr/lib/squid/icons/anthony-dvi.gif
+&gt; /usr/lib/squid/icons/anthony-f.gif
+&gt; /usr/lib/squid/icons/anthony-image.gif
+&gt; /usr/lib/squid/icons/anthony-image2.gif
+&gt; /usr/lib/squid/icons/anthony-layout.gif
+&gt; /usr/lib/squid/icons/anthony-link.gif
+&gt; /usr/lib/squid/icons/anthony-movie.gif
+&gt; /usr/lib/squid/icons/anthony-pdf.gif
+&gt; /usr/lib/squid/icons/anthony-portal.gif
+&gt; /usr/lib/squid/icons/anthony-ps.gif
+&gt; /usr/lib/squid/icons/anthony-quill.gif
+&gt; /usr/lib/squid/icons/anthony-script.gif
+&gt; /etc/squid/errors/ERR_SHUTTING_DOWN
+&gt; /etc/squid/errors/ERR_SOCKET_FAILURE
+&gt; /etc/squid/errors/ERR_TOO_BIG
+&gt; /etc/squid/errors/ERR_UNSUP_REQ
+&gt; /etc/squid/errors/ERR_URN_RESOLVE
+&gt; /etc/squid/errors/ERR_WRITE_ERROR
+&gt; /etc/squid/errors/ERR_ZERO_SIZE_OBJECT
+&gt; /etc/rc.d/init.d/squid
+&gt; /etc/rc.d/rc0.d/K25squid
+&gt; /etc/rc.d/rc1.d/K25squid
+&gt; /etc/rc.d/rc2.d/K25squid
+&gt; /etc/rc.d/rc3.d/S90squid
+&gt; /usr/lib/squid/icons/anthony-sound.gif
+&gt; /usr/lib/squid/icons/anthony-tar.gif
+&gt; /usr/lib/squid/icons/anthony-tex.gif
+&gt; /usr/lib/squid/icons/anthony-text.gif
+&gt; /usr/lib/squid/icons/anthony-unknown.gif
+&gt; /usr/lib/squid/icons/anthony-xbm.gif
+&gt; /usr/lib/squid/icons/anthony-xpm.gif
+&gt; /usr/sbin/RunCache
+&gt; /usr/sbin/RunAccel
+&gt; /usr/sbin/squid
+&gt; /usr/sbin/client
+&gt; /var/log/squid</PRE></FONT>
+<HR>
+
+<TABLE width="100%">
+  <TBODY>
+  <TR>
+    <TD><!--<A
+    href="http://linux.webclub.ru/books/linuxsos/ch18_2.html">-->Назад<!--</A>--></TD>
+    <TD align=middle><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/index.html#18">-->Оглавление<!--</A>--></TD>
+    <TD align=right><!--<A
+      href="http://linux.webclub.ru/books/linuxsos/ch19_1.html">-->Вперед<!--</A>--></TD></TR></TBODY></TABLE><BR><BR><!-- InterReklama advertising -->
+<SCRIPT>
+  // <!--
+  var userid = 14679;
+  var page = 2;
+  var rndnum = Math.round(Math.random() * 10000);
+  document.write("<center><!--<A HREF='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=go&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' target='_top'>-->");
+  document.write("<IMG SRC='http://ad.ir.ru/cgi-bin/irads.cgi?cmd=ad&pubid=" + userid + "&pg=" + page + "&nocache=" + rndnum + "' width=468 height=60 Alt='InterReklama advertising' border=0><!--</A>--><BR></center>");
+  document.write("<center><FONT SIZE=1><!--<A HREF='http://ad.ir.ru/' target='_top'>-->InterReklama Advertising Network<!--</A>--></FONT></center>");
+  // -->
+  </SCRIPT>
+<!-- InterReklama advertising end -->
+
+  </div>
+</div>
+</body>
+</html>

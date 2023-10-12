@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Linux - Advanced filesystem implementor's guide, Part 2 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<h2>Руководство по "продвинутым" файловым системам, часть 2</h2><br>
+<h3>Первоисточник : <!--<a href="http://www-106.ibm.com/developerworks/library/l-fs2.html">-->http://www-106.ibm.com/developerworks/library/l-fs2.html<!--</a>--></h3><br>
+<h2>Использование ReiserFS в Linux 2.4</h2>
+<p><a href="l-fs2_ru.html#author1">Daniel Robbins</a> (<a href="../cdn-cgi/l/email-protection.html#c9adbba6ababa0a7ba89aeaca7bda6a6e7a6bbae"><span class="__cf_email__" data-cfemail="a0c4d2cfc2c2c9ced3e0c7c5ced4cfcf8ecfd2c7">[email&#160;protected]</span></a>)<br>President/CEO, Gentoo Technologies, Inc.<br>August 2001</p>
+<blockquote>
+С выходом релиза 2.4 Linux появилась возможность использования filesystem с новыми свойствами, таких как Reiserfs, XFS, GFS и
+других. Эти filesystems еще не достаточно опробованы и имеются вопросы, что именно они могут делать, насколько они хороши и
+насколько оправдано их использование в промышленной Linux среде. Daniel Robbins отвечает на эти вопросы по ходу пояснения
+инсталляции этих новых продвинутых filesystems под Linux 2.4. В своей предыдущей статье этой серии Daniel описал преимущества
+journalling и ReiserFS. В этой статье речь пойдет о процессе инсталляции rock-solid Linux 2.4-based ReiserFS системы.
+</blockquote>
+<p>В этой статье я опишу процесс установки ReiserFS с ядром 2.4. Одновременно будут затронуты "технические" аспекты, касающиеся
+ядра 2.4 и его сопряженности с ReiserFS, вопросы производительности и т.п. Так как инсталляция будет описана в начале, я
+рекомендую прежде прочесть всю статью, и лишь потом перейти к практике. Полезно сразу ознакомиться с техническими примечаниями,
+поскольку при установке ReiserFS на вашу систему такое знание поможет снять ряд вопросов.</p>
+<h3>Поиск подходящего ядра.</h3>
+<p>Чтобы enable ReiserFS на вашей системе, сначала потребуется найти подходящее ядро. Если вы следите за развитием ядер серии
+2.4, то, наверное, знаете, что не все происходит гладко. При написании статьи последним было 2.4.6-pre2. Однако я рекомендую
+обратить внимание либо на 2.4.4 (a stock Linus kernel), либо на 2.4.4-ac9 (модифицированное ядро от Alan Cox) для установки
+ReiserFS. Тесты показали, что на 2.4.5 имеются "моменты", которые не позволяют рекомендовать это ядро для промышленного
+использования. Давайте надеяться, что 2.4.6 в этом плане будет лучше.</p>
+<p>Если не хотите использовать 2.4.4 или 2.4.4-ac9 ядро для ReiserFS, прежде убедитесь, что проведены достаточные тесты по
+исследованию устойчивости ReiserFS на выбранном ядре. Конечно, предупреждение не распространяется для ReiserFS на тестовом
+сервере, где можно использовать любое ядро, если не поступало сообщений о его "проблемности".</p>
+<p>Имеются два серьезных основания для повышенного внимания к проблемам стабильности ядра вообще и стабильности ReiserFS в
+частности. Первое, до сих пор ReiserFS - "экспериментальная" kernel feature и вы не должны прогнозировать, что ее реализация
+на более новом ядре будет работать не хуже, чем на предыдущем. Второе (в данный момент это самая большая проблема), большая
+часть релизов ядра 2.4 и patches были немного flaky side, что предполагает большую осторожность. Теоретически, все 2.4 релизы
+принадлежат stable series, так как 2.4 "по определению" считается таковой. На практике в этом возникают сомнения.</p>
+<p>Я надеюсь, что не отговорил вас от использования ReiserFS или Linux 2.4, но предупреждение не будет лишним. Не прыгайте с
+одного ядра на другое только по причине его "современности". На промышленных системах такая практика ничего хорошего не сулит.
+Когда переходите на непроверенное ядро, вы рискуете не только зависанием системы, но и сохранностью данных. Даже если сама
+ReiserFS устойчива, есть вероятность, что ошибки в других частях ядра приведут к повреждению информации на файловой системе.</p>
+<p>Если вы еще не выбрали хороший источник информации по стабильности современных ядер, я рекомендую посетить Linux Weekly News
+(смотри <a href="l-fs2_ru.html#resources"> Resources</a> ниже), чтобы быть "в курсе" kernel problems (информация обновляется каждый четверг).
+Теперь, когда я убедил читателей в использовании 2.4.4 или 2.4.4-ac9 для ответственных инсталляций ReiserFS, продолжим.</p>
+<h3>Подготавливаем ядро.</h3>
+<p>OK, возможны три варианта получения production-ready ReiserFS. Первый, использование простого stock 2.4.4 Linux kernel.
+Второй, использование 2.4.4 kernel с наложением ReiserFS bigpatch. Он, в свою очередь, содержит специальные patches для
+придания ReiserFS свойств quota-compatible и дополнительной совместимости с locally-running NFS сервером. Третий,
+использование 2.4.4 ядра с ac9 patch (что дает нам 2.4.4-ac9) как с bigpatch, так и без него. Я рекомендую использовать
+2.4.4-ac9 с bigpatch, так как bigpatch не имеет отрицательных эффектов, а с ac9 ядро работает лучше. Однако, если вы
+испытываете неприязнь к ac ядрам, используйте простое 2.4.4. Далее описывается процесс установки 2.4.4-ac9 с bigpatch, но
+если у вас одна или обе patches не установлены, просто пропустите соответствующий шаг. Теперь начнем.</p>
+<p>Получите <!--<a href="http://www.kernel.org/pub/linux/kernel/v2.4/linux-2.4.4.tar.bz2">-->2.4.4 kernel sources<!--</a>--> от kernel.org
+и положите в /usr/src каталог. Переименуйте существовавший linux каталог или symlink на него, либо просто удалите старую
+symlink. Далее:</p>
+<pre><code>
+# cd /usr/src
+# cat /path/to/linx-2.4.4.tar.bz2 | bzip2 -d | tar xvf -
+</code></pre>
+<h3>The ac9 patch and bigpatch</h3>
+<p>Можно использовать простое 2.4.4 ядро, в нем все имеется. Однако я рекомендую применить следующие ac и bigpatch patches.</p>
+<p>Для apply the ac9 patch, получите <!--<a href="http://www.kernel.org/pub/linux/kernel/people/alan/2.4/patch-2.4.4-ac9.bz2">-->
+Alan Cox ac9 patch<!--</a>--> из kernel.org и выполните:</p>
+<pre><code>
+# cd /usr/src/linux
+# bzip2 -dc /path/to/patch-2.4.4-ac9.bz2 | patch -p1
+</code></pre>
+<p>Наложив такой patch (или оставив все без изменений), получите <!--<a href="http://dice.dhs.org/download/reiserfs-3.6.25-2.4.4/">-->
+DiCE<!--</a>--> и ReiserFS <!--<a href="http://dice.dhs.org/download/reiserfs-3.6.25-2.4.4/bigpatch-2.4.4.diff.bz2">--> bigpatch<!--</a>-->. Опять
+же, этот шаг необязателен, но мною рекомендованный, особенно для NFS сервера и поддержки квот (даже если это вам не нужно,
+patch не навредит). Для наложения bigpatch выполните:</p>
+<pre><code>
+# cd /usr/src/linux
+# bzip2 -dc /path/to/bigpatch-2.4.4.diff.bz2 | patch -p1
+</code></pre>
+<p>Выполнив один, оба или ни одного шага, вы готовы к конфигурированию ядра для ReiserFS.</p>
+<p><b>Обратите внимание:</b> если вам требуется помощь в компиляции ядра, есть хорошая, свободно распространяемая обучающая
+программа <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/7E96EDC7EA87208B8625694400584F81?OpenDocument">-->
+Compiling the Linux kernel<!--</a>--> на <i>developerWorks</i>. Далее очень кратко.</p>
+<p>Kernel configuration весьма проста. Сначала выполняем "<code>make menuconfig</code>". В секции <b>"Code maturity level
+options"</b> убедитесь, что опция <b>"Prompt for development and/or incomplete code/drivers"</b> - <i>enabled</i>. Переходим
+в секцию <b>"File systems"</b> и <i>enable</i> <b>"ReiserFS support"</b>. Вы должны конфигурировать поддержку ReiserFS для
+компилирования непосредственно в ядро, а не как модуль. Теперь не помешает разрешить <b>"Have reiserFS do extra internal
+checking"</b>. Сохраните конфигурацию и компилируйте ядро ("make dep; make bzImage; make modules; make modules_install") и
+добавьте запись в ваш загрузчик для ReiserFS-enabled kernel.</p>
+<p><b>Важно:</b> никогда не удаляйте ваше текущее ядро, не убедившись в работоспособности нового.</p>
+<h2>Работа с ReiserFS</h2>
+<h3>Инсталляция tools.</h3>
+<p>До перезагрузки следует инсталлировать "reiserfsprogs" tools, которые состоят из "mkreiserfs", "resize_reiserfs" (полезно,
+если у вас используется LVM) и "fsck.reiserfs". Получить самую последнюю версию "reiserfsprogs" (на момент написания статьи -
+"3.x.0j") можно от <!--<a href="http://www.namesys.com/">--> Namesys.com download page<!--</a>-->. Как только tools загружены, их можно
+компилировать и инсталлировать следующими командами:</p>
+<pre><code>
+# cd /tmp
+# tar xzvf reiserfsprogs-3.x.0j.tar.gz
+# cd reiserfsprogs-3.x.0j
+# ./configure
+./configure output will appear here
+# make
+make output will appear here
+# make install
+make install output will appear here
+</code></pre>
+<p>После инсталляции tools можно создавать новые partitions (используя "fdisk" или "cfdisk") либо LVM logical volumes
+(используя "lvcreate") по необходимости и перезагрузить систему. Когда создается standard partitions его можно маркировать
+как "Linux native file system" (83).</p>
+<h3>Создание и монтирование файловой системы.</h3>
+<p>После перезагрузки вы сможете создать файловую систему ReiserFS на пустом partition следующей командой:</p>
+<pre><code>
+# mkreiserfs /dev/hdxy
+</code></pre>
+<p>В этом примере /dev/hdxy - device node, соответствующий свободному partition. Монтирование аналогично любой другой
+файловой системе:</p>
+<pre><code>
+# mount /dev/hdxy /mnt/reiser
+</code></pre>
+<p>Добавить файловую систему ReiserFS в файл /etc/fstab можно при установке полей "freq" и "passno" в значение "0",
+например:</p>
+<pre><code>
+/dev/hdc1       /home                   reiserfs        defaults       0 0
+</code></pre>
+<p>Начиная с этого момента ваша ReiserFS внешне становится тождественной ext2. Вы быстро забудете об изнурительном "fsck",
+а данные станут доступны быстрее, особенно из маленьких файлов.</p>
+<h2>Технические примечания по ReiserFS.</h2>
+<h3>Стабильность файловой системы.</h3>
+<p>Я использовал 2.4.4 с ReiserFS на промышленном сервере в течение месяца (на cvs.gentoo.org development сервере) без
+каких-либо проблем. 2.4.4 и 2.4.4-ac9 зарекомендовали себя надежными. Сервер сильно загружен операциями IO, так как на нем
+хранятся cvs архив нашего <!--<a href="http://cvs.gentoo.org/wiki">-->"dev-wiki"<!--</a>-->, почтовый сервер gentoo.org, списки рассылки
+и другое.</p>
+<h3>Ограничения ReiserFS.</h3>
+<p>Хотя ReiserFS превосходит по быстродействию практически во всех типах приложений "файловую классику" ext2, имеется ряд
+областей, где ReiserFS в настоящее время еще не доработан. Это не жесткие ограничения ReiserFS, а те области, до которых
+разработчики Namesys не имели время добраться.</p>
+<h3>No dump/restore</h3>
+<p>Да, это истина. ReiserFS не имеет "dump" и "restore" реализации. Если вы желаете использовать ReiserFS, но вам нравится
+"dump", придется находить иные пути backing data. В действительности это не так актуально. Ядро 2.4 несовместимо с "dump" и
+"restore" в принципе (а не только на ReiserFS). Для подробной информации о dump/kernel 2.4 incompatibility читайте Linus
+Torvalds (смотри <a href="l-fs2_ru.html#resources">Resources</a>), где он говорит, <i>"Dump была глупой программой, во-первых.
+Оставьте ее в прошлом."</i></p>
+<h3>Проблемы производительности.</h3>
+<p>Хотя ReiserFS в общем, имеет преимущество в производительности над ext2, в частностях имеются и слабости. Первая - работа
+с "разреженными" файлами (например, mailbox). ReiserFS заметно хуже справляется с разреженными файлами, чем ext2. Положение
+должно изменится, когда разработчики Namesys вернуться к оптимизации этой стороны ReiserFS (предполагается в версии 4 ReiserFS).
+А сейчас ext2 - лучшее решение для приложений, которые помещают информацию в разреженные файлы.</p>
+<p>Вы можете столкнуться с проблемами при написании кода, который делает связанный вызов stat() для большого числа файлов.
+Одно из приложений, которое имеет проблемы (проявляется только с ReiserFS на ядрах 2.4, но не с 2.2) - <i>mutt mailer</i>
+(смотри <a href="l-fs2_ru.html#resources">Resources</a>) когда он читает большие maildir-style mailboxes. Очевидно, mutt выполняет вызов
+stats для каждого почтового файла дважды. Это имеет тенденцию замедления работы. В команде разработчиков ReiserFS
+об этой специфической проблеме знают и работают над ее устранением (решение будет включено в ReiserFS 4 или раньше).</p>
+<h3>Performance tweaks</h3>
+<p>К счастью, имеется пара простых приемов, которые вы можете использовать для "купирования" проблем производительности.
+Первый прием - монтирование ReiserFS filesystem с опцией "noatime" (опция монтирования, доступная и для других файловых систем).
+Вероятно, вы знаете, что системы UNIX делают запись atime (время доступа) для каждого объекта файловой системы и этот атрибут
+модифицируется при каждом чтении файла. Для большинства случаев штамп atime интереса не представляет (даже не могу привести
+пример, когда atime требуется для "критических" приложений). По этой причине, ничем не рискуя, от его модификации можно
+отказаться и получить выигрыш в производительности. Можно даже сказать следующее. Если вам не известно, что штамп atime
+требуется для конкретного приложения, разместившего файлы на конкретной файловой системе, то вы должны монтировать ее с опцией
+noatime. Используйте примерно следующую запись в /etc/fstab:</p>
+<pre><code>
+/dev/hdc1       /home                   reiserfs        noatime       0 0
+</code></pre>
+<p>В <!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->первой статье о ReiserFS<!--</a>--> я упомянул, что ReiserFS имеет специфическую feature, называемую
+"tail packing" (упаковка хвостов). А что в ReiserFS называют "хвостами"? Во-первых, файлы, размер которых меньше, чем блок
+файловой системы или, во-вторых, "кончики" файлов, которые не заполняют весь блок. В первом случае ReiserFS имеет превосходную
+производительность по причине умения "запихивать" такие "карликовые" файлы в свои b*tree (первичная организационная структура
+данных). При этом данные хранятся рядом со stat-data (ReiserFS эквивалент i-node). Во втором случае с производительностью иначе.
+Хвосты не заполняют полный блок и непроизводительно используют дисковое пространство. Для лучшего использования дискового
+пространства ReiserFS использует "tail packing". Считается, что такая feature позволяет экономить более 5% в сравнении с ext2.</p>
+<h3>Немного больше о notail.</h3>
+<p>Не следует думать, что упаковка хвостов больших файлов имеет одни достоинства. Один из недостатков - снижение
+производительности. Разработчики ReiserFS предполагали, что ряд пользователей решит не жертвовать производительностью ради 5%
+экономии дискового пространства. Была предусмотрена опция монтирования "notail". Когда файловая система монтируется с этой
+опцией, упаковка хвостов отключается, что дает прирост скорости при меньшей вместимости диска. С учетом сегодняшней стоимости
+дискового пространства следует рекомендовать монтирование файловой системы с опциями "notail" и "noatime":</p>
+<pre><code>
+/dev/hdc1       /home                   reiserfs        noatime,notail       0 0
+</code></pre>
+<p>Даже если имеется потребность в экономии дискового пространства, может оказаться хорошей идеей временное монтирование
+файловой системы (пока не заполнилась) с опцией "notail". Кроме того, некоторые загрузчики имеют проблемы с загрузкой ядер,
+созданных на ReiserFS с tail packing enabled. Если у вас <i>LILO</i> старее версии 21.6, с такой проблемой вы обязательно
+столкнетесь. Могут быть проблемы даже с современными версиями <i>GRUB</i> при загрузке файлов <i>stage1</i> и <i>stage1_5</i>,
+хотя на загрузку самого ядра это не влияет. Устранить проблему поможет временное монтирование ReiserFS с опцией "notail" и
+перемещение файлов в буферную файловую систему "туда обратно". Помните, после пересоздания файлов (инсталляция нового ядра)
+они снова окажутся "без хвостов". Есть возможность перемонтирования файловой системы (с новыми опциями) без ее размонтирования
+(подробно в <!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->части 3<!--</a>-->). Ниже показано, как перемонтировать корневую файловую систему с опцией "notail".
+Команда будет полезной, если для вас обычная практика - упаковка хвостов, но загрузчик "этого не любит" и требуется
+"распаковать" вспомогательные файлы:</p>
+<pre><code>
+# mount / -o remount,notail
+</code></pre>
+<h3>Примечания по Qmail.</h3>
+<p>Если вы используете qmail с ReiserFS, то имеется несколько важных замечаний. Первое - необходимо использовать специальный
+<!--<a href="http://www.jedi.claranet.fr/qmail-link-sync.patch">-->patch к qmail 1.03 sources<!--</a>-->. Он требуется для устранения
+проблемы, которая возникает в связи с несинхронными "link()" и "unlink()" вызовами (с ext2 имеется похожая проблема). Далее,
+можно посетить <!--<a href="http://www.jedi.claranet.fr/qmail-tuning.html">-->Jedi's qmail tuning page<!--</a>-->, где содержится множество
+хороших советов о том, как оптимизировать производительность qmail. Наконец, имеется <!--<a href="http://www.jedi.claranet.fr/reisersmtp.html">-->
+Jedi's ReiserSMTP<!--</a>--> package. ReiserSMTP содержит GPL plug-in для SMTP части qmail. Такая модернизация от Jedi's
+(специально для ReiserFS) обеспечит удвоение производительности при обработке входящей почты.</p>
+<h2>Заключение.</h2>
+<p>Я нахожу, что ReiserFS очень приятная файловая система и дает выигрыш не только на маленьких, но и на больших файлах по
+сравнению с ext2. Благодаря ReiserFS разработчикам требуется только 15 секунд для модификации CVS Gentoo Linux, притом, что на
+ext2 это занимало около 2 минут. ReiserFS делает работу более комфортной и позволяет нашему cvs серверу одновременно
+обрабатывать большее число IO без потери интерактивности.</p>
+<p>Притом, что она уже сегодня производит впечатление, будущее представляется еще более интересным. Hans Reiser имеет очень
+агрессивный творческий план относительно ReiserFS, включая использование ее как full-fledged high-performance database с полной
+поддержкой transaction и advanced querying features. Со временем можно ожидать, что ReiserFS станет больше чем "другая
+высокоэффективная файловая система". Это должно открыть новые возможности и подходы для решения традиционных проблем хранения
+информации. С Namesys можно связывать и будущее развитие Linux.</p>
+<a name="resources"><h3>Resources</h3></a>
+<ul>
+<li>Читайте другие статьи этой серии от Daniel Robbins:
+<ul>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs1_ru.html">-->Презентация ReiserFS.<!--</a>--> (Часть 1)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs2_ru.html">-->Использование ReiserFS в Linux 2.4.<!--</a>--> (Часть 2)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs3_ru.html">-->Презентация tmpfs и bind mounts.<!--</a>--> (Часть 3)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs4_ru.html">-->Презентация devfs.<!--</a>--> (Часть 4)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs5_ru.html">-->Установка devfs.<!--</a>--> (Часть 5)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs6_ru.html">-->Переход на devfs (с использованием init wrapper).<!--</a>--> (Часть 6)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs7_ru.html">-->Презентация ext3.<!--</a>--> (Часть 7)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs8_ru.html">-->Неожиданности от ext3.<!--</a>--> (Часть 8)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs9_ru.html">-->Презентация XFS.<!--</a>--> (Часть 9)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs10_ru.html">-->Развертывание XFS.<!--</a>--> (Часть 10)</li>
+<li><!--<a href="http://linux.yaroslavl.ru/docs/conf/fs/l-fs_ru/l-fs11_ru.html">-->Совершенствование файловых систем.<!--</a>--> (Часть 11)</li>
+</ul><br>
+<br></li>
+<li>Keep an eye on <!--<a href="http://dice.dhs.org/download/">-->DiCE's download page<!--</a>--> for the <!--<a href="http://dice.dhs.org/download/reiserfs-3.6.25-2.4.4/">-->latest ReiserFS bigpatch<!--</a>-->.</li>
+<li>The <!--<a href="http://www.namesys.com/mailinglist.html">-->ReiserFS mailing list<!--</a>--> is an excellent source for current, more
+in-depth ReiserFS information.  Be sure to check out the <!--<a href="http://marc.theaimsgroup.com/?l=reiserfs&amp;r=1&amp;w=2">-->ReiserFS mailing list archive<!--</a>-->, too.</li>
+<li><!--<a href="http://www.lwn.net/">-->Linux Weekly News<!--</a>--> is a great resource for keeping up with the latest kernel developments.</li>
+<li>You can find a very nice detailed look at the meta-data differences between UFS, ext2, ReiserFS, and more in Juan I. Santos
+ Florido's <!--<a href="http://www.linuxgazette.com/issue55/florido.html">-->Journal File Systems<!--</a>--> review in <i>Linux Gazette</i>.</li>
+<li>Jedi's <!--<a href="http://www.jedi.claranet.fr/reiserfs-tuning.html">-->ReiserFS/Qmail tuning page<!--</a>--> contains a lot of good
+information for <!--<a href="http://www.qmail.org/">-->qmail<!--</a>--> users.  Also be sure to check out <!--<a href="http://www.jedi.claranet.fr/reisersmtp.html">-->
+ReiserSMTP<!--</a>-->, Jedi's collection of drop-in qmail components that offer dramatically higher qmail performance.</li>
+<li>Check out the <!--<a href="http://www.mutt.org/">-->mutt e-mail client<!--</a>-->, which can be used to read large maildir-style mailboxes.</li>
+<li>Read <!--<a href="http://lwn.net/2001/0503/a/lt-dump.php3">-->Linus Torvalds' recent comments on dump and restore<!--</a>-->.</li>
+<li>Take the <!--<a href="http://www-105.ibm.com/developerworks/education.nsf/linux-onlinecourse-bytitle/73CADD8F9875EAD0862569C8005B6783?OpenDocument">-->
+Compiling the Linux kernel<!--</a>--> free tutorial on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/linux/?article=lr">-->more Linux resources<!--</a>--> on <i>developerWorks</i>.</li>
+<li>Browse <!--<a href="http://www-106.ibm.com/developerworks/opensource/?article=osr">-->more Open source resources<!--</a>--> on <i>developerWorks</i>.</li>
+</ul>
+<a name="author1">
+</a><h3><a name="author1">About the author</a></h3>
+<a name="author1"><img src="l-fs2_ru_files/robbins.gif" border="0" width="64" height="71" align="left" alt="author">
+Residing in Albuquerque, New Mexico, Daniel
+Robbins is the
+ President/CEO of Gentoo Technologies, Inc., and the creator of </a><!--<a href="http://www.gentoo.org/">-->Gentoo Linux<!--</a>-->,
+an advanced Linux for the
+ PC, and the <b>Portage</b> system, a next-generation ports system for
+ Linux. He has also served as a
+contributing author for the Macmillan books
+ <i>Caldera OpenLinux Unleashed</i>, <i>SuSE Linux Unleashed</i>, and
+ <i>Samba
+Unleashed</i>. Daniel has been involved with computers in some
+ fashion since the second grade, when he was first exposed to the
+Logo
+ programming language as well as a potentially dangerous dose of Pac Man.
+ This probably explains why he has since served as
+a Lead Graphic Artist at
+ <b>SONY Electronic Publishing/Psygnosis</b>. Daniel enjoys spending time
+ with his wife, Mary, and his
+new baby daughter,
+ Hadassah. You can contact Daniel at <a href="../cdn-cgi/l/email-protection.html#d8bcaab7babab1b6ab98bfbdb6acb7b7f6b7aabf"><span class="__cf_email__" data-cfemail="3b5f495459595255487b5c5e554f54541554495c">[email&#160;protected]</span></a>.
+<br><br>
+Перевод: <a href="../cdn-cgi/l/email-protection.html#95e3fefdfaf9f8d5e5fcfbfaf6fdf0e1bbf6fce1ecf9fcfbf0bbe7e0">Владимир Холманов</a>
+<br><hr>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

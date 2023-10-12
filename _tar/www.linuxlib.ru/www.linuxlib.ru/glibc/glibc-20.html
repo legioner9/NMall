@@ -1,0 +1,489 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Библиотека языка C GNU glibc: Нелокальные Выходы — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<A HREF="glibc-21.html">Вперед</A>
+<A HREF="glibc-19.html">Назад</A>
+<A HREF="glibc.html#toc20">Содержание</A>
+<HR>
+<H2><A NAME="s20">20. Нелокальные Выходы</A></H2>
+
+<P>
+<P>
+<P>Иногда, когда ваша программа обнаруживает необычную ситуацию
+внутри глубоко вложенного набора обращений к функциям, Вы можете захотеть
+немедленно возвратиться к внешнему уровню управления. Этот раздел
+описывает, как делать такие нелокальные выходы,
+используя setjmp и longjmp функции.
+<P>
+<H2><A NAME="ss20.1">20.1 Введение в нелокальные Выходы</A>
+</H2>
+
+<P>
+<P>Вот пример ситуации, где нелокальный выход может быть полезен:
+предположим, Вы имеете интерактивную программу, которая имеет "основной цикл"
+который запрашивает и выполняет команды.
+Предположите, что команда "read" читает ввод из файла, делая
+некоторый лексический анализ и анализируя ввод. Если входная ошибка
+низкого уровня обнаружена, то было бы полезно возвратиться
+немедленно в " основной цикл " вместо того, чтобы иметь
+необходимость делать лексический анализ, синтаксический анализ, и
+все фазы обработки, которые должны явно иметь дело с ситуациями
+ошибки, первоначально обнаруженными вложенными обращениями.
+<P>Некоторым образом нелокальный выход подобен использованию
+"return", чтобы возвратиться из функции. Но в то время как "return"
+отказывается только от обращения, пересылая управление обратно к
+функции, из которой оно вызывалось, нелокальный выход может
+потенциально отказываться от многих уровней вложенных обращений к
+функциям.
+<P>Вы определяете куда возвращать управление при нелокальных выходах,
+вызывая функцию setjmp. Эта функция сохраняет информацию
+относительно среды выполнения, в которой появляется обращение к
+setjmp в объекте типа jmp_buf. После обращения к setjmp выполнение
+программы продолжается как обычно, но если позже вызывается
+longjmp с соответствующим объектом jmp_buf, управление передается
+обратно в то место, где вызывалась setjmp. Возвращаемое значение из
+setjmp используется, чтобы отличить обычный возврат и возврат,
+сделанный обращением к longjmp, так что обращения к setjmp обычно
+появляются в ` if '.
+<P>Вот пример программы, описанный выше:
+<BLOCKQUOTE><CODE>
+<PRE>
+                 #include &lt;setjmp.h&gt;
+                 #include &lt;stdlib.h&gt;
+                 #include &lt;stdio.h&gt;
+                 jmp_buf main_loop;
+                 void
+                 abort_to_main_loop (int status)
+                 {
+                         longjmp (main_loop, status);
+                 }
+                 int
+                 main (void)
+                 {
+                         while (1)
+                                 if (setjmp (main_loop))
+                                         puts ("Back at main loop....");
+                                 else
+                                         do_command ();
+                 }
+
+                 void
+                         do_command (void)
+                         {
+                                 char buffer[128];
+                                 if (fgets (buffer, 128, stdin) == NULL)
+                                         abort_to_main_loop (-1);
+                                 else
+                                         exit (EXIT_SUCCESS);
+                         }
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Функция abort_to_main_loop вызывает непосредственную передачу
+управления в main программы, независимо от того, где она
+вызывается.
+<P>Способ управления внутри функции main может показаться сначала немного
+таинственным, но это - фактически общая идиома для setjmp.
+Нормальное обращение к setjmp возвращает нуль, так что "else"-часть
+условного выражения выполнена. Если abort_to_main_loop вызывается
+где-нибудь внутри выполнения команды do, то это фактически
+действует как будто обращение к setjmp в main возвращалось со
+значением -1.
+<P>Так, общий шаблон для использования setjmp выглядит вроде:
+<BLOCKQUOTE><CODE>
+<PRE>
+                         if (setjmp (buffer))
+                                 /* Код, для выполнения после
+          преждевременного возврата. */
+                                 . . .
+                         else
+                                 /* Код, который будет
+         выполнен после обычной установки
+         возвращающей отметки. */
+                                 . . .
+</PRE>
+</CODE></BLOCKQUOTE>
+<H2><A NAME="ss20.2">20.2 Подробности нелокальных Выходов</A>
+</H2>
+
+<P>
+<P>Имеются некоторые подробности относительно функций и структур
+данных, используемых для выполнения нелокальных выходов.
+<P>Эти средства объявлены в " setjmp.h ".
+<BLOCKQUOTE><CODE>
+<PRE>
+       jmp_buf  (тип данных)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Объекты типа jmp_buf содержат информацию о состоянии, которое
+будет восстановлено при нелокальном выходе.
+<P>Содержимое jmp_buf идентифицирует конкретное место
+возвращения.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+       int setjmp (jmp_buf state)  (макрос)
+</PRE>
+</CODE></BLOCKQUOTE>
+       setjmp сохраняет информацию относительно состояния выполнения
+программы в state и возвращает нуль. Если longjmp позже
+используется, чтобы выполнить нелокальный выход к этому состоянию,
+setjmp возвращает значение отличное от нуля.
+<BLOCKQUOTE><CODE>
+<PRE>
+       void longjmp (jmp_buf state, int value)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Эта функция восстанавливает текущее выполнение в состояние,
+сохраненное в state, и продолжает выполнение от обращения к setjmp.
+Возвращение из setjmp посредством longjmp возвращает значение
+аргумента, который был передан к longjmp, а не 0. (Но если значение
+задано как 0, setjmp возвращает 1).
+<P>Имеется множество неизвестных, но важных ограничений на
+использование setjmp и longjmp. Большинство этих ограничений
+присутствует, потому что нелокальные выходы требуют некоторых
+волшебных свойств от части компилятора Cи и могут взаимодействовать
+с другими частями языка странными способами.
+setjmp - фактически макрокоманда без определения функции, так что
+Вы не должны пробовать к " #undef " ее или брать адрес. Кроме того,
+обращения к setjmp безопасны в только следующих контекстах:
+<UL>
+<LI>        Как тестовое выражение в операторе выбора или цикла (типа "if"
+или "while").</LI>
+<LI>        Как один операнд равенства или сравнения, которое появляется
+как тестовое выражение оператора выбора или цикла. Другой операнд
+должен быть целочисленным постоянным выражением.</LI>
+<LI>        Как операнд унарного оператора "!", который появляется как как
+тестовое выражение оператора выбора или цикла.</LI>
+<LI>        Как выражение утверждения.</LI>
+</UL>
+
+Пункты возврата, допустимы только в течение динамической
+протяженности функции которая вызвала setjmp, установить их. Если
+Вы используете longjmp чтобы возвратиться отметке, которая была
+установлена в функции, которая уже возвратилась, могут случиться
+непредсказуемые и бедственные вещи.
+<P>Вы должны использовать в longjmp аргумент отличный от нуля. То
+что longjmp отказывается передавать обратно аргумент нуля как
+возвращаемое значение из setjmp, предназначено для
+безопасности при случайном неправильном употреблении и не
+является хорошим стилем программирования.
+<P>
+<P>Когда Вы выполняете нелокальный выход, все доступные объекты
+сохраняют любые значения, которые они имели во время вызова
+longjmp. Исключение - значения динамических локальных переменных,
+локальных для функции, содержащей обращение к setjmp, будут
+изменены и начиная с обращения на setjmp являются неопределенными,
+если Вы не объявили их отдельно.
+<P>
+<H2><A NAME="ss20.3">20.3 Нелокальные Выходы и Сигналы</A>
+</H2>
+
+<P>
+<P>В системах UNIX BSD, setjmp и longjmp также сохраняют и
+восстанавливают набор блокированных сигналов; см. Раздел 21.7
+[Блокирование Сигналов]. Однако, POSIX.1 стандарт требует чтобы
+setjmp и longjmp не изменяли набор блокированных сигналов, и
+обеспечивает дополнительную пару функций (sigsetjmp и sigsetjmp)
+чтобы получить поведение BSD функций.
+<P>Поведение setjmp и longjmp в библиотеке GNU управляется
+макрокомандами теста возможностей; см. Раздел 1.3.4 [Макрокоманды
+Проверки Возможностей]. Значение по умолчанию в системе GNU &shy;
+POSIX.1 поведение, а не поведение BSD.
+<P>Средства в этом разделе объявлены в заглавном файле " setjmp.h ".
+<BLOCKQUOTE><CODE>
+<PRE>
+       sigjmp_buf  (тип данных)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Подобен jmp_buf, за исключением того, что он может также
+сохранять информацию о состоянии набора блокированных сигналов.
+<BLOCKQUOTE><CODE>
+<PRE>
+       int sigsetjmp (sigjmp_buf state, int savesigs)  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Подобна setjmp. Если savesigs отличен от нуля, набор
+блокированных сигналов сохранен в state и будет восстановлен, если
+siglongjmp позже будет выполнена с этим state.
+<BLOCKQUOTE><CODE>
+<PRE>
+       void siglongjmp (sigjmp_buf state, int value)  (функция)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Подобна longjmp кроме типа аргумента state. Если обращение к
+sigsetjmp, которое устанавило это состояние, использовало savesigs
+флаг отличный от нуля, siglongjmp также восстанавливает набор
+блокированных сигналов.
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<HR>
+<A HREF="glibc-21.html">Вперед</A>
+<A HREF="glibc-19.html">Назад</A>
+<A HREF="glibc.html#toc20">Содержание</A>
+
+  </div>
+</div>
+</body>
+</html>

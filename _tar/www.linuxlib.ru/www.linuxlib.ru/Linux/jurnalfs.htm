@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Журналируемые файловые системы для GNU/Linux: мифы и реальность || Бибилиотека ЛинуксЦентра — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#loading">установка, загрузчики</A> |
+    <A HREF="index.htm#setting">настройка Linux</A> |
+    <A HREF="index.htm#console">консоль</A> |
+    <A HREF="index.htm#filesys">файловые системы</A> |
+    <A HREF="index.htm#proc">процессы</A> |
+    <A HREF="index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=bottom width="95%"></TD>
+    <TD background="jurnalfs.files/rightbg.gif" vAlign=bottom width="5%"></TD></TR>
+  <TR>
+    <TD bgColor=#fff8e8 vAlign=top width="95%">
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD><IMG height=1 src="jurnalfs.files/onepix.gif" width=169></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><!--<A class=menulink
+            href="http://www.linuxcenter.ru/news/">-->&nbsp;&nbsp;<!--</A>--></FONT></B></TD>
+          <TD><!--<A href="http://www.linuxcenter.ru/news/">--><!--</A>--></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><!--<A class=menulink
+            href="http://www.linuxcenter.ru/?wellcome=1">-->&nbsp;&nbsp;<!--</A>--></FONT></B></TD>
+          <TD><!--<A href="http://www.linuxcenter.ru/?wellcome=1">--><!--</A>--></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><!--<A class=menulink
+            href="http://www.linuxcenter.ru/lib/">-->&nbsp;&nbsp;<!--</A>--></FONT></B></TD>
+          <TD><!--<A href="http://www.linuxcenter.ru/lib/">--><!--</A>--></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><!--<A class=menulink
+            href="http://www.linuxcenter.ru/index.phtml?action=seller_warn">-->&nbsp;&nbsp;<!--</A>--></FONT></B></TD>
+          <TD><!--<A href="http://www.linuxcenter.ru/?action=seller_warn">--><!--</A>--></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><!--<A class=menulink
+            href="http://www.linuxcenter.ru/about.phtml">-->&nbsp;&nbsp;<!--</A>--></FONT></B></TD>
+          <TD><!--<A href="http://www.linuxcenter.ru/about.phtml">--><!--</A>--></TD>
+          <TD align=right><B><FONT color=#5b1900 face=Arial, size=2 Helvetica,
+            sans-serif><A class=menulink href="../cdn-cgi/l/email-protection.html#741d1a121b34181d1a010c17111a0011065a0601">&nbsp;&nbsp;</A></FONT></B></TD>
+          <TD><A href="../cdn-cgi/l/email-protection.html#563f383039163a3f38232e353338223324782423"></A></TD></TR></TBODY></TABLE></TD>
+    <TD background="jurnalfs.files/rightbg.gif" bgColor=#fff8e8 vAlign=top
+    width="5%"></TD></TR>
+  <TR>
+    <TD bgColor=#f8ba07 vAlign=top width="95%"><IMG height=2
+      src="jurnalfs.files/smline.gif" width=197></TD>
+    <TD background="jurnalfs.files/rightbg.gif" bgColor=#f8ba07 vAlign=top
+    width="5%"><IMG height=2 src="jurnalfs.files/onepix.gif"
+  width=1></TD></TR></TBODY></TABLE>
+<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD vAlign=top width="95%"><IMG height=1 src="jurnalfs.files/onepix.gif"
+      width=712><BR>
+      <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+        <TBODY>
+        <TR>
+          <TD vAlign=top width="19%"><IMG height=1
+            src="jurnalfs.files/onepix.gif" width=168><BR><BR><BR><BR><BR><BR><BR><!--<A
+            href="http://www.atlant.ru/comar">--><!--</A>--><BR><!--<A
+            href="http://www.promt.ru/">--><!--</A>--><BR><!--<A
+            href="http://subscribe.ru/catalog/comp.soft.linux.lcnews">--><!--</A>--><BR><!--<A
+            href="http://topshop.rambler.ru/go.html?ID=2435">--><!--</A>--><BR><!--<A
+            href="http://top100.rambler.ru/top100/">--><!--</A>--><BR><!--<A
+            href="http://top.list.ru/jump?from=145476">--><!--</A>--><IMG
+            height=1 src="D:\new0312\new\jurnalfs.files\top100(1).gif"
+            width=1><BR><!--<A
+            href="http://u501.96.spylog.com/cnt?cid=50196&amp;f=3&amp;p=0">--><!--</A>-->&nbsp;<!-- HotLOG --><IMG border=0 height=1 src="jurnalfs.files/count.html"
+            width=1> <!-- /HotLOG --></TD>
+          <TD vAlign=top width="2%"><IMG height=1
+            src="jurnalfs.files/onepix.gif" width=10></TD>
+          <TD vAlign=top width="79%"><BR>
+            <TABLE border=1 borderColor=#f8bb0b borderColorDark=#f8bb0b
+            borderColorLight=#ffffff cellPadding=2 cellSpacing=0 width="100%">
+              <TBODY>
+              <TR bgColor=#fff8e8>
+                <TD><FONT color=#5b1900 face=Arial, Helvetica,
+                  sans-serif><B>Журналируемые файловые системы для GNU/Linux:
+                  мифы и реальность </B></FONT></TD></TR></TBODY></TABLE>
+            <TABLE border=0 cellPadding=0 cellSpacing=0 width="100%">
+              <TBODY>
+              <TR>
+                <TD width=20><IMG height=1 src="jurnalfs.files/onepix.gif"
+                  width=20></TD>
+                <TD bgColor=#f8bb0b width=1><IMG height=1
+                  src="jurnalfs.files/onepix.gif" width=1></TD>
+                <TD width=5>&nbsp;</TD>
+                <TD><FONT size=2><BR><FONT color=#ca7622><I>Первый и
+                  единственный миф - что журналируемые файловые системы спасут
+                  вас и ваши данные от любого сбоя. Нет, не спасут. Они просто
+                  предназначены для другого. </I><BR>
+                  <P align=right><B>[<A href="../cdn-cgi/l/email-protection.html#74151802341a110319151d185a0601">Олег
+                  Бройтман</A> ]</B></P></FONT>
+                  <P align=justify>24 сентября 2001 состоялось третье заседание
+                  семинара. <!--<A href="http://www.sam-solutions.net/"
+                  target=_blank>-->Александр Боковой<!--</A>--> прочел лекцию
+                  "Журналируемые файловые системы. Мифы и реальность".
+                  <P align=justify>Лекция была отличная. Александр и выглядит
+                  хорошо, и умеет говорить, он не суетился возле доски, и вообще
+                  поднял планку лекций семинара на такую высоту, что следующим
+                  лекторам придется попотеть, чтобы допрыгнуть. :)
+                  <P align=justify>Александр рассмотрел 4 наиболее известные
+                  файловые системы - ReiserFS, JFS, XFS и ext3 - однако не
+                  вообще, а применительно к конкретной задаче - создание
+                  высокопроизводительного надежного файлового сервера. Александр
+                  не назвал лучшую, и я не назову - сначала дайте критерии
+                  "лучшести". Как будет видно ниже, по разным критериям лучшие
+                  бывают разные.
+                  <P align=justify>Мифов же уважаемый лектор развеял немного.
+                  Первый и единственный миф - что журналируемые файловые системы
+                  спасут вас и ваши данные от любого сбоя. Нет, не спасут. Они
+                  просто предназначены для другого.
+                  <P align=justify>Вот, скажем, сценарий. Вы открываете файл, и
+                  пишете в него большой объем данных. В середине записи
+                  происходит сбой, перезагрузка, и после восстановления файл
+                  оказывается пустой. Нулевой длины. Как же так, говорите вы, а
+                  где же то, что я туда писал? Ответ такой - журналируемые
+                  файловые системы ТАК не работают. Они предназначены не для
+                  восстановления всех ваших данных любой ценой, а для
+                  поддержания непротиворечивости метаданных файловой системы на
+                  момент сбоя. Поэтому такая система работает так: вы открываете
+                  файл - и он успешно открывается, файловая система отмечает
+                  открытие в своем журнале записью транзакции. Затем вы
+                  начинаете писать. Но файловая система не запоминает копии этих
+                  данных. И когда происходит восстановление после сбоя,
+                  происходит откат до последней успешной транзакции - открытия
+                  нового пустого файла.
+                  <P align=justify>Следующие общие слова Александр сказал об
+                  алгоритмах журналируемых файловых систем. Большинство из них
+                  построено на основе сбалансированных деревьев, иначе известных
+                  как <!--<A
+                  href="http://starship.python.net/crew/aaron_watters/bplustree/bplustree.py.txt"
+                  target=_blank>-->B+ деревья<!--</A>-->.
+                  <P align=justify>Из четырех рассмотренных файловых систем 3
+                  используют сбалансированные деревья.
+                  <P align=justify>Второй способ оптимизации журналируемой
+                  файловой системы - вынесение журнала на другое независимое
+                  устройство (для асинхронного доступа). Это увеличивает
+                  эффективность системы на 30-50%! Не все из рассмотренных
+                  систем имеют вынос журнала. XFS имеет, для ReiserFS нужен
+                  особый патч.
+                  <P align=justify>В основной части лекции Александр рассказал
+                  подробности о каждой из файловых систем.
+                  <P align=justify>XFS была создана в начале 90-ых (1992-1993)
+                  фирмой Silicon Grapgics (сейчас SGI) для мультимедийных
+                  компьютеров с ОС Irix. Файловая система была ориентирована на
+                  очень большие файлы и файловые системы. Особенностью этой
+                  файловой системы является устройство журнала - в журнал
+                  пишется часть метаданных самой файловой системы таким образом,
+                  что весь процесс восстановления сводится к копированию этих
+                  данных из журнала в файловую систему. Размер журнала задается
+                  при создании системы, он должен быть не меньше 32 мегабайт; а
+                  больше и не надо - такое количество незакрытых транзакций
+                  тяжело получить.
+                  <P align=justify>JFS, журналируемая файловая система фирмы
+                  IBM, была создана для ОС AIX. В дальнейшем была перенесена на
+                  OS/2, но проявила себя там очень вяло. Нынешняя ее версия для
+                  Linux и то лучше. Размер журнала - примерно 40% от объема
+                  файловой системы, но не больше 32 мегабайт. Особенностью этой
+                  файловой системы являются "агрегаты" - в этой файловой системе
+                  может быть несколько сегментов, включающих журнал и данные, и
+                  каждый из таких сегментов можно монтировать отдельно.
+                  <P align=justify>Проект ReiserFS тоже начинался в 90-ых годах,
+                  первый прототип носил название TreeFS. Разработчики системы
+                  мечтают создать не только файловую систему, но вообще механизм
+                  иерархического именования объектов. Уже есть патчи,
+                  интегрирующие Squid с ReiserFS, аналогичный проект начался для
+                  qmail. В этом смысле работа Ханса Райзера с коллегами
+                  уникальна, потому что они ведут научные исследования, и
+                  воплощают результаты в свободный код!
+                  <P align=justify>И, наконец, ext3. Это журналируемая
+                  надстройка над ext2. Достоинство ее в том, что она не меняет
+                  внутренние структуры ext2. Файловую систему ext3 можно создать
+                  из ext2 просто запустив программу создания журнала.
+                  Впоследствии эту файловую систему можно опять подмонтировать
+                  драйвером ext2. А потом опять драйвером ext3, и создать
+                  журнал.
+                  <P align=justify>Во второй части лекции Александр показал кучу
+                  графиков сравнения производительности 4-ех описанных файловых
+                  систем. Сравнение проводилось с помощью стандартного теста <!--<A
+                  href="http://www.netbench.com/" target=_blank>-->NetBench<!--</A>-->,
+                  точнее, как стало понятно из лекции чуть позже, с помощью его
+                  свободного аналога <!--<A
+                  href="http://freshmeat.net/projects/dbench/"
+                  target=_blank>-->DBench<!--</A>-->. NetBench - это распределенный
+                  клиент, который с сотни виндовых машин дает нагрузку на
+                  файловый сервер - создает, переименовывает, пишет и читает
+                  файлы, всего около 90 тысяч транзакций. DBench создан Эндрю
+                  Триджелом, автором Самбы, еще когда он работал в SGI, и у него
+                  была возможность использовать сотню виндовых машин. DBench не
+                  является, как я понял, распределенным клиентом, а эмулирует
+                  NetBench на одной машине, но отклонение от результатов
+                  NetBench составляет 1%. Вполне приемлемо. DBench был создан
+                  так - через сервер с Самбой прогнали NetBench, и Самба все
+                  операции записала в лог.
+                  <P align=justify>Вот этим-то DBench'ем Александр нагрузил
+                  файловые сервера, создавая нагрузку, эквивалентную нагрузке
+                  NetBench от 1 до 25 клиентов. Результаты были представлены в
+                  виде графиков падения производительности на 1 клиента в
+                  зависимости от числа клиентов. Тестирование проводилось на
+                  сервер самой обычной конфигурации - Celeron 800Mhz, 256M
+                  памяти, 4 независимых IDE-контроллера; на одном Linux, на
+                  другом тестируемая файловая система, на третьем журнал (в тех
+                  FS, которые позволяют вынести журнал), один запасной.
+                  <P align=justify>Я не буду пытаться воспроизвести эти графики
+                  здесь, возможно, Александр опубликует их отдельно. Приведу
+                  лишь общие выводы. Вывод номер один, самый главный: на таком
+                  железе (даже не Pentium4) файловые системы обладают такой
+                  высокой производительностью, что забивают 100-мегабитную сеть.
+                  То есть для того, чтобы выйти на предел, уже надо было бы
+                  иметь гигабитный ethernet.
+                  <P align=justify>Теперь по отдельным файловым системам. Слабее
+                  всех проявила себя JFS. Ее производительность с самого начала
+                  невысокая, и падает она быстро. Зато ее падение
+                  производительности очень гладкое; тем, кому важна не только
+                  производительность, но и предсказуемость поведения, это важно.
+
+                  <P align=justify>Лучше себя ведет XFS. Ее производительность
+                  на 1 клиенте выше, и падает медленнее. А при вынесении журнала
+                  на независимый контроллер ее производительность сильно
+                  улучшается, и она приближается к топовым показателям. Про XFS
+                  следует отметить, что она разрабатывалась как файловая система
+                  для больших файлов, а NetBench выполняет операции с
+                  небольшими, поэтому можно предполагать, что на реальных
+                  файловых серверах XFS будет вести себя еще лучше. К тому же у
+                  этой FS тоже очень гладкий график падения производительности.
+                  <P align=justify>ReiserFS показал еще лучшую
+                  производительность, но зато у него негладкое падение. Где-то в
+                  районе 12-15 клиентов график начинает скакать вверх и вниз
+                  довольно резко (на вопрос из зала, воспроизводимо ли такое
+                  поведение, или это ошибка эксперимента, Александр ответил, что
+                  графики эти выверены, и все скачки воспроизводимы). После 15
+                  клиентов график становится более гладким, возможно, за счет
+                  приближения к полной загрузке сети, а не файлового сервера.
+                  <P align=justify>Графики ext3 до такой степени мало отличаются
+                  от ResierFS, что на сводном графике и не увидишь разницы.
+                  <P align=justify>Особой проблемой является то, что во время
+                  интенсивной записи на диск файловые системы постоянно
+                  перебалансируют свои B+ деревья. Загрузка процессора при
+                  использовании XFS достигает 90%. ReiserFS дает 70%, потому что
+                  оптимизирует порядок операций. Другая оптимизация ReiserFS -
+                  она может упаковывать несколько маленьких файлов в один
+                  дисковый блок, а совсем маленькие - просто записать в inode :)
+
+                  <P align=justify>Что касается стабильности, то наиболее
+                  устойчивой оказалась ReiserFS, которую Александр назвал
+                  рабочей лошадкой, на которую вполне можно положиться.
+                  <P align=justify>Во время лекции и после нее возникло пара
+                  вопросов о совместимости журналируемых файловых систем с
+                  сетевыми. То есть можно ли поверх ReiserFS поставить NFS, или
+                  поверх XFS - Coda. Не все хорошо оказалось в этой области, но
+                  подвижки есть. Лучше всего должны быть совместимы Coda и ext3
+                  - у них один автор Peter Braam. :) </P><!-------------------------------- Текст --------------------------------><BR><BR>[Источник
+                  <!--<A href="http://www.computerra.ru/">-->Computerra
+                  Online<!--</A>-->]<BR><BR><FONT color=#ca7622>
+                  <P align=right><B>[ опубликовано 24/10/2001
+                  ]</B></P></FONT><BR></FONT></TD></TR>
+              <TR>
+                <TD height=1><IMG height=1 src="jurnalfs.files/onepix.gif"
+                  width=1></TD>
+                <TD bgColor=#f8bb0b colSpan=3 height=1><IMG height=1
+                  src="jurnalfs.files/onepix.gif"
+            width=1></TD></TR></TBODY></TABLE><BR><BR><BR></TD></TR></TBODY></TABLE><BR></TD>
+    <TD background="jurnalfs.files/rightbg.gif" width="5%"><IMG height=1
+      src="jurnalfs.files/onepix.gif" width=44></TD></TR></TBODY></TABLE>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

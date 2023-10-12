@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Server Migration and Scalability Issues — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Administration Made Easy</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="hardware-raid.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 11. Enterprise Computing with Linux</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="security.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SERVER-MIGRATION"
+>11.3. Server Migration and Scalability Issues</A
+></H1
+><P
+>With support for a diverse selection of hardware, as well as proven
+speed and reliability, Linux is up to the challenge of scaling up to meet
+resource demands as they increase.  This can include moving to an SMP
+(<EM
+>Symmetric Multi Processing</EM
+>) configuration for
+greater processing needs, RAID levels 0 through 5 (either in software or
+hardware driven modes), etc.</P
+><P
+>On occasion, you may feel that your Linux server has outgrown the
+hardware it is running on, perform a major Linux version upgrade, or
+perhaps move to a different distribution of Linux.  There are, of course,
+two ways of doing this.  Either you will be leaving your server on
+existing or upgraded hardware (in which case you need simply shut down
+services, back up your data, perform the required modifications, and then
+restore data if needed), or in the more radical case, migrate your server
+to new hardware.</P
+><P
+>This section will concentrate more on the latter situation, where
+you will be actually migrating your various services from the old server
+to a new one.  There are, of course, several migration strategies, however
+this section will attempt to provide some rough guidelines which you can
+follow in order to ensure your migration effort succeeds with minimal
+disruption to your users.</P
+><P
+></P
+><UL
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Prepare your
+new server as necessary; install and configure Linux so that your new
+hardware devices are supported, and any required daemons and kernel-based
+features (such as firewalling) are enabled.  See <A
+HREF="install-config.html"
+>Chapter 4</A
+>, as well as <A
+HREF="kernel-custom.html"
+>Section 10.6</A
+> for
+details.</P
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Set up your existing services (such as the Apache web
+server, Samba or Netatalk file &#38; print services, etc.) and make use
+of them with test data for at least several days to ensure everything is
+working as desired.  See <A
+HREF="samba-file-and-print.html"
+>Section 7.4</A
+>, as well
+as <A
+HREF="netatalk-file-and-print.html"
+>Section 7.5</A
+> for details.  Don't forget to
+ensure that any changes or custom scripts you have made in the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/</TT
+></TT
+>'' directory, including
+anything in ``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/rc.d/</TT
+></TT
+>'' have
+also been done on the new server as required.  It is especially important
+that you remember to move over your user account information in the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/passwd</TT
+></TT
+>'',
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/group</TT
+></TT
+>'', and, if you are
+using shadow passwords,
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/shadow</TT
+></TT
+>''!</P
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Shut down services on your old server, so that your file
+systems will see a minimal amount of file update activity.  Obviously you
+don't want users uploading web pages and receiving e-mail on the old
+server, while you are restoring the data onto the new one!  As root, you
+can shut down most services with the following command:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>killall httpd atalkd smbd nmbd squid sendmail ftpd</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The above command will shut down the web server, file &#38; print
+services, e-mail server, and FTP service.  (You may be running less or
+more services than the ones I have listed above.  Check your process list
+and terminate any other service you feel appropriate; see <A
+HREF="managing-processes.html"
+>Section 9.2</A
+> for details.)</P
+><P
+>You might also want to edit the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/inetd.conf</TT
+></TT
+>'' file on your
+old server, and with the ``<TT
+CLASS="LITERAL"
+>#</TT
+>'' character, comment out
+any services (such as FTP, IMAP, and POP3 services) which might result in
+file system updates.  Then, again as root, type:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>killall -HUP inetd</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The above command will reload the TCP wrappers (security wrappers
+to Internet services) so that future connections to any services you have
+disabled in the
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/etc/inet.conf</TT
+></TT
+>'' file will not
+be loaded).</P
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Now you should be able to move over the data from one
+system to another.  Likely, you will have prepared your new server to
+have everything it needs to function, including any additional software
+that you wish to install that did not come with your Red Hat
+distribution.  Therefore, you will likely need to backup any data stored
+in ``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/home</TT
+></TT
+>'',
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/var/spool</TT
+></TT
+>'', as well as
+optional file systems, such as
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/archive</TT
+></TT
+>'', if applicable.
+Here is an example command that uses the ``<TT
+CLASS="LITERAL"
+>tar</TT
+>''
+utility to make a compressed backup file of data:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>cd /</B
+></TT
+>
+<TT
+CLASS="USERINPUT"
+><B
+>tar zcvpf /tmp/backup_data.tar.gz --exclude=var/spool/squid \
+          home archive var/spool</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The above command will write a backup of your
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/archive</TT
+></TT
+>'',
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/home</TT
+></TT
+>'', and
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/var/spool</TT
+></TT
+>'' file systems (or
+subdirectories, depending on how you have set up your system), to a file
+called
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/tmp/backup_data.tar.gz</TT
+></TT
+>'' in
+compressed tar format.  Make sure you have enough space to create the
+backup, or write it elsewhere!</P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>Tip: </B
+>Tip: You can use the ``<TT
+CLASS="LITERAL"
+>du</TT
+>'' utility to help
+determine required space.  For example, to determine the requirements of
+the ``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/archive/</TT
+></TT
+>'' and
+``<TT
+CLASS="LITERAL"
+><TT
+CLASS="FILENAME"
+>/home/</TT
+></TT
+>'' directory trees,
+type:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>du -h -s /archive /home</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Bear in mind that the above command will report the actual size of
+your data, but if you are using tar's ``<TT
+CLASS="LITERAL"
+>z</TT
+>'' option (as
+above) to compress the image file, your usage requirements will likely be
+significantly less. Consider the output from the ``<TT
+CLASS="LITERAL"
+>du</TT
+>''
+command a worst-case estimate of the space required.</P
+></BLOCKQUOTE
+></DIV
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Now, you can restore the backup data from the tar file
+onto the new server.  You can restore it directly over NFS (see <A
+HREF="nfs-services.html"
+>Section 7.6</A
+> for details on how to configure NFS), or simply
+use FTP to transfer it over and untar it locally.  Here is an example that
+will restore the files that were backed up as above:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="USERINPUT"
+><B
+>cd /</B
+></TT
+>
+<TT
+CLASS="USERINPUT"
+><B
+>tar zxvpf /tmp/backup_data.tar.gz</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Next, if necessary, swap your IP addresses so that your
+new server is seen on the old address.</P
+></LI
+><LI
+STYLE="list-style-type: Bullet"
+><P
+>Finally, you may wish to shutdown and restart your server
+to ensure there are no unexpected error messages that appear.  See <A
+HREF="system-shutdown-and-restart.html"
+>Section 6.7</A
+> for details.</P
+></LI
+></UL
+><P
+>Once you are done, make sure everything is working as expected!
+If not, you can always re-enable any services you disabled on the old
+server and restart them so that users can continue using it until you
+resolve the problems on the new one (bear in mind, however, that you'll
+need to repeat the above steps again if you choose to do that).</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="hardware-raid.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="security.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>High Availability with RAID</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="enterprise-computing.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Strategies for Keeping a Secure Server</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

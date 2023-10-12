@@ -1,0 +1,570 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Как запускается функция main() в Linux — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="index.htm#gl">графические библиотеки</a> |
+    <A HREF="index.htm#tcl">Tcl</a> |
+    <A HREF="index.htm#perl">Perl</a> |
+    <A HREF="index.htm#php">PHP</a> |
+    <A HREF="index.htm#java">Java &amp; C#</a> |
+    <A HREF="index.htm#dbms">СУБД</a> |
+    <A HREF="index.htm#cvs">CVS</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://dutyfree-sigarets.club/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Http://dutyfree-sigarets.com/ </p> <p class='block_links_text'> <a href="https://dutyfree-sigarets.club/" target="_blank">http://dutyfree-sigarets.com/</a> купить импортные сигареты, у нас сигареты. </p><p class='block_links_url'> dutyfree-sigarets.club </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<CENTER><BIG><BIG><STRONG>Как запускается функция main() в
+Linux</STRONG></BIG></BIG><BR><BR><STRONG>Автор (c): Hyouck "Hawk"
+Kim</STRONG><BR><!-- Translator --><STRONG>Перевод (c): <A href="../cdn-cgi/l/email-protection.html#046f6d775b656a4469656d682a7671">Андрей Киселев</A></STRONG> </CENTER>
+<HR>
+
+<P></P>
+<H2>Вступление</H2>
+<P>Так ли прост вопрос: "Как запускается функция main() в Linux"? Для ответа на
+него я возьму, в качестве примера, простенькую программу на языке C --
+"simple.c"</P><PRE>main()
+{
+   return(0);
+}
+
+</PRE>
+<H2>Сборка</H2><PRE>gcc -o simple simple.c<BR>
+</PRE>
+<H2>Что находится внутри исполняемого файла?</H2>
+<P>Для того, чтобы рассмотреть внутреннее устройство исполняемого файла
+воспользуемся утилитой "objdump"</P><PRE>objdump -f simple<BR>
+<BR>
+simple:     file format elf32-i386<BR>
+architecture: i386, flags 0x00000112:<BR>
+EXEC_P, HAS_SYMS, D_PAGED<BR>
+start address 0x080482d0<BR>
+</PRE>Отсюда видно, что файл, во-первых, имеет формат "ELF32", а во-вторых --
+адрес запуска программы "0x080482d0"
+<H2>Что такое ELF?</H2>
+<P>ELF -- это аббревиатура от английского Executable and Linking Format (Формат
+Исполняемых и Связываемых файлов). Это одна из разновидностей форматов для
+исполняемых и объектных файлов, используемых в UNIX-системах. Для нас особый
+интерес будет представлять заголовок файла. Каждый файл формата ELF имеет
+ELF-заголовок следующей структуры:</P><PRE>typedef struct
+{
+        unsigned char   e_ident[EI_NIDENT];     /* Сигнатура и прочая информация */
+        Elf32_Half      e_type;                 /* Тип объектного файла */
+        Elf32_Half      e_machine;              /* Аппаратная платформа (архитектура) */
+        Elf32_Word      e_version;              /* Номер версии */
+        Elf32_Addr      e_entry;                /* Адрес точки входа (стартовый адрес программы) */
+        Elf32_Off       e_phoff;                /* Смещение от начала файла таблицы программных заголовков */
+        Elf32_Off       e_shoff;                /* Смещение от начала файла таблицы заголовков секций */
+        Elf32_Word      e_flags;                /* Специфичные флаги процессора (не используется в архитектуре i386) */
+        Elf32_Half      e_ehsize;               /* Размер ELF-заголовка в байтах */
+        Elf32_Half      e_phentsize;            /* Размер записи в таблице программных заголовков */
+        Elf32_Half      e_phnum;                /* Количество записей в таблице программных заголовков */
+        Elf32_Half      e_shentsize;            /* Размер записи в таблице заголовков секций */
+        Elf32_Half      e_shnum;                /* Количество записей в таблице заголовков секций */
+        Elf32_Half      e_shstrndx;             /* Расположение сегмента, содержащего таблицy стpок */
+} Elf32_Ehdr;
+</PRE>В этой структуре, поле "e_entry" содержит адрес запуска программы.
+<H2>Что находится по адресу "0x080482d0", то есть по адресу запуска (starting
+address)?</H2>
+<P>Для ответа на этот вопрос попробуем дизассемблировать программу "simple". Для
+дизассемблирования исполняемых файлов я использую objdump.</P><PRE>objdump --disassemble simple
+</PRE>Утилита objdump выдаст очень много информации, поэтому я не буду приводить
+её всю. Нас интересует только адрес 0x080482d0. Вот эта часть листинга: <PRE>080482d0 &lt;_start&gt;:
+ 80482d0:       31 ed                   xor    %ebp,%ebp
+ 80482d2:       5e                      pop    %esi
+ 80482d3:       89 e1                   mov    %esp,%ecx
+ 80482d5:       83 e4 f0                and    $0xfffffff0,%esp
+ 80482d8:       50                      push   %eax
+ 80482d9:       54                      push   %esp
+ 80482da:       52                      push   %edx
+ 80482db:       68 20 84 04 08          push   $0x8048420
+ 80482e0:       68 74 82 04 08          push   $0x8048274
+ 80482e5:       51                      push   %ecx
+ 80482e6:       56                      push   %esi
+ 80482e7:       68 d0 83 04 08          push   $0x80483d0
+ 80482ec:       e8 cb ff ff ff          call   80482bc &lt;_init+0x48&gt;
+ 80482f1:       f4                      hlt
+ 80482f2:       89 f6                   mov    %esi,%esi
+</PRE>Похоже на то, что первой запускается процедура "_start". Все, что она
+делает -- это очищает регистр ebp, "проталкивает" какие-то значения в стек и
+вызывает подпрограмму. Согласно этим инструкциям содержимое стека должно
+выглядеть так: <PRE>         -----Дно стека-----
+         0x80483d
+         -------------------
+         esi
+         -------------------
+         ecx
+         -------------------
+         0x8048274
+         -------------------
+         0x8048420
+         -------------------
+         edx
+         -------------------
+         esp
+         -------------------
+         eax
+         -------------------
+</PRE>
+<P>Теперь вопросов становится еще больше</P>
+<OL>
+  <LI>Что за числа кладутся в стек?
+  <LI>Что находится по адресу 80482bc, который вызывается инструкцией call в
+  процедуре _start?
+  <LI>В приведенном листинге отсутствуют инструкции, инициализирующие регистры
+  <EM>(имеются ввиду eax, ecx, edx прим. перев.)</EM>. Где они инициализируются?
+  </LI></OL>
+<P>Попробуем ответить на все эти вопросы.</P>
+<H2>Вопрос 1&gt; Что за числа кладутся в стек?</H2>
+<P>Если внимательно просмотреть весь листинг, создаваемый утилитой objdump, то
+можно легко найти ответ</P>
+<P>Вот он:</P>
+<P>0x80483d0 : Это адрес функции main().</P>
+<P>0x8048274 : адрес функции _init.<BR></P>
+<P>0x8048420 : адрес функции _fini. Функции _init и _fini -- это функции
+инициализации и финализации (завершения) приложения, генерируемые компилятором
+GCC.<BR></P>
+<P>Таким образом все приведенные числа являются указателями на функции (точнее
+-- адресами функций прим. перев.)</P>
+<H2>Вопрос 2&gt; Что находится по адресу 80482bc?</H2>
+<P>Снова обратимся к листингу.</P><PRE>80482bc:   ff 25 48 95 04 08       jmp    *0x8049548<BR>
+</PRE><BR>Здесь *0x8049548 означает указатель.<BR>Это просто косвенный переход
+по адресу, хранящемуся в памяти по адресу 0x8049548.
+<P><BR></P>
+<H2>Дополнительно о формате ELF и динамическом связывании</H2>
+<P>Формат ELF предполагает возможность динамического связывания исполняемой
+программы с библиотеками.<BR>Где под словами "динамическое связывание" следует
+понимать то, что связывание производится во время исполнения. В
+противоположность динамическому связыванию существует "статическое связывание",
+т.е. когда связывание с библиотеками происходит на этапе сборки программы, что,
+как правило, приводит к "раздуванию" исполняемого файла до огромных размеров.
+Если вы запустите команду:</P><PRE>"ldd simple"
+
+    libc.so.6 =&gt; /lib/i686/libc.so.6 (0x42000000)
+    /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+
+</PRE>Вы сможете увидеть полный список библиотек, связанных с программой simple
+динамически. <BR><BR>Вкратце, концепция динамического связывания выглядит
+так.<BR>
+<OL>
+  <LI>На этапе сборки программы адреса переменных и функций в динамической
+  библиотеке не известны. Они становятся известны только на этапе исполнения
+  <LI>Для того, чтобы иметь возможность обращаться к компонентам динамической
+  библиотеки (переменные, функции и т.д. прим. перев.) необходимо предусмотреть
+  указатели на эти компоненты<BR>Указатели заполняются фактическими адресами во
+  время загрузки.
+  <LI>Приложение может обращаться к динамическим компонентам только косвенно,
+  используя для этого указатели. Пример такой косвенной адресации можно увидеть
+  в листинге, приведенном выше, по адресу 80482bc, когда осуществляется
+  косвенный переход.<BR>Фактический адрес перехода сохраняется по адресу
+  0x8049548 во время загрузки программы.<BR>Косвенные ссылки можно посмотреть,
+  выполнив команду <PRE>objdump -R simple<BR>
+<BR>
+      simple:     file format elf32-i386
+<BR>
+        DYNAMIC RELOCATION RECORDS
+        OFFSET   TYPE              VALUE
+        0804954c R_386_GLOB_DAT    __gmon_start__
+        08049540 R_386_JUMP_SLOT   __register_frame_info
+        08049544 R_386_JUMP_SLOT   __deregister_frame_info
+        08049548 R_386_JUMP_SLOT   __libc_start_main
+</PRE>Здесь адрес 0x8049548 называется "jump slot" и имеет определенный смысл.
+  В соответствии с таблицей он означает вызов __libc_start_main.<BR></LI></OL>
+<H2>Что такое __libc_start_main?</H2>
+<P>Теперь "карты сдает" библиотека libc. __libc_start_main -- это функция из
+библиотеки libc.so.6. Если отыскать функцию __libc_start_main в исходном коде
+библиотеки glibc, то увидите примерно такое объявление.</P><PRE>extern int BP_SYM (__libc_start_main) (int (*main) (int, char **, char **),
+        int argc,
+        char *__unbounded *__unbounded ubp_av,
+        void (*init) (void),
+        void (*fini) (void),
+        void (*rtld_fini) (void),
+        void *__unbounded stack_end)
+        __attribute__ ((noreturn));
+</PRE>Теперь становится понятен смысл ассемблерных инструкций из листинга,
+приведенного выше -- они кладут на стек входные параметры и вызывают функцию
+__libc_start_main. <BR>В задачу этой функции входят некоторые действия по
+инициализации среды исполнения и вызов функции main().<BR>Рассмотрим содержимое
+стека с новых позиций. <BR><PRE>
+Дно стека  ------------------
+           0x80483d0             main
+           ------------------
+           esi                   argc
+           ------------------
+           ecx                   argv
+           ------------------
+           0x8048274             _init
+           ------------------
+           0x8048420             _fini
+           ------------------
+           edx                   _rtlf_fini
+           ------------------
+           esp                   stack_end
+           ------------------
+           eax                   это ноль (0)
+           ------------------
+</PRE><BR>Согласно такому представлению стека, понятно, что перед вызовом
+__libc_start_main() в регистры esi, ecx, edx, esp и eax должны быть записаны
+соответствующие значения. Совершенно очевидно, что дизассемблированный код,
+показанный выше, ничего в эти регистры не пишет. Тогда кто? Остается только одно
+предположение -- ядро.<BR>А теперь перейдем к третьему вопросу.
+<H2>Вопрос 3&gt; Что делает ядро?</H2>
+<P>Когда программа запускается из командной строки, выполняются следующие
+действия.</P>
+<OL>
+  <LI>Командная оболочка (shell) делает системный вызов "execve" с параметрами
+  argc/argv.
+  <LI>Обработчик системного вызова в ядре получает управление и начинает его
+  обработку. В ядре обработчик называется "sys_execve". На платформе x86,
+  пользовательское приложение передает аргументы вызова в ядро через регистры.
+  <UL>
+    <LI>ebx : указатель на строку с именем программы
+    <LI>ecx : указатель на массив argv
+    <LI>edx : указатель на массив переменных окружения </LI></UL>
+  <LI>Универсальный обработчик системного вызова в ядре называется do_execve. Он
+  создает и заполняет определенные структуры данных, копирует необходимую
+  информацию из пространства пользователя в пространство ядра и, наконец,
+  вызывает search_binary_handler(). Linux поддерживает множество форматов
+  исполняемых файлов, например a.out и ELF. Для обеспечения такой поддержки в
+  ядре имеется структура "struct linux_binfmt", которая содержит указатели на
+  загрузчики каждого из поддерживаемых форматов. Таким образом,
+  search_binary_handler() просто отыскивает нужный загрузчик и вызывает его. В
+  нашем случае -- это load_elf_binary(). Описывать эту функцию в подробностях
+  слишком долгая и нудная работа, так что я не буду заниматься этим здесь. За
+  подробностями обращайтесь к специальной литературе по данной тематике. (от
+  себя могу предложить ссылку на статью <!--<A
+  href="http://www.opennet.ru/docs/RUS/lki/index.html">-->Внутреннее устройство
+  ядра Linux 2.4<!--</A>--> прим. перев.) Вкратце процесс загрузки выглядит примерно
+  так. Сначала создаются и заполняются структуры в пространстве ядра и файл
+  программы считывается в память. Затем производится установка дополнительных
+  значений -- определяется размер сегмента кода, определяется начало сегмента
+  данных и сегмента стека и т.д.. В пользовательском режиме выделяется память, в
+  которую копируются входные параметры (argv) и переменные окружения. Затем
+  функция create_elf_tables(), в пользовательском режиме, кладет на стек argc,
+  указатели на argv и массив переменных окружения, после чего start_thread()
+  запускает программу на исполнение. </LI></OL>
+<P><BR></P>
+<P>Когда управление передается в точку _start, стек выглядит примерно так:</P><PRE>Дно стека       -------------
+                argc
+                -------------
+                указатель на argv
+                -------------
+                указатель на env
+                -------------
+
+</PRE>
+<P>Теперь наш дизассемблированный листинг выглядит еще более определенным.</P><PRE>pop %esi           &lt;--- со стека снимается argc
+move %esp, %ecx    &lt;--- argv
+                      т.е. теперь, фактически, адрес argv совпадает с указателем стека
+</PRE>Теперь все готово к запуску программы.
+<H2>Что можно сказать по-поводу остальных регистров?</H2>
+<P>esp используется для указания вершины стека в прикладной программе. После
+того как со стека будет снята вся необходимая информация, процедура _start
+просто скорректирует указатель стека (esp), сбросив 4 младших бита в регистре
+esp. В регистр edx заносится указатель на, своего рода деструктор приложения --
+rtlf_fini. На платформе x86 эта особенность не поддерживается, поэтому ядро
+заносит туда число 0 макрокомандой.</P><PRE>#define ELF_PLAT_INIT(_r)  do { \
+        _r-&gt;ebx = 0; _r-&gt;ecx = 0; _r-&gt;edx = 0; \
+        _r-&gt;esi = 0; _r-&gt;edi = 0; _r-&gt;ebp = 0; \
+        _r-&gt;eax = 0; \
+} while (0)
+</PRE>
+<H2>Откуда взялся весь этот дополнительный код</H2>
+<P>Откуда взялся весь этот дополнительный код? Он входит в состав компилятора
+GCC. Вы можете найти его в<BR>/usr/lib/gcc-lib/i386-redhat-linux/XXX
+и<BR>/usr/lib где XXX -- номер версии gcc.<BR>Файлы называются
+crtbegin.o,crtend.o, gcrt1.o.</P>
+<H2>Подведение итогов</H2>
+<P>Итак, выводы следующие.</P>
+<OL>
+  <LI>При сборке программы, GCC присоединяет к ней код из объектных модулей
+  crtbegin.o/crtend.o/gcrt1.o а другие библиотеки, по-умолчанию, связывает
+  динамически. Адрес запуска приложения (в ELF-заголовке прим. перев.) указывает
+  на точку _start.
+  <LI>Ядро загружает программу и устанавливает сегменты text/data/bss/stack,
+  распределяет память для входных параметров и переменных окружения и помещает
+  на стек всю необходимую информацию.
+  <LI>Управление передается в точку _start. Здесь информация снимается со стека,
+  на стеке размещаются входные параметры для функции __libc_start_main, после
+  чего ей передается управление.
+  <LI>Функция __libc_start_main выполняет все необходимые действия по
+  инициализации среды исполнения, особенно это касается библиотеки C (malloc и
+  т.п.) и вызывает функцию main() программы.
+  <LI>Функции main() передаются входные аргументы -- main(argc, argv). Здесь
+  есть один интересный момент. __libc_start_main "представляет" себе сигнатуру
+  функции main() как main(int, char **, char **). Если вам это любопытно, то
+  попробуйте запустить следующую программу: <PRE>main(int argc, char** argv, char** env)
+{
+    int i = 0;
+    while(env[i] != 0)
+    {
+       printf("%s\n", env[i++]);
+    }
+    return(0);
+}
+</PRE></LI></OL>
+<H2>Заключение</H2>
+<P>В Linux запуск функции main() является результатом взаимодействия GCC, libc и
+загрузчика.</P>
+<H2>Ссылки</H2>
+<P>objdump -- "man objdump"</P>
+<P>ELF-заголовок -- /usr/include/elf.h</P>
+<P>__libc_start_main -- исходный код glibc (./sysdeps/generic/libc-start.c)</P>
+<P>sys_execve -- исходный код ядра linux (arch/i386/kernel/process.c)</P>
+<P>do_execve -- исходный код ядра linux (fs/exec.c)</P>
+<P>struct linux_binfmt -- исходный код ядра linux (include/linux/binfmts.h)</P>
+<P>load_elf_binary -- исходный код ядра linux (fs/binfmt_elf.c)</P>
+<P>create_elf_tables -- исходный код ядра linux (fs/binfmt_elf.c)</P>
+<P>start_thread -- исходный код ядра linux (include/asm/processor.h)</P><!-- *** BEGIN copyright *** -->
+<HR>
+
+<CENTER><SMALL><STRONG>Copyright (C) 2002, Hyouck "Hawk" Kim. Copying license.<BR>Published
+in Issue 84 of <EM>Linux Gazette</EM>, November 2002</STRONG></SMALL> </CENTER>
+<HR>
+</TBODY></TABLE></CENTER></EM>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

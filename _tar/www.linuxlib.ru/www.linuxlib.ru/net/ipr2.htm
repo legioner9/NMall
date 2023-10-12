@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>LinuxBegin.ru - Настройка сетевых интерфейсов и маршрутизация с помощью пакета iproute 2 — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://proxy5.ru/socks5-proxy&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Прокси SOCKS5 </p> <p class='block_links_text'> Купить <a href="https://proxy5.ru/socks5-proxy" target="_blank">прокси SOCKS5</a> c IP-адресами разных стран мира и безлимитным пропускным каналом </p><p class='block_links_url'> proxy5.ru </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <table border="0" align="center"><tr><td>
+
+    <table border="0" width="640" cellpadding="0" cellspacing="1" bgcolor="#000000"><tr><td>
+    <table border="0" width="640" cellpadding="20" cellspacing="1" bgcolor="#ffffff"><tr><td>
+
+    <font class="content">
+    <h2>Настройка сетевых интерфейсов и маршрутизация с помощью пакета iproute 2
+</h2></font>
+    <a href="../cdn-cgi/l/email-protection.html#5731323338253821172136333e3a79382530792236">Вадим Фёдоров</a>, 4.05.03, <!--<a href="http://www.vadim.org.ua">-->http://www.vadim.org.ua<!--</a>--><br><br><font class="content">
+    <p>Большинство дистрибутивов Linux, впрочем как и UNIX, для настройки сети и маршрутизации используют команды ifconfig, arp и route. Однако в Linux,  начиная с ядра  2.2, была полностью переделана сетевая система и были добавлены новые возможности, которые ранее требовали дополнительных утилит, такие как маршрутизация на основе правил, управление трафиком и т.д.  К этим возможностям предоставляет доступ пакет программ iproute2, который в настоящее время входит в большинство современных дистрибутивов. </p>
+<p>Утилита ip объединяет в себе возможности команд ifconfig, arp и route, рассмотрим синтаксис команды:</p>
+<p><b>ip [Опции]  Объект [ Команда [Аргументы команды] ]</b></p>
+<p>где Опции - опциональные параметры, который  влияют на общую работу утилиты или вывод результатов.</p>
+<p>В настоящее время доступны следующие опции:</p>
+<ul>
+<li>-V, -Version - выводит в стандартный вывод (stdout) версию программы ip<br>
+
+</li>
+<li>-s, -stats, -statistic - выводит статистическую информацию.<br>
+
+</li>
+<li>-f, - family - указывается перед идентификатором протокола, таким как inet (IPv4), inet6(IPv6)
+или link (Устройстов). Служит для выбора указания протокола, если протокол не указан, то по умолчанию протокол выбирается из параметров команд. <br>
+
+</li>
+<li>-4 - аналог параметра -family inet<br>
+
+</li>
+<li>-6 - аналог параметра -family inet6<br>
+
+</li>
+<li>-0 - аналог параметра -family link<br>
+
+</li>
+<li>-o, -oneline - каждая запись будет выводиться на новой строке.<br>
+
+</li>
+<li>-r - выводить на экран символические имена хостов.<br>
+
+</li>
+</ul>
+<p>Объект - это объект, с которым будут работать или получать о котором информацию. Объекты бывают следующими:</p>
+<ul>
+<li>link - сетевое устройство<br>
+
+</li>
+<li>address - IPv4 или IPv6 адрес на устройстве.<br>
+
+</li>
+<li>neighbour - ARP адреса<br>
+
+</li>
+<li>route - машрутизация<br>
+
+</li>
+<li>rule - база данных правил машрутизации<br>
+
+</li>
+<li>madress - Multicast-адреса представляют собой особый подвид широковещательных адресов, позволяющих обращаться к группе машин, которые не обязательно должны  быть в той же самой подсети. Они весьма полезны при сетевых голосовых  переговорах и видеоконференциях. Поддерживаются многими, но не всеми картами Ethernet.<br>
+
+</li>
+<li>mroute - Multicast-пакетов.<br>
+
+</li>
+<li>tunnel - туннель через IP.<br>
+</li>
+</ul>
+<p>
+Команда описывает действие над Объектом. </p>
+<hr>
+<br>
+<b>ip link</b> - конфигурация сетевого устройства.
+<p>Доступные команды: set и show (или list).
+</p>
+<p><b>ip link set</b> - изменение параметров сетевого устройства.
+</p>
+<p><b>Аргументы:</b><br>
+
+
+</p>
+<ul>
+<li>dev - Имя интерфейса, с которым будем проводить какие-то манипуляции.<br>
+
+</li>
+<li>up (включить) или down (выключить) - включить или выключить сетевой интерфейс.<br>
+
+</li>
+<li>arp on или arp off - изменяет значение флага NOARP на устройстве.<br>
+
+</li>
+<li>multicast on или multicast off - изменяет флаг MULTICAST на устройстве.<br>
+
+</li>
+<li>dynamic on или dynamic off - изменяет флаг DYNAMIC на устройстве.<br>
+
+</li>
+<li>name - Изменяет имя устройства<br>
+
+</li>
+<li>txqueuelen Число или  txqlen Число - изменяет длину передаваемой очереди.<br>
+
+</li>
+<li>mtu Число  - изменяет значение MTU на устройстве.<br>
+
+</li>
+<li>address Адрес - изменяет адрес на устройстве.<br>
+
+</li>
+<li>broadcast Адрес  или brd Адрес - изменяет широковещательный адрес на устройстве.<br>
+
+</li>
+</ul>
+<p><b>ip link show (list, ls, sh, lst, l) </b>- показывает информацию об сетевом интерфейсе.
+Аргументы:<br>
+
+</p>
+<ul>
+<li>dev - Имя интерфейса с которым будем проводить какие-то манипуляции.<br>
+
+</li>
+<li>up - показать только включенные интерфейсы.</li>
+</ul>
+<p><b>Примеры:</b></p>
+<p>Выведем информацию о состоянии интерфейса eth0</p>
+<p># ip link ls dev eth0</p>
+<p>В результате получим:</p>
+<p>eth0:  mtu 1500 qdisc cbq qlen 100<br>
+
+    link/ether 00:04:61:92:21:1d brd ff:ff:ff:ff:ff:ff</p>
+<p>Выведем статистику интерфейса eth0</p>
+<p>#ip -s link ls dev eth0</p>
+<p>2: eth0:  mtu 1500 qdisc cbq qlen 100<br>
+
+    link/ether 00:04:61:92:21:1d brd ff:ff:ff:ff:ff:ff<br>
+
+    RX: bytes  packets  errors  dropped overrun mcast<br>
+
+    2891892504 15070935 0       0       0       0<br>
+
+    TX: bytes  packets  errors  dropped carrier collsns<br>
+
+    3139067270 54387014 0       0       0       132934</p>
+<hr>
+<br>
+<b>ip address</b> - управление адресами на интерфейсе.
+<p>Команда address имеет ряд псевдонимов: addr, a. Объект address - это адрес IPv4 или IPv6 протокола, связанный с каким-то  устройством, чтобы оно могло работать с данными протоколами. Так же каждое устройство может иметь несколько IP адресов. Команда ip address  показывает адреса, их свойства, а так же добавляет новые или удаляет старые.<br>
+
+</p>
+<p><b>ip address add</b> - добавляет новый адрес. </p>
+<p><b>Аргументы:</b></p>
+<ul>
+<li>dev Имя - имя устройства.<br>
+
+</li>
+<li>local Адрес - адрес интерфейса.<br>
+
+</li>
+<li>peer Адрес - адрес удаленной машины при использовании протокола PPP.<br>
+
+</li>
+<li>broadcast  Адрес - широковещательный адрес на интерфейсе. Вы можете использовать специальные символы &quot;+&quot; и &quot;-&quot;, в этом  случае широковещательный адрес получается путем установки/сброса бит в адрес  хоста.<br>
+
+</li>
+<li>label Метка - каждый адрес может быть подписан строкой, однако следует помнить, что имя должно начинаться с имени устройства, затем после двоеточия идет сама метка.</li>
+</ul>
+<p><b>Пример:</b></p>
+<p>ip addr add 10.0.0.1/24 brd + dev eth0 label eth0:Alias</p>
+<p>Данная команда добавляет адрес 10.0.0.1/24 с маской подсети 255.255.255.0 со  стандартным широковещательным адресом и именем eth0:Alias.</p>
+<p><b>ip address delete</b> - удаляет адреса. Сокращения: delete, del, d. </p>
+<p><b>Пример: </b></p>
+<p>ip addr del 127.0.0.1/8 dev lo</p>
+<p>Удаляет адрес 127.0.0.1/8 с устройства lo.</p>
+<p><b>ip address show</b> - выводит информацию об адресе. Сокращения: show, list, lst, sh, ls, l. Аргументы:</p>
+<ul>
+<li>dev Имя - имя устройства.<br>
+
+</li>
+<li>to  Префикс - вывести информация о адресах с заданным префиксом.<br>
+
+</li>
+<li>label Имя - вывести информацию об адресах с заданным именем.<br>
+
+</li>
+</ul>
+<p><b>Пример работы команды:<br>
+</b>
+
+</p>
+<p>kuznet@alisa:~ $ ip addr ls eth0<br>
+
+3: eth0:  mtu 1500 qdisc cbq qlen 100<br>
+
+    link/ether 00:a0:cc:66:18:78 brd ff:ff:ff:ff:ff:ff<br>
+
+    inet 193.233.7.90/24 brd 193.233.7.255 scope global eth0<br>
+
+    inet6 3ffe:2400:0:1:2a0:ccff:fe66:1878/64 scope global dynamic <br>
+
+       valid_lft forever preferred_lft 604746sec<br>
+
+    inet6 fe80::2a0:ccff:fe66:1878/10 scope link <br>
+
+kuznet@alisa:~ $</p>
+<hr>
+<p><b>ip route</b> - управление таблицей машрутизации. </p>
+<p>Сокращения: route, ro, r.<br>
+
+</p>
+<p>ip route add - добавить новый маршрут<br>
+
+ip route change - изменить маршрут<br>
+
+ip route replace - заменить маршрут<br>
+
+</p>
+<p>Сокращения: add, a; change, chg; replace, repl.<br>
+
+</p>
+<p><b>Аргументы:<br>
+</b>
+
+</p>
+<ul>
+<li>to - назначение маршрута.<br>
+
+</li>
+<li>metric Число - задание метрики маршрута.<br>
+
+</li>
+<li>table Идентификатор таблицы - таблица связанная с маршрутом. Идентификатором  таблицы может быть номер или строка из файла /etc/iproute2/rt_tables<br>
+
+</li>
+<li>dev Имя - имя устройства.<br>
+
+</li>
+<li>via Адрес - адрес перехода к следующему маршрутизатору<br>
+
+</li>
+<li>src Адрес - адрес источника<br>
+
+</li>
+<li>nexthop NEXTHOP -  следующий переход в случае, если используется многоканальная маршрутизация.<br>
+
+</li>
+<li>via Адрес<br>
+
+</li>
+<li>dev Имя - имя устройства.<br>
+
+</li>
+<li>weight Число - вес маршрута, определяющийся шириной канала или качеством . <br>
+
+</li>
+</ul>
+<p><b>Примеры:<br>
+</b>
+
+</p>
+<p>Добавляем маршрут к сети 10.0.0/24 через 193.233.7.65</p>
+<p>ip route add 10.0.0/24 via 193.233.7.65</p>
+<p>Добавим шлюз по умолчанию в случае использования двух каналов в зависимости от загрузки канала:<br>
+
+</p>
+<p>ip route add default scope global nexthop dev ppp0 <br>
+
+nexthop dev ppp1<br>
+
+</p>
+<p><b>ip route delete</b> - удалить маршрут.<br>
+
+</p>
+<p>Сокращения: delete, del, d.<br>
+
+</p>
+<p>Аргументы: Аргументы данной команды сходны с ip route add.<br>
+
+</p>
+<p><b>Пример:</b></p>
+<p>Удаляем маршрут, созданный в предыдущем разделе.</p>
+<p>ip route del default scope global nexthop dev ppp0 <br>
+
+                                    nexthop dev ppp1<br>
+
+</p>
+<hr>
+<p><b>ip rule</b> - управление правилами машрутизации</p>
+<p>Сокращения: rule, ru<br>
+
+</p>
+<p>Маршрутизация может производиться не только в зависимости от адреса получателя, но и по адресу источника, IP протокола и транспортного протокола. По умолчанию существуют 3 правила:<br>
+
+</p>
+<ul>
+<li>Таблица Local (ID 255) - специальная таблица маршрутизации с самым большим  приоритетом, которая содержит таблицы для локальных и широковещательных адресов.<br>
+
+</li>
+<li>Таблица Main (ID 254) - обычная таблица маршрутизации.<br>
+
+</li>
+<li>Таблица Default (ID 253) - пустая по умолчанию таблица.<br>
+
+</li>
+</ul>
+<p>ip rule add - добавить новое правило.<br>
+
+Ip rule delete - удалить правило.<br>
+
+</p>
+<p>Сокращения: add, a; delete, del, d<br>
+
+</p>
+<p><b>Аргументы:<br>
+</b>
+
+</p>
+<ul>
+<li>from  - адрес источник<br>
+
+</li>
+<li>to - адрес получателя<br>
+
+</li>
+<li>iif Имя - имя интерфейса с которого будет получен пакет<br>
+
+</li>
+<li>fwmark Метка - метка пакета, устанавливаемая firewall. <br>
+
+</li>
+<li>table Идентификатор таблицы - таблица связанная с маршрутом. Идентификатором таблицы может быть номер или строка из файла /etc/iproute2/rt_tables<br>
+
+</li>
+<li>priority Число- приоритет таблицы.<br>
+
+</li>
+</ul>
+<p><b>Примеры:<br>
+</b>
+
+</p>
+<p>Маршрутизировать пакеты с сети 192.203.80.0/24 согласно таблицы example.<br>
+
+</p>
+<p>ip ru add from 192.203.80.0/24 table example prio 220<br>
+
+</p>
+<hr>
+<p>Рассмотрим примеры использования маршрутизации на основе правил.<br>
+
+</p>
+<p>1. Пусть у нас есть два канала в интернет: быстрый модем с IP адресом 212.64.94.251, связанный PPP c 212.64.94.1, и медленный c 212.64.78.148,  связанный PPP c 195.96.98.253. Надо пакеты одного пользователя отправлять  через медленный модем. Для этого сформируем новое правило:</p>
+<p># echo 200 User &gt;&gt; /etc/iproute2/rt_tables<br>
+
+# ip rule add from 10.0.0.10 table John<br>
+
+# ip rule ls<br>
+
+0: from all lookup local<br>
+
+32765: from 10.0.0.10 lookup John<br>
+
+32766: from all lookup main<br>
+
+32767: from all lookup default<br>
+
+</p>
+<p>Далее назначаем для этого пользователя шлюз по умолчанию и очищаем кэш таблицы маршрутизации для того чтобы наши изменения вступили в действие.<br>
+
+</p>
+<p># ip route add default via 195.96.98.253 dev ppp2 table John<br>
+
+# ip route flush cache<br>
+
+</p>
+<p>2. Необходимо  направить весь трафик на 80 порт через сетевую карту eth0. Пометим пакеты, идущие на 80 порт.<br>
+
+</p>
+<p># iptables -A PREROUTING -i eth0 -t mangle -p tcp --dport 80 <br>
+
+-j MARK --set-mark 2<br>
+
+</p>
+<p>Создадим правила для помеченных пакетов.<br>
+
+</p>
+<p># echo 202 www.out &gt;&gt; /etc/iproute2/rt_tables<br>
+
+# ip rule add fwmark 2 table www.out<br>
+
+# ip route add default via 10.0.0.2 dev eth0 table www.out<br>
+
+# ip route flush cache</p>
+<hr>
+<p>СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ:</p>
+<p>1. IP Command Reference - Alexey N. Kuznetsov<br>
+
+2. Linux Advanced Routing &amp; Traffic  Control HOWTO</p><br><br>
+    </font>
+    </td></tr></table></td></tr></table>
+    <br><br><center>
+    <font class="content">
+    Источник -  LinuxBegin.ru<br>
+    <!--<a href="http://linuxbegin.ru">-->http://linuxbegin.ru<!--</a>--><br><br>
+    Адрес этой статьи:<br>
+    <!--<a href="http://linuxshop.ru/linuxbegin/article297.html">-->http://linuxshop.ru/linuxbegin/article297.html<!--</a>-->
+    </font>
+    </td></tr></table>
+
+</center>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

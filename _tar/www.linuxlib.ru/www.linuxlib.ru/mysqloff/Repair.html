@@ -1,0 +1,597 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.4.6.9  Как ремонтировать таблицы — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Repair.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Repair.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="gp"><a href="https://www.linuxlib.ru/mysqloff/Disaster_Prevention.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.4 Предотвращение катастроф и восстановление
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Table_maintenance.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.4.6 Использование <code>myisamchk</code> для профилактики таблиц и послеаварийного
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/myisamchk_syntax.html">4.4.6.1 Синтаксис запуска <code>myisamchk</code>
+</a></li><li><a href="myisamchk_general_options.html">4.4.6.2 Общие опции для <code>myisamchk</code>
+</a></li><li><a href="myisamchk_check_options.html">4.4.6.3 Проверочные опции для <code>myisamchk</code>
+</a></li><li><a href="myisamchk_repair_options.html">4.4.6.4 Опции исправления для <code>myisamchk</code>
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/myisamchk_other_options.html">4.4.6.5 Другие опции для <code>myisamchk</code>
+</a></li><li><a href="myisamchk_memory.html">4.4.6.6 Использование памяти утилитой <code>myisamchk</code>
+</a></li><li><a href="Crash_recovery.html">4.4.6.7 Использование myisamchk для послеаварийного восстановления
+</a></li><li><a href="Check.html">4.4.6.8 Как проверять таблицы на ошибки
+</a></li><li class="self">4.4.6.9 Как ремонтировать таблицы
+</li><li><a href="Optimisation.html">4.4.6.10 Оптимизация  таблиц
+</a></li></ul></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Check.html" title="4.4.6.8  Как проверять таблицы на ошибки">Previous</a> / <a rel="next" href="Optimisation.html" title="4.4.6.10  Оптимизация  таблиц">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Table_maintenance.html" title="4.4.6  Использование myisamchk для профилактики таблиц и послеаварийного">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H4>4.4.6.9  Как ремонтировать таблицы</H4>
+
+<P>
+<A NAME="IDX563"></A>
+<A NAME="IDX564"></A>
+
+</P>
+<P>
+В данном разделе рассматривается только использование <code>myisamchk</code> на
+таблицах <code>MyISAM</code> (расширения <tt>`.MYI'</tt> и <tt>`.MYD'</tt>). Если же в системе применяются
+таблицы <code>ISAM</code> (расширения <tt>`.'</tt>IS<code>M</code> и <tt>`.'</tt>IS<code>D</code>), то следует пользоваться <code>isamchk</code>.
+
+</P>
+<P>
+Начиная с версии MySQL 3.23.14 можно ремонтировать таблицы <code>MyISAM</code> при
+помощи команды <code>REPAIR TABLE</code> (see section <A HREF="https://www.linuxlib.ru/mysqloff/REPAIR_TABLE.html">4.4.5  Синтаксис <code>REPAIR TABLE</code></A>).
+
+</P>
+<P>
+К симптомам повреждения таблицы относятся неожиданные прерывания
+выполнения запросов и появление следующих ошибок:
+
+</P>
+
+<ul>
+<LI>
+
+<tt>`tbl_name.frm'</tt> is locked against change (Файл  заблокирован  для
+изменений)
+<LI>
+
+Can't find file <tt>`tbl_name.MYI'</tt> (Errcode: ###) (Не  могу  найти  файл
+<tt>`tbl_name.MYI'</tt> (Ошибка: ###))
+<LI>
+
+Unexpected end of file (Неожиданно  наступил  конец)
+<LI>
+
+Record file is crashed (Файл  записей  испорчен)
+<LI>
+
+Got error ### from table handler (Получена  ошибка ### от  дескриптора
+таблицы). Для получения более подробной информации об ошибке можно
+выполнить <code>perror</code> ###. Чаще всего о проблемах с таблицей свидетельствуют
+следующие ошибки:
+
+<pre>
+shell&#62; perror 126 127 132 134 135 136 141 144 145
+126 = Index file is crashed / Wrong file format
+127 = Record-file is crashed
+132 = Old database file
+134 = Record was already deleted (or record file crashed)
+135 = No more room in record file
+136 = No more room in index file
+141 = Duplicate unique key or constraint on write or update
+144 = Table is crashed and last repair failed
+145 = Table was marked as crashed and should be repaired
+</pre>
+
+Заметим, что ошибка 135 - 'no more room in record file' ('не осталось места в
+файле записей'), не может быть исправлена просто выполнением ремонта. В
+этом случае необходимо использовать следующую команду:
+
+
+<pre>
+ALTER TABLE table MAX_ROWS=xxx AVG_ROW_LENGTH=yyy;
+</pre>
+
+</ul>
+
+<P>
+В других случаях следует выполнять ремонт таблиц. <code>myisamchk</code> обычно может
+обнаружить и исправить большинство неполадок.
+
+</P>
+<P>
+Процесс ремонтирования включает до четырех описанных здесь стадий. Перед
+тем как приступить к ремонту, необходимо выполнить <tt>`cd'</tt> в каталог базы
+данных и проверить права доступа к табличным файлам. Файлы должны быть
+доступны для чтения Unix-пользователю, от имени которого выполняется
+<code>mysqld</code>, (а также выполняющему ремонт, поскольку ему приходится обращаться
+к проверяемым файлам). Если появится необходимость изменять файлы, то
+проверяющий также должен иметь доступ для записи.
+
+</P>
+<P>
+Если используется версия MySQL 3.23.16 и выше, то для проверки и ремонта
+таблиц <code>MyISAM</code> можно (и нужно) использовать команды <code>CHECK</code> и <code>REPAIR</code> (section <A HREF="https://www.linuxlib.ru/mysqloff/CHECK_TABLE.html">4.4.4  Синтаксис <code>CHECK TABLE</code></A> и see section <A HREF="https://www.linuxlib.ru/mysqloff/REPAIR_TABLE.html">4.4.5  Синтаксис <code>REPAIR TABLE</code></A>).
+
+</P>
+<P>
+Раздел руководства, посвященный сопровождению таблиц, содержит опции к
+<code>isamchk</code>/<code>myisamchk</code> (see section <A HREF="https://www.linuxlib.ru/mysqloff/Table_maintenance.html">4.4.6  Использование <code>myisamchk</code> для профилактики таблиц и послеаварийного</A>).
+
+</P>
+<P>
+Случаи, когда упомянутые команды не дают результата или желательно
+использовать расширенные возможности, представленные в <code>isamchk</code>/<code>myisamchk</code>,
+рассматриваются в следующем разделе.
+
+</P>
+<P>
+Если ремонт таблицы планируется выполнять из командной строки то сначала
+требуется остановить сервер. Следует отметить, что при выполнении
+<code>mysqladmin shutdown</code> с удаленного сервера <code>mysqld</code> все еще будет некоторое
+время работать после завершения <code>mysqladmin</code>, пока не будут остановлены все
+запросы и сброшены на диск все ключи.
+
+</P>
+<P>
+<strong>Стадия 1: проверка таблиц</strong>
+
+</P>
+<P>
+Выполните <code>myisamchk *.MYI</code> или, если вы располагаете временем, <code>myisamchk -e
+*.MYI</code>. Используйте опцию <code>-s</code> (молчаливый режим) для подавления ненужной
+информации.
+
+</P>
+<P>
+Если <code>mysqld</code> остановлен, то следует использовать опцию <code>--update-state</code> для
+указания <code>myisamchk</code> отмечать таблицы как 'проверенные'(checked).
+
+</P>
+<P>
+Ремонтировать следует только те таблицы, для которых <code>myisamchk</code> выдала
+ошибки. Для таких таблиц следует перейти к стадии 2.
+
+</P>
+<P>
+Если во время проверки будут получены странные ошибки (подобные out of
+memory), или <code>myisamchk</code> завершится аварийно, то перейдите к стадии 3.
+
+</P>
+<P>
+<strong>Стадия 2: легкий безопасный ремонт</strong>
+
+</P>
+<P>
+Примечание: если есть желание ускорить ремонт, рекомендуется добавить: <code>-O
+sort_buffer=# -O key_buffer=#</code> (где # примерно 1/4 от имеющейся памяти) во
+всех командах <code>isamchk</code>/<code>myisamchk</code>.
+
+</P>
+
+<P>
+Сначала надо попробовать запустить <code>myisamchk -r -q tbl_name</code> (<code>-r -q</code>
+означает "режим быстрого восстановления"). При этом будет сделана попытка
+исправить индексный файл без изменения файла данных. Если в файле данных
+содержится все необходимое, а удаленные связи указывают на правильные
+позиции в файле данных, то команда должна дать результат и таблица будет
+исправлена. Перейдите к ремонту следующей таблицы. В противном случае
+следует выполнить следующие действия:
+
+</P>
+
+<ol>
+<LI>
+
+Сделать резервную копию файла данных.
+
+<LI>
+
+Использовать <code>myisamchk -r tbl_name</code> (<code>-r</code> означает "режим
+восстановления"). При этом из файла данных будут удалены некорректные
+и уничтоженные записи, и будет заново создан индексный файл.
+
+<LI>
+
+Если на предыдущем шаге проблему решить не удастся, то используйте
+<code>myisamchk --safe-recover tbl_name</code>. В режиме безопасного восстановления
+используется старый метод восстановления, справляющийся с некоторыми
+случаями, которые оказываются не под силу для режима обычного
+исправления (но работает этот метод медленнее).
+</ol>
+
+<P>
+Если во время проверки будут получены странные ошибки (подобные out of
+memory) или <code>myisamchk</code> аварийно завершается, то перейдите к стадии 3.
+
+</P>
+<P>
+<strong>Стадия 3: сложный ремонт</strong>
+
+</P>
+<P>
+До этой стадии дело доходит, только если первый 16-килобайтный блок в
+индексном файле разрушен или содержит неверную информацию, либо когда
+индексный файл отсутствует. В этом случае необходимо создать новый
+индексный файл. Необходимо выполнить следующие действия:
+
+</P>
+
+<ol>
+<LI>
+
+Переместить файл данных в какое-нибудь безопасное место.
+
+<LI>
+
+Использовать файл описания таблицы для создания новых (пустых) файлов
+- данных и индексного:
+
+
+<pre>
+shell&#62; mysql db_name
+mysql&#62; SET AUTOCOMMIT=1;
+mysql&#62; TRUNCATE TABLE table_name;
+mysql&#62; quit
+</pre>
+
+Если используемая версия SQL не располагает <code>TRUNCATE TABLE</code>, то взамен
+используется <code>DELETE FROM table_name</code>.
+
+<LI>
+
+Скопируйте старый файл данных на место недавно созданного (делать
+перемещение старого файла обратно на место нового нецелесообразно,
+поскольку в старом файле может снова возникнуть потребность, если
+что-то пойдет не так).
+</ol>
+
+<P>
+Вернитесь к стадии 2. <code>myisamchk -r -q</code> теперь должна сработать (но
+бесконечно повторять стадии не следует).
+
+</P>
+<P>
+Что касается MySQL 4.0.2, то тут можно воспользоваться <code>REPAIR ... USE_FRM</code>,
+выполняющей всю эту процедуру автоматически.
+
+</P>
+<P>
+<strong>Стадия 4: очень сложный ремонт</strong>
+
+</P>
+<P>
+До этой стадии вы дойдете только в случае, если ко всему прочему запорчен
+и файл описания. Такого происходить не должно, поскольку файл описания
+после создания таблицы не изменяется. Выполните следующие действия:
+
+</P>
+
+<ol>
+<LI>
+
+Восстановите файл описания из резервной копии и перейдите к стадии 3.
+Можно также восстановить индексный файл и вернуться к стадии 2. Во
+втором случае начинать надо с <code>myisamchk -r</code>.
+
+<LI>
+
+Если резервной копии нет, но точно известно, как таблица создавалась,
+то создается копия таблицы в другой базе данных. Новый файл данных
+удаляется, затем файл описания с индексным файлом перемещаются из
+другой базы данных в поврежденную. Таким образом вы получаете новый
+файл описания и индексный файл, не затрагивая при этом файла данных.
+Делается возврат к стадии 2 с попыткой воссоздать индексный файл.
+</ol>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Repair">Add your own comment.</a></p><div id="docnav"><a href="Repair.html#">Top</a> / <a rel="prev" href="Check.html" title="4.4.6.8  Как проверять таблицы на ошибки">Previous</a> / <a rel="next" href="Optimisation.html" title="4.4.6.10  Оптимизация  таблиц">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Table_maintenance.html" title="4.4.6  Использование myisamchk для профилактики таблиц и послеаварийного">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

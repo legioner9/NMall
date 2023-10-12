@@ -1,0 +1,822 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Интерпретатор команд — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Руководство FreeBSD</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="dirstructure.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Основы Unix</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="editors.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SHELLS"
+>3.4. Интерпретатор команд</A
+></H1
+><P
+>При работе с FreeBSD, в большинстве случаях для выполнения
+      повседневных задач используется командный интерфейс (так называемый
+      ``шелл''), который принимает команды, которые ему подаются,
+      и выполняет их.  Многие командные интерпретаторы имеют встроенные
+      средства выполнения наиболее часто используемых команд, например,
+      операции над файлами и каталогами, редактирование командной строки,
+      командные макросы и переменные окружения.  Вместе с FreeBSD
+      поставляется несколько командных интерпретаторов, например, sh, или
+      Bourne Shell, и csh, иначе C-shell.  Многие другие, более мощные,
+      например, tcsh или bash, доступны в коллекции портов.</P
+><P
+>Какой из командных интерпретаторов использовать?  Это дело вкуса.
+      Если Вы программируете на C, то Вам, возможно, понравится tcsh, а если
+      Вы работали с Linux, то Вас скорее устроит bash, нежели что-либо
+      другое.  Каждый из названных интерпретаторов имеет свои особенные
+      свойства, которые отличат его от других и, возможно, повлияют на Ваш
+      выбор.</P
+><P
+>Одна из наиболее часто используемых функций командного
+      интерпретатора - дополнение частичного имени файла до полного.  Вы
+      можете набрать только первые несколько символов имени файла, нажать
+      клавишу табуляции (TAB), и командный интерпретатор автоматически
+      Например, у нас есть два фала, названные <TT
+CLASS="FILENAME"
+>foobar</TT
+> и
+      <TT
+CLASS="FILENAME"
+>foo.bar</TT
+>.  Допустим, мы хотим удалить файл
+      <TT
+CLASS="FILENAME"
+>foo.bar</TT
+>.  Для этого, наберем на клавиатуре
+      <TT
+CLASS="COMMAND"
+>rm fo[TAB].[TAB]</TT
+>.</P
+><P
+>Вы увидите следующее: <TT
+CLASS="COMMAND"
+>rm foo[BEEP].bar</TT
+>.</P
+><P
+>Здесь [BEEP] - это так называемый консольный звонок,
+      сигнализирующий о том, что интерпретатор не в состоянии закончить имя
+      файла, так как по введенным Вами символам невозможно однозначно
+      идентифицировать файл.  Например, имена файлов
+      <TT
+CLASS="FILENAME"
+>foobar</TT
+> и <TT
+CLASS="FILENAME"
+>foo.bar</TT
+> оба
+      начинаются с <TT
+CLASS="LITERAL"
+>fo</TT
+>, но после нажатия TAB можно
+      однозначно дополнить только до <TT
+CLASS="LITERAL"
+>foo</TT
+>.  Если же теперь
+      ввести точку (<TT
+CLASS="LITERAL"
+>.</TT
+>) и вновь нажать TAB, интерпретатор
+      достроит имя файла целиком.</P
+><P
+>При работе с любым командным интерпретатором, Вы столкнетесь с
+      переменными окружения.  Под переменной окружения понимается некоторая
+      строка символов, идентифицируемая некоторым именем.  Значение
+      переменных окружения может быть прочитано любо программой, запущенной
+      из командного интерпретатора, и часто содержит конфигурационные
+      настройки для многих приложений и утилит.  Ниже приведены некоторые
+      наиболее часто встречающиеся переменные окружения с объяснением их
+      значения:</P
+><DIV
+CLASS="INFORMALTABLE"
+><P
+></P
+><TABLE
+BORDER="0"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Переменная</TH
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Описание</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>USER</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Имя текущего пользователя.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>PATH</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Каталоги, разделенные двоеточием, в которых производить
+	      поиск исполняемых файлов.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>DISPLAY</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Сетевое имя виртуального дисплея X11, если доступен для
+	      подключения.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>SHELL</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Текущий командный интерпретатор.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>TERM</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Название (тип) терминала.  Используется, чтобы узнать
+	      возможности терминала.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>TERMCAP</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Список escape-последовательностей для управления
+	      различными функциями терминала.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>OSTYPE</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Название (тип) операционной системы.  Например,
+	      FreeBSD.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>MACHTYPE</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Архитектура машины (процессора).</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>EDITOR</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Предпочитаемый пользователем текстовый редактор.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>PAGER</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Предпочитаемая пользователем утилита просмотра
+	      файлов.</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="ENVAR"
+>MANPATH</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Каталоги, разделенные двоеточием, в которых производить
+	      поиск файлов системного справочника.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><P
+>В зависимости от используемого командного интерпретатора, для
+      просмотра и установки значений переменных окружения служат различные
+      команды.  Например, в интерпретаторах csh и tcsh это
+      <TT
+CLASS="COMMAND"
+>setenv</TT
+>.  В sh и bash это <TT
+CLASS="COMMAND"
+>set</TT
+> и
+      <TT
+CLASS="COMMAND"
+>export</TT
+>.  В частности, чтобы установить или изменить
+      значение переменной <TT
+CLASS="ENVAR"
+>EDITOR</TT
+> (в csh или tcsh) равное
+      <TT
+CLASS="FILENAME"
+>/usr/local/bin/emacs</TT
+>, выполните команду:</P
+><P
+><TT
+CLASS="COMMAND"
+>setenv EDITOR /usr/local/bin/emacs</TT
+></P
+><P
+>Если Вы используете bash:</P
+><P
+><TT
+CLASS="COMMAND"
+>export EDITOR="/usr/local/bin/emacs"</TT
+></P
+><P
+>Чтобы получить значение переменной, например, в командной строке,
+      поместите символ доллара (<TT
+CLASS="LITERAL"
+>$</TT
+>) перед именем
+      переменной.  Например, команда <TT
+CLASS="COMMAND"
+>echo $TERM</TT
+> выведет
+      значение переменной <TT
+CLASS="ENVAR"
+>$TERM</TT
+>.</P
+><P
+>Командный интерпретатор воспринимает некоторые символы, называемые
+      метасимволами, в качестве управляющих, несущих специальные функции.
+      Одни из наиболее часто используемых - символ <TT
+CLASS="LITERAL"
+>*</TT
+>,
+      который заменяет любое количество символов в имени файла, и
+      <TT
+CLASS="LITERAL"
+>?</TT
+>, заменяющий один символ.  Эти метасимволы
+      используются для поиска файлов по маске, например, команда
+      <TT
+CLASS="COMMAND"
+>echo *</TT
+> выполняет практически тоже самое, что и
+      команда <TT
+CLASS="COMMAND"
+>ls</TT
+>, так как под маску <TT
+CLASS="LITERAL"
+>*</TT
+>
+      попадают все файлы из текущего каталога (на самом деле, это всегда так
+      и зависит от командного интерпретатора, например, в bash под маску
+      <TT
+CLASS="LITERAL"
+>*</TT
+> не попадут файлы, начинающиеся с точки
+      <TT
+CLASS="LITERAL"
+>.</TT
+> - скрытые файлы).</P
+><P
+>В некоторых ситуациях требуется, чтобы интерпретатор воспринимал
+      метасимволы как обычные, не несущие специальной смысловой нагрузки.
+      Этого можно достичь, поставив перед символом обратную косую черту
+      (<TT
+CLASS="LITERAL"
+>\</TT
+>).  Например, команда <TT
+CLASS="COMMAND"
+>echo
+      $TERM</TT
+> выведет тип Вашего терминала, в то же время команда
+      <TT
+CLASS="COMMAND"
+>echo \$TERM</TT
+> выведет именно слово
+      <TT
+CLASS="LITERAL"
+>$TERM</TT
+>, а не значение переменной
+      <TT
+CLASS="ENVAR"
+>$TERM</TT
+>.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CHANGING-SHELLS"
+>3.4.1. Как изменить командый интерпретатор по умолчанию</A
+></H2
+><P
+>Самым простым, пожалуй, будет воспользоваться командой
+	<TT
+CLASS="COMMAND"
+>chsh</TT
+>.  Если переменная <TT
+CLASS="ENVAR"
+>EDITOR</TT
+>
+	определена, то будет загружен текстовый редактор
+	<TT
+CLASS="ENVAR"
+>$EDITOR</TT
+>, иначе vi.  Вам нужно будет изменить значение
+	поля ``Shell:'' и выйти из редактора с сохранением
+	результатов.</P
+><P
+>Можно также воспользоваться опцией <TT
+CLASS="OPTION"
+>-s</TT
+> команды
+	<TT
+CLASS="COMMAND"
+>chsh</TT
+>.  Например:</P
+><PRE
+CLASS="SCREEN"
+>    <TT
+CLASS="PROMPT"
+>%</TT
+> <TT
+CLASS="USERINPUT"
+><B
+>chsh -s /usr/local/bin/bash</B
+></TT
+></PRE
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Note: </B
+>Помните, чтобы использовать некоторую программу в качестве
+	  командного интерпретатора, она должна быть
+	  <I
+CLASS="EMPHASIS"
+>обязательно</I
+> упомянута в файле
+	  <TT
+CLASS="FILENAME"
+>/etc/shells</TT
+>.  Обычно, при установке
+	  интерпретаторов из дерева портов, это делается автоматически.
+	  Если же это не так, Вам нужно будет самим добавить соответствующую
+	  строчку в этот файл.</P
+><P
+>Например, допустим, что Вы установили <TT
+CLASS="COMMAND"
+>bash</TT
+>
+	  вручную, без использования соответствующего порта, и поместили его в
+	  каталог <TT
+CLASS="FILENAME"
+>/usr/local/bin</TT
+>.  В таком случае,
+	  можно набрать:</P
+><PRE
+CLASS="SCREEN"
+>    <TT
+CLASS="PROMPT"
+>#</TT
+> <TT
+CLASS="USERINPUT"
+><B
+>echo &quot;/usr/local/bin/bash&quot; &gt;&gt; /etc/shells</B
+></TT
+></PRE
+><P
+>Теперь можно смело использовать команду
+	  <TT
+CLASS="COMMAND"
+>chsh</TT
+>.</P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="dirstructure.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="editors.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Структура каталогов</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="basics.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Текстовые редакторы</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

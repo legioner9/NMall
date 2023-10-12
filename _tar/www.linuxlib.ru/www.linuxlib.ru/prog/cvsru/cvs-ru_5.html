@@ -1,0 +1,907 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>CVS -- Система Управления Параллельными Версиями - Создание ветвей и слияние — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../index.htm#gl">графические библиотеки</a> |
+    <A HREF="../index.htm#tcl">Tcl</a> |
+    <A HREF="../index.htm#perl">Perl</a> |
+    <A HREF="../index.htm#php">PHP</a> |
+    <A HREF="../index.htm#java">Java &amp; C#</a> |
+    <A HREF="../index.htm#dbms">СУБД</a> |
+    <A HREF="../index.htm#cvs">CVS</a> |
+    <A HREF="../index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+Go to the <A HREF="cvs-ru_1.html">first</A>, <A HREF="cvs-ru_4.html">previous</A>, <A HREF="cvs-ru_6.html">next</A>, <A HREF="cvs-ru_24.html">last</A> section, <A HREF="cvs-ru_toc.html">table of contents</A>.
+<P><HR><P>
+
+
+<H1><A NAME="SEC54" HREF="cvs-ru_toc.html#TOC54">Создание ветвей и слияние</A></H1>
+<P>
+<A NAME="IDX271"></A>
+<A NAME="IDX272"></A>
+<A NAME="IDX273"></A>
+<A NAME="IDX274"></A>
+<A NAME="IDX275"></A>
+<A NAME="IDX276"></A>
+<A NAME="IDX277"></A>
+<A NAME="IDX278"></A>
+
+
+<P>
+CVS позволяет изолировать изменения в отдельной линии
+разработки, называемой <EM>веткой</EM>.  Когда вы изменяете файлы на
+ветке, эти изменения не появляются в основном стволе или на
+других ветках.
+
+
+<P>
+Позже вы можете переместить изменения с одной ветки на другую или
+же с ветки в ствол, это называется <EM>слиянием</EM>.  Сначала
+выполняется <CODE>cvs update -j</CODE>, чтобы  слить изменения в
+рабочий каталог, а затем эти изменения можно зафиксировать, что
+фактически приведет
+к копированию изменений на другую ветку.
+
+
+
+
+<H2><A NAME="SEC55" HREF="cvs-ru_toc.html#TOC55">Для чего хороши ветви?</A></H2>
+<P>
+<A NAME="IDX279"></A>
+<A NAME="IDX280"></A>
+<A NAME="IDX281"></A>
+
+
+<P>
+Предположим, был выпущен <TT>tc</TT> версии 1.0.  Вы продолжаете его
+разработку, планируя выпустить версию 1.1 через пару месяцев.
+Через некоторое время ваши пользователи начинают жаловаться на
+серьезную ошибку.  Вы извлекаете версию 1.0 (see section <A HREF="cvs-ru_4.html#SEC48">Метки ревизий</A>) и
+находите ошибку, для исправления которой требуется всего лишь
+тривиальное изменение).  Однако же, текущая версия исходников
+находится в крайне нестабильном состоянии и не стабилизируется по
+крайней мере еще месяц.  Вы не можете выпустить исправленную
+версию, основываясь на свежих исходниках.
+
+
+<P>
+В подобной ситуации имеет смысл создать <EM>ветку</EM> в дереве
+ревизий, содержащую файлы, из которых состояла версия 1.0.  Затем
+вы вносите изменения в ветвь без вторжения в основной ствол.
+Потом вы сможете либо внести те же самые изменения в основной
+ствол, либо оставить их только на ветви.
+
+
+
+
+<H2><A NAME="SEC56" HREF="cvs-ru_toc.html#TOC56">Создание ветви</A></H2>
+<P>
+<A NAME="IDX282"></A>
+<A NAME="IDX283"></A>
+<A NAME="IDX284"></A>
+<A NAME="IDX285"></A>
+<A NAME="IDX286"></A>
+<A NAME="IDX287"></A>
+
+
+<P>
+Вы можете создать ветвь, используя <CODE>cvs tag -b</CODE>.  Например,
+если вы находитесь в каталоге с рабочей копией:
+
+
+
+<PRE>
+$ cvs tag -b rel-1-0-patches
+</PRE>
+
+<P>
+Это отщепляет ветку, основанную на текущей ревизии рабочей копии,
+и присваивает этой ветке имя <SAMP>`rel-1-0-patches'</SAMP>.
+
+
+<P>
+Важно понимать, что ветки создаются в репозитории, а не в рабочей
+копии.  Создание ветки, основанной на текущей ревизии, как в
+вышеприведенном примере, <EM>НЕ</EM> переключает рабочую копию на
+использование ветки (See section <A HREF="cvs-ru_5.html#SEC57">Доступ к веткам</A>, где описано, как
+сделать это).
+
+
+<P>
+Можно также создать ветку вообще без использования рабочей копии,
+используя <CODE>rtag</CODE>.
+
+
+
+<PRE>
+$ cvs rtag -b -r rel-1-0 rel-1-0-patches tc
+</PRE>
+
+<P>
+<SAMP>`-r rel-1-0'</SAMP> означает, что эта ветка имеет корневую ревизию,
+соответствующую метке <SAMP>`rel-1-0'</SAMP>.  Это не обязательно должна
+быть самая последняя ревизия: довольно часто бывает полезно
+отщепить ветку от старой ревизии (например, для исправления
+ошибки в старой версии, которая в основном стабильна).
+
+
+<P>
+Как и в случае с <SAMP>`tag'</SAMP>, ключ командной строки <SAMP>`-b'</SAMP>
+заставляет <CODE>rtag</CODE> создать ветку (а не символьное имя
+ревизии).  Заметьте, что номера ревизий, соответствующих
+<SAMP>`rel-1-0'</SAMP>, скорее всего, будут разными в разных файлах.
+
+
+<P>
+Таким образом, полный эффект этой команды -- создать новую ветку,
+которая называется <SAMP>`rel-1-0-patches'</SAMP>, в модуле <SAMP>`tc'</SAMP>,
+которая растет в дереве ревизий из точки, помеченной как
+<SAMP>`rel-1-0'</SAMP>.
+
+
+
+
+<H2><A NAME="SEC57" HREF="cvs-ru_toc.html#TOC57">Доступ к веткам</A></H2>
+<P>
+<A NAME="IDX288"></A>
+<A NAME="IDX289"></A>
+<A NAME="IDX290"></A>
+<A NAME="IDX291"></A>
+<A NAME="IDX292"></A>
+<A NAME="IDX293"></A>
+
+
+<P>
+Вы можете извлечь ветку двумя способами:  извлекая ее из
+репозитория в чистом каталоге или переключая существующую рабочую
+копию на ветку.
+
+
+<P>
+Для того, чтобы извлечь ветку из репозитория, выполните команду
+<SAMP>`checkout'</SAMP> с ключом командной строки <SAMP>`-r'</SAMP>, с именем
+метки в качестве параметра (see section <A HREF="cvs-ru_5.html#SEC56">Создание ветви</A>).
+
+
+
+<PRE>
+$ cvs checkout -r rel-1-0-patches tc
+</PRE>
+
+<P>
+Если у вас уже есть рабочая копия, вы можете переключить ее на
+нужную ветку с помощью <SAMP>`update -r'</SAMP>:
+
+
+
+<PRE>
+$ cvs update -r rel-1-0-patches tc
+</PRE>
+
+<P>
+или, что то же самое:
+
+
+
+<PRE>
+$ cd tc
+$ cvs update -r rel-1-0-patches
+</PRE>
+
+<P>
+Неважно, что рабочая копия была извлечена из основного ствола или
+какой-нибудь другой ветки: вышеприведенная команда переключит ее
+на указанную ветку.  Подобно обычной команде <SAMP>`update'</SAMP>,
+<SAMP>`update -r'</SAMP> сливает сделанные изменения, уведомляя вас о
+произошедших конфликтах.
+
+
+<P>
+Когда вы связываете рабочую копию с какой-либо веткой, она
+будет оставаться связанной, пока вы не укажете обратного.  Это
+означает, что изменения, которые фиксируются из рабочей копии,
+будут добавлять новые ревизии на ветку, оставляя без изменений
+основной ствол и другие ветки.
+
+
+<P>
+<A NAME="IDX294"></A>
+Чтобы узнать, на какой ветви находится рабочая копия, можно
+использовать команду <SAMP>`status'</SAMP>.  В том, что она вывела на
+экран, обратите внимание на поле, которое называется <SAMP>`Sticky
+tag'</SAMP> (see section <A HREF="cvs-ru_4.html#SEC53">Липкие метки</A>) -- здесь CVS сообщает, на какой
+ветви находятся рабочие файлы:
+
+
+
+<PRE>
+$ cvs status -v driver.c backend.c
+===================================================================
+File: driver.c          Status: Up-to-date
+
+    Version:            1.7     Sat Dec  5 18:25:54 1992
+    RCS Version:        1.7     /u/cvsroot/yoyodyne/tc/driver.c,v
+    Sticky Tag:         rel-1-0-patches (branch: 1.7.2)
+    Sticky Date:        (none)
+    Sticky Options:     (none)
+
+    Existing Tags:
+        rel-1-0-patches             (branch: 1.7.2)
+        rel-1-0                     (revision: 1.7)
+
+===================================================================
+File: backend.c         Status: Up-to-date
+
+    Version:            1.4     Tue Dec  1 14:39:01 1992
+    RCS Version:        1.4     /u/cvsroot/yoyodyne/tc/backend.c,v
+    Sticky Tag:         rel-1-0-patches (branch: 1.4.2)
+    Sticky Date:        (none)
+    Sticky Options:     (none)
+
+    Existing Tags:
+        rel-1-0-patches             (branch: 1.4.2)
+        rel-1-0                     (revision: 1.4)
+        rel-0-4                     (revision: 1.4)
+
+</PRE>
+
+<P>
+Не смущайтесь тем, что номера ветвей для каждого файла различны
+(<SAMP>`1.7.2'</SAMP> и <SAMP>`1.4.2'</SAMP>, соответственно).  Метка ветви одна
+и та же, <SAMP>`rel-1-0-patches'</SAMP>, и все файлы действительно
+находятся на одной и той же ветке.  Номера лишь отражают ту точку в
+истории файла, в которой появилась ветвь.  Из вышеприведенного
+примера можно узнать, что перед тем, как была создана
+ветка, <SAMP>`driver.c'</SAMP> претерпел больше изменений, чем
+<SAMP>`backend.c'</SAMP>.
+
+
+<P>
+Смотри section <A HREF="cvs-ru_5.html#SEC58">Ветки и ревизии</A>, где подробно описано, как устроены
+номера ветвей.
+
+
+
+
+<H2><A NAME="SEC58" HREF="cvs-ru_toc.html#TOC58">Ветки и ревизии</A></H2>
+<P>
+<A NAME="IDX295"></A>
+<A NAME="IDX296"></A>
+<A NAME="IDX297"></A>
+
+
+<P>
+Обычно история ревизий файла -- это линейная возрастающая
+последовательность номеров (see section <A HREF="cvs-ru_4.html#SEC45">Номера ревизий</A>):
+
+
+
+<PRE>
+       +-----+    +-----+    +-----+    +-----+    +-----+
+       ! 1.1 !----! 1.2 !----! 1.3 !----! 1.4 !----! 1.5 !
+       +-----+    +-----+    +-----+    +-----+    +-----+
+</PRE>
+
+<P>
+Однако же, CVS не ограничен линейной разработкой.
+<EM>Дерево ревизий</EM> может быть расщеплено на <EM>ветви</EM>, где
+каждая ветвь -- самостоятельная линия разработки.  Изменения,
+сделанные на одной ветке, легко могут быть внесены также и в
+основной ствол.
+
+
+<P>
+Каждая ветка имеет <EM>номер ветки</EM>, состоящий из нечетного
+числа десятичных чисел, разделенных точками.  Номер ветки
+создается путем добавления целого числа к номеру ревизии, от
+которой была отщеплена ветка.  Номера веток позволяют отщеплять
+от одной и той же ревизии несколько веток.
+
+
+<P>
+Все ревизии на ветке имеют номера ревизий, образованные путем
+добавления порядкового номера к номеру ветки.  Вот иллюстрация
+создания веток.
+
+
+
+<PRE>
+                                                      +-------------+
+                           Branch 1.2.2.3.2 -&#62;        ! 1.2.2.3.2.1 !
+                                                    / +-------------+
+                                                   /
+                                                  /
+                 +---------+    +---------+    +---------+
+Branch 1.2.2 -&#62; _! 1.2.2.1 !----! 1.2.2.2 !----! 1.2.2.3 !
+               / +---------+    +---------+    +---------+
+              /
+             /
++-----+    +-----+    +-----+    +-----+    +-----+
+! 1.1 !----! 1.2 !----! 1.3 !----! 1.4 !----! 1.5 !  &#60;- The main trunk
++-----+    +-----+    +-----+    +-----+    +-----+
+                !
+                !
+                !   +---------+    +---------+    +---------+
+Branch 1.2.4 -&#62; +---! 1.2.4.1 !----! 1.2.4.2 !----! 1.2.4.3 !
+                    +---------+    +---------+    +---------+
+
+</PRE>
+
+<P>
+Обычно не требуется задумываться о точных деталях того, как
+строятся номера веток, но вот еще подробности: когда CVS
+создает номер ветки, он берет первое неиспользованное четное
+число, начиная с двойки.  Поэтому, если вы хотите создать ветку
+от ревизии 6.4, она будет называться 6.4.2.  Номера веток,
+заканчивающиеся на ноль (например, 6.4.0), используются для
+внутренних нужд CVS (see section <A HREF="cvs-ru_5.html#SEC59">Волшебные номера веток</A>).  Ветка
+1.1.1 имеет специальное значение.  See section <A HREF="cvs-ru_13.html#SEC103">Слежение за чужими исходными текстами</A>.
+
+
+
+
+<H2><A NAME="SEC59" HREF="cvs-ru_toc.html#TOC59">Волшебные номера веток</A></H2>
+
+<P>
+<A NAME="IDX298"></A>
+<A NAME="IDX299"></A>
+В этой секции описана возможность CVS, называющаяся
+<EM>волшебные ветки</EM>.  В большинстве случаев вам не потребуется
+беспокоиться о волшебных ветках, так как CVS сам следит за
+ними.  Однако, при определенных условиях их можно увидеть, и
+поэтому полезно было бы узнать, как они работают.
+
+
+<P>
+Номера веток состоят из нечетного количества десятичных целых чисел,
+разделенных точками.  See section <A HREF="cvs-ru_4.html#SEC45">Номера ревизий</A>.  Однако же, это не
+полная правда.  Из соображений эффективности CVS иногда
+вставляет лишний ноль во вторую справа позицию (1.2.4 становится
+1.2.0.4, а 8.9.10.11.12 становится 8.9.10.11.0.12 и так далее).
+
+
+<P>
+CVS довольно хорошо прячет такие "волшебные" ветки, но в
+нескольких местах ему это не удается:
+
+
+
+<UL>
+<LI>
+
+Номера волшебных веток появляются в выдаче <CODE>cvs log</CODE>.
+
+<LI>
+
+Вы не можете указать символическое имя ветки в команде <CODE>cvs
+admin</CODE>.
+
+</UL>
+
+<P>
+Можно использовать команду <CODE>admin</CODE>, чтобы переназначить
+символическое имя ветки на то, которое ожидает увидеть CVS.
+Например, если <CODE>R4patches</CODE> присвоено ветке 1.4.2 (волшебный
+номер 1.4.0.2) в файле <TT>`numbers.c'</TT>, можно сделать так:
+
+
+
+<PRE>
+$ cvs admin -NR4patches:1.4.2 numbers.c
+</PRE>
+
+<P>
+Это сработает, только если хотя бы одна ревизия уже была
+зафиксирована на ветке.  Будьте очень осторожны, чтобы не
+присвоить метку неправильному числу, так как нет способа узнать,
+чему была присвоена эта метка вчера (за исключением ежедневного
+резервного копирования).
+
+
+
+
+<H2><A NAME="SEC60" HREF="cvs-ru_toc.html#TOC60">Слияние веток</A></H2>
+<P>
+<A NAME="IDX300"></A>
+<A NAME="IDX301"></A>
+
+
+<P>
+Вы можете объединить изменения, сделанные на ветке, с вашей
+рабочей копией, добавив флаг <SAMP>`-j <VAR>ветка</VAR>'</SAMP> к команде
+<CODE>update</CODE>.  В результате CVS внедряет в рабочую копию
+изменения, сделанные между корневой ревизией ветки и
+свежайшей ревизией на этой ветке.
+
+
+<P>
+<A NAME="IDX302"></A>
+Ключ командной строки <SAMP>`-j'</SAMP> означает "объединить" (join).
+
+
+<P>
+<A NAME="IDX303"></A>
+<A NAME="IDX304"></A>
+<A NAME="IDX305"></A>
+<A NAME="IDX306"></A>
+Представьте себе такое дерево ревизий:
+
+
+
+<PRE>
++-----+    +-----+    +-----+    +-----+
+! 1.1 !----! 1.2 !----! 1.3 !----! 1.4 !      &#60;- основной ствол
++-----+    +-----+    +-----+    +-----+
+                !
+                !
+                !   +---------+    +---------+
+ Ветвь R1fix -&#62; +---! 1.2.2.1 !----! 1.2.2.2 !
+                    +---------+    +---------+
+</PRE>
+
+<P>
+Ветке 1.2.2 была назначена метка (символьное имя)
+<SAMP>`R1fix'</SAMP>.  В нижеследующем примере предполагается, что модуль
+<SAMP>`mod'</SAMP> содержит единственный файл, <TT>`m.c'</TT>.
+
+
+
+<PRE>
+$ cvs checkout mod               # Извлечь последнюю ревизию, 1.4
+
+$ cvs update -j R1fix m.c        # Слить все изменения, сделанные на ветке,
+                                 # т. е. изменения между ревизиями 1.2
+                                 # и 1.2.2.2, в рабочую копию файла
+
+$ cvs commit -m "Included R1fix" # создать ревизию 1.5.
+</PRE>
+
+<P>
+В результате операции слияния может произойти конфликт.  В это
+случае вам сначала надо справиться с ним перед фиксированием
+изменений.  See section <A HREF="cvs-ru_10.html#SEC85">Пример конфликта</A>.
+
+
+<P>
+Команда <CODE>checkout</CODE> также поддерживает флаг <SAMP>`-j
+<VAR>ветка</VAR>'</SAMP>.  Можно добиться эффекта, обсуждавшегося выше, с
+помощью
+
+
+
+<PRE>
+$ cvs checkout -j R1fix mod
+$ cvs commit -m "Добавлен R1fix"
+</PRE>
+
+
+
+<H2><A NAME="SEC61" HREF="cvs-ru_toc.html#TOC61">многократное слияние из ветки</A></H2>
+<P>
+<A NAME="IDX307"></A>
+
+
+<P>
+Мы продолжаем обсуждение примера.  Теперь дерево ревизий выглядит
+так:
+
+
+
+<PRE>
++-----+    +-----+    +-----+    +-----+    +-----+
+! 1.1 !----! 1.2 !----! 1.3 !----! 1.4 !----! 1.5 !   &#60;- ствол
++-----+    +-----+    +-----+    +-----+    +-----+
+                !                           *
+                !                          *
+                !   +---------+    +---------+
+ Ветвь R1fix -&#62; +---! 1.2.2.1 !----! 1.2.2.2 !
+                    +---------+    +---------+
+</PRE>
+
+<P>
+Здесь линия из звездочек представляет собой слияние ветки
+<SAMP>`R1fix'</SAMP> с основным стволом, обсуждавшееся только что.
+
+
+<P>
+Предположим теперь, что разработка ветки <SAMP>`R1fix'</SAMP>
+продолжается:
+
+
+
+<PRE>
++-----+    +-----+    +-----+    +-----+    +-----+
+! 1.1 !----! 1.2 !----! 1.3 !----! 1.4 !----! 1.5 !   &#60;- ствол
++-----+    +-----+    +-----+    +-----+    +-----+
+                !                           *
+                !                          *
+                !   +---------+    +---------+    +---------+
+ Ветвь R1fix -&#62; +---! 1.2.2.1 !----! 1.2.2.2 !----! 1.2.2.3 !
+                    +---------+    +---------+    +---------+
+</PRE>
+
+<P>
+и теперь вы опять хотите слить свежайшие изменения с основным
+стволом.  Если бы вы просто использовали команду <CODE>cvs update
+-j R1fix m.c</CODE>, то CVS попыталась бы опять слить уже слитые
+изменения, что привело бы к нежелательным результатам.
+
+
+<P>
+Вместо этого вам нужно указать, что вы хотите слить только
+те изменения на ветке, что еще не были объединены со стволом.  Для
+этого вы указываете два ключа командной строки <SAMP>`-j'</SAMP>, и
+CVS сливает изменения между первой и второй ревизиями.
+Например, в этом случае самым простым способом будет
+
+
+
+<PRE>
+cvs update -j 1.2.2.2 -j R1fix m.c    # Слить изменения между 1.2.2.2 и
+                                      # головой ветки R1fix
+</PRE>
+
+<P>
+Проблемой здесь является то, что вы должны вручную указать
+ревизию 1.2.2.2.  Чуть лучшим подходом будет использование даты
+совершения последнего слияния.
+
+
+
+<PRE>
+cvs update -j R1fix:yesterday -j R1fix m.c
+</PRE>
+
+<P>
+Еще лучше было бы помечать ветку <SAMP>`R1fix'</SAMP> после каждого
+слияния со стволом, и использовать эту метку для дальнейших
+слияний:
+
+
+
+<PRE>
+cvs update -j merged_from_R1fix_to_trunk -j R1fix m.c
+</PRE>
+
+
+
+<H2><A NAME="SEC62" HREF="cvs-ru_toc.html#TOC62">Слияние изменений между двумя ревизиями</A></H2>
+<P>
+<A NAME="IDX308"></A>
+<A NAME="IDX309"></A>
+<A NAME="IDX310"></A>
+
+
+<P>
+С помощью двух флагов <SAMP>`-j <VAR>ревизия</VAR>'</SAMP>, команды <CODE>update</CODE> и
+<CODE>checkout</CODE> могут сливать изменения между любыми двумя ревизиями в
+ваш рабочий файл.
+
+
+<P>
+<A NAME="IDX311"></A>
+<A NAME="IDX312"></A>
+Команда
+
+
+
+<PRE>
+$ cvs update -j 1.5 -j 1.3 backend.c
+</PRE>
+
+<P>
+отменит изменения, сделанные между ревизиями 1.3 и 1.5.  Обратите
+внимание на порядок указания ревизий!
+
+
+<P>
+Если вы попробуете использовать эту опцию при работе с несколькими
+файлами, помните, что номера ревизий, вероятно, будут сильно
+отличаться для разных файлов.  В таких случаях почти всегда
+следует использовать символьные метки, а не номера ревизий.
+
+
+<P>
+<A NAME="IDX313"></A>
+<A NAME="IDX314"></A>
+Указав два ключа командной строки <SAMP>`-j'</SAMP>, можно также отменить
+удаление или добавление файла.  Например, предположим, у вас есть файл
+<SAMP>`file1'</SAMP>, существовавший в ревизии 1.1.  Затем вы удалили его,
+создав "мертвую" ревизию 1.2.  Теперь предположим, что вы хотите
+добавить его опять, с тем же самым содержимым, что он имел ранее.  Вот
+как сделать это:
+
+
+
+<PRE>
+$ cvs update -j 1.2 -j 1.1 file1
+U file1
+$ cvs commit -m test
+Checking in file1;
+/tmp/cvs-sanity/cvsroot/first-dir/file1,v  &#60;--  file1
+new revision: 1.3; previous revision: 1.2
+done
+$
+</PRE>
+
+
+
+<H2><A NAME="SEC63" HREF="cvs-ru_toc.html#TOC63">При слиянии можно добавлять и удалять файлы</A></H2>
+
+<P>
+Если изменения, которые вы сливаете, включают в себя удаление или
+добавление каких-либо файлов, то команда <CODE>update -j</CODE> учтет такие
+добавления и удаления.
+
+
+<P>
+For example:
+
+<PRE>
+cvs update -A
+touch a b c
+cvs add a b c ; cvs ci -m "added" a b c
+cvs tag -b branchtag
+cvs update -r branchtag
+touch d ; cvs add d
+rm a ; cvs rm a
+cvs ci -m "added d, removed a"
+cvs update -A
+cvs update -jbranchtag
+</PRE>
+
+<P>
+После того, как эти команды выполнены, а также выполнена команда
+<SAMP>`cvs commit'</SAMP>, файл <TT>`a'</TT> будет удален, а файл <TT>`d'</TT> будет
+добавлен в основной ствол.
+
+
+<P><HR><P>
+Go to the <A HREF="cvs-ru_1.html">first</A>, <A HREF="cvs-ru_4.html">previous</A>, <A HREF="cvs-ru_6.html">next</A>, <A HREF="cvs-ru_24.html">last</A> section, <A HREF="cvs-ru_toc.html">table of contents</A>.
+
+  </div>
+</div>
+</body>
+</html>

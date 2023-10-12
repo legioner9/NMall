@@ -1,0 +1,879 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>The tcpd Access Control Facility — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-appl.inetd.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 12. ImportantNetwork Features</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-appl.services.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="X-087-2-APPL.TCPD"
+>12.2. The tcpd Access Control Facility</A
+></H1
+><P
+>Since opening a computer to network access involves many security risks,
+applications are designed to guard against several types of attacks. Some
+security features, however, may be flawed (most drastically demonstrated by the
+RTM Internet worm, which exploited a hole in a number of programs, including old
+versions of the sendmail mail daemon), or do not distinguish between secure
+hosts from which requests for a particular service will be accepted and
+insecure hosts whose requests should be rejected. We've already briefly
+discussed the <B
+CLASS="COMMAND"
+>finger</B
+> and <B
+CLASS="COMMAND"
+>tftp</B
+> services.
+Network Administrator would want to limit access to these services to
+&#8220;trusted hosts&#8221; only, which is impossible with the usual setup,
+for which <B
+CLASS="COMMAND"
+>inetd</B
+> provides this service either to all clients
+or not at all.</P
+><P
+>A useful tool for managing host-specific access is <B
+CLASS="COMMAND"
+>tcpd</B
+>,
+often called the daemon
+&#8220;wrapper.&#8221;<A
+NAME="X-087-2-FNFE01"
+HREF="x-087-2-appl.tcpd.html#FTN.X-087-2-FNFE01"
+>[1]</A
+>
+For TCP services you want to monitor or protect, it is invoked instead of the
+server program. <B
+CLASS="COMMAND"
+>tcpd</B
+> checks if the remote host is allowed
+to use that service, and only if this succeeds will it execute the real server
+program. <B
+CLASS="COMMAND"
+>tcpd</B
+> also logs the request to the
+<B
+CLASS="COMMAND"
+>syslog</B
+> daemon. Note that this does not work with
+UDP-based services.</P
+><P
+>
+For example, to wrap the <B
+CLASS="COMMAND"
+>finger</B
+> daemon, you have to change
+the corresponding line in <TT
+CLASS="FILENAME"
+>inetd.conf</TT
+> from this:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># unwrapped finger daemon
+finger    stream tcp nowait bin    /usr/sbin/fingerd in.fingerd</PRE
+></TD
+></TR
+></TABLE
+>
+
+to this:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># wrap finger daemon
+finger  stream  tcp     nowait  root    /usr/sbin/tcpd   in.fingerd</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>&#13;Without adding any access control, this will appear to the client as
+the usual <B
+CLASS="COMMAND"
+>finger</B
+> setup, except that any requests are logged
+to <B
+CLASS="COMMAND"
+>syslog</B
+>'s <I
+CLASS="EMPHASIS"
+>auth</I
+>
+facility.</P
+><P
+>
+
+Two files called <TT
+CLASS="FILENAME"
+>/etc/hosts.allow</TT
+> and
+<TT
+CLASS="FILENAME"
+>/etc/hosts.deny</TT
+> implement access control.
+They contain entries that allow and deny access to certain services and hosts.
+When <B
+CLASS="COMMAND"
+>tcpd</B
+> handles a request for a service such as
+<B
+CLASS="COMMAND"
+>finger</B
+> from a client host named
+<SPAN
+CLASS="SYSTEMITEM"
+>biff.foobar.com</SPAN
+>, it scans
+<TT
+CLASS="FILENAME"
+>hosts.allow</TT
+> and <TT
+CLASS="FILENAME"
+>hosts.deny</TT
+>
+(in this order) for an entry matching both the service and client host.
+If a matching entry is found in <TT
+CLASS="FILENAME"
+>hosts.allow</TT
+>, access
+is granted and <B
+CLASS="COMMAND"
+>tcpd</B
+> doesn't consult the
+<TT
+CLASS="FILENAME"
+>hosts.deny</TT
+> file. If no match is found in the
+<TT
+CLASS="FILENAME"
+>hosts.allow</TT
+> file, but a match is found in
+<TT
+CLASS="FILENAME"
+>hosts.deny</TT
+>, the request is rejected by closing down the
+connection. The request is accepted if no match is found at all.</P
+><P
+>Entries in the access files look like this:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="REPLACEABLE"
+><I
+>servicelist</I
+></TT
+>: <TT
+CLASS="REPLACEABLE"
+><I
+>hostlist</I
+></TT
+> [:<TT
+CLASS="REPLACEABLE"
+><I
+>shellcmd</I
+></TT
+>]</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>servicelist</I
+></TT
+> is a list of service names from
+<TT
+CLASS="FILENAME"
+>/etc/services</TT
+>, or the keyword
+<SPAN
+CLASS="SYSTEMITEM"
+>ALL</SPAN
+>. To match all services except
+<B
+CLASS="COMMAND"
+>finger</B
+> and <B
+CLASS="COMMAND"
+>tftp</B
+>, use
+<SPAN
+CLASS="SYSTEMITEM"
+>ALL</SPAN
+>
+<SPAN
+CLASS="SYSTEMITEM"
+>EXCEPT</SPAN
+>
+<TT
+CLASS="LITERAL"
+>finger, tftp</TT
+>.</P
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>hostlist</I
+></TT
+> is a list of hostnames, IP addresses,
+or the keywords <SPAN
+CLASS="SYSTEMITEM"
+>ALL</SPAN
+>,
+<SPAN
+CLASS="SYSTEMITEM"
+>LOCAL</SPAN
+>,
+<SPAN
+CLASS="SYSTEMITEM"
+>UNKNOWN</SPAN
+> or
+<SPAN
+CLASS="SYSTEMITEM"
+>PARANOID</SPAN
+>.
+<SPAN
+CLASS="SYSTEMITEM"
+>ALL</SPAN
+> matches any host, while
+<SPAN
+CLASS="SYSTEMITEM"
+>LOCAL</SPAN
+> matches hostnames that don't
+contain a dot.<A
+NAME="X-087-2-FNFE02"
+HREF="x-087-2-appl.tcpd.html#FTN.X-087-2-FNFE02"
+>[2]</A
+>
+
+<SPAN
+CLASS="SYSTEMITEM"
+>UNKNOWN</SPAN
+> matches any hosts whose name
+or address lookup failed. <SPAN
+CLASS="SYSTEMITEM"
+>PARANOID</SPAN
+>
+matches any host whose hostname does not resolve back to its IP
+address.<A
+NAME="X-087-2-FNFE03"
+HREF="x-087-2-appl.tcpd.html#FTN.X-087-2-FNFE03"
+>[3]</A
+>
+
+A name starting with a dot matches all hosts whose domain is equal to this
+name. For example, <SPAN
+CLASS="SYSTEMITEM"
+>.foobar.com</SPAN
+> matches
+<SPAN
+CLASS="SYSTEMITEM"
+>biff.foobar.com</SPAN
+>, but not
+<SPAN
+CLASS="SYSTEMITEM"
+>nurks.fredsville.com</SPAN
+>. A pattern that
+ends with a dot matches any host whose IP address begins with the supplied
+pattern, so <SPAN
+CLASS="SYSTEMITEM"
+>172.16.</SPAN
+> matches
+<SPAN
+CLASS="SYSTEMITEM"
+>172.16.32.0</SPAN
+>, but not
+<SPAN
+CLASS="SYSTEMITEM"
+>172.15.9.1</SPAN
+>. A pattern of the form
+<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>n.n.n.n</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>m.m.m.m</I
+></TT
+></TT
+><I
+CLASS="EMPHASIS"
+></I
+> is treated as an IP address and network mask, so we could specify
+our previous example as
+<SPAN
+CLASS="SYSTEMITEM"
+>172.16.0.0/255.255.0.0</SPAN
+> instead.
+Lastly, any pattern beginning with a &#8220;/&#8221; character allows you to
+specify a file that is presumed to contain a list of hostname or IP address
+patterns, any of which are allowed to match. So a pattern that looked like
+<I
+CLASS="EMPHASIS"
+>/var/access/trustedhosts</I
+> would cause
+the <B
+CLASS="COMMAND"
+>tcpd</B
+> daemon to read that file, testing if any of the
+lines in it matched the connecting host.</P
+><P
+>To deny access to the <B
+CLASS="COMMAND"
+>finger</B
+> and <B
+CLASS="COMMAND"
+>tftp</B
+>
+services to all but the local hosts, put the following in
+<TT
+CLASS="FILENAME"
+>/etc/hosts.deny</TT
+> and leave
+<TT
+CLASS="FILENAME"
+>/etc/hosts.allow</TT
+> empty:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>in.tftpd, in.fingerd: ALL EXCEPT LOCAL, <TT
+CLASS="REPLACEABLE"
+><I
+>.your.domain</I
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>The optional <TT
+CLASS="REPLACEABLE"
+><I
+>shellcmd</I
+></TT
+> field may contain a shell
+command to be invoked when the entry is matched. This is useful to set up
+traps that may expose potential attackers. The following example creates
+a log file listing the user and host connecting, and if the host is not
+<I
+CLASS="EMPHASIS"
+>vlager.vbrew.com</I
+> it will append the
+output of a <B
+CLASS="COMMAND"
+>finger</B
+> to that host:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>in.ftpd: ALL EXCEPT LOCAL, .vbrew.com : \
+      echo "request from %d@%h: &#62;&#62; /var/log/finger.log; \
+      if [ %h != "vlager.vbrew.com:" ]; then \
+          finger -l @%h &#62;&#62; /var/log/finger.log \
+      fi</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>The <SPAN
+CLASS="SYSTEMITEM"
+>%h</SPAN
+> and
+<SPAN
+CLASS="SYSTEMITEM"
+>%d</SPAN
+> arguments are expanded by
+<B
+CLASS="COMMAND"
+>tcpd</B
+> to the client hostname and service name,
+respectively. Please refer to the <TT
+CLASS="FILENAME"
+>hosts_access(5)</TT
+>
+manual page for details.
+
+&#13;</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNFE01"
+HREF="x-087-2-appl.tcpd.html#X-087-2-FNFE01"
+>[1]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Written by Wietse Venema,
+<SPAN
+CLASS="SYSTEMITEM"
+><a href="../../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5f28363a2b2c3a1f28252971283631712b2a3a713133">[email&#160;protected]</a></SPAN
+>.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNFE02"
+HREF="x-087-2-appl.tcpd.html#X-087-2-FNFE02"
+>[2]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>Usually only local hostnames obtained from lookups in
+<TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> contain no dots.</P
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNFE03"
+HREF="x-087-2-appl.tcpd.html#X-087-2-FNFE03"
+>[3]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>While its name suggests it is an extreme measure, the <SPAN
+CLASS="SYSTEMITEM"
+>PARANOID</SPAN
+> keyword is
+a good default, as it protects you against mailicious hosts pretending to
+be someone they are not. Not all <B
+CLASS="COMMAND"
+>tcpd</B
+> are supplied with
+<SPAN
+CLASS="SYSTEMITEM"
+>PARANOID</SPAN
+> compiled in; if yours is not, you need to recompile
+<B
+CLASS="COMMAND"
+>tcpd</B
+> to use it.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.inetd.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.services.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The inetd Super Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x-087-2-appl.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>The Services and Protocols Files</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

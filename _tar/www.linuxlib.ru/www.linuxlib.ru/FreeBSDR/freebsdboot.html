@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>FreeBSD Bootup — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <th colspan="3" align="center">Иллюстрированное Руководство по
+          Установке FreeBSD</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "exit-inst.html">Предыдущая</a></td>
+
+          <td width="80%" align="center" valign="bottom">
+          </td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "shutdown.html">Следующая</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="CHAPTER">
+      <h1><a name="FREEBSDBOOT">Глава 29. Процедура Загрузки FreeBSD</a></h1>
+
+      <p>Если все прошло успешно, на экран будут выведены сообщения
+      подобные этому и в завершении появится приглашение для входа в
+      систему. Вы можете посмотреть промелькнувшие сообщения прокручивая
+      буфер экрана с помощью специальных клавиш, сперва нажмите [SCROLL-LOCK],
+      после чего клавишами [PgUp] и [PgDn] можете прокручивать буфер экрана
+      вверх или вниз. Повторное нажатие клавиши [SCROLL-LOCK] вернет вас
+      в рабочее состояние, командную строку или приглашение для входа в
+      систему.</p>
+
+      <p>Возможно вы не сможете увидеть сообщение целиком из-за
+      ограничения размера буфера, но вы сможете сделать это позже
+      из командной строки, воспользовавшись утилитой <tt class=
+      "COMMAND">dmesg</tt> и снова используя клавишу [SCROLL-LOCK]
+      или сочетание команд: <tt class="COMMAND">dmesg | less</tt>.</p>
+
+      <p>Войдите в систему используя атрибуты заведенного ранее
+      пользователя: user/password (rpratt в моем случае). Вместо
+      входа в систему суперпользователем root, поскольку это необходимо
+      лишь в исключительных случаях.</p>
+<pre class="SCREEN">
+    Copyright (c) 1992-2001 The FreeBSD Project.
+    Copyright (c) 1982, 1986, 1989, 1991, 1993, 1994
+            The Regents of the University of California. All rights reserved.
+    FreeBSD 4.3-RELEASE #0: Sat Apr 21 10:54:49 GMT 2001
+        <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="412b2a29012f2033276f2e32256f233225286f222e2c">[email&#160;protected]</a>:/usr/src/sys/compile/GENERIC
+    Timecounter "i8254"  frequency 1193182 Hz
+    CPU: AMD-K6(tm) 3D processor (300.68-MHz 586-class CPU)
+      Origin = "AuthenticAMD"  Id = 0x580  Stepping = 0
+      Features=0x8001bf&lt;FPU,VME,DE,PSE,TSC,MSR,MCE,CX8,MMX&gt;
+      AMD Features=0x80000800&lt;SYSCALL,3DNow!&gt;
+    real memory  = 268435456 (262144K bytes)
+    config&gt; di sn0
+    config&gt; di lnc0
+    config&gt; di le0
+    config&gt; di ie0
+    config&gt; di fe0
+    config&gt; di cs0
+    config&gt; di bt0
+    config&gt; di ata1
+    config&gt; di aic0
+    config&gt; di aha0
+    config&gt; di adv0
+    config&gt; q
+    avail memory = 256983040 (250960K bytes)
+    Preloaded elf kernel "kernel" at 0xc044d000.
+    Preloaded userconfig_script "/boot/kernel.conf" at 0xc044d09c.
+    md0: Malloc disk
+    npx0: &lt;math processor&gt; on motherboard
+    npx0: INT 16 interface
+    pcib0: &lt;Host to PCI bridge&gt; on motherboard
+    pci0: &lt;PCI bus&gt; on pcib0
+    pcib1: &lt;VIA 82C598MVP (Apollo MVP3) PCI-PCI (AGP) bridge&gt; at device 1.0 on pci0
+    pci1: &lt;PCI bus&gt; on pcib1
+    pci1: &lt;Matrox MGA G200 AGP graphics accelerator&gt; at 0.0 irq 11
+    isab0: &lt;VIA 82C586 PCI-ISA bridge&gt; at device 7.0 on pci0
+    isa0: &lt;ISA bus&gt; on isab0
+    atapci0: &lt;VIA 82C586 ATA33 controller&gt; port 0xe000-0xe00f at device 7.1 on pci0
+    ata0: at 0x1f0 irq 14 on atapci0
+    ata1: at 0x170 irq 15 on atapci0
+    uhci0: &lt;VIA 83C572 USB controller&gt; port 0xe400-0xe41f irq 10 at device 7.2 on pci0
+    usb0: &lt;VIA 83C572 USB controller&gt; on uhci0
+    usb0: USB revision 1.0
+    uhub0: VIA UHCI root hub, class 9/0, rev 1.00/1.00, addr 1
+    uhub0: 2 ports with 2 removable, self powered
+    chip1: &lt;VIA 82C586B ACPI interface&gt; at device 7.3 on pci0
+    ed0: &lt;NE2000 PCI Ethernet (RealTek 8029)&gt; port 0xe800-0xe81f irq 9 at
+    device 10.0 on pci0
+    ed0: address 52:54:05:de:73:1b, type NE2000 (16 bit)
+    isa0: too many dependant configs (8)
+    isa0: unexpected small tag 14
+    fdc0: &lt;NEC 72065B or clone&gt; at port 0x3f0-0x3f5,0x3f7 irq 6 drq 2 on isa0
+    fdc0: FIFO enabled, 8 bytes threshold
+    fd0: &lt;1440-KB 3.5" drive&gt; on fdc0 drive 0
+    atkbdc0: &lt;keyboard controller (i8042)&gt; at port 0x60-0x6f on isa0
+    atkbd0: &lt;AT Keyboard&gt; flags 0x1 irq 1 on atkbdc0
+    kbd0 at atkbd0
+    psm0: &lt;PS/2 Mouse&gt; irq 12 on atkbdc0
+    psm0: model Generic PS/2 mouse, device ID 0
+    vga0: &lt;Generic ISA VGA&gt; at port 0x3c0-0x3df iomem 0xa0000-0xbffff on isa0
+    sc0: &lt;System console&gt; at flags 0x1 on isa0
+    sc0: VGA &lt;16 virtual consoles, flags=0x300&gt;
+    sio0 at port 0x3f8-0x3ff irq 4 flags 0x10 on isa0
+    sio0: type 16550A
+    sio1 at port 0x2f8-0x2ff irq 3 on isa0
+    sio1: type 16550A
+    ppc0: &lt;Parallel port&gt; at port 0x378-0x37f irq 7 on isa0
+    ppc0: SMC-like chipset (ECP/EPP/PS2/NIBBLE) in COMPATIBLE mode
+    ppc0: FIFO with 16/16/15 bytes threshold
+    ppi0: &lt;Parallel I/O&gt; on ppbus0
+    lpt0: &lt;Printer&gt; on ppbus0
+    lpt0: Interrupt-driven port
+    plip0: &lt;PLIP network interface&gt; on ppbus0
+    ad0: 8063MB &lt;IBM-DHEA-38451&gt; [16383/16/63] at ata0-master using UDMA33
+    ad2: 8063MB &lt;IBM-DHEA-38451&gt; [16383/16/63] at ata1-master using UDMA33
+    acd0: CDROM &lt;DELTA OTC-H101/ST3 F/W by OIPD&gt; at ata0-slave using PIO4
+    Mounting root from ufs:/dev/ad0s1a
+    swapon: adding /dev/ad0s1b as swap device
+    Automatic boot in progress...
+    /dev/ad0s1a: FILESYSTEM CLEAN; SKIPPING CHECKS
+    /dev/ad0s1a: clean, 70119 free (655 frags, 8683 blocks, 0.7% fragmentation)
+    /dev/ad0s1f: FILESYSTEM CLEAN; SKIPPING CHECKS
+    /dev/ad0s1f: clean, 6976313 free (51774 frags, 829297 blocks, 0.7% fragmentation)
+    /dev/ad0s1e: filesystem CLEAN; SKIPPING CHECKS
+    /dev/ad0s1e: clean, 97952 free (9 frags, 12381 blocks, 0.0% fragmentation)
+    Doing initial network setup: hostname.
+    lo0: flags=8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; mtu 16384
+            inet6 fe80::1%lo0 prefixlen 64 scopeid 0x8
+            inet6 ::1 prefixlen 128
+            inet 127.0.0.1 netmask 0xff000000
+    Additional routing options: tcp extensions=NO IP gateway=YES TCP
+    keepalive=YES
+    routing daemons:.
+    additional daemons: syslogd.
+    Doing additional network setup: portmap.
+    Starting final network daemons: creating ssh RSA host key
+    Generating RSA keys:  Key generation complete.
+    Your identification has been saved in /etc/ssh/ssh_host_key.
+    Your public key has been saved in /etc/ssh/ssh_host_key.pub.
+    The key fingerprint is:
+    2d:02:37:d2:0e:68:93:8f:9c:46:de:92:f4:be:60:0a <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="31435e5e45715a071c031f465454535d541f525e5c">[email&#160;protected]</a>
+     creating ssh DSA host key
+    Generating DSA parameter and key.
+    Your identification has been saved in /etc/ssh/ssh_host_dsa_key.
+    Your public key has been saved in /etc/ssh/ssh_host_dsa_key.pub.
+    The key fingerprint is:
+    38:af:d2:1f:63:14:00:d8:83:fd:dd:4b:97:1c:43:6d <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="dba9b4b4af9bb0edf6e9f5acbebeb9b7bef5b8b4b6">[email&#160;protected]</a>.
+    setting ELF ldconfig path: /usr/lib /usr/lib/compat /usr/X11R6/lib
+    /usr/local/lib
+    setting a.out ldconfig path: /usr/lib/aout /usr/lib/compat/aout
+    /usr/X11R6/lib/aout
+    starting standard daemons: inetd cron sendmail sshd usbd.
+    Initial rc.i386 initialization: linux.
+    rc.i386 configuring syscons: blank_time screensaver moused.
+    Additional ABI support: linux.
+    Local package initilization:.
+    Additional TCP options:.
+
+    Wed May 2 10:06:32 EDT 2001
+
+    FreeBSD/i386 (k6-2.weeble.com) (ttyv0)
+
+    login: rpratt
+    Password:
+    Copyright (c) 1980, 1983, 1986, 1988, 1990, 1991, 1993, 1994
+                   The Regents of the University of California.  All
+                   rights reserved.
+
+    FreeBSD 4.3-RELEASE (GENERIC) #0: Sat Apr 21 10:54:49 GMT 2001
+
+    Welcome to FreeBSD!
+
+    Before seeking technical support, please use the following resources:
+
+    o  Security advisories and updated errata information for all
+       releases are at http://www.FreeBSD.org/releases/ - always consult
+       the ERRATA section for your release first as it's updated
+       frequently.
+
+    o  The Handbook and FAQ documents are at http://www.freebsd.org/
+       and, along with the mailing lists, can be searched by going to
+       http://www.FreeBSD.org/search.html.  If the doc distribution has
+       been installed, they're also available formatted in
+       /usr/share/doc.
+
+    If you still have a question or problem, please take the output of
+    `uname -a',  along with any relevant error messages, and email it
+    as a question to the <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="5d2c28382e293432332e1d1b2f38381f0e1973322f3a">[email&#160;protected]</a> mailing list.  If you are
+    unfamiliar with FreeBSD's directory layout, please refer to the hier(7)
+    man page. If you are not familiar with man pages, type "man man". You may
+    also use `/stand/sysinstall' to re-enter the installation and
+    configuration utility.  Edit /etc/motd to change this login announcement.
+
+    bash-2.05$
+</pre>
+
+      <p>Если предварительно был успешно установлен и настроен X сервер
+      и Default Desktop - оконный менеджер, они могут быть запущены с
+      командной строки используя команду <tt class="COMMAND">startx</tt>.</p>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table width="100%" border="0" cellpadding="0" cellspacing=
+      "0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "exit-inst.html">Предыдущая</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html">Оглавление</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "shutdown.html">Следующая</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Выход из Установки</td>
+
+          <td width="34%" align="center" valign="top">&nbsp;</td>
+
+          <td width="33%" align="right" valign="top">Процедура Выключения
+          FreeBSD - Shutdown</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

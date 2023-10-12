@@ -1,0 +1,674 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Checking the ARP Tables — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-iface.netstat.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Configuring TCP/IP Networking</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-resolv.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="X-087-2-IFACE.VERIFY.ARP"
+>5.10. Checking the ARP Tables</A
+></H1
+><P
+>On some occasions, it is useful to view or alter the contents of the
+kernel's ARP tables, for example when you suspect a duplicate Internet
+address is the cause for some intermittent network problem.  The
+<B
+CLASS="COMMAND"
+>arp</B
+> tool was made for situations like this.  Its
+command-line options are:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>arp [-v] [-t <TT
+CLASS="REPLACEABLE"
+><I
+>hwtype</I
+></TT
+>] -a [<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>]
+arp [-v] [-t <TT
+CLASS="REPLACEABLE"
+><I
+>hwtype</I
+></TT
+>] -s <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>hwaddr</I
+></TT
+>
+arp [-v] -d <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>&#8230;]</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>All <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+> arguments may be either symbolic
+hostnames or IP addresses in dotted quad notation.</P
+><P
+>The first invocation displays the ARP entry for the IP address or host
+specified, or all hosts known if no <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+> is
+given.  For example, invoking <B
+CLASS="COMMAND"
+>arp</B
+> on
+<SPAN
+CLASS="SYSTEMITEM"
+>vlager</SPAN
+> may yield:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <TT
+CLASS="USERINPUT"
+><B
+>arp -a</B
+></TT
+>
+IP address      HW type                 HW address
+172.16.1.3      10Mbps Ethernet         00:00:C0:5A:42:C1
+172.16.1.2      10Mbps Ethernet         00:00:C0:90:B3:42
+172.16.2.4      10Mbps Ethernet         00:00:C0:04:69:AA</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>which shows the Ethernet addresses of
+<SPAN
+CLASS="SYSTEMITEM"
+>vlager</SPAN
+>,
+<SPAN
+CLASS="SYSTEMITEM"
+>vstout</SPAN
+> and
+<SPAN
+CLASS="SYSTEMITEM"
+>vale</SPAN
+>.</P
+><P
+>You can limit the display to the hardware type specified using the
+<TT
+CLASS="OPTION"
+>&#8211;t</TT
+> option.  This may be <SPAN
+CLASS="SYSTEMITEM"
+>ether</SPAN
+>, <SPAN
+CLASS="SYSTEMITEM"
+>ax25</SPAN
+>, or <SPAN
+CLASS="SYSTEMITEM"
+>pronet</SPAN
+>, standing for 10 Mbps Ethernet;
+AMPR AX.25, and IEEE 802.5 token ring equipment, respectively.</P
+><P
+>The <TT
+CLASS="OPTION"
+>&#8211;s</TT
+> option is used to permanently add
+<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>'s Ethernet address to the ARP
+tables. The <TT
+CLASS="REPLACEABLE"
+><I
+>hwaddr</I
+></TT
+> argument specifies the
+hardware address, which is by default expected to be an Ethernet
+address specified as six hexadecimal bytes separated by colons. You
+may also set the hardware address for other types of hardware, using
+the <TT
+CLASS="OPTION"
+>&#8211;t</TT
+> option.</P
+><P
+>For some reason, ARP queries for the remote host sometimes fail, for
+instance when its ARP driver is buggy or there is another host in the
+network that erroneously identifies itself with that host's IP
+address; this problem requires you to manually add an IP address to
+the ARP table.  Hard-wiring IP addresses in the ARP table is also a
+(very drastic) measure to protect yourself from hosts on your Ethernet
+that pose as someone else.</P
+><P
+>Invoking <B
+CLASS="COMMAND"
+>arp</B
+> using the <TT
+CLASS="OPTION"
+>&#8211;d</TT
+>
+switch deletes all ARP entries relating to the given host. This switch
+may be used to force the interface to re-attempt obtaining the
+Ethernet address for the IP address in question. This is useful when a
+misconfigured system has broadcasted wrong ARP information (of course,
+you have to reconfigure the broken host first).</P
+><P
+>&#13;
+
+
+
+
+
+
+The <TT
+CLASS="OPTION"
+>&#8211;s</TT
+> option may also be used to implement
+<I
+CLASS="EMPHASIS"
+>proxy</I
+> ARP. This is a special technique through
+which a host, say <SPAN
+CLASS="SYSTEMITEM"
+>gate</SPAN
+>, acts
+as a gateway to another host named <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+> by pretending that both addresses
+refer to the same host, namely <SPAN
+CLASS="SYSTEMITEM"
+>gate</SPAN
+>. It does so by publishing an ARP
+entry for <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+> that points
+to its own Ethernet interface. Now when a host sends out an ARP query
+for <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+>, <SPAN
+CLASS="SYSTEMITEM"
+>gate</SPAN
+> will return a reply containing its
+own Ethernet address. The querying host will then send all datagrams
+to <SPAN
+CLASS="SYSTEMITEM"
+>gate</SPAN
+>, which dutifully
+forwards them to <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+>.</P
+><P
+>These contortions may be necessary when you want to access <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+> from a DOS machine with a broken
+TCP implementation that doesn't understand routing too well. When you
+use proxy ARP, it will appear to the DOS machine as if <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+> was on the local subnet, so it
+doesn't have to know about how to route through a gateway.</P
+><P
+>Another useful application of proxy ARP is when one of your hosts acts
+as a gateway to some other host only temporarily, for instance,
+through a dial-up link. In a previous example, we encountered the
+laptop <SPAN
+CLASS="SYSTEMITEM"
+>vlite</SPAN
+>, which was
+connected to <SPAN
+CLASS="SYSTEMITEM"
+>vlager</SPAN
+> through a
+PLIP link from time to time. Of course, this application will work
+only if the address of the host you want to provide proxy ARP for is
+on the same IP subnet as your gateway. <SPAN
+CLASS="SYSTEMITEM"
+>vstout</SPAN
+> could proxy ARP for any host on
+the Brewery subnet (<SPAN
+CLASS="SYSTEMITEM"
+>172.16.1.0</SPAN
+>), but never for a host on the
+Winery subnet (<SPAN
+CLASS="SYSTEMITEM"
+>172.16.2.0</SPAN
+>).</P
+><P
+>The proper invocation to provide proxy ARP for <SPAN
+CLASS="SYSTEMITEM"
+>fnord</SPAN
+> is given below; of course, the
+given Ethernet address must be that of <SPAN
+CLASS="SYSTEMITEM"
+>gate</SPAN
+>:</P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># arp -s fnord 00:00:c0:a1:42:e0 pub</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>The proxy ARP entry may be removed again by invoking:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># arp -d fnord</PRE
+></TD
+></TR
+></TABLE
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-iface.netstat.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-resolv.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The netstat Command</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x-087-2-iface.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Name Service and Resolver Configuration</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

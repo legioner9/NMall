@@ -1,0 +1,796 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.7.4  myisampack, MySQL-генератор сжатых таблиц (только для чтения) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/myisampack.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/myisampack.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Server-Side_Scripts.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.7 Серверные сценарии и утилиты MySQL
+</a><ul class="immediate"><li><a href="Server-Side_Overview.html">4.7.1 Обзор серверных сценариев и утилит
+</a></li><li><a href="safe_mysqld.html">4.7.2 <code>safe_mysqld</code>, оболочка <code>mysqld</code>
+</a></li><li><a href="mysqld_multi.html">4.7.3 <code>Mysqld_multi</code>, программа для управления множеством серверов MySQL
+</a></li><li class="self">4.7.4 <code>myisampack</code>, MySQL-генератор сжатых таблиц (только для чтения)
+</li><li><a href="mysqld-max.html">4.7.5 <code>mysqld-max</code>, расширенный сервер <code>mysqld</code>
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="mysqld_multi.html" title="4.7.3  Mysqld_multi, программа для управления множеством серверов MySQL">Previous</a> / <a rel="next" href="mysqld-max.html" title="4.7.5  mysqld-max, расширенный сервер mysqld">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Server-Side_Scripts.html" title="4.7  Серверные сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.7.4  <code>myisampack</code>, MySQL-генератор сжатых таблиц (только для чтения)</H3>
+
+<P>
+<A NAME="IDX679"></A>
+<A NAME="IDX680"></A>
+<A NAME="IDX681"></A>
+<A NAME="IDX682"></A>
+<A NAME="IDX683"></A>
+
+</P>
+<P>
+Утилита <code>myisampack</code> используется для сжатия таблиц <code>MyISAM</code>, а утилита
+<code>pack_isam</code> - для сжатия таблиц <code>ISAM</code>. Поскольку таблицы <code>ISAM</code> являются
+устаревшими, здесь будет рассматриваться только <code>myisampack</code>, но все,
+сказанное относительно <code>myisampack</code>, справедливо также и для <code>pack_isam</code>.
+
+</P>
+<P>
+<code>myisampack</code>  сжимает каждый столбец в таблице по отдельности. Информация,
+необходимая для декомпрессии столбцов, считывается в память при открытии
+таблицы. В результате обеспечивается более высокая производительность при
+доступе к отдельным записям, поскольку нужно распаковывать только одну
+запись, а не значительно больший по размеру дисковый блок, как при
+использовании программы Stacker в MS DOS. В среднем <code>myisampack</code> сжимает
+файл данных на 40%-70%.
+
+</P>
+<P>
+(MySQL использует отображение в памяти (<code>mmap()</code>) для сжатых таблиц
+
+</P>
+<P>
+а если <code>mmap()</code> не работает, возвращается назад к нормальному режиму
+чтения/записи.
+
+</P>
+<P>
+Обратите внимание на следующее:
+
+</P>
+
+<ul>
+<LI>
+
+После сжатия таблица доступна в режиме только для чтения. Это удобно,
+скажем, для записи на CD. Реализация возможности записи в сжатые таблицы
+находится в нашем списке задач к выполнению, но имеет низкий приоритет.
+
+<LI>
+
+<code>myisampack</code> может также сжимать столбцы c типами <code>BLOB</code> или <code>TEXT</code>. В
+предыдущей версии <code>pack_isam</code> (для таблиц <code>ISAM</code>) данной функции не было.
+</ul>
+
+<P>
+Утилиту <code>myisampack</code> можно запустить следующим образом:
+
+</P>
+
+<pre>
+shell&#62; myisampack [options] filename ...
+</pre>
+
+<P>
+Каждое имя файла (<code>filename</code>) должно быть именем индексного файла (<tt>`.MYI'</tt>).
+Если вы не находитесь в директории базы данных, необходимо указать полный
+путь к файлу. Допускается опускать расширение <tt>`.MYI'</tt>.
+
+</P>
+<P>
+myisampack  поддерживает следующие опции:
+
+</P>
+<DL COMPACT>
+
+<DT><code>-b, --backup</code>
+<DD>
+Создает резервную копию таблицы, присваивая ей имя <tt>`tbl_name.OLD'</tt>.
+
+<DT><code>-#, --debug=debug_options</code>
+<DD>
+Выводить журнал отладки. Строка <code>debug_options</code> часто принимает значение
+<code>d:t:o,filename</code>
+
+<DT><code>-f, --force</code>
+<DD>
+Сжатие таблицы происходит, даже если она увеличивается или если существует
+временный файл. Во время сжатия таблицы <code>myisampack</code>  создает временный файл
+<tt>`tbl_name.TMD'</tt>. Если вы вручную прекратите выполнение <code>myisampack</code>, может
+оказаться так, что файл <tt>`tbl_name.TMD'</tt> не будет удален. Обычно если
+<code>myisampack</code> обнаруживает существующий <tt>`tbl_name.TMD'</tt>, она прекращает работу и
+выдает ошибку. При указании опции <code>--force</code> <code>myisampack</code> сжимает таблицу в
+любом случае.
+
+<DT><code>-?, --help</code>
+<DD>
+Выдает справочную информацию и завершает работу.
+
+<DT><code>-j big_tbl_name, --join=big_tbl_name</code>
+<DD>
+Соединяет все таблицы, указанные в командной строке, в одну таблицу
+<code>big_tbl_name</code>. Все таблицы, подлежащие объединению, должны быть идентичными
+(одинаковые имена и типы столбцов, одинаковые индексы и т.д.).
+
+<DT><code>-p #, --packlength=#</code>
+<DD>
+Определяет разрядность поля, хранящего длину строки, в байтах. Может
+принимать значения 1, 2 или 3. (<code>myisampack</code>  хранит все строки с
+указателями длины размером в 1, 2, или 3 байта. В большинстве случаев
+<code>myisampack</code> способна определить правильное значение длины перед началом
+сжатия файла, но во время сжатия она может обнаружить, что может быть
+использована более короткая длина. В этом случае <code>myisampack</code> выведет
+сообщение о том, что в следующий раз при сжатии данного файла можно
+использовать более короткую длину записи.)
+
+<DT><code>-s, --silent</code>
+<DD>
+Молчаливый режим. Сообщения выводятся только при возникновении ошибок.
+
+<DT><code>-t, --test</code>
+<DD>
+Сжатие таблицы не выполняется, происходит только проверка процедуры
+сжатия.
+
+<DT><code>-T dir_name, --tmp_dir=dir_name</code>
+<DD>
+Указанная директория используется как местоположение для создания
+временной таблицы.
+
+<DT><code>-v, --verbose</code>
+<DD>
+Расширенный режим вывода сообщений. Выводится информация о состоянии
+процесса и результаты сжатия.
+
+<DT><code>-V, --version</code>
+<DD>
+Отображает информацию о версии и завершает работу.
+
+<DT><code>-w, --wait</code>
+<DD>
+Если таблица уже используется, подождать повторить попытку. Если сервер
+<code>mysqld</code> был вызван с опцией <code>--skip-locking</code>, то не самая лучшая идея -
+вызывать <code>myisampack</code>, если таблица может модифицироваться во время процесса
+сжатия.
+</DL>
+
+<P>
+<A NAME="IDX684"></A>
+Последовательность приведенных ниже команд иллюстрирует типичный сеанс
+сжатия таблицы:
+
+</P>
+
+<pre>
+shell&#62; ls -l station.*
+-rw-rw-r--   1 monty    my         994128 Apr 17 19:00 station.MYD
+-rw-rw-r--   1 monty    my          53248 Apr 17 19:00 station.MYI
+-rw-rw-r--   1 monty    my           5767 Apr 17 19:00 station.frm
+
+shell&#62; myisamchk -dvv station
+
+MyISAM file:     station
+Isam-version:  2
+Creation time: 1996-03-13 10:08:58
+Recover time:  1997-02-02  3:06:43
+Data records:              1192  Deleted blocks:              0
+Datafile: Parts:           1192  Deleted data:                0
+Datafile pointer (bytes):     2  Keyfile pointer (bytes):     2
+Max datafile length:   54657023  Max keyfile length:   33554431
+Recordlength:               834
+Record format: Fixed length
+
+table description:
+Key Start Len Index   Type                       Root  Blocksize    Rec/key
+1   2     4   unique  unsigned long              1024       1024          1
+2   32    30  multip. text                      10240       1024          1
+
+Field Start Length Type
+1     1     1
+2     2     4
+3     6     4
+4     10    1
+5     11    20
+6     31    1
+7     32    30
+8     62    35
+9     97    35
+10    132   35
+11    167   4
+12    171   16
+13    187   35
+14    222   4
+15    226   16
+16    242   20
+17    262   20
+18    282   20
+19    302   30
+20    332   4
+21    336   4
+22    340   1
+23    341   8
+24    349   8
+25    357   8
+26    365   2
+27    367   2
+28    369   4
+29    373   4
+30    377   1
+31    378   2
+32    380   8
+33    388   4
+34    392   4
+35    396   4
+36    400   4
+37    404   1
+38    405   4
+39    409   4
+40    413   4
+41    417   4
+42    421   4
+43    425   4
+44    429   20
+45    449   30
+46    479   1
+47    480   1
+48    481   79
+49    560   79
+50    639   79
+51    718   79
+52    797   8
+53    805   1
+54    806   1
+55    807   20
+56    827   4
+57    831   4
+
+shell&#62; myisampack station.MYI
+Compressing station.MYI: (1192 records)
+- Calculating statistics
+
+normal:     20  empty-space:      16  empty-zero:        12  empty-fill:  11
+pre-space:   0  end-space:        12  table-lookups:      5  zero:         7
+Original trees:  57  After join: 17
+- Compressing file
+87.14%
+
+shell&#62; ls -l station.*
+-rw-rw-r--   1 monty    my         127874 Apr 17 19:00 station.MYD
+-rw-rw-r--   1 monty    my          55296 Apr 17 19:04 station.MYI
+-rw-rw-r--   1 monty    my           5767 Apr 17 19:00 station.frm
+
+shell&#62; myisamchk -dvv station
+
+MyISAM file:     station
+Isam-version:  2
+Creation time: 1996-03-13 10:08:58
+Recover time:  1997-04-17 19:04:26
+Data records:              1192  Deleted blocks:              0
+Datafile: Parts:           1192  Deleted data:                0
+Datafilepointer (bytes):      3  Keyfile pointer (bytes):     1
+Max datafile length:   16777215  Max keyfile length:     131071
+Recordlength:               834
+Record format: Compressed
+
+table description:
+Key Start Len Index   Type                       Root  Blocksize    Rec/key
+1   2     4   unique  unsigned long             10240       1024          1
+2   32    30  multip. text                      54272       1024          1
+
+Field Start Length Type                         Huff tree  Bits
+1     1     1      constant                             1     0
+2     2     4      zerofill(1)                          2     9
+3     6     4      no zeros, zerofill(1)                2     9
+4     10    1                                           3     9
+5     11    20     table-lookup                         4     0
+6     31    1                                           3     9
+7     32    30     no endspace, not_always              5     9
+8     62    35     no endspace, not_always, no empty    6     9
+9     97    35     no empty                             7     9
+10    132   35     no endspace, not_always, no empty    6     9
+11    167   4      zerofill(1)                          2     9
+12    171   16     no endspace, not_always, no empty    5     9
+13    187   35     no endspace, not_always, no empty    6     9
+14    222   4      zerofill(1)                          2     9
+15    226   16     no endspace, not_always, no empty    5     9
+16    242   20     no endspace, not_always              8     9
+17    262   20     no endspace, no empty                8     9
+18    282   20     no endspace, no empty                5     9
+19    302   30     no endspace, no empty                6     9
+20    332   4      always zero                          2     9
+21    336   4      always zero                          2     9
+22    340   1                                           3     9
+23    341   8      table-lookup                         9     0
+24    349   8      table-lookup                        10     0
+25    357   8      always zero                          2     9
+26    365   2                                           2     9
+27    367   2      no zeros, zerofill(1)                2     9
+28    369   4      no zeros, zerofill(1)                2     9
+29    373   4      table-lookup                        11     0
+30    377   1                                           3     9
+31    378   2      no zeros, zerofill(1)                2     9
+32    380   8      no zeros                             2     9
+33    388   4      always zero                          2     9
+34    392   4      table-lookup                        12     0
+35    396   4      no zeros, zerofill(1)               13     9
+36    400   4      no zeros, zerofill(1)                2     9
+37    404   1                                           2     9
+38    405   4      no zeros                             2     9
+39    409   4      always zero                          2     9
+40    413   4      no zeros                             2     9
+41    417   4      always zero                          2     9
+42    421   4      no zeros                             2     9
+43    425   4      always zero                          2     9
+44    429   20     no empty                             3     9
+45    449   30     no empty                             3     9
+46    479   1                                          14     4
+47    480   1                                          14     4
+48    481   79     no endspace, no empty               15     9
+49    560   79     no empty                             2     9
+50    639   79     no empty                             2     9
+51    718   79     no endspace                         16     9
+52    797   8      no empty                             2     9
+53    805   1                                          17     1
+54    806   1                                           3     9
+55    807   20     no empty                             3     9
+56    827   4      no zeros, zerofill(2)                2     9
+57    831   4      no zeros, zerofill(1)                2     9
+</pre>
+
+<P>
+Ниже приведено описание вывода myisampack:
+
+</P>
+<DL COMPACT>
+
+<DT><code>normal</code>
+<DD>
+Количество столбцов, для которых не используется никакого дополнительного
+сжатия.
+
+<DT><code>empty-space</code>
+<DD>
+Количество столбцов, содержащих пустые значения; эти занимают по 1 биту.
+
+<DT><code>empty-zero</code>
+<DD>
+Количество целочисленных столбцов, в которых содержатся только двоичные
+нули (ascii 0); каждый из них будет занимать 1 бит
+
+<DT><code>empty-fill</code>
+<DD>
+Количество целочисленных столбцов, значения которых не полностью занимают
+отведенную для них разрядность в байтах; тип этих столбцов изменяется на
+тип с меньшей разрядностью(например, столбец <code>INTEGER</code> может быть изменен на
+<code>MEDIUMINT</code>).
+
+<DT><code>pre-space</code>
+<DD>
+Количество десятичных столбцов, которые хранятся с начальными пробелами. В
+этом случае каждое значение будет содержать число ведущих пробелов.
+
+<DT><code>end-space</code>
+<DD>
+Количество столбцов, имеющих много оконечных пробелов. В этом случае
+каждое значение будет содержать число таких пробелов.
+
+<DT><code>table-lookup</code>
+<DD>
+Столбец имеет только небольшое количество различающихся значений, которые
+перед сжатием Хаффмана (Huffman) конвертируются в <code>ENUM</code>.
+
+<DT><code>zero</code>
+<DD>
+Количество столбцов, все значения которых являются нулями.
+
+<DT><code>Original  trees</code>
+<DD>
+Начальное количество деревьев Хаффмана.
+
+<DT><code>After  join</code>
+<DD>
+Количество различных деревьев Хаффмана, оставленных после соединения
+деревьев для сохранения немного пространства в заголовках.
+</DL>
+
+<P>
+После сжатия таблицы <code>myisamchk -dvv</code> выводит дополнительную информацию по
+каждому полю:
+
+</P>
+<DL COMPACT>
+
+<DT><code>Type</code>
+<DD>
+Тип поля может содержать следующие дескрипторы:
+
+<DL COMPACT>
+
+<DT><code>constant</code>
+<DD>
+Все строки содержат одинаковое значение.
+
+<DT><code>no  endspace</code>
+<DD>
+Не сохраняются замыкающие пробелы.
+
+<DT><code>no endspace, not_always</code>
+<DD>
+Не сохраняются замыкающие пробелы и не производится сжатие за счет
+замыкающих пробелов для всех значений.
+
+<DT><code>no endspace, no empty</code>
+<DD>
+Не сохраняются замыкающие пробелы. Не сохраняются пустые значения.
+
+<DT><code>table-lookup</code>
+<DD>
+Столбец был преобразован к <code>ENUM</code>.
+
+<DT><code>zerofill(n)</code>
+<DD>
+В значении n главных байтов всегда являются 0 и не сохранены.
+
+<DT><code>no zeros</code>
+<DD>
+Не сохраняются нули.
+
+<DT><code>always  zero</code>
+<DD>
+Значения 0 хранятся в 1 бите.
+</DL>
+
+<DT><code>Huff  tree</code>
+<DD>
+Дерево Хаффмана, связанное с полем.
+
+<DT><code>Bits</code>
+<DD>
+Количество битов, используемых в дереве Хаффмана.
+</DL>
+
+<P>
+После запуска <code>pack_isam</code>/<code>myisampack</code> нужно запустить <code>isamchk</code>/<code>myisamchk</code> для
+повторного создания индекса. В это время можно также отсортировать
+индексные блоки и создать статистику, необходимую для более эффективной
+работы оптимизатора MySQL:
+
+</P>
+
+<pre>
+myisamchk -rq --analyze --sort-index table_name.MYI
+isamchk -rq --analyze --sort-index table_name.ISM
+</pre>
+
+<P>
+После установки сжатой таблицы в директорию базы данных MySQL нужно
+проделать операцию <code>mysqladmin flush-tables</code>, чтобы сервер <code>mysqld</code> начал
+использовать новую таблицу.
+
+</P>
+<P>
+Для распаковки сжатой таблицы можно использовать опцию <code>--unpack</code> <code>isamchk</code>
+или <code>myisamchk</code>.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=myisampack">Add your own comment.</a></p><div id="docnav"><a href="myisampack.html#">Top</a> / <a rel="prev" href="mysqld_multi.html" title="4.7.3  Mysqld_multi, программа для управления множеством серверов MySQL">Previous</a> / <a rel="next" href="mysqld-max.html" title="4.7.5  mysqld-max, расширенный сервер mysqld">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Server-Side_Scripts.html" title="4.7  Серверные сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

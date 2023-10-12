@@ -1,0 +1,882 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Мини-HOWTO: Очередь почты в Linux — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Мини-HOWTO: Очередь почты в Linux</A
+></H1
+><DIV
+CLASS="AUTHORGROUP"
+><A
+NAME="AEN4"
+></A
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN5"
+>Leif Erlingsson</A
+></H3
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="e68a838f80a68a838183c885898b">[email&#160;protected]</a></P
+></DIV
+></DIV
+><DIV
+CLASS="AFFILIATION"
+><DIV
+CLASS="ADDRESS"
+><P
+CLASS="ADDRESS"
+><a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="cfa5bfbba6aabbb5aa8fa2aea6a3e1a7a7e1bfbda0b9a6e1abaa">[email&#160;protected]</a></P
+></DIV
+></DIV
+><H3
+CLASS="CORPAUTHOR"
+> Перевод: <A HREF="../cdn-cgi/l/email-protection.html#21405744614052510c4d484f54590f424e4c" TARGET="_top">Александр Ермолаев</A
+>,
+ <!--<A
+HREF="http://www.asplinux.com"
+TARGET="_top"
+>-->SWSoft Pte Ltd.<!--</A
+>-->
+ </H3
+></DIV
+><P
+CLASS="PUBDATE"
+>Версия 2.02, 3 сентября 1997 года, sendmail 8.8.7<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><A
+NAME="AEN20"
+></A
+><P
+></P
+><P
+>Отложенная Удаленная Почта + Доставка Локальной Почты (Queue Remote Mail + Deliver Local Mail) Для того, чтобы Sendmail локально доставлял почту, необходимо изменение конфигурации. Почта будет находится в очереди, пока я не скажу "вперед".</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Содержание</B
+></DT
+><DT
+>1. <A
+HREF="Mail-Queue.html#AEN22"
+>Введение</A
+></DT
+><DT
+>2. <A
+HREF="Mail-Queue.html#AEN25"
+>Решения, основанные не на доставке по требованию (non dial-on-demand)</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="Mail-Queue.html#AEN29"
+>Запуск sendmail</A
+></DT
+><DT
+>2.2. <A
+HREF="Mail-Queue.html#AEN41"
+>Конфигурирование sendmail</A
+></DT
+><DD
+><DL
+><DT
+>2.2.1. <A
+HREF="Mail-Queue.html#AEN45"
+>Непосредственное конфигурирование sendmail.cf для простых конфигураций</A
+></DT
+><DT
+>2.2.2. <A
+HREF="Mail-Queue.html#AEN55"
+>Конфигурирование sendmail.cf с использованием m4-файлов</A
+></DT
+></DL
+></DD
+><DT
+>2.3. <A
+HREF="Mail-Queue.html#AEN69"
+>Поддержка меню</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="Mail-Queue.html#AEN73"
+>Решения, основанные на доставке по требованию (dial-on-demand)</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="Mail-Queue.html#AEN81"
+>Конфигурирование sendmail.cf</A
+></DT
+><DD
+><DL
+><DT
+>3.1.1. <A
+HREF="Mail-Queue.html#AEN85"
+>Непосредственное конфигурирование sendmail.cf для простых конфигураций</A
+></DT
+><DT
+>3.1.2. <A
+HREF="Mail-Queue.html#AEN94"
+>Конфигурирование sendmail.cf, при помощи m4-файлов</A
+></DT
+></DL
+></DD
+><DT
+>3.2. <A
+HREF="Mail-Queue.html#AEN102"
+>Добавление задержки при доставке</A
+></DT
+><DD
+><DL
+><DT
+>3.2.1. <A
+HREF="Mail-Queue.html#AEN105"
+>Непосредственное конфигурирование sendmail.cf</A
+></DT
+><DT
+>3.2.2. <A
+HREF="Mail-Queue.html#AEN115"
+>Конфигурирование sendmail.cf, при помощи m4-файлов</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>4. <A
+HREF="Mail-Queue.html#AEN124"
+>Доставка e-mail</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="Mail-Queue.html#AEN128"
+>Как доставить почту в определенное время.</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="Mail-Queue.html#AEN142"
+>Авторские права</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN22"
+>1. Введение</A
+></H1
+><P
+>Этот текст был написан двумя авторами. Решения, основанные не на доставке
+по требованию (более старая часть), написаны Leif Erlingsson
+&lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="94f8f1fdf2d4f8f1f3f1baf7fbf9">[email&#160;protected]</a>&gt;, более же новая часть, описывающая решения с
+доставкой по требованию, написана Jan P Tietze
+&lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="7913090d101c0d031c391418101557111157090b160f10571d1c">[email&#160;protected]</a>&gt;.</P
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN25"
+>2. Решения, основанные не на доставке по требованию (non dial-on-demand)</A
+></H1
+><P
+>Написано Leif Erlingsson &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="bad6dfd3dcfad6dfdddf94d9d5d7">[email&#160;protected]</a>&gt;.</P
+><P
+>Первоначальная версия этой части содержала много ненужного материала. Сейчас осталось только то, что требуется. Точно...</P
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN29"
+>2.1. Запуск sendmail</A
+></H2
+><P
+>В дистрибутиве Slackware: /etc/rc.d/rc.M:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>echo "Starting sendmail daemon (/usr/sbin/sendmail -bd -os) [только режим с очередью]..."
+/usr/sbin/sendmail -bd -os	#"Стандартные" параметры "-bd -q 15m", не используются!</PRE
+>&#13;</P
+><P
+>В дистрибутиве RedHat: /etc/rc.d/init.d/sendmail.init:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>echo -n "Starting sendmail: [только режим с очередью]"
+daemon sendmail -bd -os		# Не запускайте: sendmail -bd -q1h</PRE
+>&#13;</P
+><P
+>Параметр -os не слишком существенен, вот что он делает:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>SuperSafe [s] Быть супер-надежным при запуске, другими словами,
+	всегда требовать файл очереди, даже если
+	Вы попытаетесь осуществить немедленную доставку.
+	Sendmail всегда будет использовать файл очереди
+	перед возвращением контроля клиенту в любых обстоятельствах
+	Это должно всегда работать.</PRE
+>&#13;</P
+><P
+>С другой стороны, в файле конфигурации sendmail.cf это является значением по умолчанию.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN41"
+>2.2. Конфигурирование sendmail</A
+></H2
+><P
+>Серьезные пользователи sendmail для этой задачи используют файлы m4. Я рекомендую это решение, если в ваши планы входит последующее расширение (изменение) функциональности sendmail, а также все нетривиальные изменения sendmail.cf.</P
+><P
+>Если Вы никогда не собираетесь менять настройку sendmail для изменения заголовков писем, при том, что IP - адрес выделяется для Вас динамически или что-то в этом духе, то использование файлов m4 может быть для Вас необязательным.</P
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN45"
+>2.2.1. Непосредственное конфигурирование sendmail.cf для простых конфигураций</A
+></H3
+><P
+>Этот способ - экстремальный, по сравнению с использованием M4. Следующее решение работает только для sendmail-8.8.x.</P
+><P
+>Редактируем /etc/sendmail.cf:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+># избегать соединения с "расходующей ресурсы" почтовой программой при начальной передаче?
+O HoldExpensive=True</PRE
+>&#13;</P
+><P
+>... ниже ...</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>#####  @(#)smtp.m4	8.33 (Berkeley) 7/9/96	#####
+
+Msmtp,		P=[IPC], F=mDFMuXe, S=11/31, R=21, E=\r\n, L=990,
+		T=DNS/RFC822/SMTP,
+		A=IPC $h
+Mesmtp,		P=[IPC], F=mDFMuXae, S=11/31, R=21, E=\r\n, L=990,
+		T=DNS/RFC822/SMTP,
+		A=IPC $h
+Msmtp8,		P=[IPC], F=mDFMuX8e, S=11/31, R=21, E=\r\n, L=990,
+		T=DNS/RFC822/SMTP,
+		A=IPC $h
+Mrelay,		P=[IPC], F=mDFMuXa8e, S=11/31, R=61, E=\r\n, L=2040,
+		T=DNS/RFC822/SMTP,
+		A=IPC $h</PRE
+>&#13;</P
+><P
+>"e" - очень важный параметр. Не волнуйтесь, если вышеприведенные флаги отличаются от ваших. Сохраните свои параметры и просто добавьте к ним "e" так же, как это сделано в нашем примере. "e" - означает, что эта программа доставки почта является "расходующей ресурсы".</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN55"
+>2.2.2. Конфигурирование sendmail.cf с использованием m4-файлов</A
+></H3
+><P
+>Далее я, для простоты, буду предполагать, что версия вашего sendmail - 8.8.7. Если у вас другая версия, то замените 8.8.7 своим номером версии, но только если она не ниже! Для более старых версий наши инструкции срабатывать не будут. Установите самый новый sendmail!</P
+><P
+>Загрузите исходные тексты sendmail. Поищите в
+ ``http://WWW.Sendmail.ORG'' или, возможно, в ``ftp.sendmail.org''.</P
+><P
+>Я также рекомендую вам установит мой патч для разрешения изменений псевдонимов и некоторых других полезных функций для того, чтобы у вас был полный контроль над почтовой средой.</P
+><P
+>Пошлите письмо по адресу ``Sendmail Patch &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="c8bbada6aca5a9a1a488a4adafade6aba7a5">[email&#160;protected]</a>&gt;''
+с темой ``sendmail-8.8.7'', если 8.8.7 - это ваша версия.</P
+><P
+>Эти патчи также можно найти на "http://www.lege.com"; там же есть и исходные sgml-версии этого mini-HOWTO!</P
+><P
+>Вы не должны устанавливать мои патчи для работы с "Queue Remote Mail + Deliver Local Mail". Мои патчи решают другие проблемы. Я просто подумал, что это хорошее место для их упоминания, так как множество пользователей Linux сочтет их очень удобными. (Они даже заставят работать должным образом виртуальные домены (virtual domains),. Виртуальные домены не должны быть "локальными". Они дадут Вам "xaliases", или другими словами, "обратное совмещение имен" ("reverse aliasing".))</P
+><P
+>Распакуйте исходные тексты sendmail. Вы получите /usr/src/sendmail-8.8.7/ или что-то подобное. Зайдите в каталог /usr/src/sendmail-8.8.7/cf</P
+><P
+>Сейчас используйте мой патч, если Вы этого хотите, иначе пропустите данный шаг: Если Вы не хотите использовать procmail в качестве локального агента доставки, сохраните /usr/src/sendmail-8.8.7/cf/ostype/linux.m4 перед следующим шагом... Запишите мой патч в "/tmp/sendmail-8.8.7-cf-cpio-idcmu.gz" и затем...
+
+<PRE
+CLASS="SCREEN"
+>cd /usr/src/sendmail-8.8.7/cf
+gzip -dc &lt; /tmp/sendmail-8.8.7-cf-cpio-idcmu.gz | cpio -idcmu</PRE
+>
+
+Если Вы не хотите использовать procmail, перепишите обратно сохраненную копию /usr/src/sendmail-8.8.7/cf/ostype/linux.m4 .</P
+><P
+>Независимо от того, использовали ли Вы мои патчи или нет, Вам требуется убедиться в том, что к файлу /usr/src/sendmail-8.8.7/cf/cf/yourhostname.smtp.mc добавились следующие строки (или очень похожие на них) (но если Вы использовали мой патч, то можно исследовать файлы, содержащие в имени слово "elijah", в каталоге /usr/src/sendmail-8.8.7/cf):</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>dnl # Задерживать доставку через "расходнующую ресурсы" почтовую программу, если
+dnl # очередь использует "O HoldExpensive=True", и пометить все
+dnl # известные почтовые программы, как "расходующие".
+dnl # (Смотрите книгу по "sendmail" Часть 30: Опции,
+dnl # "Oc - не соединяться с расходующими ресурсы почтовыми программы", или
+dnl # 2-е Издание  Часть 34.8.29,
+dnl # "HoldExpensive (c), Очередь для расходующих ресурсы почтовых программ".)
+dnl #				/ Leif Erlingsson &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="80ece5e9e6c0ece5e7e5aee3efed">[email&#160;protected]</a>&gt;
+define(`confCON_EXPENSIVE', `True')
+define(SMTP_MAILER_FLAGS, e)
+MAILER(local)dnl
+MAILER(smtp)dnl</PRE
+>&#13;</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN69"
+>2.3. Поддержка меню</A
+></H2
+><P
+>1.x версия этого текста содержала пункт 'Поддержка меню' для /var/X11R6/lib/fvwm/system.fvwmrc. В настоящем документе это опущено, однако эту информацию можно получить, написав по адресу:</P
+><P
+>``Menu support suggestions &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="0a6c7c7d6778694a666f6d6f24696567">[email&#160;protected]</a>&gt;'',
+Тема: ``Menu support suggestions''</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN73"
+>3. Решения, основанные на доставке по требованию (dial-on-demand)</A
+></H1
+><P
+>Написано Jan P Tietze &lt;<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="523822263b37262837123f333b3e7c3a3a7c22203d243b7c3637">[email&#160;protected]</a>&gt;.</P
+><P
+>У многих пользователей Linux есть доступ в Интернет через телефонные линии, и многие решили реализовать на своей системе "доставку почты по требованию". То есть всякий раз, когда некоторый IP - пакет должен выйти за пределы локальной сети или машины, автоматически происходит соединение с провайдером услуг Интернет (ISP). Cвязь завершается после некоторого периода бездействия (пакеты для доставки в Интернет отсутствуют).</P
+><P
+>Хотя это очень удобно и эффективно, с точки зрения стоимости решения, имеется один частный случай, когда это не совсем так (мы помним, что время установления соединения через "обычную" модемную линию относительно велико). И этот случай связан с посылкой электронной почты. E-Mail обычно посылается через SMTP, локально настроенной на вашей системе, через SMTP-сервер, который постоянно находится в Интернет (SMTP-сервер вашего провайдера).</P
+><P
+>Когда Вы посылаете сообщение, линия будет поднята и связь установлена. Все будет хорошо, если делаете Вы это нечасто, однако если Вы посылаете множество сообщений (писем), то это станет утомительно и невыгодно. Более того, если ваш провайдер налагает ограничения на время или количество звонков, то это уменьшит возможность посылать письма в течении дня, и Вам придется делать это вручную в другое время.</P
+><P
+>Глава 1 данного документа позволит выйти из этой ситуации, хотя в системах, где имеется внешний поиск DNS имен, это все равно вызовет соединение с ISP. Хотя почта и будет поставлена в очередь. Это случается потому, что sendmail пытается "канонизировать" имена хостов.</P
+><P
+>Решение этой проблемы двояко: Сначала мы подправим sendmail.cf. Затем мы должны определить процесс, который действительно займется доставкой почты. Лично я предпочитаю использовать crond и создавать задания - это будет описано ниже.</P
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN81"
+>3.1. Конфигурирование sendmail.cf</A
+></H2
+><P
+>По причинам, описанным в [1.2], я рекомендую изменять m4 файлы, вместо непосредственного редактирования sendmail.cf. Это сэкономит много нервов и позволит избежать неприятных незапланированных осечек, а также сделает конфигурацию более гибкой.</P
+><P
+>Сначала реализуйте все шаги, описанные в первой части. Затем прочтите материал, специфичный "доставке по требованию".</P
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN85"
+>3.1.1. Непосредственное конфигурирование sendmail.cf для простых конфигураций</A
+></H3
+><P
+>!Непосредственное конфигурирование очень непрактично и негибко, но ведь вы этого хотите.</P
+><P
+>Найдите в вашем sendmail.cf строку, похожую на эту:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>R$* &lt; @ $* $~P &gt; $*		$: $1 &lt; @ $[ $2 $3 $] &gt; $4</PRE
+>&#13;</P
+><P
+>Поставьте в начале строки "#", чтобы все выглядело примерно так:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>#R$* &lt; @ $* $~P &gt; $*		$: $1 &lt; @ $[ $2 $3 $] &gt; $4</PRE
+>&#13;</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN94"
+>3.1.2. Конфигурирование sendmail.cf, при помощи m4-файлов</A
+></H3
+><P
+>Добавьте следующую строку в файл /usr/src/sendmail-8.8.7/cf/cf/имя_вашей_машины.smtp.mc:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>FEATURE(nocanonify)dnl</PRE
+>&#13;</P
+><P
+>Файл sendmail.cf будет построен автоматически с использованием специальных команд. Сохраните старую версию /etc/sendmail.cf перед тем, как устанавливать новую:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>cp /etc/sendmail.cf /etc/sendmail.cf.bak
+cd /usr/src/sendmail-8.8.7/cf/cf
+m4 yourhostname.smtp.mc &gt; /etc/sendmail.cf</PRE
+>&#13;</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN102"
+>3.2. Добавление задержки при доставке</A
+></H2
+><P
+>Часто бывает полезным установить некоторую задержку при доставке почты на время набора номера и установления соединения. Это означает, что, если sendmail пытается установить соединение, но получает отказ, так как связь еще не установилась, то он будет ждать некоторое время, а затем пытаться вновь.</P
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN105"
+>3.2.1. Непосредственное конфигурирование sendmail.cf</A
+></H3
+><P
+>Где-то в вашем sendmail.cf должна быть строка, похожая на эту:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>#O DialDelay=10s</PRE
+>&#13;</P
+><P
+>(или очень похожая). Удалите символ "#". Если этого символа уже нет, то значит все в порядке (видимо Вы сделали это ранее).</P
+><P
+>Если же нет ничего похожего на эту строку, то сами вставьте ее (лучше всего сделать это в разделе "options"):</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>O DialDelay=10s</PRE
+>&#13;</P
+><P
+>А сейчас измените значение "10s" на значение, которое Вы считаете подходящим.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><HR><H3
+CLASS="SECT3"
+><A
+NAME="AEN115"
+>3.2.2. Конфигурирование sendmail.cf, при помощи m4-файлов</A
+></H3
+><P
+>Добавьте следующую строку в файл /usr/src/sendmail-8.8.7/cf/cf/имя_вашей_машины.smtp.mc:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>define(`confDIAL_DELAY',`10s')</PRE
+>&#13;</P
+><P
+>А теперь измените значение"10s" на значение, которое Вы считаете подходящим.</P
+><P
+>Файл sendmail.cf будет построен автоматически с использованием специальных команд. Сохраните старую версию /etc/sendmail.cf перед тем, как устанавливать новую:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>cp /etc/sendmail.cf /etc/sendmail.cf.bak
+cd /usr/src/sendmail-8.8.7/cf/cf
+m4 yourhostname.smtp.mc &gt; /etc/sendmail.cf</PRE
+>&#13;</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN124"
+>4. Доставка e-mail</A
+></H1
+><P
+>E-Mail может быть доставлена непосредственно с использованием команды "sendmail -q". Для тех, кому интересно, что при этом происходит, используйте "sendmail -q -v", и вы получите больше информации об этом процессе.</P
+><P
+>Очень удобно автоматизировать этот процесс. Для этого используется cron.</P
+><DIV
+CLASS="SECT2"
+><HR><H2
+CLASS="SECT2"
+><A
+NAME="AEN128"
+>4.1. Как доставить почту в определенное время.</A
+></H2
+><P
+>Отредактируйте ваш crontab:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>crontab -e</PRE
+>&#13;</P
+><P
+>Добавьте в него строки следующего формата:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>05 18-23,0-7	* * Mon,Tue,Wed,Thu,Fri	/usr/sbin/sendmail -q
+05 *		* * Sat,Sun		/usr/sbin/sendmail -q</PRE
+>&#13;</P
+><P
+>Пожалуйста, обратитесь руководству по crontab (man 5 crontab) для более подробной информации. Мне кажется, что формат довольно очевиден. Данный пример записи посылает почту (если, и еще раз если, она находится в очереди) в 5 минут некоторых часов из определенных дней недели, начиная в 18:05 и заканчивая в 7:05. В выходные, e-mail отправляется в 5 минут каждого часа, начиная в 0:05 субботы и заканчивая в 23:05 воскресенья.</P
+><P
+>Поскольку вызов осуществляется по требованию, желательно заодно иметь систему, которая забирает почту через POP3 протокол в определенное время дня. Вы можете добавить в crontab следующее:</P
+><P
+>&#13;<PRE
+CLASS="SCREEN"
+>0 21		* * * popclient -3 -u &lt;ваше имя пользователя pop3&gt;
+-p &lt;пароль&gt; -o /var/spool/mail/&lt;Пользователь user в вашей системе,
+собирающий и переправляющий e-mail&gt;&lt;mailhost.somedomain.com&gt;</PRE
+>&#13;</P
+><P
+>Конечно, все это обязательно должно быть в одной строке.</P
+><P
+>Затем сохраните файл и выйдите из редактора. Crontab запомнит все изменения.</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT1"
+><HR><H1
+CLASS="SECT1"
+><A
+NAME="AEN142"
+>5. Авторские права</A
+></H1
+><P
+>Авторские права на русский перевод этого текста принадлежат &copy; 2000 SWSoft Pte Ltd.
+Все права зарезервированы.</P
+><P
+>Этот документ является частью проекта Linux HOWTO.</P
+><P
+>Авторские права на документы Linux HOWTO принадлежат их авторам, если явно
+не указано иное. Документы Linux HOWTO, а также их переводы, могут
+быть воспроизведены и распространены полностью или частично на любом
+носителе, физическом или электронном, при условии сохранения этой заметки об
+авторских правах на всех копиях. Коммерческое распространение разрешается и
+поощряется; но, так или иначе, автор текста и автор перевода желали бы знать о
+таких дистрибутивах.</P
+><P
+>Все переводы и производные работы, выполненные по документам Linux HOWTO
+должны сопровождаться этой заметкой об авторских правах. Это делается в
+целях предотвращения случаев наложения дополнительных ограничений на
+распространение документов HOWTO. Исключения могут составить случаи
+получения специального разрешения у координатора Linux HOWTO, с которым
+можно связаться по адресу приведенному ниже.</P
+><P
+>Мы бы хотели распространить эту информацию по всем возможным каналам. Но
+при этом сохранить авторские права и быть уведомленными о всех планах
+распространения HOWTO. Если у вас возникли вопросы, пожалуйста, обратитесь
+к координатору проекта Linux HOWTO по электронной почте:
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#c1ada8afb4b9eca9aeb6b5ae81aca4b5a0ada0a3efb4afa2efa4a5b4"><span class="__cf_email__" data-cfemail="e5898c8b909dc88d8a92918aa588809184898487cb908b86cb808190">[email&#160;protected]</span></A
+>&#62;</TT
+> или к координатору русского
+перевода Linux HOWTO компании SWSoft Pte Ltd. по адресу
+<TT
+CLASS="EMAIL"
+>&#60;<A HREF="../cdn-cgi/l/email-protection.html#c7abaea9b2bfeaafa8b0b3a887a6b4b7abaea9b2bfe9b5b2"><span class="__cf_email__" data-cfemail="7c10151209045114130b08133c1d0f0c1015120904520e09">[email&#160;protected]</span></A
+>&#62;</TT
+></P
+></DIV
+></DIV
+>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

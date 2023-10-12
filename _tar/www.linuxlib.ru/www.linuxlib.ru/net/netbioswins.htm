@@ -1,0 +1,664 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>WINS на практике — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://chemvac.ru/product/e2m175-a36604940/" target="_blank">E2M175</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://peretyazhechka-spb.ru/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Peretyazhechka-spb.ru </p> <p class='block_links_text'> Перетяжка мебели в спб: перетяжка дивана спб <a href="https://peretyazhechka-spb.ru/" target="_blank">peretyazhechka-spb.ru</a>. </p><p class='block_links_url'> peretyazhechka-spb.ru </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<P><center><H3>NetBIOS, WINS и Browsing lists.</H3></center></P>
+<P>Терминология:
+<OL type=i>
+  <LI>
+  <P>Windows* - MS Windows 95, 98, NT 3.5x/4. </P>
+  <LI>Компьютер - как правило, компьютер с Win NT 4.0. Идеология относится и к
+  W9x, но я рассматриваю NT.
+  <LI>Сеть - сегментированная сеть на основе TCP/IP.
+  <LI>Broadcast - специальный широковещательный пакет; broadcast обязаны
+  обработать все компьютеры, которые его получат.
+  <LI>jfyi: NetBEUI - <B>NetBIOS Extended User Interface</B> - родной для
+  Windows* протокол. Замечателен тем, что a)<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn1" name=_ftnref1>-->[1]<!--</A>--> не
+  умеет маршрутизироваться, поскольку в нем нет networking layer и b) использует
+  только broadcasts для распознавания имен и сервисов, по каковым причинам в
+  чуть более серьезных местах, чем сетка на 5-10 компьютеров нормальными людьми
+  не используется.<BR><B>Не путать с NetBIOS, схожесть этих имен уже породила
+  массу терминологических противоречий.</B>
+  <LI><!--<A href="http://www.samba.org/">-->SAMBA<!--</A>--> - комплекс программ для доступа
+  к файл- и принт-сервисам Windows*, в тексте идет речь о samba версии &lt;=
+  2.0.6. </LI></OL>
+<HR>
+
+<OL>
+  <LI>NetBIOS - <B>Network Basic Input Output System<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn2" name=_ftnref2>-->[2]<!--</A>--></B>
+  <P>1.1. NetBIOS - это session-level интерфейс. Используется программами для
+  общения over NetBIOS совместимых транспортных протоколов. Транспортные
+  протоколы - это NetBEUI, TCP/IP, IPX/SPX. Cеть Windows* не живет без NetBIOS.
+  Никогда. Ни при каких условиях. Даже под угрозой расстрела. Неважно, что там у
+  вас написано в свойствах сетевого окружения - если есть это самое окружение,
+  значит есть и NetBIOS. Он отвечает за логические имена компьютеров на сети и
+  передачу данных между двумя компьютерами, установившими между собой
+сессию.</P>
+  <P>NetBIOS over TCP/IP называется NetBT.</P>
+  <P>1.2. NetBIOS names</P>
+  <P>NetBIOS name закрепляется за ресурсом - не за компьютером! - только за
+  ресурсом, имеет размер в 16 байт. Первые 15 - собственно имя, 16-й - тип
+  ресурса, (00-FF hex), типы стандартизованы.<BR></P>
+  <P>Имена делятся на:<BR>
+  <OL type=i>
+    <LI>Unique (U)- к этому имени может быть привязан только один адрес.
+    <LI>Group (G) - к этому имени не привязан адрес; На запрос WINS клиента об
+    адресе всегда возвращается limited broadcast address.
+    <LI>Multihomed (M) - не описан в rfc 1001/1002; к этому имени может быть
+    привязано до 25 адресов; TTL общий для всех..
+    <LI>Internet Group (Special Group) (I) - к этому имени может быть привязано
+    до 25 адресов; для каждого адреса хранится свой TTL.
+    <LI>Domain Name (D) - про него сказано коротко: "New in Windows NT 4.0."
+    </LI></OL><BR><!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/Q163409.htm">-->NetBIOS
+suffixes<!--</A>--><BR>
+  <P>1.3. Name Resolution</P>
+  <P>Name Resolution в NetBIOS от рождения основано на broadcasts, что сильно
+  осложняет жизнь уже в средних размеров сети - любой свитч<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftm2" name=_ftmref2>-->[c2]<!--</A>-->
+  broadcast'ы через себя не пропускает, и правильно делает<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn3" name=_ftnref3>-->[3]<!--</A>-->.
+  Ранние версии NetBIOS'а умели пользваться для распознавания имен только </P>
+  <OL type=i>
+    <LI>NetBIOS name cache
+    <LI>IP subnet broadcasts
+    <LI>LMHOSTS<BR><BR></LI></OL>
+  <P>К версии NT 3.5 MS одумался и ввел улучшения. Сейчас NetBIOS умеет
+  пользоваться </P>
+  <OL type=i>
+    <LI>NetBIOS name cache - посмотреть в своем собственном кэше - нет ли там
+    искомого имени; в кэше имена обычно остаются на 10 мин.
+    <LI>NetBIOS name server - WINS, о котором речь пойдет дальше
+    <LI>IP subnet broadcasts - громко крикнуть на всю (под)сеть: "А подать сюда
+    Ляпкина-Тяпкина!"
+    <LI>Static LMHOSTS file, для WINS клиента:
+    <BLOCKQUOTE>
+      <HR>
+      102.54.94.97&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rhino&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#PRE&nbsp;#DOM:networking&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#net&nbsp;group's&nbsp;DC<BR>102.54.94.102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"RTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\0x1c"<!--<A
+      href="http://info.mitht.rssi.ru:8101/wins/#_ftn4"
+      name=_ftnref4>-->[4]<!--</A>-->&nbsp;&nbsp;#special&nbsp;app&nbsp;server<BR>102.54.94.123&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;popular&nbsp;&nbsp;&nbsp;&nbsp;#PRE&nbsp;&nbsp;&nbsp;&nbsp;#source&nbsp;server<BR>102.54.94.117&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;localsrv&nbsp;&nbsp;&nbsp;&nbsp;#PRE&nbsp;&nbsp;&nbsp;#needed&nbsp;for&nbsp;the&nbsp;include<BR>#BEGIN_ALTERNATE<BR>#INCLUDE&nbsp;\\localsrv\public\lmhosts<BR>#INCLUDE&nbsp;\\rhino\public\lmhosts<BR>#END_ALTERNATE<BR>
+      <HR>
+      Директивы (#PRE, #DOM, etc) описаны внутри lmhosts.sam.</BLOCKQUOTE>
+    <P></P>
+    <LI>Static HOSTS file
+    <LI>DNS servers </LI></OL><BR>
+  <P>1.4. Что бы хоть как-то управлять этим разнотравьем, вводится понятие
+  NodeType для порядка регистрации и распознавания имен<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn5" name=_ftnref5>-->[5]<!--</A>-->:</P>
+  <TABLE cellSpacing=0 cellPadding=3 border=1>
+    <TBODY>
+    <TR>
+      <TD vAlign=top noWrap>
+        <P>B-node (Broadcast) </P></TD>
+      <TD vAlign=top>
+        <P>Использует только broadcasts. <BR><I>В TCP/IP от MS используется
+        "Microsoft Modified B-Node":<BR>1. кэш 2. Broadcast 3.
+    LMHOSTS</I></P></TD></TR>
+    <TR>
+      <TD vAlign=top noWrap>
+        <P>P-node (Point-to-Point) </P></TD>
+      <TD align=top>Использует <B>только</B> WINS. Если WINS не работает, то
+        ни регистрации, ни распознавания<!--<A
+        href="http://info.mitht.rssi.ru:8101/wins/#_ftm1"
+        name=_ftmref1>-->[c1]<!--</A>-->. </TD></TR>
+    <TR>
+      <TD vAlign=top noWrap>M-node (Mixed) </TD>
+      <TD vAlign=top>Для регистрации использует broadcasts. Для распознавания
+        использует broadcasts, но если не получает ответа, то переключается в
+        P-node. </TD></TR>
+    <TR>
+      <TD vAlign=top noWrap>H-node (Hybrid) </TD>
+      <TD vAlign=top>Пытается стать P-node; если WINS не работает,
+        переключается в B-node. Переключается в P-node, как только находит WINS
+        server. </TD></TR></TBODY></TABLE>
+  <P>NodeType раздаются DHCP сервером либо (surprise, surprise!) выставляются в
+  <!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/registry.html#nodetype">-->registry<!--</A>--></P>
+  <P>По умолчанию (при сконфигурированном WINS server'e ) Windows* встает в
+  H-node.</P>
+  <LI>
+  <P>WINS.</P>2.1. WINS - Windows Internet Naming Service. <BR>WINS server ==
+  NetBIOS Name Server (NBNS), но в MS по традиции (чтоб жизнь медом не казалась)
+  используются оба термина. Для тех, кто знаком с DNS, достаточно сказать что
+  WINS - это такой DNS от Microsoft - для NetBIOS'a. WINS отвечает за
+  регистрацию Netbios'овских имен и преобразование их в IP адреса. WINS хранит
+  базу данных вот такого вида:
+  <P><IMG height=444 src="netbioswins.files/wins_manager.jpg" width=623
+  border=0></P>
+  <P>Поля A и S - Active и Static, Version ID - уникальный номер, который
+  используется MS WINS'ом при репликации - для поиска новых записей (репликация
+  - процедура слияния баз нескольких WINS серверов).</P>
+  <P>WINS - в своей работе использует UDP -137 и 138 порт (и broadcast'ы - если
+  поймает).</P>
+  <P>На сегодняшний день я знаю два WINS сервера - один из них поставляется с NT
+  server, второй включен в пакет SAMBA. Какой из них использовать - дело вкуса;
+  если хочется [псевдо]спокойной жизни, надо использовать сервер от MS. Упадет
+  NT с WINS сервером - последствия для своего случая прикидывайте сами.</P>
+  <P>Если доверять продукции MS не хочется, то придется использовать samba,
+  несмотря на ее недостатки. К недостаткам относятся два пункта:</P>
+  <OL type=i>
+    <LI>Нет возможности реплицировать между собой два WINS сервера;
+    <LI>Честное следование rfc. SAMBA пишется наивными людьми, которые верят,
+    что MS следует своим спецификациям. Понятно же, что там где-то что-то будет
+    сделано хоть чуть-чуть, но не так. Если уж писать WINS сервер под MS, то с
+    отладчиком, дизассемблером и tcpdump'ом в руках. Чтобы аккуратно повторять
+    все ошибки MS (см. Readme к service pack'ам на предмет слова
+  WINS).<BR></LI></OL><BR>2.2. Как работает WINS сервер
+  <P>Основная задача WINS server'а - уметь отвечать на вопрос - а какой адрес у
+  сервиса "name".</P>
+  <P>Функции Name Registration, Refresh, and Release: Сервис грузится, шлет на
+  WINS сервер пакет Registration. В ответ получает подтверждение ( различные
+  ошибки и конфликты опускаю ) и время, в течение которого его регистрация
+  действительна - TTL. Согласно описанию от MS через TTL/2 NT<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn6" name=_ftnref6>-->[6]<!--</A>-->
+  (остальные клиенты могут делать refresh с другой частотой, но до истечения
+  TTL) должна прислать Refresh - мол вот она я, жива. И снова получить TTL. И
+  так до окончания работы, когда сервис должен послать пакет Release. Если TTL
+  истек, а сервис Refresh не прислал, WINS server о нем забывает. </P>
+  <P>MS WINS server умеет реплицировать свою базу с другими MS WINS
+  серверами.</P>
+  <LI>Browsing lists
+  <P>Итак, с помощью WINS сервера можно получить адрес ресурса по имени "name".
+  Но как увидеть список всех компьютеров в сети/домене/рабочей_группе? WINS на
+  такие вопросы не отвечает - не обучен. Занимаются этим всяческие browser'ы. В
+  каждой подсети есть master browser(<I>domain</I>\0x1d), backup browser,
+  potential browser и preferred master browser, их в последнее время называют
+  segment browsers ( изобретенными в MS терминами можно, наверное, библиотеку
+  заполнить ). </P>
+  <P>Компьютеры, таким образом, разделяются на:</P>
+  <OL type=i>
+    <LI>Non-browser компьютеры
+    <LI>Potential browsers - может стать backup browser'ом, если понадобится.
+    <LI>Backup Browser - оперирует Browse lists'ами серверов и доменов, каковые
+    lists получает от Master Browser.
+    <LI>Master Browser - Получает анонсы от компьютеров и доменов, посылает
+    Browse list Backup Browsers'ам, высылает по запросы клиента Browse list,
+    продвигает Potential в Backup Browser по мере необходимости и общается с
+    Domain Master Browser.
+    <LI>Preferred Master Browser - то же самое, что и Backup, но выигравший
+    выборы за счет установки в registry флажка IsDomainMasterBrowser<!--<A
+    href="http://info.mitht.rssi.ru:8101/wins/#_ftm3" name=_ftmref3>-->[c3]<!--</A>--> в
+    True.
+    <LI>Domain Master Browser - Согласно MS'овской документации функции domain
+    master browser'a всегда выполняет primary domain controller<!--<A
+    href="http://info.mitht.rssi.ru:8101/wins/#_ftn7" name=_ftnref7>-->[7]<!--</A>-->, и
+    лучше бы этому не препятствовать, хотя samba и умеет (domain master = yes).
+    </LI></OL><BR>
+  <P>Неважно, что у вас в подсети/домене/рабочей_группе одна машина - она будет
+  и master, и backup, и potential. На каждые 32 компьютера добавляется еще один
+  backup browser. Master browser'ы занимаются тем, что обрабатывают broadcast'ы,
+  которые раз в time=12 минут выдает каждый компьютер и складывают результаты в
+  browsing lists глубоко внутри себя. </P>
+  <P>Если компьютер в течении time*3 признаков жизни не подает, master browser
+  удаляет его из browsing list. Итого тайм-аут между выключением компютера и
+  пропаданием его из neighborhood составляет 36 мин. - внутри одного сегмента.
+  Если компьютер выключен "gracefully", browser (имеется в виду сервис computer
+  browser) пошлет master browser'у соответствующее сообщение и будет вычищен из
+  списков сразу.</P>
+  <P>В дополнение все master browser'ы периодически<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn8" name=_ftnref8>-->[8]<!--</A>-->
+  анонсируют себя принадлежащими к группе \0x01\0x02__MSBROWSE__\0x02\0x01<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn9" name=_ftnref9>-->[9]<!--</A>--> в
+  локальной подсетке - без использования WINS, broadcast'ом. В анонсе
+  присутствуют имя домена и имя domain master browser'a. Master Browser'ы,
+  получающие такие анонсы, хранят их в internal browse lists<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn10" name=_ftnref10>-->[10]<!--</A>-->
+  вместе с именем компьютера, пославшего анонс.</P>
+  <P>Backup browser кэширует browsing lists у себя и инициирует <!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/DeterminingBrowserRoles.htm">-->перевыборы<!--</A>-->,
+  если не может найти master browser.</P>
+  <P>Domain master browser составляет список имен master browser'ов на основании
+  полученных от них Master Announcement frames, которые ему присылают сначала
+  после победы на выборах, а затем каждые 12 (у самбы - 15) минут. На основании
+  этого списка domain master browser раз в 15 минут опрашивает всех master
+  browsers на предмет local browsing lists, соединяет полученное в domain browse
+  list и раздает (по запросу, который раз в 12 минут) master browser'ам. <!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/Q188001.htm">-->Сами считайте<!--</A>-->,
+  через сколько минут выключенный компьютер пропадет из browsing lists в
+  остальных сегментах.</P>
+  <P>Свежезагрузившийся клиент шлет broadcast<!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/#_ftn11" name=_ftnref11>-->[11]<!--</A>--> на
+  имя <I>domain</I>\0x1d. Master browser возвращает соответствующий список
+  browser'ов, из коего списка клиент выбирает три сервера и, случайным образом
+  образом из этих троих выбрав одного, шлет запрос. Результат появляется в
+  network neighborhood'e. При обращении к компьютеру, нарисованному в Network
+  Neighborhood идет запрос к WINS серверу о его адресе. </P>
+  <P>В NT за browser'енье отвечает сервис Computer Browser.</P>
+  <P><!--<A href="http://info.mitht.rssi.ru:8101/wins/part_of_browsing.html">-->Кусок
+  документации<!--</A>--> от samba - объяснение на пальцах того, как синхронизируются
+  Browsing lists в подсетях, взято из файла browsing.txt; переводить мне его
+  лень.</P>
+  <P>Итого, в сегментированной сети с Windows*-клиентами без WINS'а Browsing
+  lists не работают. А поскольку слова "сеть работает" проверяются наличием
+  соседских компьютеров в Network Neighborhood, то ...</P>
+  <HR>
+
+  <LI>Multihomed browsers (<A href="../cdn-cgi/l/email-protection.html#c8bea7a488adbbaba7babcaba7bab8e6aba7a5">Vladimir
+  Pastukhov</A>)
+  <P>Хотелось бы добавить пару слов о multihomed master browsers - у которых
+  более одной сетевой карты.<BR>Собственно, MS их категорически не рекомендует.
+  Дело в том, что NT'шный browser отдает не полный browse list, а только ту его
+  часть, которая относится к подсети откуда пришел запрос (возможно, в
+  действительности значение имеет то, <B>на какой адрес</B> он пришел - негде
+  сейчас проверить). MS объясняет, что, мол, browser знать ничего не знает о
+  роутинге между подсетями, и поэтому отдавать чужую подсеть ему не с
+  руки.<BR>Кое-как это лечится при помощи Q158487 - оставляем компьютер
+  browser'ом только в одном из сегментов. Если бедной кляче к тому же
+  посчастливилось быть PDC, то придется прописать в WINS (или в lmhosts на
+  potential browsers) static mapping типа multihomed для имени domain\0x1b с
+  адресом интерфейса из этого сегмента - это чтобы master browser'ы всегда
+  обращались по правильному адресу.<BR>Самба всегда отдает объединенный browse
+  list, поэтому делать ее master browser'ом бывает очень чисто и сухо.<BR></P>
+  <HR>
+
+  <LI>Комментарий
+  <P>Уф. Комментировать такой подход я не в силах, но вот коротенькое
+резюме:</P>
+  <P>Все, что касается browsing lists, происходит, как это водится у MS,
+  "автомагически". Влиять на эту политику я умею только одним способом -
+  поубивав<!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftn12"
+  name=_ftnref12>-->[12]<!--</A>--> сервис computer browser на всех NT в подсетке, кроме
+  одной, это оставит ее local/backup master browser'ом, навсегда. Но как только
+  эта единственная NT упадет, пропадет содержимое neighborhood.</P>
+  <P>Так что и этот подход на практике использовать нельзя...</P>
+  <HR>
+
+  <P>Материалы для внеклассного чтения от MS: <!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/winswp.zip">-->winswp<!--</A>-->, <!--<A
+  href="http://info.mitht.rssi.ru:8101/wins/tcpipimp2.zip">-->tcpipimp2<!--</A>-->, <!--<A
+  href="http://www.microsoft.com/technet/winnt/Winntas/technote/ntbrowse.asp">-->ntbrowse<!--</A>-->.</P>
+  <P>Предложения, пожелания, bugfixes(к тексту, не к MS) шлите <A href="../cdn-cgi/l/email-protection.html#97faf6fcd7e2f9f2e4f4f8b9fafee3ffe3b9e5e4e4feb9e5e2">мне</A>.</P>
+  <P>Maxim Berlin, 31.01.2000.</P>
+  <P>Выношу благодарности за помощь в работе над этим материалом:<BR>Александру
+  Калагову (ТЦ РТС),<BR>Игорю Нестерову (ТЦ РТС),<BR>Владимиру
+  Чухареву,<BR>Vladimir Pastukhov,<BR>Sergei V. Dubrov.<BR></P>
+  <LI>Возникшие вопросы:
+  <OL type=i>
+    <LI><A href="../cdn-cgi/l/email-protection.html#eb98838e998e86ab999f998a8f8ec5999e">Дмитрий Шеремет</A>: Как задать адрес,
+    на котором WINS сервер будет принимать пакеты? <BR><B>A</B>: Для NT я не
+    умею. Похоже, MS WINS server хватает первый попавшийся адрес (alias или
+    сетевую карту). Samba поступает лучше - ей можно задать ( socket address = )
+    адрес сокета, который нужно слушать, но сама себя она анонсирует на первом
+    попавшемся адресе. Например: на сетевой карте есть два алиаса xx.12 и xx.3,
+    socket address = xx.12. Samba честно будет слушать xx.12 адрес, но в WINS ее
+    адрес будет xx.3, со всеми вытекающими последствиями. Алгоритма выбора
+    адресов я не знаю.
+    <LI><A href="../cdn-cgi/l/email-protection.html#baced9d2d5cfd1d2dbc8dfccfad7dbd3d694c8cf">Владимир Чухарев</A>: Кто будет
+    исполнять функции Domain master browser'а, если на сети нет Primary/Backup
+    domain controller'а?<BR><B>A1</B>: Не знаю. Кто знает, напишите <A href="../cdn-cgi/l/email-protection.html#6e030f052e1b000b1d0d014003071a061a401c1d1d07401c1b">мне</A>, пожалуйста. <BR><B>A2</B>,
+    <A href="../cdn-cgi/l/email-protection.html#01776e6d416472626e7375626e73712f626e6c">Vladimir Pastukhov</A>: Не хочет NT быть
+    DMB без домена, однако. Даже если ее адрес насильно в WINS прописАть с
+    именем workgroup[1b], самба все равно на попытки синхронизироваться получает
+    в ответ RST. <BR><B>Резюме</B>: Если нужен domain master browser и не нужен
+    domain, необходимо ставить samba. </LI></OL></LI></OL>
+<P><BR clear=all></P>
+<HR align=left>
+
+<DIV id=ftn1>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref1" name=_ftn1>-->[1]<!--</A>--> За
+счет пункта a) NetBEUI остается самым быстрым и маленьким сетевым протоколом
+</P></DIV>
+<DIV id=ftn2>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref2" name=_ftn2>-->[2]<!--</A>-->
+NetBIOS изначально находился в ROMе сетевых карт для писюковой сетки от
+IBM.</P></DIV>
+<DIV id=ftm2><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftmref2"
+name=_ftm2>-->[c2]<!--</A>--> Меня поправляет <A href="../cdn-cgi/l/email-protection.html#f9bd8c9b8b968fb9909789d7978a92d78a8c">Sergei V.
+Dubrov</A>: </DIV>
+<BLOCKQUOTE>
+  <DIV id=ftm2>
+  <P><B>1. Не путай роутер и свитч. Далеко не всякий свитч режет
+  броадкасты.<BR>2. Обычным свитчом я называю железяку, работающую только на
+  уровне MAC-адресов, т.е., также, как и старые добрые бриджи. Классические,
+  первые свитчи - это просто многопортовые буферированные бриджи, они пересылают
+  пакеты из-в сегмента в сегмент только на основании MAC-адреса фрейма
+  (Ethernet, FDDI, и пр.). Они ничего не знают про .255 бродкаст (IP-level) -
+  для них это такой же пакет, как и остальные. Если чуть вдаться в подробности,
+  даже классический свитч, работающий на втором уровне, но имеющий достаточно
+  мозгов внутри, может в принципе иметь возможность строить фильтры по различным
+  полям принимаемых-передаваемых фреймов, т.е., его можно научить, например,
+  зная структуру IP-пакета, упакованного в Ethernet-фрейм, откидывать бродкасты
+  сетевого уровня. Из примеров таких железок - LanPlex2500 (сейчас -
+  CorePlex2500) от 3Com.<BR>Новые, современные и достаточно навороченные свитчи
+  уже обычно могут работать с третьим уровнем - сетевым (те же VLAN-ы), вот на
+  них уже действительно можно без приседаний в виде писания фильтров на птичьем
+  языке машины а-ля Тьюринг работать с пакетами на уровне IP или IPX, например,
+  в т.ч. устраивая no passaran для IP-бродкастов ;-). Хотя, с другой стороны, и
+  сейчас выпускается масса дешевых свитчей фирмами типа D-Link, SMC и т.п.,
+  которые про сетевой уровень (и про VLAN-ы) ничего знать не знают.
+  </B></P></DIV></BLOCKQUOTE>
+<P>Про канальный, сетевой и прочие уровни можно прочитать здесь: <!--<A
+href="http://www.citforum.ru/nets/tpns/glava_17.shtml">-->Протокол, интерфейс, стек
+протоколов. Модель ISO/OSI. <!--</A>--></P>
+<DIV id=ftn3>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref3" name=_ftn3>-->[3]<!--</A>-->
+Документация от MS всегда ставит проблему злобных роутеров на первое место.
+Роутеры, мол, не пропускают броадкасты. Вторым пунктом упоминают, что броадкаст
+должен быть обработан каждой машиной, имевшей счастье его словить, за что его
+роутеры и не пускают...</P></DIV>
+<DIV id=ftn4>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref4" name=_ftn4>-->[4]<!--</A>-->
+Внимательно считаем пробелы между именем и типом. Тип должен быть
+16-м.</P></DIV>
+<DIV id=ftn5>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref5" name=_ftn5>-->[5]<!--</A>--> Я
+видел упоминание о "Microsoft-enhanced - Local LMHOSTS file or WINS proxies plus
+Windows Sockets gethostbyname() calls (using standard DNS and/or local HOSTS
+files) in addition to standard node types.", но живьем ее никогда не
+видел.</P></DIV>
+<DIV id=ftmc1>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftmref1" name=_ftm1>-->c1<!--</A>--> <A href="../cdn-cgi/l/email-protection.html#2f5b4c47405a44474e5d4a596f424e4643015d5a">Владимир Чухарев</A>: </P></DIV>
+<BLOCKQUOTE>
+  <DIV>
+  <P><B>Мои эсперименты с node type на W95 (до OSR2) показывали, что p-type при
+  отсутствии wins сваливается в b-type (по крайней мере начинает слать
+  broadcast's). В отличии от h-type - необратимо. По этой причине им
+  пользоваться просто не стоит никогда. И, если склероз мне не изменяет, именно
+  p-type стоит по умолчанию на указанных w95 (при сконфигуренном wins и запрете
+  быть броузером). Это было лет пять назад... </B></P></DIV></BLOCKQUOTE>
+<DIV id=ftn6><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref6"
+name=_ftn6>-->[6]<!--</A>--> NT далеко не всегда использует TTL/2.
+<P></P></DIV>
+<DIV id=ftmc3>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftmref3" name=_ftm3>-->c3<!--</A>--> <A href="../cdn-cgi/l/email-protection.html#83f5ecefc3e6f0e0ecf1f7e0ecf1f3ade0ecee">Vladimir Pastukhov</A>: Ключ
+IsDomainMasterBrowser на самом деле называется IsDomainMaster - <!--<A
+href="http://support.microsoft.com/support/kb/articles/Q99/1/30.ASP">-->документированные<!--</A>-->
+грабли. </P></DIV>
+<DIV id=ftn7>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref7" name=_ftn7>-->[7]<!--</A>--> В
+его registry есть некий(не уточняется) ключ, который помогает ему выиграть на
+выборах титул Domain Master Browser'а. "This allows browsing to be effective
+when a domain spans multiple subnets." Не спрашивайте, чем оно будет эффективнее
+- не скажу. Не знаю. </P></DIV>
+<DIV id=ftn8>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref8" name=_ftn8>-->[8]<!--</A>-->
+Написано - "periodically". Подозреваю, что либо раз в 12, либо раз в 15
+минут.</P></DIV>
+<DIV id=ftn9>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref9" name=_ftn9>-->[9]<!--</A>-->
+WINS server на запрос о таком имени всегда возвращает broadcast адрес
+соответствующей сети</P></DIV>
+<DIV id=ftn10>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref10" name=_ftn10>-->[10]<!--</A>-->
+Понятия не имею, что это такое. Нашел только одно упоминание:": In addition,
+master browser servers receive these domain announcements to this name and
+maintain them in their internal browse list along with the announcer's computer
+name."</P></DIV>
+<DIV id=ftn11>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref11" name=_ftn11>-->[11]<!--</A>-->
+"A client will broadcast to this name to get a list of browser servers from the
+Master Browser." Возможно, имелся в виду multicast...
+<BLOCKQUOTE>
+  <DIV><A href="../cdn-cgi/l/email-protection.html#0e7861624e6b7d6d617c7a6d617c7e206d6163"><BR>Vladimir Pastukhov</A>: <B>Это
+  действительно broadcast в терминах IP. Просто в неком поле указывается имя
+  получателя - domain\0x1d. Пакет обрабатывается только теми, кто назвался таким
+  именем, а это в данном случае master browser. Остальные получившие пакет его
+  игнорируют. Все вместе MS называет "to broadcast a datagram to <SOME>name".
+  Еще бывает directed datagram - когда IP получателя есть конкретный IP
+  адрес.</B> </DIV></BLOCKQUOTE>
+<P></P></DIV>
+<DIV id=ftn12>
+<P><!--<A href="http://info.mitht.rssi.ru:8101/wins/#_ftnref12" name=_ftn12>-->[12]<!--</A>-->
+Или запретив в registry. Чревато. Установка Option pack для NT server с
+выключенным computer browser оканчивается (не начавшись) сообщением "Cannot
+detect OS type".</P></DIV>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

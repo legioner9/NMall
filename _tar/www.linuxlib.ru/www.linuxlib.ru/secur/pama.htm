@@ -1,0 +1,794 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Pluggable Authentication Modules (PAM) — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://www.pornozavod.cc/models/anya/&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Anya </p> <p class='block_links_text'> <a href="https://www.pornozavod.cc/models/anya/" target="_blank">anya</a> </p><p class='block_links_url'> www.pornozavod.cc </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<p align = "left">
+	<h2>
+		Pluggable Authentication Modules (PAM)
+	</h2>
+</p>
+<p align = "justify">
+	Программы, предоставляющие пользователям привилегии должны правильно
+	идентифицировать каждого пользователя. Когда вы входите в систему, вы
+	предоставляете ваше имя пользователя (username) и пароль (password),
+	и процесс регистрации использует эти данные для проверки:
+	действительно ли вы тот, за кого себя выдаете.  Возможны формы
+	проверки подлинности отличные от паролей, и пароли могут храниться
+	разными способами.
+</p>
+<p align = "justify">
+	Pluggable Authentication Modules (PAM) - это способ, позволяющий
+	системному администратору задавать правила аутентификации без
+	перекомпиляции программ аутентификации. Используя PAM, вы
+	настраиваете определенные модули, включаемые в программу, редактируя
+	конфигурационный PAM файл программы в /etc/pam.d.
+</p>
+<p align = "justify">
+	Большинство пользователей Red Hat Linux никогда не нуждаются в
+	изменении конфигурационных PAM файлов их программ. Когда вы
+	используете RPM для установки программ, требующих аутентификации, они
+	автоматически вносят необходимые для нормальной работы изменения.
+	Однако, если вам понадобится изменить вашу конфигурацию, вы должны
+	понимать стуктуру конфигурационного файла PAM. Больше информации вы
+	можете найти в разделе "модули PAM".
+</p>
+<p align = "left">
+	<h2>
+		Преимущества PAM
+	</h2>
+</p>
+<p align = "justify">
+	PAM предоставляет множество полезностей
+	системному администратору, таких как:
+	<ul>
+		<li>
+			Общая схема аутентификации, которая может быть использована многими
+			приложениями.
+		<li>
+			С PAM могуть работать разнообразные приложения, которые не
+			нуждаются в перекомпиляции для поддержки PAM.
+		<li>
+			Невероятная гибкость управления аутентификацией для администраторов
+			и разработчиков ПО.
+		<li>
+			Разработчикам не нужно привязывать свои приложения к конкретной
+			схеме аутентификации. Вместо этого они могут сосредоточиться
+			непосредственно на разработке самого приложения.
+	</ul>
+</p>
+<p align = "left">
+	<h2>
+		Конфигурационные файлы PAM.
+	</h2>
+</p>
+<p align = "justify">
+	Каталог /etc/pam.d содержит в себе конфигурационные файлы PAM. В
+	ранних версиях PAM использовался файл pam.conf. Этот файл будет
+	использоваться если не было найдено каталога /etc/pam.d, однако его
+	использование нежелательно.
+</p>
+<p align = "justify">
+	Каждое приложение (или сервис, используемый многими пользователями)
+	имеет собственный файл. Каждый файл имеет пять разных элементов:
+	имя сервиса, тип модуля, флаги управления, путь к модулю и аргументы.
+</p>
+<p align = "left">
+	<h2>
+		Имена сервисов PAM.
+	</h2>
+</p>
+<p align = "justify">
+	Имя сервиса каждого приложения использующего PAM - это имя его файла
+	конфигурации в /etc/pam.d. Каждое приложение, использующее PAM
+	определяет собственное имя сервиса.
+</p>
+<p align = "justify">
+	Например, программа login определяет имя login, программа ftpd -
+	ftpd, и так далее.
+</p>
+<p align = "justify">
+	В общем, имя сервиса - это имя программы использующей сервис, а не
+	программы его предоставляющей.
+</p>
+<p align = "left">
+	<h2>
+		Модули PAM.
+	</h2>
+</p>
+<p align = "justify">
+	PAM включает четыре типа модулей для управления доступом к
+	определенному сервису:
+	<ul>
+		<li>
+			Auth модуль предоставляет фактичкескую аутентификацию (возможно
+			запрашивает и проверяет пароль) и устанавливает удостоверения
+			(credentials) такие как членство в группе или Kerberos tickets.
+		<li>
+			Account модуль проверяет, разрешена ли регистрация данного
+			пользователя в данный момент (не истекло ли время дествия аккаунта,
+			разрешено ли пользователю регистрироваться в данный момент и т. п.)
+		<li>
+			Password модуль используется для установки паролей пользователя.
+		<li>
+			Session модуль используется после того как пользователь прошел
+			регистрацию. Этот модуль позволяет использовать кому-то его
+			аккаунт (например, монтировать домашний каталог пользователя или
+			делать доступным его почтовый ящик).
+	</ul>
+
+</p>
+<p align = "justify">
+	Эти модули могут группироваться, разнообразно размещаться, таким
+	образом используется несколько модулей. Порядок расположения модулей
+	играет важную роль в процессе аутентификации, поэтому это дает
+	возможность администратору легко задавать условия, которые должны
+	быть пройдены пользователем в процессе аутентификации, прежде чем он
+	получит необходимые привилегии.
+</p>
+<p align = "justify">
+	Например, xlogin обычно использует как минимум четыре метода
+	аутентификации, так может выглядеть его конфигурационный файл PAM:
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+<pre>auth       required     /lib/security/pam_nologin.so
+auth       required     /lib/security/pam_securetty.so
+auth       required     /lib/security/pam_env.so
+auth       sufficient   /lib/security/pam_rhosts_auth.so
+auth       required     /lib/security/pam_stack.so service=system-auth
+account    required     /lib/security/pam_stack.so service=system-auth
+password   required     /lib/security/pam_stack.so service=system-auth
+session    required     /lib/security/pam_stack.so service=system-auth
+</pre>
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Прежде, чем кто-либо получит доступ к xlogin, PAM проверит отсутствие
+	/etc/nologin, что это не попытка удаленной регистрации под root, и
+	что ни одной переменной окружения не может быть загружено. Затем
+	необходимо успешное выполнение аутентификации xhosts, для того, чтобы
+	позволить установить соединение. Если аутентификация xhosts
+	завершается неудачей, то выполняется стандартная password
+	аутентификация.
+</p>
+<p align = "justify">
+	Новые PAM модули могут добавляться в любое время, после чего
+	приложения использующие PAM могут работать с ними. Например, если вы
+	создаете one-time-password creation метод и пишете PAM модуль для его
+	поддержки, ваши программы могут сразу его использовать, не требуя
+	перекомпиляции либо других изменений. Как вы уже заметили, это очень
+	полезно, потому как вы можете легко выбирать необходимы компонеты,
+	смешивать их и довольно легко отлаживать получившееся. Методы
+	аутентификации для любых программ можно строить легко и быстро, и у
+	вас нет необходимости перекомпилировать программу или нвосить в нее
+	изменения другого рода.
+</p>
+<p align = "justify">
+	Документацию касательно написания модулей вы можете найти в
+	/usr/share/doc/pam?(version-number).
+</p>
+<p align = "left">
+	<h2>
+		Флаги управления PAM.
+	</h2>
+</p>
+<p align = "justify">
+	Каждый модуль PAM возвращает результат успешного выполнения или
+	неудачи. Флаги	управления говорят PAM, что нужно делать с
+	результатом. Когда модули расположены в определенной
+	последовательности, флаги дают вам возможность установить "важность"
+	модуля по отношению к следующему за ним.
+</p>
+<p align = "justify">
+	Вернемся к нашему конфигурационному файлу PAM для xlogin:
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+<pre>auth       required     /lib/security/pam_nologin.so
+auth       required     /lib/security/pam_securetty.so
+auth       required     /lib/security/pam_env.so
+auth       sufficient   /lib/security/pam_rhosts_auth.so
+auth       required     /lib/security/pam_stack.so service=system-auth
+account    required     /lib/security/pam_stack.so service=system-auth
+password   required     /lib/security/pam_stack.so service=system-auth
+session    required     /lib/security/pam_stack.so service=system-auth
+</pre>
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Четыре типа флагов, стандартных для PAM.
+</p>
+<p align = "justify">
+	<ul>
+		<li>
+			required. Такой модуль должен быть успешно пройден. Лишь только в
+			этом случае пользователь будет допущен к проверке следующим
+			модулем.
+		<li>
+			requisite. Чтобы получить аутентификацию, этот модуль должен также
+			быть успешно пройден. Однако, если requisite модуль не будет
+			пройден, управление передается непосредственно приложению.
+		<li>
+			sufficient. При проверке, завершившейся неудачей, этот модуль будет
+			просто проигнорирован. Но, если sufficient модуль успешно пройден,
+			и не было неудач при прохождение вышестоящих required модулей, то
+			все остальные модули этого типа больше не будут рассматриваться и
+			будут считаться успешно пройденными.
+		<li>
+			optional. Успешное или неудачное прохождение модулей этого типа не
+			является критичным для общей картины аутентификации. Модули этого
+			типа играют роль только тогда, когда нет модулей других типов.
+	</ul>
+</p>
+<p align = "justify">
+	В настоящий момент в PAM доступны новые флаги управления. Смотрите
+	документацию PAM в /usr/share/doc/pam?(version-number) для получения
+	информации.
+</p>
+<p align = "left">
+	<h2>
+		Пути к PAM модулям.
+	</h2>
+</p>
+<p align = "justify">
+	Пути к модулям говорят PAM, где искать подключаемый модуль. Обычно,
+	это представляет собой полный путь к модулю, такой как
+	/lib/security/pam_stack.so. Если путь к модулю не будет указан (или
+	он начинается не с '/', то по-умолчанию считается, что модуль
+	расположен в /lib/security.
+</p>
+<p align = "left">
+	<h2>
+		Аргументы PAM.
+	</h2>
+</p>
+<p align = "justify">
+	PAM использует аргументы для передачи информации подключаемому модулю
+	во время аутентификации. Аргументы позволяют в различных
+	конфигурационных файлах PAM использовать модули по-разному.
+</p>
+<p align = "justify">
+	Например, модуль pam_userdb.so использует информацию хранящуюся в
+	файле Berkeley DB для аутентификации пользователя. Этому модулю нужно
+	передать аргумент, определяющий имя используемого файла, который
+	у каждого сервиса свой.
+</p>
+<p align = "justify">
+	Таким образом, строка pam_userdb.so будет выглядеть следующим
+	образом:
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+
+auth      required  /lib/security/pam_userdb.so db=path/to/file
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Неправильные аргументы будут проигнорированы и модуль не
+	вернет никакого результата. Когда встречается неверный аргумент,
+	ошибка обычно фиксируется в /var/log/mesages.
+</p>
+<p align = "left">
+	<h2>
+		Примеры конфигурационного файла PAM.
+	</h2>
+</p>
+<p align = "justify">
+	Конфигурационный PAM файл приложения может выглядеть так:
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+#%PAM-1.0<br>
+auth      required  /lib/security/pam_securetty.so<br>
+auth      required  /lib/security/pam_unix.so shadow nullok<br>
+auth      required  /lib/security/pam_nologin.so<br>
+account   required  /lib/security/pam_unix.so<br>
+password  required  /lib/security/pam_cracklib.so<br>
+password  required  /lib/security/pam_unix.so shadow nullok
+use_authtok<br>
+session   required  /lib/security/pam_unix.so<br>
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Первая строка является комментарием (любая строка, начинающаяся с '#'
+	- это комментарий. Строки со второй по четвертую используются для
+	аутнетификации.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+
+auth      required  /lib/security/pam_securetty.so
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Вторая строка проверяет наличие терминала с которого производится
+	попытка а аутентификации в файле /etc/securetty, если таковой
+	существует, в случае root логина. Если tty не указан в файле, то
+	аутентификация не будет разрешена.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+
+auth      required  /lib/security/pam_unix.so shadow nullok
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Третья строка запрашивает у пользователя пароль и проверяет его.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+
+auth      required  /lib/security/pam_nologin.so
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Четвертая строка проверяет наличие файла /etc/nologin. Если файл
+	существует и пользоваетль не является root, аутентификация завершится
+	неудачей.
+</p>
+<p align = "justify">
+	Заметьте, что все три auth модуля будут обрабатываться одниаково,
+	независимо от того, проход какого модуля завершится неудачей. Такая
+	стратегия не позволяет узнать пользователю какой именно этап
+	аутентификации он не прошел. Знание причин провала аутентификации
+	может стать причиной обхода пользователем этого этапа в следующий
+	раз. Вы можете изменить такое поведение системы, заменив required
+	модуль на requisite. Если какой либо requisite модуль не будет
+	пройден, PAM остановится немедленно и вернет результат неудачи.
+	Остальные существующие модули при этом проверяться не будут.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+
+account   required  /lib/security/pam_unix.so
+
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Пятая строка производит необходимые проверки аккаунта. Например, если
+	включены теневые пароли, модуль pam_unix.so проверяет время действия
+	аккаунта или своевременную смену пароля пользователем.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+account   required  /lib/security/pam_cracklib.so
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Шестая строка проверяет, не могут ли измененные пароли быть взломаны
+	при помощи программ перебирающих по словарю.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+password  required  /lib/security/pam_unix.so shadow nullok
+use_authtok
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Седьмая строка определяет, что если программа login изменяет пароль
+	пользователя, она для этого использует модуль pam_unix.so. Это может
+	произойти, если auth модуль определит, что пароль необходимо сменить
+	- например, если истек срок действия пароля.
+</p>
+<p align = "justify">
+	Восьмая, и последняя строка определяет, что модуль pam_unix.so будет
+	управлять сеансом (сессией). В данный момент этот модуль ничего не
+	делает; он должен быть заменен на необходимый модуль или дополнен
+	stack'ингом  (поправьте меня, кто может).
+</p>
+<p align = "justify">
+	Обратите внимание на порядок строк в файле. Порядок вызова required
+	модулей не имеет значения, доступны другие флаги управления.
+	Использование в файле optional модулей обуславливает важность порядка
+	выполнения модулей sufficient и requisite.
+</p>
+<p align = "justify">
+	В качестве следующегь примера рассмотрим конфигурационный
+	файл для rlogin:
+</p>
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+<pre>#%PAM-1.0
+auth      required    /lib/security/pam_nologin.so
+auth      required    /lib/security/pam_securetty.so
+auth      required    /lib/security/pam_env.so
+auth      sufficient  /lib/security/pam_rhosts_auth.so
+auth      required    /lib/security/pam_stack.so service=system-auth
+</pre>
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Первое. Если существует файл /etc/nologin, никто кроме root не сможет
+	зарегистрироваться в системе.
+</p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+	auth      required    /lib/security/pam_securetty.so
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Второе. pam_securetty.so предотвращает регистрацию root с
+	ненадежных терминалов. Неплохо было бы запретить логиниться root'у
+	при помощи rlogin. Если вы желаете иметь такую возможность (в этом
+	случае вы должны иметь хороший firewall или быть отключенным от
+	интернета), смотрите документацию rlogin.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+	auth      required    /lib/security/pam_env.so
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Третье. Модуль pam_env.so загружает переменные окружения, описанные в
+	/etc/security/pam_env.conf.
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+	auth      sufficient  /lib/security/pam_rhosts_auth.so
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Четвертое. Если pam_rhosts_auth.so аутентифицирует пользователя
+	используя .rhosts в домашнем каталоге пользователя, PAM
+	передает управление непосредственно rlogin, не переходя к следующему
+	шагу аутентификации (обычной проверки пароля). Если проход модуля
+	pam_rhosts_auth.so завершится неудачей, то будет производиться
+	нормальная проверка пароля (следующий шаг).
+</p>
+<p>
+<table border = "0" bgcolor = "silver" width = "100%">
+<tr>
+<td>
+	auth      required    /lib/security/pam_stack.so service=system-auth
+</td>
+</tr>
+</table>
+</p>
+<p align = "justify">
+	Пятое. Если pam_rhosts_auth.so не был пройден, pam_stack.so с
+	аргументом service=system-auth производит стандартную password
+	аутентификацию.
+</p>
+<p align = "justify">
+	<b>
+		NOTE:
+	</b>
+	<br>
+	Если вы не хотите запрашивать пароль в случае неудачной проверки
+	securetty и определения попытки установления удаленного соединения,
+	вы можете сменить pam_securetty.so с required на requisite. Как
+	вариант, вы можете пожелать разрешить удаленные root регистрации,
+	но это не является хорошей идеей.
+</p>
+
+<hr>
+<p align = "right">
+	Источник:<br>
+	<!--<a href = "http://www.redhat.com">-->
+		Red Hat Linux 7.1: The Official Red Hat Linux Reference Guide
+	<!--</a>-->
+	<br>
+	Перевод:<br>
+	<!--<a href = "http://www.leasat.net/~ashep">-->
+		Александр Шепетко
+	<!--</a>-->
+</p>
+
+  </div>
+</div>
+</body>
+</html>

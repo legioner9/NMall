@@ -1,0 +1,581 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Отладка ядра в режиме реального времени с помощью
+    DDB — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Руководство FreeBSD для
+          разработчиков</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "x2052.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">Chapter
+          16. Отладка ядра</td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "x2190.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="SECT1">
+      <h1 class="SECT1"><a name="AEN2071">16.4. Отладка ядра в
+      режиме реального времени с помощью DDB</a></h1>
+
+      <p>Хотя <tt class="COMMAND">gdb <tt class=
+      "OPTION">-k</tt></tt> является отладчиком не реального
+      времени с высокоуровневым пользовательским интерфейсом, есть
+      несколько вещей, которые он сделать не сможет. Самыми важными
+      из них являются точки останова и пошаговое выполнение кода
+      ядра.</p>
+
+      <p>Если вам нужно выполнять низкоуровневую отладку вашего
+      ядра, то на этот случай имеется отладчик реального времени,
+      который называется DDB. Он позволяет устанавливать точки
+      останова, выполнять функции ядра по шагам, исследовать и
+      изменять переменные ядра и прочее. Однако он не может
+      использовать исходные тексты ядра и имеет доступ только к
+      глобальным и статическим символам, а не ко всей отладочной
+      информации, как <tt class="COMMAND">gdb</tt>.</p>
+
+      <p>Чтобы отконфигурировать ваше ядро для включения DDB,
+      добавьте строчку с параметром</p>
+<pre class="PROGRAMLISTING">
+    options DDB
+</pre>
+      в ваш конфигурационный файл, и перестройте ядро. (Обратитесь
+      к <a href="https://www.linuxlib.ru/handbook/index.html" target="_top">Руководству
+      по FreeBSD</a> для выяснения подробностей о конфигурации ядра
+      FreeBSD.<br>
+      <br>
+
+      <div class="NOTE">
+        <blockquote class="NOTE">
+          <p><b>Note:</b> Если у вас устаревшая версия загрузочных
+          блоков, то отладочная информация может оказаться не
+          загруженной. Обновите блоки загрузки; самые новые
+          загружают символы для DDB автомагически.)</p>
+        </blockquote>
+      </div>
+
+      <p>После того, как ядро с DDB запущено, есть несколько
+      способов войти в DDB. Первый, и самый простой, способ
+      заключается в наборе флага загрузки <tt class=
+      "OPTION">-d</tt> прямо в приглашении загрузчика. Ядро будет
+      запущено в режиме отладки и войдет в DDB до выполнения
+      процедуры распознавания каких бы то ни было устройств.
+      Поэтому вы можете выполнить отладку даже функций
+      распознавания/присоединения устройств.</p>
+
+      <p>Вторым способом является переход в режим отладчика сразу
+      после загрузки системы. Есть два простых способа этого
+      добиться. Если вы хотите перейти в отладчик из командной
+      строки, просто наберите команду:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> sysctl debug.enter_debugger=ddb
+</pre>
+
+      <p>Либо, если вы работаете за системной консолью, можете
+      воспользоваться определенной комбинацией клавиш. По умолчанию
+      для перехода в отладчик используется комбинация <b class=
+      "KEYCAP">Ctrl</b>+<b class="KEYCAP">Alt</b>+<b class=
+      "KEYCAP">ESC</b>. Для драйвера syscons эта последовательность
+      может быть изменена, и в некоторых распространяемых
+      раскладках это сделано, так что обязательно выясните
+      правильную комбинацию. Для последовательных консолей имеется
+      параметр, позволяющий использовать последовательность BREAK
+      на канале консоли для входа в DDB (<tt class=
+      "LITERAL">options BREAK_TO_DEBUGGER</tt> в конфигурационном
+      файле ядра). По умолчанию этого не делается, так как
+      существует множество паршивых последовательных адаптеров,
+      которые генерируют последовательность BREAK, к примеру, при
+      вытягивании кабеля.</p>
+
+      <p>Третий способ заключается во входе в DDB при возникновении
+      любой аварийной ситуации, если ядро его использует. По этой
+      причине не очень умно конфигурировать ядро с DDB для машины,
+      которая работает без присмотра.</p>
+
+      <p>Команды DDB примерно повторяют некоторые команды <tt
+      class="COMMAND">gdb</tt>. Первым делом вам, наверное, нужно
+      задать точку останова:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>b function-name</b></tt>
+    <tt class="USERINPUT"><b>b address</b></tt>
+
+</pre>
+
+      <p>Значения по умолчанию воспринимаются в шестнадцатиричном
+      виде, но чтобы отличать их от имен символов;
+      шестнадцатиричные числа, начинающиеся с букв <tt class=
+      "LITERAL">a-f</tt>, должны предваряться символами <tt class=
+      "LITERAL">0x</tt> (это опционально для других чисел).
+      Разрешены простые выражения, например: <tt class=
+      "LITERAL">function-name + 0x103</tt>.</p>
+
+      <p>Чтобы продолжить работу прерванного ядра, просто
+      наберите:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>c</b></tt>
+</pre>
+
+      <p>Чтобы получить трассировку стека, задайте:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>trace</b></tt>
+</pre>
+
+      <div class="NOTE">
+        <blockquote class="NOTE">
+          <p><b>Note:</b> Заметьте, что при входе в DDB по
+          специальной комбинации, ядро в данный момент обслуживает
+          прерывание, так что трассировка стека может не дать много
+          информации.</p>
+        </blockquote>
+      </div>
+
+      <p>Если вы хотите убрать точку останова, введите</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>del</b></tt>
+    <tt class="USERINPUT"><b>del address-expression</b></tt>
+
+</pre>
+
+      <p>В первом варианте команда будет исполнена сразу же по
+      достижении точки останова, а текущая точка останова будет
+      удалена. Во второй форме можно удалить любую точку останова,
+      однако вам нужно будет указать ее точный адрес; его можно
+      получить из:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>show b</b></tt>
+</pre>
+
+      <p>Чтобы выполнить один шаг ядра, попробуйте:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>s</b></tt>
+</pre>
+
+      <p>При этом будет осуществляться пошаговое выполнение
+      функций, однако вы можете трассировать их с помощью DDB, пока
+      не будет достигнуто соответствие возвращаемому значению:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>n</b></tt>
+</pre>
+
+      <div class="NOTE">
+        <blockquote class="NOTE">
+          <p><b>Note:</b> Это отличается от команды <tt class=
+          "COMMAND">next</tt> отладчика <tt class=
+          "COMMAND">gdb</tt>; это похоже на команду <tt class=
+          "COMMAND">gdb</tt> <tt class="COMMAND">finish</tt>.</p>
+        </blockquote>
+      </div>
+
+      <p>Чтобы выводить значения в памяти, используйте, (к
+      примеру):</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>x/wx 0xf0133fe0,40</b></tt>
+    <tt class="USERINPUT"><b>x/hd db_symtab_space</b></tt>
+    <tt class="USERINPUT"><b>x/bc termbuf,10</b></tt>
+    <tt class="USERINPUT"><b>x/s stringbuf</b></tt>
+
+</pre>
+      для доступа к данным типа слово/полуслово/байт и вывода в
+      шестнадцатиричном/десятичном/символьном виде. Число после
+      запятой означает счетчик объектов. Чтобы вывести следующие
+      0x10 объектов, просто укажите:<br>
+      <br>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>x ,10</b></tt>
+</pre>
+
+      <p>Подобным же образом используйте</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>x/ia foofunc,10</b></tt>
+</pre>
+      для дизассемблирования и вывода первых 0x10 инструкций
+      функции <tt class="FUNCTION">foofunc</tt> вместе с их адресом
+      относительно начала <tt class="FUNCTION">foofunc</tt>.<br>
+      <br>
+
+      <p>Чтобы изменить значения в памяти, используйте команду
+      write:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>w/b termbuf 0xa 0xb 0</b></tt>
+    <tt class="USERINPUT"><b>w/w 0xf0010030 0 0</b></tt>
+
+</pre>
+
+      <p>Модификатор команды (<tt class="LITERAL">b</tt>/<tt class=
+      "LITERAL">h</tt>/<tt class="LITERAL">w</tt>) указывает на
+      размер записываемых данных, первое следующее за ним выражение
+      является адресом для записи, а оставшаяся часть
+      интерпретируется как данные для записи в доступные области
+      памяти.</p>
+
+      <p>Если вам нужно узнать текущее содержимое регистров,
+      используйте:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>show reg</b></tt>
+</pre>
+
+      <p>Альтернативно вы можете вывести содержимое одного регистра
+      по команде, скажем,</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>p $eax</b></tt>
+</pre>
+      и изменить его по:<br>
+      <br>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>set $eax new-value</b></tt>
+</pre>
+
+      <p>Если вам нужно вызвать некоторую функцию ядра из DDB,
+      просто укажите:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>call func(arg1, arg2, ...)</b></tt>
+</pre>
+
+      <p>Будет выведено возвращаемое значение.</p>
+
+      <p>Для вывода суммарной статистики по всем работающим
+      процессам в стиле команды <span class="CITEREFENTRY"><span
+      class="REFENTRYTITLE">ps</span>(1)</span> воспользуйтесь
+      такой командой:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>ps</b></tt>
+</pre>
+
+      <p>Теперь вы узнали, почему ядро работает с ошибками и хотите
+      выполнить перезагрузку. Запомните, что в зависимости от
+      влияния предыдущих ошибок, не все части ядра могут работать
+      так, как ожидается. Выполните одно из следующих действий для
+      закрытия и перезагрузки вашей системы:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>panic</b></tt>
+</pre>
+
+      <p>Это приведет к созданию дампа ядра и перезагрузке, так что
+      позже вы можете проанализировать дамп на более высоком уровне
+      при помощи <tt class="COMMAND">gdb</tt>. Как правило, эта
+      команда должна следовать за другой командой <tt class=
+      "COMMAND">continue</tt>.</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>call boot(0)</b></tt>
+</pre>
+
+      <p>Это может оказаться хорошим способом для корректного
+      закрытия работающей системы, <tt class="FUNCTION">sync()</tt>
+      для всех дисков и напоследок перезагрузка. Пока интерфейсы
+      диска и файловой системы в ядре не повреждены, это может быть
+      самым правильным способом закрытия системы.</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>call cpu_reset()</b></tt>
+</pre>
+
+      <p>самый последнее средство при аварии и практически то же
+      самое, что нажатие Большой Красной Кнопки.</p>
+
+      <p>Если вам нужен краткий справочник по командам, просто
+      наберите:</p>
+<pre class="SCREEN">
+    <tt class="USERINPUT"><b>help</b></tt>
+</pre>
+
+      <p>Однако настоятельно рекомендуем отпечатать копию страницы
+      справочника по <span class="CITEREFENTRY"><span class=
+      "REFENTRYTITLE">ddb</span>(4)</span> при подготовке к сеансу
+      отладки. Помните, что трудно читать онлайновое руководство
+      при пошаговом выполнении ядра.</p>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "x2052.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "x2190.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">Посмертный
+          анализ дампа</td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "kerneldebug.html" accesskey="U">Up</a></td>
+
+          <td width="33%" align="right" valign="top">Отладка ядра в
+          режиме реального времени при помощи удаленного GDB</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

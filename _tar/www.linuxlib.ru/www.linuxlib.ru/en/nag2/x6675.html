@@ -1,0 +1,801 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Using chat to Automate Dialing — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Linux Network Administrators Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="x-087-2-ppp.options.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 8. The Point-to-Point Protocol</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="x-087-2-ipconfig.options.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AEN6675"
+>8.4. Using chat to Automate Dialing</A
+></H1
+><P
+>&#13;
+
+One of the things that may have struck you as inconvenient in the
+previous example is that you had to establish the connection manually
+before you could fire up <B
+CLASS="COMMAND"
+>pppd</B
+>.  Unlike
+<B
+CLASS="COMMAND"
+>dip</B
+>, <B
+CLASS="COMMAND"
+>pppd</B
+> does not have its own
+scripting language for dialing the remote system and logging in, but
+relies on an external program or shell script to do this. The
+command to be executed can be given to <B
+CLASS="COMMAND"
+>pppd</B
+> with
+the <SPAN
+CLASS="SYSTEMITEM"
+>connect</SPAN
+> command-line
+option. <B
+CLASS="COMMAND"
+>pppd</B
+> will redirect the command's standard
+input and output to the serial line.</P
+><P
+>The <B
+CLASS="COMMAND"
+>pppd</B
+> software package is supplied with a very simple
+program called <B
+CLASS="COMMAND"
+>chat</B
+>, which is capable of being used in
+this way to automate simple login sequences. We'll talk about this command in
+some detail.</P
+><P
+>&#13;
+If your login sequence is complex, you will need something more
+powerful than <B
+CLASS="COMMAND"
+>chat</B
+>. One useful alternative you
+might consider is <B
+CLASS="COMMAND"
+>expect</B
+>, written by Don Libes. It
+has a very powerful language based on Tcl, and was designed exactly for
+this sort of application. Those of you whose login sequence requires,
+for example, challenge/response authentication involving
+ calculator-like key generators will find
+<B
+CLASS="COMMAND"
+>expect</B
+> powerful enough to handle the task. Since
+there are so many possible variations on this theme, we won't describe
+how to develop an appropriate expect script in this book.  Suffice it
+to say, you'd call your expect script by specifying its name using the
+<B
+CLASS="COMMAND"
+>pppd</B
+> <SPAN
+CLASS="SYSTEMITEM"
+>connect</SPAN
+> option. It's also important to
+note that when the script is running, the standard input and output
+will be attached to the modem, not to the terminal that invoked
+<B
+CLASS="COMMAND"
+>pppd</B
+>. If you require user interaction, you should
+manage it by opening a spare virtual terminal, or arrange some other
+means.</P
+><P
+>&#13;
+The <B
+CLASS="COMMAND"
+>chat</B
+> command lets you specify a UUCP-style chat script.
+Basically, a chat script consists of an alternating sequence of strings that
+we expect to receive from the remote system, and the answers we are to send.
+We will call them <I
+CLASS="EMPHASIS"
+>expect</I
+> and <I
+CLASS="EMPHASIS"
+>send</I
+>
+strings, respectively.  This is a typical excerpt from a chat script:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>ogin: b1ff ssword: s3|&#60;r1t</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>This script tells <B
+CLASS="COMMAND"
+>chat</B
+> to wait for the remote system to send
+the login prompt and return the login name
+<SPAN
+CLASS="SYSTEMITEM"
+>b1ff</SPAN
+>. We wait only for
+<SPAN
+CLASS="SYSTEMITEM"
+>ogin:</SPAN
+> so that it doesn't matter if
+the login prompt starts with an uppercase or lowercase l, or if it arrives
+garbled.  The following string is another expect string that makes
+<B
+CLASS="COMMAND"
+>chat</B
+> wait for the password prompt and send our
+response password.</P
+><P
+>This is basically what chat scripts are all about. A complete script to
+dial up a PPP server would, of course, also have to include the appropriate
+modem commands. Assume that your modem understands the Hayes command set, and
+the server's telephone number is 318714. The complete <B
+CLASS="COMMAND"
+>chat</B
+>
+invocation to establish a connection with
+<SPAN
+CLASS="SYSTEMITEM"
+>c3po</SPAN
+> would then be:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <TT
+CLASS="USERINPUT"
+><B
+>chat -v '' ATZ OK ATDT318714 CONNECT '' ogin: ppp word: GaGariN</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>By definition, the first string must be an expect string, but as the
+modem won't say anything before we have kicked it, we make
+<B
+CLASS="COMMAND"
+>chat</B
+> skip the first expect by specifying an empty string.
+We then send <SPAN
+CLASS="SYSTEMITEM"
+>ATZ</SPAN
+>, the reset
+command for Hayes-compatible modems, and wait for its response
+(<SPAN
+CLASS="SYSTEMITEM"
+>OK</SPAN
+>). The next string sends the <B
+CLASS="COMMAND"
+>dial</B
+>
+command along with the phone number to <B
+CLASS="COMMAND"
+>chat</B
+>, and expects
+the <SPAN
+CLASS="SYSTEMITEM"
+>CONNECT</SPAN
+> message in response.
+This is followed by an empty string again because we don't want to send
+anything now, but rather wait for the login prompt. The remainder of the
+chat script works exactly as described previously. This description probably looks a bit
+confusing, but we'll see in a moment that there is a way to make
+chat scripts a lot easier to understand.</P
+><P
+>The <TT
+CLASS="OPTION"
+>&#8211;v</TT
+> option makes <B
+CLASS="COMMAND"
+>chat</B
+> log all
+activities to the <B
+CLASS="COMMAND"
+>syslog</B
+> daemon
+<SPAN
+CLASS="SYSTEMITEM"
+>local2</SPAN
+>
+facility.<A
+NAME="X-087-2-FNPP06"
+HREF="x6675.html#FTN.X-087-2-FNPP06"
+>[1]</A
+></P
+><P
+>&#13;Specifying the chat script on the command line bears a certain risk
+because users can view a process's command line with the <B
+CLASS="COMMAND"
+>ps</B
+>
+command.  You can avoid this risk by putting the chat script in a file like
+<TT
+CLASS="FILENAME"
+>dial-c3po</TT
+>.  You make <B
+CLASS="COMMAND"
+>chat</B
+> read
+the script from the file instead of the command line by giving it the
+<TT
+CLASS="OPTION"
+>&#8211;f</TT
+> option, followed by the filename. This action has the
+added benefit of making our chat expect sequences easier to
+understand. To convert our example, our <TT
+CLASS="FILENAME"
+>dial-c3po</TT
+> file
+would look like:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>''      ATZ
+OK      ATDT318714
+CONNECT ''
+ogin:   ppp
+word:   GaGariN</PRE
+></TD
+></TR
+></TABLE
+>
+
+When we use a chat script file in this way, the string we expect to
+receive is on the left and the response we will send is on the
+right. They are much easier to read and understand when presented this way.</P
+><P
+>The complete <B
+CLASS="COMMAND"
+>pppd</B
+> incantation would now look like this:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <TT
+CLASS="USERINPUT"
+><B
+>pppd connect "chat -f dial-c3po" /dev/ttyS3 38400 -detach \
+        crtscts modem defaultroute</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>Besides the <SPAN
+CLASS="SYSTEMITEM"
+>connect</SPAN
+> option
+that specifies the dialup script, we have added two more options to
+the command line: <SPAN
+CLASS="SYSTEMITEM"
+>&#8211;detach</SPAN
+>, which tells
+<B
+CLASS="COMMAND"
+>pppd</B
+> not to detach from the console and become a
+background process, and the <SPAN
+CLASS="SYSTEMITEM"
+>modem</SPAN
+>
+keyword, which makes it perform
+modem-specific actions on the serial device, like disconnecting the
+line before and after the call. If you don't use this keyword,
+<B
+CLASS="COMMAND"
+>pppd</B
+> will not monitor the port's DCD line and will
+therefore not detect whether the remote end hangs up unexpectedly.</P
+><P
+>The examples we have shown are rather simple; <B
+CLASS="COMMAND"
+>chat</B
+>
+allows for much more complex scripts. For instance, it can specify
+strings on which to abort the chat with an error.  Typical abort
+strings are messages like <SPAN
+CLASS="SYSTEMITEM"
+>BUSY</SPAN
+>
+or <SPAN
+CLASS="SYSTEMITEM"
+>NO CARRIER</SPAN
+> that your modem
+usually generates when the called number is busy or doesn't answer. To
+make <B
+CLASS="COMMAND"
+>chat</B
+> recognize these messages immediately
+rather than timing out, you can specify them at the beginning of the
+script using the <SPAN
+CLASS="SYSTEMITEM"
+>ABORT</SPAN
+>
+keyword:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <TT
+CLASS="USERINPUT"
+><B
+>chat -v ABORT BUSY ABORT 'NO CARRIER' '' ATZ OK ...</B
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>Similarly, you can change the timeout value for parts of
+the chat scripts by inserting <SPAN
+CLASS="SYSTEMITEM"
+>TIMEOUT</SPAN
+>
+options.</P
+><P
+>Sometimes you also need to have conditional execution
+for parts of the chat script: when you don't receive the
+remote end's login prompt, you might want to send a BREAK or a carriage
+return. You can achieve this by appending a subscript to an expect
+string.  The subscript consists of a sequence of send and expect strings, just
+like the overall script itself, which are separated by hyphens. The
+subscript is executed whenever the expected string it is appended to
+is not received in time.  In the example above, we would modify the chat
+script as follows:
+
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>ogin:-BREAK-ogin: ppp ssword: GaGariN</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>When <B
+CLASS="COMMAND"
+>chat</B
+> doesn't see the remote system send the login
+prompt, the subscript is executed by first sending a BREAK, and then
+waiting for the login prompt again. If the prompt now appears, the
+script continues as usual; otherwise, it will terminate with an error.
+
+
+&#13;</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.X-087-2-FNPP06"
+HREF="x6675.html#X-087-2-FNPP06"
+>[1]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>If you edit <TT
+CLASS="FILENAME"
+>syslog.conf</TT
+> to redirect these log messages to
+a file, make sure this file isn't world readable, as <B
+CLASS="COMMAND"
+>chat</B
+>
+also logs the entire chat script by default&#8212;including passwords.</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="x-087-2-ppp.options.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x-087-2-ipconfig.options.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Using Options Files</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="x-087-2-ppp.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>IP Configuration Options</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>CGI & Perl - PERL - Полезные советы: Сортировка — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="index.htm#gl">графические библиотеки</a> |
+    <A HREF="index.htm#tcl">Tcl</a> |
+    <A HREF="index.htm#perl">Perl</a> |
+    <A HREF="index.htm#php">PHP</a> |
+    <A HREF="index.htm#java">Java &amp; C#</a> |
+    <A HREF="index.htm#dbms">СУБД</a> |
+    <A HREF="index.htm#cvs">CVS</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+                  <TABLE height=410 cellSpacing=0 cellPadding=3 width="100%"
+                  border=0>
+                    <TBODY>
+                    <TR vAlign=top>
+                      <TD>PERL - Полезные советы
+                        <UL>
+
+                          <LI><A href="https://www.linuxlib.ru/prog/sort.shtml">Сортировка</A> </LI></UL>
+                        <HR noShade SIZE=1>
+                        Попробуем отсортировать по возрастанию числа от 1 до 10.
+                        sort 1..10 дает нам результ ('1', '10', '2', '3', '4',
+                        '5', '6', '7', '8', '9'). Немного не то... Сортировка
+                        сработала как расстановка по алфавиту. Проблему можно
+                        решить с помощью оператора &lt;=&gt;. <PRE><CODE><B>
+        @sorted_num = sort { $a &lt;=&gt; $b } 1..10;  # То, что мы ожидали
+
+        # другой вариант этого же кода
+        sub numerically { $a &lt;=&gt; $b }
+        @sorted_num = sort numerically 1..10;
+</B></CODE></PRE>По умолчанию функция сортировки sort
+                        выполняет расстановку по алфавиту (сортировка в
+                        контексте символьных строк). Таким образом '10' и '100'
+                        появятся перед '2' и '3'. Чтобы изменить способ
+                        сортировки в данном случае мы применили собственный
+                        оператор сравнения двух переменных (блок сортировки).
+                        <HR align=right width="40%" color=#8080c0 noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка одного массива в соответсвии с содержимым
+                        другого массива.</B> <BR>Нам надо отсортировать два
+                        "параллельных" массива (списка). Например массив @page
+                        состоит из номеров страниц, а @note состоит из
+                        примечаний к этим страницам, т.е. $note[$i] - это
+                        примечание к странице $page[$i]. Нам хочется напечатать
+                        оба массива, отсортировав их по номерам страниц.
+                        <P></P><PRE><CODE><B>
+        @page = qw(24 75 41 9);
+        @note = qw(p.24-text p.75-text p.41-text p.9-text);
+        for (sort { $note[$a] &lt;=&gt; $note[$b] } 0..$#note) {
+                print "$page[$_]: $note[$_]\n";
+        }
+
+        # другой вариант
+        @note_sorted = @note[sort { $page[$a] &lt;=&gt; $page[$b] } 0..$#page];</PRE></B></CODE><PRE></PRE>
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка по убыванию.</B> <BR>Надо просто поменять
+                        местами переменные $a и $b в блоке сравнения. <PRE><CODE><B>
+        print "descending: ",
+                join(" ", sort { $b &lt;=&gt; $a } 3,4,1,5,9,7),
+                "\n";
+</B></CODE></PRE>
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка ключей хэш-массива в порядке возрастаний
+                        их значений</B>. <BR>Имеем хэш-массив, состоящий из слов
+                        книги и количеством повторений этих слов. Нам надо
+                        напечатать этот массив в порядке убывания частоты слова.
+<PRE><CODE><B>
+        # Считываем слова
+        while (&lt;&gt;) {
+                for (split) {
+                        $count{$_}++;
+                }
+        }
+
+        # Теперь выводим список слов и количество повторений
+        for (sort { $count{$b} &lt;=&gt; $count{$a} } keys %count) {
+                print "$_: $count{$_}\n";
+        }
+</B></CODE></PRE>
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка имен файлов по дате/времени изменения.</B>
+<PRE><CODE><B>
+        @newest_first = sort { -M $a &lt;=&gt; -M $b } &lt;*&gt;;
+</B></CODE></PRE>Оператор -М возвращает дату/время
+                        изменения файла в виде числа с плавающей точкой.
+                        Проблема состоит в том, что оператор -М выполняется
+                        очень медленно и на больших списках файлов операция
+                        сортировки может занять очень много времени. Для
+                        сортировки n файлов блок сравнения будет вызван примерно
+                        n log n раз. Для решения этой проблемы смотрите пример
+                        сортировки Шварца.
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка величин, время сравнения которых
+                        сравнительно велико.</B> <BR>Например, нам надо
+                        отсортировать файлы по времени последнего изменения, но
+                        оператор -М (время последнего изменения файла) работает
+                        очень медленно.
+                        <P>Решить проблему можно с помощью сортировка Шварца (по
+                        имени Рандала Шварца Randal Schwartz). <PRE><CODE><B>
+        # Сортировка имен файлов по времени их последнего изменения
+        @newest_first =
+          map { $_-&gt;[0] }
+          sort { $a-&gt;[1] &lt;=&gt; $b-&gt;[1] }
+          map { [ $_, -M ] }
+          &lt;*&gt;;
+
+        # Общая форма. Сортировка по одному ключу
+        @sorted =
+          map { $_ -&gt;[0] }
+          sort { $a-&gt;[1] %%compare-op%% $b-&gt;[1] }
+          map { [ $_, %%transform-func%% ] }
+          @input;
+
+        # Общая форма. Сортировка по двум ключам
+        @sorted =
+          map { $_ -&gt;[0] }
+          sort { $a-&gt;[1] %%compare-op1%% $b-&gt;[1] or
+                 $a-&gt;[2] %%compare-op2%% $b-&gt;[2] }
+          map { [ $_, %%transform-func1%%, %%transform-func2%% ] }
+          @input;
+</B></CODE></PRE>Суть метода заключается в том, что
+                        медленные вычисления производятся только один раз, а их
+                        результат сохраняется во временном массиве. Дальнейшая
+                        сортировка производится над значениями временного
+                        массива.
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                        <B>Сортировка строк по полям, разделенным символом.</B>
+                        <BR>Например, хочу отсортировать строки, разделенные на
+                        поля запятой, сначала по второму полю по числам, затем
+                        по первому полю по алфавиту в порядке убывания. <PRE><CODE><B>
+        sub fieldsort {
+            my ($sep, $cols);
+            if (ref $_[0]) {
+                $sep = '\\s+'
+            } else {
+                $sep = shift;
+            }
+            unless (ref($cols = shift) eq 'ARRAY') {
+                die "fieldsort columns must be in anon array";
+            }
+            my (@sortcode, @col);
+            my $col = 1;
+            for (@$cols) {
+                my ($a, $b) = /^-/ ? qw(b a) : qw(a b);
+                my $op = /n$/ ? '&lt;=&gt;' : 'cmp';
+                push @col, (/(\d+)/)[0] - 1;
+                push @sortcode, "\$${a}-&gt;[$col] $op \$${b}-&gt;[$col]";
+                $col++;
+            }
+            my $sortfunc = eval "sub { " . join (" or ", @sortcode) . " } ";
+            my $splitfunc = eval 'sub { (split /$sep/o, $_)[@col] } ';
+            return
+                map $_-&gt;[0],
+                sort { $sortfunc-&gt;() }
+                map [$_, $splitfunc-&gt;($_)],
+                @_;
+        }
+
+        #Примеры:
+
+        # Как сказано выше
+        @sorted = fieldsort ':', ['2n', -1], @data;
+
+        # по 2-му затем по 1-му полю, по алфавиту, разделены пробелами
+        @sorted = fieldsort [2, 1], @data;
+
+        # по 1-му полю по числам в порядке убывания, затем по 3-му полю
+        # по алфавиту и по 2-му по числам, поля разделены '+'
+        @sorted = fieldsort '+', ['-1n', 3, 2], @data;
+</B></CODE></PRE>На самом деле большая часть
+                        приведенного выше кода - это препроцессор, который
+                        готовит данные для дальнейшей сортировки Шварца.
+                        <HR align=right width="40%" noShade>
+
+                        <P align=right>Автор: Joseph N. Hall </P>
+                        <HR noShade SIZE=1>
+                      </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+
+  </div>
+</div>
+</body>
+</html>

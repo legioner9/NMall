@@ -1,0 +1,580 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Building a Custom Kernel — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV CLASS="NAVHEADER">
+<TABLE WIDTH="100%" BORDER="0" CELLPADING="0" CELLSPACING="0">
+<TR><TH COLSPAN="3" ALIGN="center">Linux Administration Made Easy</TH></TR>
+<TR><TD WIDTH="10%" ALIGN="left" VALIGN="bottom"><A HREF="x1930.htm">Назад
+</A></TD>
+<TD WIDTH="80%" ALIGN="center" VALIGN="bottom">Chapter 10. Upgrading Linux
+and Other Applications</TD>
+<TD WIDTH="10%" ALIGN="right" VALIGN="bottom"><A HREF="x2104.htm">Вперед</A>
+</TD></TR></TABLE><HR ALIGN="LEFT" WIDTH="100%"></DIV>
+
+<DIV CLASS="SECT1"><H1 CLASS="SECT1"><A NAME="KERNEL-CUSTOM">Построение
+специального ядра</A></H1>
+<P>Если Вы используете Linux с необычной аппаратурой, нуждаетесь в
+возможностях, которых нет в стандартных ядрах системы или хотите уменьшить
+память, отдаваемую ядром тем возможностям, которыми Вы все равно не
+пользуетесь, создайте специально настроенное ядро.</P>
+
+<P>Обновление ядра включает конфигурирование желательных модулей, компиляцию
+ядра и модулей, и в заключение установку образа ядра. Это сопровождается
+перезагрузкой системы, чтобы загрузить новое ядро. Все это описано в файле
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">README</TT></TT>'', поставляемом с
+каждым пакетом ядра. Дальнейшая информация может быть найдена в подкаталоге
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">Documentation/</TT></TT>''.
+Особенно полезный файл там ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">
+Configure.help</TT></TT>'', который содержит детализированную информацию
+относительно доступного ядра, параметров компиляции и модулей.</P>
+
+<P>Далее приводится пример построения заказного ядра версии 2.0.36 для
+платформы Intel. При формировании заказного ядра обычно происходит только
+конфигурирование, компиляция и установка, но иногда (обычно в случае
+новых аппаратных средств) необходимо загрузить дополнительное программное
+обеспечение (драйвер), если аппаратные средства еще не поддерживаются версией
+ядра, которую Вы компилируете.</P>
+
+<P>Первый шаг в формирование заказного ядра: скачать и поставить исходный
+текст ядра из RPM (рекмендуется) или из tarball. См. <A HREF="x1890.htm">в
+разделе <I>Обновление ядра Linux</I></A> подробности о том, какие файлы нужны
+и где их взять.</P>
+
+<P>Теперь утилитой ``<TT CLASS="LITERAL">rpm</TT>'' (или
+``<TT CLASS="LITERAL">tar</TT>'') поставьте дерево исходников ядра и файлы
+заголовков. Например, для установки ядра 2.0.36-3 из RPM:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>
+rpm -Uvh kernel-source-2.0.36-3.i386.rpm kernel-headers-2.0.36-3.i386.rpm
+</B></TT><TT CLASS="USERINPUT"><B>
+rpm -Uvh kernel-ibcs-2.0.36-3.i386.rpm</B></TT></PRE></TD></TR></TABLE>
+
+<P>(Если Linux используется на notebook, Вам также нужен файл
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">kernel-pcmcia-cs-2.0.36-3.i386.rpm
+</TT></TT>'', который поддерживает функции управления питанием.)</P>
+
+<P>После установки файлов ядра, Вы должны быть способны найти новое дерево
+исходников в каталоге ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">
+/usr/src/linux/</TT></TT>''.</P>
+
+<P>Следующий шаг: надо скачать все дополнительные файлы драйверов (если
+они нужны) и установить их в новое ядерное исходное дерево. Например,
+чтобы добавить поддержку для Mylex DAC960 (аппаратный контроллер RAID) я
+загрузил драйвер с сайта <!--<A HREF="http://www.dandelion.com" TARGET="_top">-->
+http://www.dandelion.com<!--</A>-->. К сожалению, такое программное обеспечение
+предлагается обычно только как tarballs, так что ставьте с использованием
+утилиты ``<TT CLASS="LITERAL">tar</TT>''. Например:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>cd /usr/src/</B>
+</TT><TT CLASS="USERINPUT"><B>tar zxvpf DAC960-2.0.0-Beta4.tar.gz</B></TT>
+</PRE></TD></TR></TABLE>
+
+<P>Вы должны прочитать документацию, поставляемую с драйвером. Например,
+драйвер DAC960 включает файл ``<TT CLASS="LITERAL"><TT CLASS="FILENAME">
+README</TT></TT>'', который поясняет как разместить скачанные файлы и
+применить патч ядра:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%"><TR><TD><PRE CLASS="SCREEN">
+<TT CLASS="USERINPUT"><B>
+mv README.DAC960 DAC960.[ch] /usr/src/linux/drivers/block
+</B></TT><TT CLASS="USERINPUT"><B>patch -p0 &#60; DAC960.patch</B></TT>
+</PRE></TD></TR></TABLE>
+
+<P>Следующий шаг: надо гарантировать, что символические связи файлов в Вашей
+системе не противоречат новому дереву ядра. Фактически, этот шаг должен быть
+ыыполнен только однажды, так как он нужен только, если Вы не компилировали
+заказное ядро раньше:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%"><TR><TD><PRE CLASS="SCREEN">
+<TT CLASS="PROMPT">
+mail:/usr/src#</TT> <TT CLASS="USERINPUT"><B>cd /usr/include</B></TT>
+<TT CLASS="PROMPT">
+mail:/usr/include#</TT> <TT CLASS="USERINPUT"><B>rm -rf asm linux scsi</B>
+</TT><TT CLASS="PROMPT">
+mail:/usr/include#</TT> <TT CLASS="USERINPUT"><B>
+ln -s /usr/src/linux/include/asm-i386 asm</B></TT>
+<TT CLASS="PROMPT">mail:/usr/include#</TT> <TT CLASS="USERINPUT"><B>
+ln -s /usr/src/linux/include/linux linux</B></TT><TT CLASS="PROMPT">
+mail:/usr/include#</TT> <TT CLASS="USERINPUT"><B>
+ln -s /usr/src/linux/include/scsi scsi</B></TT></PRE></TD></TR></TABLE>
+
+<DIV CLASS="NOTE"><TABLE CLASS="NOTE" WIDTH="100%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP"><IMG SRC="../images/note.gif"
+HSPACE="5" ALT="Note"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Замечание: данный шаг больше не нужен для ядер версии 2.2.x или выше.</P>
+</TD></TR></TABLE></DIV>
+
+<P>Следующий шаг: сконфигурировать ваши параметры настройки ядра. Это
+наиболее важный шаг в формировании заказного ядра. Если по ошибке выключите
+нужную возможность, узнаете про это гораздо позже... Однако, если Вы
+<I CLASS="EMPHASIS">включите</I> лишние возможности, то зря потратите память
+в системе (замечание переводчика: что обычно и происходит в неоптимальных
+стандартных ядрах).</P>
+
+<P>Надо разобраться в том, что Вам нужно в системе, какие возможности должны
+поддерживаться, какое оборудование имеется. После нескольких попыток
+настройки ядра, процесс станет очень понятным и знакомым. Это в первый раз
+трудно, потом привыкнете!</P>
+
+<P>Наберите следующее для запуска процесса настройки:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/usr/include#</TT> <TT CLASS="USERINPUT"><B>cd /usr/src/linux</B></TT>
+<TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make mrproper</B></TT>
+<TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make menuconfig</B></TT>
+</PRE></TD></TR></TABLE>
+
+<P>(Вы можете ввести ``<TT CLASS="LITERAL">make xconfig</TT>'' вместо
+``<TT CLASS="LITERAL">make menuconfig</TT>'' при работе в X Window System;
+см. <A HREF="c515.htm">главу 5</A> для подробностей о работе в X.)</P>
+
+<P>Чтобы конфигурировать ваше ядро, пройдите различные параметры настройки,
+разрешите те, которые нужны, и снимите выделение (отключите) с тех, которые
+не нужны. Вы можете выбирать между наличием поддержки некоторого свойства,
+встроенной в ядро, и наличием ее как модуля, который загружается и
+выгружается ядром когда необходимо. (Если Вы компилируете свойство, которое
+фактически необходимо, чтобы загружать систему, типа SCSI драйвера, как
+модуль, Вы будете должны создать образ RAMDISK, или система не будет
+загружаться. Это делается командой ``<TT CLASS="LITERAL">mkinitrd</TT>'';
+эта процедура описана немного позже.)</P>
+
+<P>При прохождении параметров настройки конфигурации, Вы можете выбрать
+<TT CLASS="LITERAL">&lt;Help&gt;</TT> для описания того, зачем нужна данная
+опция ядра.</P>
+
+<P>После того, как Вы сконфигурировали ваши ядерные параметры настройки,
+введите следующие команды, чтобы откомпилировать ядро:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make dep ; make clean</B>
+</TT> <TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make bzImage</B></TT>
+<TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make modules</B></TT>
+</PRE></TD></TR></TABLE>
+
+<P>Если Вы <I CLASS="EMPHASIS">перекомпилируете</I> то же самое ядро, какое
+Вы имели (2.0.36-3 в данном примере), стоит переместить существующие модули в
+какой-нибудь резервный каталог командой:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>
+mv /lib/modules/2.0.36-3 /lib/modules/2.0.36-3-backup</B></TT></PRE></TD>
+</TR></TABLE>
+
+<P>Теперь установите новые модули:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>make modules_install</B>
+</TT></PRE></TD></TR></TABLE>
+
+<P>Теперь скопируйте ядро в каталог
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/boot/</TT></TT>'' и используйте
+LILO для обновления boot record, чтобы новое ядро распознавалось. Следующие
+команды изготовят резервную копию существующего ядра, скопируют новое ядро и
+затем обновят LILO boot record:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/usr/src/linux#</TT> <TT CLASS="USERINPUT"><B>cd /boot</B></TT>
+<TT CLASS="PROMPT">
+mail:/boot#</TT> <TT CLASS="USERINPUT"><B>cp vmlinuz vmlinuz.OLD</B></TT>
+<TT CLASS="PROMPT">mail:/boot#</TT> <TT CLASS="USERINPUT"><B>
+cp /usr/src/linux/arch/i386/boot/bzImage vmlinuz-2.0.36</B></TT>
+<TT CLASS="PROMPT">mail:/boot#</TT> <TT CLASS="USERINPUT"><B>/sbin/lilo</B>
+</TT></PRE></TD></TR></TABLE>
+
+<P>Наконец, подправьте файл
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/lilo.conf</TT></TT>'', и
+создайте ссылку &#8220;image&#8221; на новое ядро. Вы должны также добавить
+раздел, который указывает на ваше резервное ядро, названное, возможно,
+&#8220;OldLinux&#8221;. Пример файла:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="PROGRAMLISTING">
+boot=/dev/hda
+map=/boot/map
+install=/boot/boot.b
+prompt
+timeout=50
+
+image=/boot/vmlinuz
+label=Linux
+root=/dev/hdb1
+read-only
+
+image=/boot/vmlinuz.OLD
+label=OldLinux
+read-only
+</PRE></TD></TR></TABLE>
+
+<P>Таким образом, Вы обеспечите себе путь для отступления: если Ваше новое
+ядро не грузится, (устройство не распознано или daemon не запускается, хотя и
+должен бы), Вы можете просто ввести ``<TT CLASS="LITERAL">OldLinux</TT>''
+чтобы загрузиться со старым ядром и исследовать проблему.</P>
+
+<DIV CLASS="NOTE"><P></P><TABLE CLASS="NOTE" WIDTH="100%" BORDER="0">
+<TR><TD WIDTH="25" ALIGN="CENTER" VALIGN="TOP">
+<IMG SRC="../images/note.gif" HSPACE="5" ALT="Note"></TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<P>Замечание: Как упомянуто выше, если Вы откомпилировали требуемое для
+загрузки системы свойство как модуль, Вы должны создать загрузочный образ
+RAMDISK, чтобы загрузить вашу систему. (Не забудьте откомпилировать Ваше ядро
+с поддержкой для такого образа начальной загрузки.)</P></TD></TR></TABLE>
+</DIV>
+
+<P>Процедура для создания и использования загрузочного образа RAMDISK:</P>
+
+<UL><LI STYLE="list-style-type: Bullet"><P>Добавьте запись в файл
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/etc/lilo.conf</TT></TT>'' для
+загрузки с загрузочного (initial) образа RAMdisk; как показано ниже:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%"><TR><TD>
+<PRE CLASS="PROGRAMLISTING">
+image=/boot/vmlinuz
+        label=Linux
+        root=/dev/hdb1
+        initrd=/boot/initrd-2.2.4-4.img
+        read-only
+</PRE></TD></TR></TABLE></LI>
+
+<LISTYLE="list-style-type: Bullet">
+<P>Устройство loopback должно быть загружено прежде, чем Вы сможете
+использовать команду mkinitrd. Загрузите модуль устройства loopback:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>/sbin/insmod loop</B>
+</TT></PRE></TD></TR></TABLE>
+
+<P>(Если Вы получаете сообщение об ошибках относительно невозможности
+загрузить модуль loopback, попробуйте определить полный путь к модулю для
+<I CLASS="EMPHASIS">текущего</I> ядра системы. Например:
+``<TT CLASS="LITERAL"><TT CLASS="FILENAME">/lib/modules/2.0.35/loop</TT>
+</TT>''.)</P></LI>
+
+<LI STYLE="list-style-type: Bullet">
+<P>Используйте команду ``<TT CLASS="LITERAL">mkinitrd</TT>'', чтобы создать
+образ:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="90%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>
+/sbin/mkinitrd /boot/initrd-2.0.36-3.img 2.0.36-3</B></TT>
+</PRE></TD></TR></TABLE></LI>
+
+<LI STYLE="list-style-type: Bullet"><P>Запустите ``<TT CLASS="LITERAL">
+/sbin/lilo</TT>'', чтобы обновить начальный загрузчик.</P></LI></UL>
+
+<P>Вот и все, теперь перезагрузитесь с новым ядром!</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="PROMPT">
+mail:/boot#</TT> <TT CLASS="USERINPUT"><B>/sbin/shutdown -r now</B></TT>
+</PRE></TD></TR></TABLE>
+
+<P>Если ядро отказывается загружаться, не паникуйте. Загрузитесь с дискеты
+начальной загрузки, которая была создана в течение установки Linux. Если Вы
+не имеете копии этих дисков, Вы должны быть способны создать ее с Red Hat CD.
+Вставьте дискету в дисковод, загрузитесь с нее и на приглашение &#8220;boot
+:&#8221; введите:</P>
+
+<TABLE BORDER="0" BGCOLOR="#E0E0E0" WIDTH="100%">
+<TR><TD><PRE CLASS="SCREEN"><TT CLASS="USERINPUT"><B>
+mount root=/dev/hda1</B></TT></PRE></TD></TR></TABLE>
+
+<P>Данная команда предполагает, что корневой раздел (&#8220;/&#8221; или
+root) находится на /dev/hda1.</P>
+
+<P>Linux должен нормально загрузиться с дискеты. Конечно, данное ядро не
+поддерживает специфических возможностей, так что часть аппаратуры, возможно,
+не будет работать, но того, что есть хватит для устранения неполадки.
+Восстановите старое ядро, переустановите LILO (то есть,
+``<TT CLASS="LITERAL">mv /vmlinuz.old /vmlinuz ; /sbin/lilo</TT>'') и
+перезагрузитесь. Теперь можно попробовать перекомпилировать ядро с другими
+опциями и повторить попытку. Замечание переводчика: если Вы предусмотрели в
+настройке LILO запись для старого ядра, наберите
+``<TT CLASS="LITERAL">OldLinux</TT>'' при загрузке с жесткого диска, чтобы
+загрузиться со старым ядром и исследовать проблему. Здесь дискеты не
+понадобятся. Непонятно почему автор предусмотрел упоминание про эту
+возможность выше, а здесь стал описывать загрузку с дискеты, будто нет
+возможности загрузить старое ядро. Забыл, что ли?</P></DIV>
+
+<DIV CLASS="NAVFOOTER"><HR ALIGN="LEFT" WIDTH="100%">
+<TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top"><A HREF="x1930.htm">Назад</A>
+</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="book1.htm">Оглавление
+</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top"><A HREF="x2104.htm">Вперед</A>
+</TD></TR>
+<TR><TD WIDTH="33%" ALIGN="left" VALIGN="top">Upgrading a Red Hat Stock
+Kernel</TD>
+<TD WIDTH="34%" ALIGN="center" VALIGN="top"><A HREF="c1795.htm">Локальное
+оглавление</A></TD>
+<TD WIDTH="33%" ALIGN="right" VALIGN="top">Moving to the Linux 2.2.x Kernels
+</TD></TR></TABLE></DIV>
+
+  </div>
+</div>
+</body>
+</html>

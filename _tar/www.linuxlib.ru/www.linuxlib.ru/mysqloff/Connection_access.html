@@ -1,0 +1,651 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.2.9  Управление доступом, этап 1: верификация подсоединения — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/Connection_access.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/Connection_access.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="Privilege_system.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.2 Общие проблемы безопасности и система привилегий доступа MySQL
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/General_security.html">4.2.1 Общие принципы обеспечения безопасности
+</a></li><li><a href="Security.html">4.2.2 Как обезопасить MySQL от хакеров
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Privileges_options.html">4.2.3 Опции запуска <code>mysqld</code>, относящиеся к безопасности
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/LOAD_DATA_LOCAL.html">4.2.4 Вопросы безопасности, относящиеся к команде LOAD DATA LOCAL
+</a></li><li><a href="What_Privileges.html">4.2.5 Функции, выполняемые системой привилегий
+</a></li><li><a href="Privileges.html">4.2.6 Как работает система привилегий
+</a></li><li><a href="Privileges_provided.html">4.2.7 Привилегии, предоставляемые MySQL
+</a></li><li><a href="Connecting.html">4.2.8 Соединение с сервером MySQL
+</a></li><li class="self">4.2.9 Управление доступом, этап 1: верификация подсоединения
+</li><li><a href="Request_access.html">4.2.10 Управление доступом, этап 2: верификация запросов
+</a></li><li><a href="Access_denied.html">4.2.11 Причины появления ошибок <code>Access denied</code> ("в доступе отказано")
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Connecting.html" title="4.2.8  Соединение с сервером MySQL">Previous</a> / <a rel="next" href="Request_access.html" title="4.2.10  Управление доступом, этап 2: верификация запросов">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.2.9  Управление доступом, этап 1: верификация подсоединения</H3>
+
+<P>
+<A NAME="IDX469"></A>
+<A NAME="IDX470"></A>
+<A NAME="IDX471"></A>
+<A NAME="IDX472"></A>
+
+</P>
+<P>
+При попытке соединения с сервером MySQL он либо устанавливает соединение,
+либо отказывает в нем - на основе данных о вашей личности и того, можете
+ли вы подтвердить их соответствующим паролем. Если нет, сервер полностью
+отказывает вам в доступе. В противном случае сервер устанавливает
+соединение, затем переходит ко второму этапу и ожидает запросов.
+
+</P>
+<P>
+Личность задается двумя порциями информации:
+
+</P>
+
+<ul>
+<LI>
+
+хостом, с которого вы подсоединяетесь
+
+<LI>
+
+вашим именем пользователя MySQL
+</ul>
+
+<P>
+Проверка личности осуществляется с помощью трех полей контекста таблицы
+<code>user</code> (<code>Host</code>, <code>User</code> и <code>Password</code>). Сервер устанавливает соединение только в том
+случае, если находит в таблице <code>user</code> запись, в которой имя хоста и имя
+пользователя совпадают с введенными вами, и вы указываете правильный
+пароль.
+
+</P>
+<P>
+Значения в полях контекста таблицы <code>user</code> могут задаваться следующим
+образом:
+
+</P>
+
+<ul>
+<LI>
+
+В поле <code>Host</code> может указываться имя хоста, либо его IP-адрес, либо
+<code>'localhost'</code> для обозначения локального хоста.
+
+<LI>
+
+В поле Host разрешается использовать шаблонные символы <samp>`%'</samp> и <samp>`_'</samp>.
+
+<LI>
+
+Значение <code>'%'</code> в поле <code>Host</code> означает любое имя хоста.
+
+<LI>
+
+Пустое значение в поле <code>Host</code> означает, что к этой привилегии должна
+быть добавлена запись в таблице <code>host</code>, совпадающая с заданным именем
+хоста. Дополнительную информацию по данной теме вы найдете в следующем
+разделе.
+
+<A NAME="IDX473"></A>
+<LI>
+
+Начиная с версии MySQL 3.23 для значений в поле в поле <code>Host</code>,
+определенных в виде IP-адресов, можно задавать сетевую маску,
+указывающую, сколько разрядов адреса будет использоваться для указания
+номера сети. Например:
+
+
+<pre>
+mysql&#62; GRANT ALL PRIVILEGES ON db.*
+    -&#62; TO david'192.58.197.0/255.255.255.0';
+</pre>
+
+В этом случае все IP-адреса, для которых выполняется следующее условие:
+
+
+<pre>
+user_ip &#38; netmask = host_ip.
+</pre>
+
+являются разрешенными для подсоединения. В предыдущем примере все
+IP-адреса в диапазоне от 192.58.197.0 до 192.58.197.255 являются
+разрешенными для подсоединения к серверу MySQL.
+
+<LI>
+
+<A NAME="IDX474"></A>
+В поле <code>User</code> запрещено использовать шаблонные символы, но пустое
+значение разрешено, и оно соответствует любому имени. Если запись в
+таблице <code>user</code>, соответствующая входящему подсоединению, содержит пустое
+имя пользователя, данный пользователь считается анонимным
+пользователем (пользователем без имени), а заданное клиентом имя
+пользователя игнорируется. Это означает, что при всех последующих
+проверках доступа, осуществляемых на протяжении данного соединения
+(т.е. на этапе 2), будет использоваться пустое имя пользователя.
+
+<LI>
+
+Поле <code>Password</code> может быть пустым. Это не означает, что в данном случае
+подходит любой пароль. Если поле пароля пусто, пользователь должен
+быть подсоединен без указания какого либо пароля.
+</ul>
+
+<P>
+<A NAME="IDX475"></A>
+Непустые значения в поле <code>Password</code> представляют собой зашифрованные пароли.
+В MySQL пароли не хранятся в виде открытого текста, который может
+прочитать кто угодно. Напротив, пароль, который вводится пользователем при
+попытке подсоединения, шифруется (с помощью функции <code>PASSWORD()</code>). В
+дальнейшем зашифрованный пароль используется клиентом/сервером в процессе
+проверки его правильности (это делается вообще без пересылки пароля во
+время подсоединения). Заметим, что с MySQL считает зашифрованный пароль
+РЕАЛЬНЫМ паролем, поэтому не следует допускать к нему кого бы то ни было!
+В частности, не разрешайте обычным пользователям доступ для чтения к
+таблицам в базе <code>mysql</code>!
+
+</P>
+<P>
+Примеры, приведенные ниже, показывают, каким входящим подсоединениям
+соответствуют различные комбинации значений, указанных в полях <code>Host</code> и <code>User</code>
+таблицы  <code>user</code>:
+
+</P>
+<TABLE BORDER WIDTH="100%">
+<TR><TD><strong>Значение в поле</strong> <code>Host</code> </TD><TD> <strong>Значение в поле</strong> <code>User</code> </TD><TD> <strong>Подсоединения, которым соответствует запись</strong>
+</TD></TR>
+<TR><TD><code>'thomas.loc.gov'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся  с <code>thomas.loc.gov</code>
+</TD></TR>
+<TR><TD><code>'thomas.loc.gov'</code> </TD><TD> <code>''</code> </TD><TD> Любой пользователь, подключающийся с <code>thomas.loc.gov</code>
+</TD></TR>
+<TR><TD><code>'%'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся с любого хоста
+</TD></TR>
+<TR><TD><code>'%'</code> </TD><TD> <code>''</code> </TD><TD> Любой пользователь, подключающийся с любого хоста
+</TD></TR>
+<TR><TD><code>'%.loc.gov'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся с любого хоста, принадлежащего домену <code>loc.gov</code>
+</TD></TR>
+<TR><TD><code>'x.y.%'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся с <code>x.y.net</code>, <code>x.y.com</code>,<code>x.y.edu</code>, и т.д. (это, по-видимому, бесполезный вариант)
+</TD></TR>
+<TR><TD><code>'144.155.166.177'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся с хоста, имеющего IP-адрес <code>144.155.166.177</code>
+</TD></TR>
+<TR><TD><code>'144.155.166.%'</code> </TD><TD> <code>'fred'</code> </TD><TD> <code>fred</code>, подключающийся с любого хоста в подсети <code>144.155.166</code> класса C
+</TD></TR>
+<TR><TD><code>'144.155.166.0/255.255.255.0'</code> </TD><TD> <code>'fred'</code> </TD><TD> То же самое, что и в предыдущем примере
+</TD></TR>
+</TABLE>
+
+<P>
+Поскольку в IP-адресе, указываемом в поле <code>Host</code>, могут использоваться
+шаблонные символы (например <code>'144.155.166.%'</code> - данное значение
+соответствует всем без исключения хостам указанной подсети), возникает
+опасность, что кто-нибудь может попытаться воспользоваться этой
+возможностью, указав имя хоста, например, как <code>144.155.166.somewhere.com</code>.
+Чтобы ``поставить заслон'' таким попыткам, в MySQL не разрешены имена
+хостов, начинающиеся с цифр и точки. Другими словами, имени хоста типа
+<code>1.2.foo.com</code>, никогда не найдется соответствия в столбцах <code>Host</code> таблиц
+привилегий. IP-адресу с шаблонными символами может соответствовать только
+IP-адрес.
+
+</P>
+<P>
+Входящее подсоединение может совпадать с несколькими записями в таблице
+user. Например, как было показано выше, подсоединению с <code>thomas.loc.gov by</code>
+<code>fred</code> могут подходить разные записи. Каким образом сервер определяет, какую
+из записей использовать, при совпадении с более чем одной из них? Для
+этого после считывания таблицы <code>user</code> во время запуска сервер производит ее
+сортировку, а затем, когда пользователь пытается установить соединение,
+записи таблицы просматриваются в порядке их упорядочения,. Используется
+первая подошедшая запись.
+
+</P>
+<P>
+Сортировка таблицы user осуществляется следующим образом. Предположим,
+таблица <code>user</code> имеет следующий вид:
+
+</P>
+
+<pre>
++-----------+----------+-
+| Host      | User     | ...
++-----------+----------+-
+| %         | root     | ...
+| %         | jeffrey  | ...
+| localhost | root     | ...
+| localhost |          | ...
++-----------+----------+-
+</pre>
+
+<P>
+При считывании этой таблицы сервер упорядочивает записи, начиная с
+наиболее конкретных значений в столбце <code>Host</code> (<code>'%'</code> в столбце <code>Host</code> означает
+``любой хост'' и является наименее конкретным). Записи с одинаковым
+значением в столбце <code>Host</code> упорядочиваются между собой начиная с наиболее
+конкретных значений в столбце <code>User</code> (пустое значение в столбце <code>User</code>
+означает ``любой пользователь'' и является наименее конкретным).
+Окончательно отсортированная таблица <code>user</code> имеет следующий вид:
+
+</P>
+
+<pre>
++-----------+----------+-
+| Host      | User     | ...
++-----------+----------+-
+| localhost | root     | ...
+| localhost |          | ...
+| %         | jeffrey  | ...
+| %         | root     | ...
++-----------+----------+-
+</pre>
+
+<P>
+<A NAME="IDX476"></A>
+<A NAME="IDX477"></A>
+<A NAME="IDX478"></A>
+
+</P>
+<P>
+При попытке подсоединения сервер просматривает отсортированные записи и
+использует первую подходящую запись. Для подсоединения с <code>localhost</code>
+пользователя  <code>jeffrey</code> первыми подходящими записями являются записи со
+значением <code>'localhost'</code> в столбце <code>Host</code>. Из них запись с пустым значением
+имени пользователя соответствует и имени подсоединяющегося хоста и имени
+пользователя. (запись <code>'%'/'jeffrey'</code> тоже подошла бы, но она -- не первая
+подходящая в этой таблице).
+
+</P>
+<P>
+Рассмотрим другой пример. Пусть таблица <code>user</code> имеет вид:
+
+</P>
+
+<pre>
++----------------+----------+-
+| Host           | User     | ...
++----------------+----------+-
+| %              | jeffrey  | ...
+| thomas.loc.gov |          | ...
++----------------+----------+-
+</pre>
+
+<P>
+Отсортированная таблица выглядит следующим образом:
+
+</P>
+
+<pre>
++----------------+----------+-
+| Host           | User     | ...
++----------------+----------+-
+| thomas.loc.gov |          | ...
+| %              | jeffrey  | ...
++----------------+----------+-
+</pre>
+
+<P>
+Для подсоединения пользователя <code>jeffrey</code> с <code>thomas.loc.gov</code> подходит первая
+запись, в то время как для подсоединения <code>jeffrey</code> с <code>whitehouse.gov</code> -
+вторая.
+
+</P>
+<P>
+Существует распространенное заблуждение: иногда думают, что при поиске
+записей для данного имени пользователя, соответствующих определенному
+подсоединению, сервер первыми будет использовать записи, в которых этот
+пользователь указан явно. Это абсолютно неверно, как и продемонстрировано
+в предыдущем примере: для подсоединения пользователя <code>jeffrey</code> с
+<code>thomas.loc.gov</code> первой подходящей записью является не запись, содержащая
+значение <code>'jeffrey'</code> в поле <code>User</code>, а запись, не содержащая имени пользователя
+вовсе!
+
+</P>
+<P>
+Если у вас возникают проблемы с подсоединением к серверу, распечатайте
+таблицу <code>user</code> и отсортируйте ее вручную, чтобы увидеть, где
+происходит первое совпадение.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c1083" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by David Beecher on Thursday September 12 2002, @2:38pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1083&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1083">Edit</a>]</td></tr></table><p class="commenttext">I installed the binary distribution on a new <br />
+server running solaris 2.7 (although this could <br />
+happen on anything).  When I went to set the <br />
+initial password for root and root@myhost per the <br />
+INSTALL documentation it accepted the root <br />
+password but then said it would not allow <br />
+connections from the fully qualified domain name <br />
+(myhost.myhome.com) of the server it resided on... <br />
+Of course I looked at the Host and User columns in <br />
+the mysql:user table and didn't get anywhere.... <br />
+finally I realized it was using the FQDN from the <br />
+/etc/hosts file (which when properly formatted <br />
+includes IP,FQDN,NAME,ALIAS,ALIAS,ALIAS).  Updated <br />
+/etc/nsswitch.conf to use dns and voila, it works <br />
+fine now).  Easy to overlook.</p><table id="c1411" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by LeRoy Michaelson on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1411&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1411">Edit</a>]</td></tr></table><p class="commenttext">After viewing the previous comment, I solved a <br />
+similar problem.  Apparently mySQL doesn't like hard <br />
+addressses.  I coun't login to mySQL from a remote <br />
+client no matter what permissions I gave the user.  <br />
+Once I added an entry like the following: <br />
+<br />
+&lt;blockquote&gt;<br />
+192.214.33.156  myRemoteHost<br />
+&lt;/blockquote&gt;<br />
+to the /etc/hosts file, problem was solved.</p><table id="c1691" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday January 31 2003, @8:31pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1691&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1691">Edit</a>]</td></tr></table><p class="commenttext">Under 3.23.55 with syntax as follows:<br />
+GRANT ... ON `foo\_bar`.* TO ...<br />
+<br />
+results in:<br />
+Unknown command '\_'<br />
+<br />
+However it appears the grant tables are still updated.<br />
+Strange</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=Connection_access">Add your own comment.</a></p><div id="docnav"><a href="Connection_access.html#">Top</a> / <a rel="prev" href="Connecting.html" title="4.2.8  Соединение с сервером MySQL">Previous</a> / <a rel="next" href="Request_access.html" title="4.2.10  Управление доступом, этап 2: верификация запросов">Next</a> / <a rel="up" href="Privilege_system.html" title="4.2  Общие проблемы безопасности и система привилегий доступа MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Программы резервного копирования — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Руководство FreeBSD</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="backups-tapebackups.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 8. Резервное копирование</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="backups-floppybackups.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="BACKUP-PROGRAMS"
+>8.3. Программы резервного копирования</A
+></H1
+><P
+>Тремя основными программами являются <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+>, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> и
+    <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+>.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4033"
+>8.3.1. Dump и Restore</A
+></H2
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+> и <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>restore</SPAN
+>(8)</SPAN
+> являются традиционными для Unix
+      программами резервного копирования.  Они работают с приводом как с
+      набором дисковых блоков, которые расположены ниже понятий файлов,
+      связей и каталогов, создаваемых файловыми системами.  Программа
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+> выполняет резервное копирование устройств, целых файловых
+      систем, но не частей файловой системы и не деревьев каталогов, которые
+      располагаются более чем в одной файловой системе при помощи
+      символических ссылок <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ln</SPAN
+>(1)</SPAN
+> или монтирования одной файловой
+      системы в другой.  Утилита <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+> не записывает на ленту файлы и
+      каталоги, она записывает блоки данных, из которых строятся файлы и
+      каталоги.  В программе <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+> имеются некоторые неудобства,
+      оставшиеся от ее ранних дней в составе Version 6 операционной системы
+      ATT Unix (около 1975).  Параметры, используемые по умолчанию, подходят
+      для 9-дорожечных лент (6250 bpi), но не для современных носителей с
+      высокой плотностью записи информации (до 62,182 ftpi).  Для
+      использования емкостей нынешних накопителей на магнитной ленте эти
+      параметры могут быть заданы в командной строке.</P
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rdump</SPAN
+>(8)</SPAN
+> и <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rrestore</SPAN
+>(8)</SPAN
+> предназначены для резервного
+      копирования данных по сети на накопитель, подключенный к другому
+      компьютеру.  Обе программы используют в работе <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rcmd</SPAN
+>(3)</SPAN
+> и
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ruserok</SPAN
+>(3)</SPAN
+> для доступа к накопителю на магнитной ленте на
+      удаленном компьютере.  Поэтому пользователь, выполняющий резервное
+      копирование, должен иметь доступ к удаленному компьютеру через
+      <TT
+CLASS="LITERAL"
+>rhosts</TT
+>.  Аргументы для <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rdump</SPAN
+>(8)</SPAN
+> и
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rrestore</SPAN
+>(8)</SPAN
+> должны подходить для использования на другом
+      компьютере.  (Например, при выполнении копирования по команде
+      <TT
+CLASS="COMMAND"
+>rdump</TT
+> на компьютере с FreeBSD на накопитель Exabyte,
+      подключенный к машине Sun по имени <TT
+CLASS="HOSTID"
+>komodo</TT
+>, используйте
+      такую команду: <TT
+CLASS="COMMAND"
+>/sbin/rdump 0dsbfu 54000 13000 126
+      komodo:/dev/nrsa8 /dev/rda0a 2&#62;&amp;1</TT
+>)	Будьте осторожны:
+      есть проблемы с обеспечением безопасности при разрешении использования
+      команд <TT
+CLASS="LITERAL"
+>rhosts</TT
+>.  Внимательно отнеситесь к вашей
+      ситуации.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4078"
+>8.3.2. Tar</A
+></H2
+><P
+>Утилита <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> также восходит корнями к Version 6 системы ATT
+      Unix (около 1975).  <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> работает с файловой системой;
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> записывает на ленту файлы и каталоги.  <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+>
+      поддерживает не полный набор опций, имеющихся в <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+>, однако
+      он не требует необычного перенаправления в командной строке, которое
+      используется в утилите <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+>.</P
+><P
+>В большинстве версий <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> создание резервных копий по сети
+      не поддерживается.  Версия GNU утилиты <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+>, которая
+      используется во FreeBSD, поддерживает удаленные устройства в том же
+      самом синтаксисе, что и <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rdump</SPAN
+>(8)</SPAN
+>.  Чтобы скопировать данные на
+      накопитель Exabyte, подключенный к машине Sun по имени
+      <TT
+CLASS="HOSTID"
+>komodo</TT
+>, используйте такую команду:
+      <TT
+CLASS="COMMAND"
+>/usr/bin/tar cf komodo:/dev/nrsa8 . 2&#62;&amp;1</TT
+>.	В
+      случае использования версий без поддержки удаленных устройств, вы
+      можете воспользоваться перенаправлением вывода и командой <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rsh</SPAN
+>(1)</SPAN
+>
+      для посылки данных на удаленный ленточный накопитель.</P
+><PRE
+CLASS="SCREEN"
+>    <TT
+CLASS="PROMPT"
+>#</TT
+> <TT
+CLASS="USERINPUT"
+><B
+>tar cf - . | rsh <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+> dd of=<TT
+CLASS="REPLACEABLE"
+><I
+>tape-device</I
+></TT
+> obs=20b</B
+></TT
+>
+        </PRE
+><P
+>Если вы беспокоитесь о безопасности создания резервных копий по
+      сети, то вместо <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rsh</SPAN
+>(1)</SPAN
+> вам нужно использовать <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ssh</SPAN
+>(1)</SPAN
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4126"
+>8.3.3. Cpio</A
+></H2
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> является оригинальной программой Unix для обмена
+      файлами на магнитных носителях.  В утилите <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> имеются опции
+      (кроме всего прочего), позволяющие выполнять изменение порядка
+      следования байтов, поддерживающие различные форматы архивов и
+      выполняющие перенаправление данных другим программам.  Последняя
+      возможность делает <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> прекрасным выбором для целей установки.
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> не знает о том, как работать с каталогами, список файлов
+      должен даваться через <TT
+CLASS="FILENAME"
+>stdin</TT
+>.</P
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> не поддерживает создание резервных копий по сети.  Вы
+      можете воспользоваться перенаправлением вывода и программой <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>rsh</SPAN
+>(1)</SPAN
+>
+      для посылки данных на удаленный накопитель.  (XXX добавить пример
+      использования утилиты)</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4149"
+>8.3.4. Pax</A
+></H2
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>pax</SPAN
+>(1)</SPAN
+> является ответом IEEE/POSIX на утилиты <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> и
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+>.  В течении многих лет различные версии программ
+      <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+> и <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> получались не совсем совместимыми.  Так что
+      вместо того, чтобы попытаться полностью их стандартизировать, POSIX
+      создал новую утилиту для работы с архивами.  <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>pax</SPAN
+>(1)</SPAN
+> пытается
+      читать и писать различные форматы <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+> и <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+>, и, кроме
+      того, свои собственные новые форматы.  Набор команд этой утилиты больше
+      напоминает <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>cpio</SPAN
+>(1)</SPAN
+>, чем <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>tar</SPAN
+>(1)</SPAN
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="BACKUPS-PROGRAMS-AMANDA"
+>8.3.5. Amanda</A
+></H2
+><P
+><A
+HREF="https://www.linuxlib.ru/ports/misc.html#amanda-2.4.0"
+TARGET="_top"
+>Amanda</A
+>
+      (Advanced Maryland Network Disk Archiver) является целой
+      клиент/серверной системой резервного копирования, а не отдельной
+      программой.  Сервер Amanda сможет осуществлять резервное копирование
+      на единственный накопитель любого количества компьютеров, на которых
+      имеется клиент Amanda и которые могут связываться по сети с сервером
+      Amanda.  Общей проблемой систем с большим количеством больших дисков
+      является время, требуемое для непосредственной записи данных на ленту,
+      превышающее лимит времени, выделенный на эту задачу.  Amanda решает
+      эту проблему.  Amanda может использовать "промежуточный диск" для
+      резервного копирования нескольких файловых систем одновременно.  Amanda
+      создает "наборы архивов": группа лент, используемых в некоторый период
+      времени для создания полных копий всех файловых систем, перечисленных
+      в конфигурационном файле системы Amanda.	"Архивный набор" содержит
+      также создаваемый каждую ночь инкрементальные (или дифференциальные)
+      резервные копии всех файловых систем.  Восстановление поврежденной
+      файловой системы требует наличие самой последней полной копии и
+      инкрементальных резервных копий.</P
+><P
+>Конфигурационный файл дает прекрасный механизм управление процессом
+      резервного копирования и объемом трафика, генерируемого системой
+      Amanda.  Amanda сможет использовать любую из перечисленных выше
+      программ для записи данных на ленту.  Amanda имеется в виде как порта,
+      так и пакаджа, и по умолчанию она не установлена.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4187"
+>8.3.6. Не делать ничего</A
+></H2
+><P
+><SPAN
+CLASS="QUOTE"
+>"Не делать ничего"</SPAN
+> - это не программа для компьютера,
+      и в то же время это наиболее широко используемая стратегия резервного
+      копирования.  Здесь нет никаких первоначальных затрат.  Здесь нет
+      расписания, которому нужно следовать.  Просто скажите нет.  Если что-то
+      случится с вашими данными, улыбнитесь и забудьте о них!</P
+><P
+>Если ваше время и данные практически ничего не стоят, то <SPAN
+CLASS="QUOTE"
+>"не
+      делать ничего"</SPAN
+> является самой подходящей программой для вашего
+      компьютера.  Но будьте осторожны, Unix является весьма полезным
+      инструментом, и через полгода вы можете обнаружить, что у вас есть
+      набор файлов, представляющих для вас определенную ценность.</P
+><P
+><SPAN
+CLASS="QUOTE"
+>"Ничего не делать"</SPAN
+> является правильным методом
+      резервного копирования для <TT
+CLASS="FILENAME"
+>/usr/obj</TT
+> и других
+      деревьев каталогов, которые могут быть в точности перегенерированы
+      вашим компьютером.  Примером являются файлы, представляющие страницы
+      этой книги - они генерируются из входных файлов
+      <SPAN
+CLASS="ACRONYM"
+>SGML</SPAN
+>.	Создание резервных копий файлов
+      <SPAN
+CLASS="ACRONYM"
+>HTML</SPAN
+> не нужно.  Исходные файлы
+      <SPAN
+CLASS="ACRONYM"
+>SGML</SPAN
+> копируются регулярно.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4199"
+>8.3.7. Какая программа резервного копирования самая лучшая?</A
+></H2
+><P
+><SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+> <I
+CLASS="EMPHASIS"
+>Точка.</I
+> Elizabeth D. Zwicky
+      протестировала все программы резервного копирования, обсуждаемые здесь.
+      Беспроигрышным вариантом для сохранения всех ваших данных и
+      особенностей файловых систем Unix является <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+>.	Элизабет
+      создала файловые системы, содержащие большое количество необычных
+      элементов (и некоторых не так уж необычных) и тестировала каждую из
+      программ, выполняя резервное копирование и последующее восстановление
+      этих файловых систем.  В число необычных элементов входили: файлы с
+      дырами, файлы с дырами и блоком пустого места, файлы с необычными
+      символами в их именах, нечитаемые и незаписываемые файлы, устройства,
+      меняющие свой размер во время резервного копирования, файлы,
+      создаваемые и удаляемые во время копирования и тому подобное.  Она
+      представила результаты на конференции LISA V в октябре 1991 года.
+      Посмотрите ссылку на <!--<A
+HREF="http://reality.sgi.com/zwicky_neu/testdump.doc.html"
+TARGET="_top"
+>-->      torture-testing Backup and Archive Programs<!--</A
+>-->.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN4210"
+>8.3.8. Процедура восстановления при сбое</A
+></H2
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN4212"
+>8.3.8.1. До того, как случится катастрофа</A
+></H3
+><P
+>Вам нужно выполнить всего лишь четыре шага для того, чтобы быть
+	готовым к любому сбою.</P
+><P
+>Во-первых, распечатайте разметку диска для всех ваших дисков
+	(<TT
+CLASS="COMMAND"
+>например, disklabel da0 | lpr</TT
+>), таблицу файловых
+	систем (<TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+>) и все сообщения, выводимые
+	при загрузке, каждого по два экземпляра.</P
+><P
+>Во-вторых, определите, все ли устройства присутствуют на
+	загрузочной и аварийной дискетах (<TT
+CLASS="FILENAME"
+>boot.flp</TT
+> и
+	<TT
+CLASS="FILENAME"
+>fixit.flp</TT
+>).  Самым простым способом проверки
+	является перезагрузка вашей машины с загрузочной дискетой,
+	вставленной в дисковод и последующая проверка сообщений при загрузке.
+	Если все имеющиеся у вас устройства здесь будут перечислены и будут
+	работоспособны, перейдите к третьему шагу.</P
+><P
+>В противном случае вам необходимо будет создать две особым
+	образом  сформированные загрузочные дискеты, на которых помещено
+	ядро, могущее смонтировать все ваши диски и получить доступ к вашему
+	стримеру.  На этих дискетах должны быть: <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>fdisk</SPAN
+>(8)</SPAN
+>,
+	<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>disklabel</SPAN
+>(8)</SPAN
+>, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>newfs</SPAN
+>(8)</SPAN
+>, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+> и какая-либо
+	используемая вами программа резервного копирования.  Эти программы
+	должны быть скомпонованы статически.  Если вы используете
+	<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dump</SPAN
+>(8)</SPAN
+>, то на дискете должна присутствовать и программа
+	<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>restore</SPAN
+>(8)</SPAN
+>.</P
+><P
+>В-третьих, регулярно создавайте резервные копии на ленте.  Любые
+	изменения, которые вы делали после последнего резервного копирования,
+	могут быть безвозвратно потеряны.  На лентах включайте защиту от
+	записи.</P
+><P
+>В-четвертых, проверяйте работу дискет (либо
+	<TT
+CLASS="FILENAME"
+>boot.flp</TT
+> и <TT
+CLASS="FILENAME"
+>fixit.flp</TT
+>, либо
+	двух дискет, которые вы сделали при выполнении второго шага) и лент
+	с резервными копиями.  Ведите журнал выполняемых действий.  Храните
+	эти записи вместе с загрузочной дискетой, распечатками и лентами.
+	Вы просто обезумеете при восстановлении данных, если окажется, что
+	записи могли бы избежать разрушения ваших резервных копий (Каким
+	образом?  Вместо команды <TT
+CLASS="COMMAND"
+>tar xvf /dev/rsa0</TT
+> вы
+	могли случайно набрать <TT
+CLASS="COMMAND"
+>tar cvf /dev/rsa0</TT
+> и тем
+	самым перезаписать вашу резервную копию).</P
+><P
+>Для дополнительной страховки, каждый раз создавайте загрузочные
+	дискеты и две резервные копии на ленте.  Храните одну из копий в
+	каком-то удаленном месте и НЕ в том же здании, где находится ваш
+	офис.  Достаточно большое количество компаний во Всемирном Торговом
+	Центре изучило это на своей шкуре.  Это удаленное хранилище должно
+	быть физически отделено на большое расстояние от ваших компьютеров и
+	дисковых устройств.</P
+><P
+>Пример скрипта для создания загрузочной дискеты:</P
+><PRE
+CLASS="PROGRAMLISTING"
+>    #!/bin/sh
+    #
+    # create a restore floppy
+    #
+    # format the floppy
+    #
+    PATH=/bin:/sbin:/usr/sbin:/usr/bin
+
+    fdformat -q fd0
+    if [ $? -ne 0 ]
+    then
+    	 echo "Bad floppy, please use a new one"
+    	 exit 1
+    fi
+
+    # place boot blocks on the floppy
+    #
+    disklabel -w -B /dev/rfd0c fd1440
+
+    #
+    # newfs the one and only partition
+    #
+    newfs -t 2 -u 18 -l 1 -c 40 -i 5120 -m 5 -o space /dev/rfd0a
+
+    #
+    # mount the new floppy
+    #
+    mount /dev/fd0a /mnt
+
+    #
+    # create required directories
+    #
+    mkdir /mnt/dev
+    mkdir /mnt/bin
+    mkdir /mnt/sbin
+    mkdir /mnt/etc
+    mkdir /mnt/root
+    mkdir /mnt/mnt			# for the root partition
+    mkdir /mnt/tmp
+    mkdir /mnt/var
+
+    #
+    # populate the directories
+    #
+    if [ ! -x /sys/compile/MINI/kernel ]
+    then
+    	 cat &#60;&#60; EOM
+    The MINI kernel does not exist, please create one.
+    Here is an example config file:
+    #
+    # MINI -- A kernel to get FreeBSD on onto a disk.
+    #
+    machine 	"i386"
+    cpu		"I486_CPU"
+    ident		MINI
+    maxusers	5
+
+    options 	INET			# needed for _tcp _icmpstat _ipstat
+    					 #	      _udpstat _tcpstat _udb
+    options 	FFS			#Berkeley Fast File System
+    options 	FAT_CURSOR		#block cursor in syscons or pccons
+    options 	SCSI_DELAY=15		#Be pessimistic about Joe SCSI device
+    options 	NCONS=2 	#1 virtual consoles
+    options 	USERCONFIG		#Allow user configuration with -c XXX
+
+    config		kernel	root on da0 swap on da0 and da1 dumps on da0
+
+    controller	isa0
+    controller	pci0
+
+    controller	fdc0	at isa? port "IO_FD1" bio irq 6 drq 2 vector fdintr
+    disk		fd0	at fdc0 drive 0
+
+    controller	ncr0
+
+    controller	scbus0
+
+    device		sc0	at isa? port "IO_KBD" tty irq 1 vector scintr
+    device		npx0	at isa? port "IO_NPX" irq 13 vector npxintr
+
+    device		da0
+    device		da1
+    device		da2
+
+    device		sa0
+
+    pseudo-device	loop		# required by INET
+    pseudo-device	gzip		# Exec gzipped a.out's
+    EOM
+    	 exit 1
+    fi
+
+    cp -f /sys/compile/MINI/kernel /mnt
+
+    gzip -c -best /sbin/init &#62; /mnt/sbin/init
+    gzip -c -best /sbin/fsck &#62; /mnt/sbin/fsck
+    gzip -c -best /sbin/mount &#62; /mnt/sbin/mount
+    gzip -c -best /sbin/halt &#62; /mnt/sbin/halt
+    gzip -c -best /sbin/restore &#62; /mnt/sbin/restore
+
+    gzip -c -best /bin/sh &#62; /mnt/bin/sh
+    gzip -c -best /bin/sync &#62; /mnt/bin/sync
+
+    cp /root/.profile /mnt/root
+
+    cp -f /dev/MAKEDEV /mnt/dev
+    chmod 755 /mnt/dev/MAKEDEV
+
+    chmod 500 /mnt/sbin/init
+    chmod 555 /mnt/sbin/fsck /mnt/sbin/mount /mnt/sbin/halt
+    chmod 555 /mnt/bin/sh /mnt/bin/sync
+    chmod 6555 /mnt/sbin/restore
+
+    #
+    # create the devices nodes
+    #
+    cd /mnt/dev
+    ./MAKEDEV std
+    ./MAKEDEV da0
+    ./MAKEDEV da1
+    ./MAKEDEV da2
+    ./MAKEDEV sa0
+    ./MAKEDEV pty0
+    cd /
+
+    #
+    # create minimum filesystem table
+    #
+    cat &#62; /mnt/etc/fstab &#60;&#60;EOM
+    /dev/fd0a	/	ufs	rw 1 1
+    EOM
+
+    #
+    # create minimum passwd file
+    #
+    cat &#62; /mnt/etc/passwd &#60;&#60;EOM
+    root:*:0:0:Charlie &#38;:/root:/bin/sh
+    EOM
+
+    cat &#62; /mnt/etc/master.passwd &#60;&#60;EOM
+    root::0:0::0:0:Charlie &#38;:/root:/bin/sh
+    EOM
+
+    chmod 600 /mnt/etc/master.passwd
+    chmod 644 /mnt/etc/passwd
+    /usr/sbin/pwd_mkdb -d/mnt/etc /mnt/etc/master.passwd
+
+    #
+    # umount the floppy and inform the user
+    #
+    /sbin/umount /mnt
+    echo "The floppy has been unmounted and is now ready."
+          </PRE
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN4249"
+>8.3.8.2. После сбоя</A
+></H3
+><P
+>Главный вопрос: выжило ли ваше оборудование?  Вы регулярно делали
+	резервные копии, так что нет нужды беспокоиться о программном
+	обеспечении.</P
+><P
+>Если оборудование было повреждено, первым делом замените
+	неисправные компоненты.</P
+><P
+>Если с оборудованием все в порядке, проверьте ваши дискеты.  При
+	использовании самостоятельно созданной загрузочной дискеты,
+	загрузитесь в однопользовательском режиме (набрав
+	<TT
+CLASS="LITERAL"
+>-s</TT
+> в приглашении <TT
+CLASS="PROMPT"
+>boot:</TT
+>).
+	Пропустите следующий абзац.</P
+><P
+>Если вы используете дискеты <TT
+CLASS="FILENAME"
+>boot.flp</TT
+> и
+	<TT
+CLASS="FILENAME"
+>fixit.flp</TT
+>, читайте дальше.  Вставьте дискету
+	<TT
+CLASS="FILENAME"
+>boot.flp</TT
+> в первый дисковод и загрузите
+	компьютер.  На экран будет выведено оригинальное меню установки.
+	Выберите пункт <TT
+CLASS="LITERAL"
+>Fixit--Repair mode with CDROM or
+	floppy</TT
+>.  После вывода приглашения вставьте
+	<TT
+CLASS="FILENAME"
+>fixit.flp</TT
+>.  <TT
+CLASS="COMMAND"
+>restore</TT
+> и другие
+	нужные вам программы находятся в
+	<TT
+CLASS="FILENAME"
+>/mnt2/stand</TT
+>.</P
+><P
+>Восстановите по отдельности каждую файловую систему.</P
+><P
+>Попробуйте выполнить команду <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>mount</SPAN
+>(8)</SPAN
+> (например,
+	<TT
+CLASS="COMMAND"
+>mount /dev/da0a /mnt</TT
+>) по отношению к корневому
+	разделу вашего первого диска.  Если метка диска была испорчена,
+	то воспользуйтесь командой <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>disklabel</SPAN
+>(8)</SPAN
+> для переразбиения на
+	разделы и разметки диска так, чтобы получившаяся метка совпала с той,
+	которая вами была распечатана и сохранена.  Для повторного создания
+	файловых систем используйте утилиту <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>newfs</SPAN
+>(8)</SPAN
+>.  Повторно
+	смонтируйте корневой раздел дискеты в режиме чтения-записи
+	(<TT
+CLASS="COMMAND"
+>mount -u -o rw /mnt</TT
+>).  Воспользуйтесь вашей
+	программой резервного копирования и резервными копиями на лентах для
+	восстановления данных для этой файловой системы (например.
+	<TT
+CLASS="COMMAND"
+>restore vrf /dev/sa0</TT
+>).  Размонтируйте файловую
+	систему (например, <TT
+CLASS="COMMAND"
+>umount /mnt</TT
+>).  Повторите эту
+	процедуру для каждой файловой системы, которая была запорчена.</P
+><P
+>Как только ваша система заработает, сделайте резервную копию на
+	новые ленты.  Что бы ни вызвало сбой или потерю данных, это может
+	случиться снова.  Еще один час, потраченный в этот момент, может
+	спасти вас от неприятностей в будущем.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN4280"
+>8.3.8.3. * Я не был готов к катастрофе, и что теперь?</A
+></H3
+><P
+></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="backups-tapebackups.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="backups-floppybackups.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Носители на магнитной ленте</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="backups.html"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Что насчет резервных копий на дискетах?</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 4.8.7  mysqlimport, импорт данных из текстовых файлов — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/mysqlimport.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/mysqlimport.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="MySQL_Database_Administration.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4 Администрирование баз данных
+</a><ul><li class="p"><a href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />4.8 Клиентские сценарии и утилиты MySQL
+</a><ul class="immediate"><li><a href="Client-Side_Overview.html">4.8.1 Обзор клиентских сценариев и утилит
+</a></li><li><a href="mysql.html">4.8.2 <code>mysql</code>, Утилита командной строки
+</a></li><li><a href="mysqladmin.html">4.8.3 <code>mysqladmin</code>, Администрирование MySQL-сервера.
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Using_mysqlcheck.html">4.8.4 Использование <code>mysqlcheck</code> для сопровождения и аварийного восстановления таблиц.
+</a></li><li><a href="mysqldump.html">4.8.5 <code>mysqldump</code>, Получение дампов данных и структуры таблицы
+</a></li><li><a href="mysqlhotcopy.html">4.8.6 <code>mysqlhotcopy</code>, Копирование баз данных и таблиц MySQL
+</a></li><li class="self">4.8.7 <code>mysqlimport</code>, импорт данных из текстовых файлов
+</li><li><a href="mysqlshow.html">4.8.8 Просмотр баз данных, таблиц и столбцов
+</a></li><li><a href="perror.html">4.8.9 perror, разъяснение кодов ошибок
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/Batch_Commands.html">4.8.10 Как запускать SQL-команды из текстового файла
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="mysqlhotcopy.html" title="4.8.6  mysqlhotcopy, Копирование баз данных и таблиц MySQL">Previous</a> / <a rel="next" href="mysqlshow.html" title="4.8.8  Просмотр баз данных, таблиц и столбцов">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html" title="4.8  Клиентские сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>4.8.7  <code>mysqlimport</code>, импорт данных из текстовых файлов</H3>
+
+<P>
+<A NAME="IDX772"></A>
+<A NAME="IDX773"></A>
+<A NAME="IDX774"></A>
+<A NAME="IDX775"></A>
+<A NAME="IDX776"></A>
+
+</P>
+<P>
+Утилита <code>mysqlimport</code> обеспечивает интерфейс командной строки для
+SQL-оператора <code>LOAD DATA INFILE</code>. Большинство параметров <code>mysqlimport</code>
+полностью соответствует аналогичным параметрам для оператора <code>LOAD DATA
+INFILE</code>. See section <A HREF="https://www.linuxlib.ru/mysqloff/LOAD_DATA.html">6.4.9  Синтаксис оператора  <code>LOAD DATA INFILE</code></A>.
+
+</P>
+<P>
+Утилита <code>mysqlimport</code> вызывается следующим образом:
+
+</P>
+
+<pre>
+shell&#62; mysqlimport [параметры] database textfile1 [textfile2 ...]
+</pre>
+
+<P>
+Для каждого текстового файла, указанного в командной строке, <code>mysqlimport</code>
+удаляет расширение в каждом имени файла и использует его, чтобы
+определить, в какую таблицу занести содержимое. Например, файлы с именами
+<tt>`patient.txt'</tt>, <tt>`patient.text'</tt> и <tt>`patient'</tt> должны быть все занесены в таблицу с
+именем <tt>`patient'</tt>.
+
+</P>
+<P>
+Утилита <code>mysqlimport</code> поддерживает следующие опции:
+
+</P>
+<DL COMPACT>
+
+<DT><code>-c, --columns=...</code>
+<DD>
+Эта опция принимает в качестве аргумента список разделенных запятыми имен
+полей. Данный список полей используется для создания соответствующей
+команды <code>LOAD DATA INFILE</code>, которая затем посылается в MySQL.
+See section <A HREF="https://www.linuxlib.ru/mysqloff/LOAD_DATA.html">6.4.9  Синтаксис оператора  <code>LOAD DATA INFILE</code></A>.
+
+<DT><code>-C, --compress</code>
+<DD>
+Использовать компрессию в связи между клиентом и сервером, если они оба
+поддерживают сжатие.
+
+<DT><code>-#, --debug[=option_string]</code>
+<DD>
+Отслеживать прохождение программы (для отладки).
+
+<DT><code>-d, --delete</code>
+<DD>
+Удалить данные из таблицы перед импортированием текстового файла.
+
+<DT><code>--fields-terminated-by=...</code>
+<DD>
+<DT><code>--fields-enclosed-by=...</code>
+<DD>
+<DT><code>--fields-optionally-enclosed-by=...</code>
+<DD>
+<DT><code>--fields-escaped-by=...</code>
+<DD>
+<DT><code>--lines-terminated-by=...</code>
+<DD>
+Эти опции аналогичны соответствующим операторам для <code>LOAD DATA INFILE</code>.
+See section <A HREF="https://www.linuxlib.ru/mysqloff/LOAD_DATA.html">6.4.9  Синтаксис оператора  <code>LOAD DATA INFILE</code></A>.
+
+<DT><code>-f, --force</code>
+<DD>
+Игнорировать ошибки. Например, если таблица для текстового файла не
+существует, продолжать обработку остающихся файлов. Без параметра <code>--force</code>
+утилита <code>mysqlimport</code> прекращает работу при отсутствии таблицы.
+
+<DT><code>--help</code>
+<DD>
+Вывести справочную информацию и выйти из программы.
+
+<DT><code>-h host_name, --host=host_name</code>
+<DD>
+Импортировать данные в MySQL-сервер на указанном хосте. Значение хоста по
+умолчанию - <code>localhost</code>.
+
+<DT><code>-i, --ignore</code>
+<DD>
+См. описание для параметра <code>--replace</code>.
+
+<DT><code>-l, --lock-tables</code>
+<DD>
+Заблокировать все таблицы для записи перед обработкой любых текстовых
+файлов. Это обеспечивает синхронизацию всех таблиц на сервере.
+
+<DT><code>-L, --local</code>
+<DD>
+Читать входящие файлы из клиента. По умолчанию предполагается, что
+текстовые файлы расположены на сервере при подсоединении к <code>localhost</code>
+(значение хоста по умолчанию).
+
+<DT><code>-pyour_pass, --password[=your_pass]</code>
+<DD>
+Используемый пароль при подключении к серверу. Если аргумент <code>=your_pass</code> не
+введен, <code>mysqlimport</code> предложит ввести пароль.
+
+<DT><code>-P port_num, --port=port_num</code>
+<DD>
+Номер порта TCP/IP, используемого для подсоединения к хосту (применяется
+при подсоединении к хостам, отличным от <code>localhost</code>, для которого
+используются сокеты Unix).
+
+<DT><code>-r, --replace</code>
+<DD>
+Опции <code>--replace</code> и <code>--ignore</code> управляют обработкой поступающих на вход
+записей, которые дублируют имеющиеся записи по значениям уникальных
+ключей. Если задано значение <code>--replace</code>, новые строки заменяют существующие
+с тем же самым значением уникального ключа. Если задано значение <code>--ignore</code>,
+входные строки, которые дублируют существующую строку по значению
+уникального ключа, пропускаются. Если же ни одна из опций не задана, то
+при обнаружении ключа-дубликата возникает ошибка и остаток текстового
+файла игнорируется.
+
+<DT><code>-s, --silent</code>
+<DD>
+Режим молчания. Выводить только сообщения об ошибках.
+
+<DT><code>-S /path/to/socket, --socket=/path/to/socket</code>
+<DD>
+Файл сокета для подсоединения к <code>localhost</code> (значение хоста по умолчанию).
+
+<DT><code>-u user_name, --user=user_name</code>
+<DD>
+Имя пользователя MySQL-сервера, используемое при подсоединении к серверу.
+Значением по умолчанию является имя для входа в Unix.
+
+<DT><code>-v, --verbose</code>
+<DD>
+Расширенный режим вывода. Вывод более детальной информации о работе
+программы.
+
+<DT><code>-V, --version</code>
+<DD>
+Вывести информацию о версии и выйти из программы.
+</DL>
+
+<P>
+Ниже приведен пример листинга программы, использующей утилиту <code>mysqlimport</code>:
+
+</P>
+
+<pre>
+$ mysql --version
+mysql  Ver 9.33 Distrib 3.22.25, for pc-linux-gnu (i686)
+$ uname -a
+Linux xxx.com 2.2.5-15 #1 Mon Apr 19 22:21:09 EDT 1999 i586 unknown
+$ mysql -e 'CREATE TABLE imptest(id INT, n VARCHAR(30))' test
+$ ed
+a
+100     Max Sydow
+101     Count Dracula
+.
+w imptest.txt
+32
+q
+$ od -c imptest.txt
+0000000   1   0   0  \t   M   a   x       S   y   d   o   w  \n   1   0
+0000020   1  \t   C   o   u   n   t       D   r   a   c   u   l   a  \n
+0000040
+$ mysqlimport --local test imptest.txt
+test.imptest: Records: 2  Deleted: 0  Skipped: 0  Warnings: 0
+$ mysql -e 'SELECT * FROM imptest' test
++------+---------------+
+| id   | n             |
++------+---------------+
+|  100 | Max Sydow     |
+|  101 | Count Dracula |
++------+---------------+
+</pre>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c880" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Tom Reinertson on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=880&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=880">Edit</a>]</td></tr></table><p class="commenttext">Keep in mind that your imported text file should <br />
+have some value for empty fields.  I regularly <br />
+build tables using msqlimport to import <br />
+tab-delimited text files.  My tables contain <br />
+integer fields, some of which are <br />
+auto_incremented and some are not.  MYSQL will <br />
+let you represent empty fields as null text <br />
+strings, i.e., two tab characters back-to-back, <br />
+but I found this increments the warning count.  <br />
+To solve this problem you must use some value <br />
+for empty fields.  Since auto_increment fields <br />
+use 0 or NULL, one would think, incorrectly, <br />
+that you could use 0 or \N to represent a null <br />
+value in the import text file.  You must 0 for <br />
+an auto_increment field.  Using \N increments <br />
+the warning count.  You should use \N for other <br />
+numeric fields where you want a null value.  <br />
+This problem is especially perplexing because of <br />
+MySQL's inability to report the text of a <br />
+warning.  It only reports a warning count.<br />
+</p><table id="c1334" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Murali Mohan on Tuesday November 5 2002, @10:58pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1334&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1334">Edit</a>]</td></tr></table><p class="commenttext">Before you invoke mysqlimport command with<br />
+appropriate options, please check that the 'FILE'<br />
+privilege is granted to you.<br />
+I wasted time facing the 'Access Denied on<br />
+table_name' error <br />
+because of the same.</p><table id="c1672" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Subburaj Palanichamy on Wednesday January 29 2003, @3:51am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1672&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1672">Edit</a>]</td></tr></table><p class="commenttext">Mysqlimport - access_to_mysql.txt - Usage -  reg.<br />
+<br />
+While converting the data from Microsoft Access database to Mysql, I have used the access_to_mysql.txt tool. In my database, some of the tables were  were linked with another microsoft access database for which  password has been set. Hence while converting the data, it displayed an error.<br />
+<br />
+To over come this, I opened the database which has the linked table and removed the password set for that database.<br />
+<br />
+Once password is removed, all the tables and data was successfully transferred to C:\temp\mysqldump.txt file.<br />
+<br />
+</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=mysqlimport">Add your own comment.</a></p><div id="docnav"><a href="mysqlimport.html#">Top</a> / <a rel="prev" href="mysqlhotcopy.html" title="4.8.6  mysqlhotcopy, Копирование баз данных и таблиц MySQL">Previous</a> / <a rel="next" href="mysqlshow.html" title="4.8.8  Просмотр баз данных, таблиц и столбцов">Next</a> / <a rel="up" href="https://www.linuxlib.ru/mysqloff/Client-Side_Scripts.html" title="4.8  Клиентские сценарии и утилиты MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+</body>
+</html>

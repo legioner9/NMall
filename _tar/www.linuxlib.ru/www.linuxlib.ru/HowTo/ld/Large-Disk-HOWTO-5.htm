@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Large-Disk-HOWTO : Доступ к Диску — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<basefont size="3">
+<center>
+<table width=100% border=0 cellpadding=0>
+<table cellspacing=0 cellpadding=0 border=0 background="https://www.linuxlib.ru/HowTo/pic/coot3.jpeg" width="100%">
+<tr valign=top><td class=arial><!--<a href="http://www.mgul.ac.ru/">--><img height=80 width=109 src="https://www.linuxlib.ru/HowTo/pic/logo.gif" alt="Server of laboratory of space computer science MGUL" border=0>
+<!--</a>--><img src="https://www.linuxlib.ru/HowTo/pic/lscs8.gif"><br></td>
+<td align=right class=arial>
+<font size="-2">
+141001 г.Мытищи МО<br>
+<!--<a class=noneline href="http://www.mgul.ac.ru">-->Ул.Институтская д:1 ком:101<!--</a>--><br>
+(095) 588-52-39, 588-55-62<br>
+E-mail: <a class=noneline href="../../cdn-cgi/l/email-protection.html#4a263929390a272d3f26642b2964383f6a75193f28202f293e776d0c3825276a3a2b2d2f6a06190919670c05181f076d"><span class="__cf_email__" data-cfemail="e8849b8b9b90a8858f9d84c6898bc69a9d">[email&#160;protected]</span></a></font>
+</tr>
+<tr>
+<th colspan=2 class=times>
+<font color=#000080 size=2><!--<a href="http://www.mgul.ac.ru" class=noneline>-->Сервер Лаб. Космической информатики каф.ВТ<!--</a>--> Московский Государственный Университет Леса</font>
+<hr noshade>
+</th>
+</tr>
+</table>
+</center>
+<A
+href="Large-Disk-HOWTO-6.htm">Next</A>
+<A
+href="Large-Disk-HOWTO-4.htm">Previous</A>
+<A
+href="https://www.linuxlib.ru/HowTo/ld/Large-Disk-HOWTO.htm#toc5">Contents</A>
+
+<HR>
+<center><H1><A name=s5><FONT COLOR="#0EB18C">5. Доступ к Диску</FONT></A></H1></center>
+
+<P>Перед тем, как прочитать или записать что-либо на диск, надо определить
+позицию с которой мы хотим начать читать или писать информацию. Позицию можно
+определить например путем передачи номера сектора или блока диска. Если
+рассматриваемый диск является SCSI диском, то номер сектора переводится в
+команды SCSI, а далее сам диск находит нужную позицию. Если диск имеет интерфейс
+IDE и использует LBA, то происходит почти то же самое. Если же диск нам достался
+с доисторических времен (RLL, MFM или IDE, когда не знали LBA), в этом случае
+диску для поиска нужной позиции требуется три значения: цилиндр, считывающая
+головка, сектор.
+<P>Между последовательной нумерацией и 3D нотацией(под выражением 3D нотация
+подразумевается поиск нужного сектора по трем параметрам c,h,s) имеется
+следующее соответствие: для диска с C цилиндрами, H считывающими головками и S
+секторами/дорожками - позиция (c,h,s) в 3D или CHS нотации соответствует позиции
+c<CODE>*</CODE>H<CODE>*</CODE>S + h<CODE>*</CODE>S + (s-1) в последовательной
+или LBA нотации. (Минус 1, это следствие того, что по традиции номер сектора в
+3D нотации начинается с 1, а не с 0.)
+<P>Следовательно, чтобы получить доступ к очень старому не SCSI диску, надо
+знать его <EM>геометрию</EM>.
+<P>
+<H2><A name=ss5.1>5.1 Доступ к диску через BIOS и ограничение в 1024
+цилиндра</A> </H2>
+<P>Linux не использует при своей работе BIOS, но другие операционные системы
+могут использовать BIOS. Старые BIOS, которые были сделаны перед внедрением LBA,
+используют для доступа к диску функции INT13, которые используют 3D нотацию
+(c,h,s). (Точнее: <CODE>AH</CODE> - выбор операции, <CODE>CH</CODE> - младшие 8
+бит номера цилиндра, <CODE>CL</CODE> - 7-6 биты соответствуют старшим битам
+номера цилиндра, 5-0 биты соответствуют номеру сектора, <CODE>DH</CODE> - номер
+считывающей головки и <CODE>DL</CODE> - номер диска (80h или 81h). Это объясняет
+схему построения таблицы разделов.)
+<P>В результате мы имеем номер в CHS нотации, укладывающийся в 3 байта: 10 бит
+на номер цилиндра, 8 бит на номер считывающей головки и 6 бит на номер сектора
+(от 1 до 63). Следствием этого является ограничение на количество цилиндров (от
+0 до 1024), которое может поддерживать BIOS.
+<P>Когда появились IDE диски с поддержкой LBA, программное обеспечение для DOS и
+Windows не изменилось. И DOS, и Windows хотят знать геометрию диска, даже если
+она им не нужна для операция чтения/записи, им требуется это для обращения к
+BIOS. OS Linux требуется знание физической геометрии диска, если от нее
+требуется общаться с BIOS или с другими операционными системами, даже при работе
+с современными дисками.
+<P>Такое состояние дел продолжалось около 4ех лет, или около того, а затем на
+рынке появились диски, которые нельзя читать через функции INT13 (потому что
+10+8+6=24 бит, следовательно обращаться только к 8.5 ГБ - для большего не
+хватает адресного пространства). Был создан новый интерфейс для BIOS - так
+называемые расширенные INT13 (Extended INT13) функции, где DS:SI указывает на 16
+байтовый Адресное Дисковое Пространство (Disk Address Packet), которое содержит
+8-ми байтовый абсолютный номер блока.
+<P>Очень медленно Microsoft ползет в сторону использования расширенных INT13
+функций. Вероятно, через несколько лет никому больше не понадобятся знания о
+физической геометрии диска.
+<P>
+<H2><A name=ss5.2>5.2 История ограничений для BIOS и IDE </A></H2>
+<P>
+<DL>
+  <DT><B>Спецификация (для IDE дисков) - ограничение в 137 ГБ</B>
+  <DD>
+  <P>Не более чем 65536 цилиндров (нумерация 0-65535), 16 считывающих головок
+  (нумерация 0-15), 255 секторов/дорожек (нумерация 1-255). Максимальная
+  емкость: 267386880 секторов по 512 байт каждый, что составляет 136902082560
+  байт (137 ГБ). Сейчас (1999 год) это не является проблемой, но через несколько
+  лет это станет проблемой.
+  <P></P>
+  <DT><B>BIOS Int 13 - ограничение в 8.5 ГБ</B>
+  <DD>
+  <P>Не более чем 1024 цилиндров (нумерация 0-1024), 256 считывающих головок
+  (нумерация 0-255), 63 сектора/дорожек (нумерация 1-63). Максимальная емкость:
+  8455716864 байт (8.5 ГБ). Сегодня это является серьезным ограничением на
+  размер диска. А именно, DOS не в состоянии использовать большие диски.
+  <P></P>
+  <DT><B>Ограничение в 528 МБ</B>
+  <DD>
+  <P>Если при обращению к диску использовать одни и те же значения c,h,s при
+  обращении через Int 13 функции BIOS и через функции IDE интерфейса, то оба эти
+  ограничения складываются так, что никто не может использовать больше чем 1024
+  цилиндра, 16 считывающих головок и 63 сектора/дорожки, что составляет
+  528482304 байт (528 МБ). Это и есть всем известная проблема ограничения в 504
+  Mб для DOS в комбинации со старыми BIOS. Это стало проблемой примерно в 1993
+  году. Для обхода этой проблемы использовались всевозможные трюки: железо
+  (LBA), firmware (BIOS `translation'), программное обеспечение (disk managers).
+  Концепция трансляции (`translation') была изобретена в 1994 году: BIOS
+  использует одну геометрию диска, когда общается с диском и другую (фальшивую)
+  при общении с DOS, и `переводит' одну нотацию в другую.
+  <P>
+  <P></P>
+  <DT><B>Ограничение в 2.1 ГБ (Апрель 1996)</B>
+  <DD>
+  <P>В некоторых старых BIOS под число цилиндров в CMOS RAM резервируется только
+  12 бит. Следовательно число цилиндров не может быть больше 4096, что дает
+  максимально доступную емкость диска в
+  4095<CODE>*</CODE>16<CODE>*</CODE>63<CODE>*</CODE>512=2113413120 байт. Если
+  диск имел большую емкость, то в процессе загрузки это приводило к `зависанию'
+  компьютера. Это привело к росту популярности дисков обладающих 4092/16/63
+  геометрией. До сих пор попадается довольно много больших дисков, которые с
+  помощью переключателей можно заставить `прикинуться' диском с подобной
+  геометрией. Более подробную информацию можно найти по адресу <!--<A
+  href="http://www.firmware.com/support/bios/over2gb.htm">-->over2gb.htm<!--</A>-->. <!--<A
+  href="http://www.asus.com/Products/Techref/Ide/Intel/intel-ide-001.html">-->Более
+  новые BIOS<!--</A>--> в процессе загрузки не `завешивают' компьютер, но видят диск
+  меньшего размера. Например определяют, что диск размером в 2.5 ГБ имеет размер
+  в 429 МБ.
+  <P></P>
+  <DT><B>Ограничение в 3.2 ГБ</B>
+  <DD>
+  <P>В BIOS от Phoenix версий 4.03 и 4.04 был баг, который приводил к
+  перезагрузке системы в случае наличии в компьютера диска с емкостью более 3277
+  МБ. Подробности ищите по адресу <!--<A
+  href="http://www.firmware.com/support/bios/over3gb.htm">-->over3gb.htm<!--</A>-->.
+  <P></P>
+  <DT><B>Ограничение в 4.2 ГБ (Февраль 1997)</B>
+  <DD>
+  <P>Простая BIOS трансляция (ECHS=Extended (расширенный) CHS, иногда зовется
+  как `Large disk support' или просто как `Large') работает путем увеличения
+  числа считывающих головок и уменьшения числа цилиндров, выдаваемых для
+  использования DOS, до тех пор, пока число цилиндров не сравняется с 1024. На
+  данный момент и DOS, и Windows 95 не поддерживает 256 считывающих головок.
+  Обычно, когда диск сообщает о 16 считывающих головках, простой механизм
+  трансляции позволяет получить доступ к диска с емкостью не более чем
+  8192<CODE>*</CODE>16<CODE>*</CODE>63<CODE>*</CODE>512=4227858432 байт (с
+  фальшивой геометрией диска в 1024 цилиндров, 128 считывающих головок, 63
+  сектора/дорожки). Обратите внимание, что ECHS не меняет число секторов на
+  дорожке, поэтому, если число секторов меньше 63, то ограничение становится еще
+  более жестким. Для получения более подробной информации смотрите <!--<A
+  href="http://www.firmware.com/support/bios/over4gb.htm">-->over4gb.htm<!--</A>-->.
+  <P></P>
+  <DT><B>Ограничение в 7.9 ГБ</B>
+  <DD>
+  <P>Более продвинутые BIOS обходят, описанную выше проблему, путем
+  приравнивание числа считывающих головок 15 (`Улучшеный ECHS'), поэтому
+  фальшивая геометрия может состоять из 240 считывающих головок, что дает
+  1024<CODE>*</CODE>240<CODE>*</CODE>63<CODE>*</CODE>512=7927234560 байт.
+  <P>
+  <P></P>
+  <DT><B>Ограничение в 8.4 ГБ</B>
+  <DD>
+  <P><A name="The 8.4 GB limit"></A>Ну и наконец: если BIOS делает все возможное
+  и невозможное для увеличения емкости диска - использует 256 считывающих
+  головок и 63 сектора/дорожки (`assisted LBA' или просто `LBA'), то это дает
+  1024<CODE>*</CODE>255<CODE>*</CODE>63<CODE>*</CODE>512=8422686720 байт,
+  немного меньше чем 8.5 ГБ, так как геометрии с 256 считывающими головками
+  следует избегать.
+  <P></P>
+  <DT><B>Ограничение в 33.8 ГБ (Август 1999)</B>
+  <DD>
+  <P><A name=biosupgrades></A>Следующий барьер на пути повышение емкости
+  приходится на 33.8 ГБ. Дело в том, что при 16 считывающих головках и 63
+  секторах/дорожках требуется число цилиндров большее, нежели 65535 - не
+  вмещается в short (2 байта). Большинство BIOS на сегодня не в состоянии
+  поддерживать подобные диски. (Для решения этой проблемы смотрите, например <!--<A
+  href="http://www.asus.com/Products/Motherboard/bios_slot1.html">-->Asus
+  upgrades<!--</A>--> для поиска новых прошивок для флэш памяти без этой проблемы.) Для
+  решения этой проблемы ядру Linux версий ниже 2.2.14 / 2.3.21 требуется патч.
+  Подробности смотрите в разделе <A
+  href="Large-Disk-HOWTO-13.htm#verylarge">Проблемы
+  IDE с дисками емкостью 34+ ГБ</A>. </P></DD></DL>
+<P>Смотрите так же <!--<A
+href="http://www.maxtor.com/technology/q&amp;a/30004.html">-->Препятствия и
+ограничения<!--</A>-->, и более детальное описание в статье <!--<A
+href="http://www.maxtor.com/technology/whitepapers/63001.html">-->Ограничения для
+жестких дисков IDE<!--</A>-->.
+<P>Жесткие диски емкостью более чем 8.4 ГБ сообщают, что их геометрия равна
+16383/16/63. Это означает, что понятие геометрии изжило себя и что полный размер
+диска не может быть подсчитан через геометрию.
+<P>
+<P>
+<HR>
+<A
+href="Large-Disk-HOWTO-6.htm">Next</A>
+<A
+href="Large-Disk-HOWTO-4.htm">Previous</A>
+<A
+href="https://www.linuxlib.ru/HowTo/ld/Large-Disk-HOWTO.htm#toc5">Contents</A>
+<HR>
+
+<table cellspacing="2" cellpadding="2" border="0">
+<tr VALIGN=TOP>
+<td>
+<!-- BEGIN MGUL-COUNTER CODE -->
+<img src="http://ns.mgul.ac.ru/cgi-bin/counter.cgi?Linux" border=0 height=31 width=88 alt="LSCS">
+<!-- END MGUL-COUNTER CODE -->
+</td>
+	<td rowspan="2">
+<!--begin of Top100-->
+<!--<a href="http://top100.rambler.ru/top100/">-->
+<img src="http://counter.rambler.ru/top100.cnt?124566" alt="Rambler's Top100" width=1 height=1
+
+border=0><!--</a>-->
+<!--end of Top100 code-->
+
+<!--begin of Top100 logo-->
+<!--<a href="http://top100.rambler.ru/top100/">-->
+<img src="http://images.rambler.ru/top100/banner-88x31-rambler-blue3.gif" alt="Rambler's Top100"
+
+width=88 height=31 border=0><!--</a>-->
+<!--end of Top100 logo -->
+</td>
+<td>
+<!--TopList COUNTER--><script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script language="JavaScript"><!--
+d=document;a='';a+=';r='+escape(d.referrer)
+js=10//--></script><script language="JavaScript1.1"><!--
+a+=';j='+navigator.javaEnabled()
+js=11//--></script><script language="JavaScript1.2"><!--
+s=screen;a+=';s='+s.width+'*'+s.height
+a+=';d='+(s.colorDepth?s.colorDepth:s.pixelDepth)
+js=12//--></script><script language="JavaScript1.3"><!--
+js=13//--></script><script language="JavaScript"><!--
+d.write('<!--<a href="http://top.list.ru/jump?from=61405"'+
+' target=_top>--><img src="http://top.list.ru/counter'+
+'?id=61405;t=99;js='+js+a+';rand='+Math.random()+
+'" alt="TopList"'+' border=0 height=18 width=88><!--</a>-->')
+if(js>11)d.write('<'+'!-- ')//--></script><noscript><!--<a
+target=_top href="http://top.list.ru/jump?from=61405">--><img
+src="http://top.list.ru/counter?js=na;id=61405;t=99"
+border=0 height=18 width=88
+alt="TopList"><!--</a>--></noscript><script language="JavaScript"><!--
+if(js>11)d.write('--'+'>')//--></script><!--TopList COUNTER-->
+</td>
+</tr>
+</TABLE>
+
+  </div>
+</div>
+</body>
+</html>

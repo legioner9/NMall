@@ -1,0 +1,542 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 8.3.6  Как получить значение столбца AUTO_INCREMENT в ODBC — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/ODBC_and_last_insert_id.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/ODBC_and_last_insert_id.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Clients.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />8 Интерфейсы для MySQL
+</a><ul><li class="p"><a href="ODBC.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />8.3 Поддержка ODBC в MySQL
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/Installing_MyODBC.html">8.3.1 Как установить MyODBC
+</a></li><li><a href="ODBC_administrator.html">8.3.2 Как заполнять различные поля в Администраторе ODBC
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/MyODBC_connect_parameters.html">8.3.3 Параметры подключения для MyODBC
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/ODBC_Problems.html">8.3.4 Как сообщать о проблемах с MyODBC
+</a></li><li><a href="MyODBC_clients.html">8.3.5 Программы, работающие с MyODBC
+</a></li><li class="self">8.3.6 Как получить значение столбца AUTO_INCREMENT в ODBC
+</li><li><a href="MyODBC_bug_report.html">8.3.7 Составление отчетов о проблемах с MyODBC
+</a></li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="MyODBC_clients.html" title="8.3.5  Программы, работающие с MyODBC">Previous</a> / <a rel="next" href="MyODBC_bug_report.html" title="8.3.7  Составление отчетов о проблемах с MyODBC">Next</a> / <a rel="up" href="ODBC.html" title="8.3  Поддержка ODBC в MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>8.3.6  Как получить значение столбца AUTO_INCREMENT в ODBC</H3>
+
+<P>
+<A NAME="IDX1035"></A>
+
+</P>
+<P>
+Существует распространенная проблема, заключающаяся в том, как получить
+значение автоматически сгенерированного <code>ID</code> из <code>INSERT</code>. С помощью ODBC можно
+сделать что-то наподобие следующего (предполагается, что auto представляет
+собой поле <code>AUTO_INCREMENT</code> ):
+
+</P>
+
+<pre>
+INSERT INTO foo (auto,text) VALUES(NULL,'text');
+SELECT LAST_INSERT_ID();
+</pre>
+
+<P>
+Или, если вы просто собираетесь вставить данный <code>ID</code> в другую таблицу, то
+можно сделать так:
+
+</P>
+
+<pre>
+INSERT INTO foo (auto,text) VALUES(NULL,'text');
+INSERT INTO foo2 (id,text) VALUES(LAST_INSERT_ID(),'text');
+</pre>
+
+<P>
+See section <A HREF="Getting_unique_ID.html">8.4.6.3  Как получить уникальный идентификатор для последней внесенной строки?</A>.
+
+</P>
+<P>
+Для некоторых приложений ODBC (по крайней мере, для Delphi и Access),
+чтобы найти недавно вставленную строку, можно использовать следующий
+запрос:
+
+</P>
+
+<pre>
+SELECT * FROM tbl_name WHERE auto IS NULL;
+</pre>
+
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c516" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=516&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=516">Edit</a>]</td></tr></table><p class="commenttext">The link for the servicepack has changed to:<br />
+<!--<a href="http://support.microsoft.com/default.aspx?">-->http://support.microsoft.com/default.aspx?<!--</a>--><br />
+scid=kb;EN-US;Q239114</p><table id="c524" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=524&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=524">Edit</a>]</td></tr></table><p class="commenttext">I have noticed that the ODBC driver for windows <br />
+2000 comes up with 'driver does not support' <br />
+error or sometimes returns no rows to an asp <br />
+recordset when trying to run sql queries with <br />
+group by clauses, the same queries do work with <br />
+the admin demo tool.<br />
+(also the admin demo tool has some major problems <br />
+with memory leaks )</p><table id="c575" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Dennis Williams on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=575&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=575">Edit</a>]</td></tr></table><p class="commenttext">In an attempt utilize Excel and VBA to connect to <br />
+a remote MySQL server, I had the following <br />
+experience:<br />
+<br />
+(Using Excel 97 and reference set ADO 2.6 Library)<br />
+<br />
+<br />
+Trying to dump a standard table output into Excel <br />
+using the Excel's &quot;CopyFromRecordset&quot; method will <br />
+not work, MyODBC returns &quot;...does not support <br />
+automation.&quot;  The following code worked for me to <br />
+perform the same result:<br />
+<br />
+(Set OPTION=16834 in connection command if you <br />
+use BIGINT in field values)<br />
+<br />
+===========================<br />
+Sub MySQL_Connect()<br />
+<br />
+Dim myconn As New ADODB.Connection<br />
+Dim myrs As New Recordset<br />
+Dim mySQL, myDSN As String<br />
+Dim fldCnt As Long<br />
+Dim xCnt, yCnt As Long<br />
+<br />
+myDSN = &quot;TEST-MySQL&quot;<br />
+<br />
+myconn.Open &quot;DSN=&quot; &amp; myDSN &amp; &quot;; &quot; &amp; _<br />
+	&quot;Database=TBL_USER; &quot; &amp; _<br />
+	&quot;OPTION=16834; &quot; &amp; _<br />
+	&quot;UID=userID; &quot; &amp; _<br />
+	&quot;PWD=password&quot;<br />
+<br />
+mySQL = &quot;SELECT * from `ACCOUNTCONTACT`;&quot;<br />
+<br />
+myrs.Source = mySQL<br />
+Set myrs.ActiveConnection = myconn<br />
+myrs.CursorLocation = adUseClient<br />
+myrs.Open<br />
+<br />
+'column names<br />
+For xCnt = 0 To myrs.Fields.Count - 1<br />
+	ActiveSheet.Range(&quot;A1&quot;).Offset(0, xCnt) = <br />
+_<br />
+		myrs(xCnt).Name<br />
+<br />
+Next<br />
+<br />
+'reset<br />
+xCnt = 0<br />
+myrs.MoveFirst<br />
+<br />
+'data values<br />
+Do While Not myrs.EOF<br />
+	For yCnt = 0 To myrs.Fields.Count - 1<br />
+		ActiveSheet.Range(&quot;A2&quot;).Offset<br />
+(xCnt, yCnt) = _<br />
+			myrs(yCnt).Value<br />
+	Next<br />
+<br />
+	myrs.MoveNext<br />
+	xCnt = xCnt + 1<br />
+<br />
+Loop<br />
+<br />
+myrs.Close<br />
+myconn.Close<br />
+<br />
+End Sub<br />
+===========================<br />
+<br />
+HTH<br />
+DWilliams</p><table id="c601" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#90fce5fbf5f5fef5fce3fffed0e9f1f8ffffbef3fffd">Luke Nelson</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=601&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=601">Edit</a>]</td></tr></table><p class="commenttext">does anyone know thu dao or ado how to get the <br />
+newly created autonum index value when accessing <br />
+mysql thru access 2000 - could you send sample <br />
+code <a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="2c40594749494249405f43426c554d444343024f4341">[email&#160;protected]</a></p><table id="c605" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#5b372e303e3e353e372834351b223a33343475383436">Luke Nelson</a> on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=605&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=605">Edit</a>]</td></tr></table><p class="commenttext">This is luke again... i figured it out for ADO in <br />
+VB... this works<br />
+<br />
+    Dim conn As ADODB.Connection<br />
+    Dim rsADO As ADODB.Recordset<br />
+    dim intNewIndex as long <br />
+<br />
+    Set conn = New ADODB.Connection<br />
+    conn.ConnectionString = &quot;DRIVER=<br />
+{MySQL};SERVER=xxxx;DATABASE=xxxxx;UID=xxxx<br />
+;PWD=xxxx;OPTION=35&quot;<br />
+    conn.Open <br />
+<br />
+    Set rsADO = New ADODB.Recordset<br />
+    rsADO.CursorLocation = adUseServer<br />
+    <br />
+ 'the where=-1 helps ado open faster!!!!!!!<br />
+    rsADO.Open &quot;Select * From tablename where <br />
+index = -1&quot;, conn, adOpenDynamic, adLockOptimistic<br />
+    rsADO.AddNew<br />
+    <br />
+    rsADO(&quot;fldName&quot;)= &quot;stuff&quot; <br />
+<br />
+    rsADO.Update<br />
+    <br />
+    rsADO.Close<br />
+    <br />
+    rsADO.Open &quot;select * from tablename Where <br />
+index = LAST_INSERT_ID()&quot;, conn<br />
+        rsADO.MoveFirst<br />
+        intNewIndex= rsADO(strIndexName).Value<br />
+        rsADO.Close <br />
+<br />
+    conn.Close<br />
+<br />
+<br />
+</p><table id="c686" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Allan Krogh Jensen on Friday May 17 2002, @6:24am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=686&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=686">Edit</a>]</td></tr></table><p class="commenttext">My VBA (Access) application sends the following <br />
+error:<br />
+<br />
+ODBC-call failed<br />
+[TCX][MyODBC] You Have An error in your SQL-<br />
+syntax near '1)'<br />
+<br />
+When I send the following SQL-request:<br />
+<br />
+SELECT knr, effekt FROM komponenter WHERE <br />
+effekt&lt;=0.1;<br />
+<br />
+The SQL sentence works out fine, when i execute <br />
+it directly at the MySQL prompt. What can cause <br />
+this error???<br />
+<br />
+I also tried to log the MyODBC activity as <br />
+descriped, but it created no logfile at all!!!<br />
+<br />
+Please help me soon!<br />
+<br />
+Allan Krogh Jensen<br />
+<a href="../cdn-cgi/l/email-protection.html" class="__cf_email__" data-cfemail="85e4e9eef7eaefe0ebc5f1ecf6e6e4e9ecabe1ee">[email&#160;protected]</a></p><table id="c733" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Tuesday July 9 2002, @5:46am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=733&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=733">Edit</a>]</td></tr></table><p class="commenttext">Many people have had a problem with using <br />
+rs.addnew with ADO, namely 'Multi- step operation <br />
+generated errors. Check each OLE DB status value if <br />
+available. No work was done.' (I know, I searched <br />
+the web in vain to find an answer and found 30+ <br />
+postings in various places - 8/7/02). The problem <br />
+appears to be with the previous ODBC driver, <br />
+myodbc-2.50.19-NT. The newer version myodbc-<br />
+2.50.39-NT DOES work. However unlike the <br />
+previous the recordset cursor location MUST be <br />
+serverside, eg rsTgt.CursorLocation = adUseServer<br />
+(Setting to client gives &quot;Driver does not support this <br />
+parameter&quot; - regardless of whatever cursor and <br />
+locktype is used.).</p><table id="c1100" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#1a6e7f7b777b717f68282f22235a637b72757534797577346e6d">Teamaker </a> on Monday September 16 2002, @12:05am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1100&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1100">Edit</a>]</td></tr></table><p class="commenttext">When I set the CusorLocation at client,the &quot;Select&quot; <br />
+syntax do not work well, but If I set CusorLocation <br />
+as Server site ,it works well.<br />
+If I choose Server site,Datagrid object will get no<br />
+any data from  Mysql.<br />
+I hope that Datagrid object get data and SQL-query <br />
+work well.<br />
+Help me...Please.<br />
+I Have try and try to find any article about the <br />
+problem here but I did not find any yet.</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=ODBC_and_last_insert_id">Add your own comment.</a></p><div id="docnav"><a href="ODBC_and_last_insert_id.html#">Top</a> / <a rel="prev" href="MyODBC_clients.html" title="8.3.5  Программы, работающие с MyODBC">Previous</a> / <a rel="next" href="MyODBC_bug_report.html" title="8.3.7  Составление отчетов о проблемах с MyODBC">Next</a> / <a rel="up" href="ODBC.html" title="8.3  Поддержка ODBC в MySQL">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

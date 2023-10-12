@@ -1,0 +1,1412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Диски, файловые системы и начальные загрузчики — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+    <div class="NAVHEADER">
+      <table summary="Header navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <th colspan="3" align="center">Часто Задаваемые Вопросы
+          по FreeBSD 2.X, 3.X и 4.X</th>
+        </tr>
+
+        <tr>
+          <td width="10%" align="left" valign="bottom"><a href=
+          "kernelconfig.html" accesskey="P">Prev</a></td>
+
+          <td width="80%" align="center" valign="bottom">
+          </td>
+
+          <td width="10%" align="right" valign="bottom"><a href=
+          "admin.html" accesskey="N">Next</a></td>
+        </tr>
+      </table>
+      <hr align="LEFT" width="100%">
+    </div>
+
+    <div class="CHAPTER">
+      <h1><a name="DISKS">Chapter 9. Диски, файловые системы и
+      начальные загрузчики</a></h1>
+
+      <div class="QANDASET">
+        <dl>
+          <dt>9.1. <a href="disks.html#ADDING-DISKS">Как добавить в
+          систему новый диск?</a></dt>
+
+          <dt>9.2. <a href="disks.html#NEW-HUGE-DISK">Как перенести
+          систему на большой новый диск?</a></dt>
+
+          <dt>9.3. <a href="disks.html#DANGEROUSLY-DEDICATED">Не
+          угрожает ли режим <span class="QUOTE">"dangerously
+          dedicated"</span> моему здоровью?</a></dt>
+
+          <dt>9.4. <a href="disks.html#SAFE-SOFTUPDATES">На каких
+          разделах можно без опаски использовать систему
+          softupdates? Я слышал, что мягкие обновления на <tt
+          class="FILENAME">/</tt> могут приводить к
+          проблемам.</a></dt>
+
+          <dt>9.5. <a href="disks.html#INAPPROPRIATE-CCD">Что не
+          так с устройством ccd?</a></dt>
+
+          <dt>9.6. <a href="disks.html#CCD-DISKLABEL">Почему
+          невозможно отредактировать метку диска ccd?</a></dt>
+
+          <dt>9.7. <a href="disks.html#MOUNT-FOREIGN-FS">Можно ли
+          смонтировать другие файловые системы?</a></dt>
+
+          <dt>9.8. <a href="disks.html#MOUNT-DOS">Как смонтировать
+          вторичный раздел DOS?</a></dt>
+
+          <dt>9.9. <a href=
+          "disks.html#CRYPTO-FILESYSTEM">Существует ли
+          криптографическая файловая система для FreeBSD?</a></dt>
+
+          <dt>9.10. <a href="disks.html#NT-BOOTLOADER">Как можно
+          использовать загрузчик NT для запуска FreeBSD?</a></dt>
+
+          <dt>9.11. <a href="disks.html#LILO-BOOTLOADER">Как
+          загрузить FreeBSD и Linux с помощью LILO?</a></dt>
+
+          <dt>9.12. <a href="disks.html#BOOTEASY-LOADER">Как
+          загрузить FreeBSD и Linux с помощью BootEasy?</a></dt>
+
+          <dt>9.13. <a href="disks.html#REMOVABLE-DRIVES">Как
+          использовать устройство для чтения сменных
+          дисков?</a></dt>
+
+          <dt>9.14. <a href="disks.html#COPY-CD">Как создать образ
+          CD с данными?</a></dt>
+
+          <dt>9.15. <a href="disks.html#USER-FLOPPYMOUNT">Как
+          разрешить обычным пользователям монтировать дискеты,
+          компакт-диски и другие сменные носители?</a></dt>
+
+          <dt>9.16. <a href="disks.html#DU-VS-DF">Команды <tt
+          class="COMMAND">du</tt> и <tt class="COMMAND">df</tt>
+          показывают разный объем доступного дискового
+          пространства. Что происходит?</a></dt>
+
+          <dt>9.17. <a href="disks.html#ADD-SWAP-SPACE">Как
+          добавить дополнительную виртуальную память?</a></dt>
+        </dl>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="ADDING-DISKS"></a><b>9.1.</b> Как добавить
+            в систему новый диск?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Обратитесь к Руководству по форматированию
+            дисков на сервере <a href=
+            "https://www.linuxlib.ru/articles/formatting-media/index.html" target=
+            "_top">www.FreeBSD.org</a>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="NEW-HUGE-DISK"></a><b>9.2.</b> Как
+            перенести систему на большой новый диск?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Самый лучший способ заключается в
+            переустановке ОС на новый диск и последующем переносе
+            данных пользователей. Это очень рекомендуется делать,
+            если вы следовали ветке -stable в течение более одного
+            релиза или обновляли релиз, а не устанавливали новый.
+            Вы можете установить программу booteasy на оба диска с
+            помощью команды <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">boot0cfg</span>(8)</span> и выполнять
+            загрузку с любого из них до тех пор, пока не будете
+            удовлетворены новой конфигурацией системы. Пропустите
+            следующий абзац, чтобы перейти к вопросу переноса
+            данных после этой операции.</p>
+
+            <p>Если вы решили не делать новой установки, то вам
+            нужно разбить на разделы и разметить новый диск с
+            помощью <tt class="FILENAME">/stand/sysinstall</tt> или
+            <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">fdisk</span>(8)</span> и <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">disklabel</span>(8)</span>. Вы также
+            должны установить на оба диска программу booteasy с
+            помощью <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">boot0cfg</span>(8)</span>, чтобы иметь
+            возможность выполнять загрузку как старой, так и новой
+            системы после выполнения копирования. Обратитесь к <a
+            href="https://www.linuxlib.ru/articles/formatting-media/index.html"
+            target="_top">руководству по форматированию
+            носителей</a> за подробным описанием этого
+            процесса.</p>
+
+            <p>Итак, после подготовки диска вы можете переносить
+            данные. К сожалению, вы не можете просто скопировать
+            данные. Такие вещи, как файлы устройств (в каталоге <tt
+            class="FILENAME">/dev</tt>), флаги и ссылки будут этому
+            мешать. Вам нужно использовать инструменты, которые
+            работают с такими случаями, а именно <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">dump</span>(8)</span>. Хотя
+            рекомендуется выполнять перенос данных в
+            однопользовательском режиме, это не обязательное
+            условие.</p>
+
+            <p>Вы не должны использовать ничего, кроме <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">dump</span>(8)</span> и <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">restore</span>(8)</span> для переноса
+            корневой файловой системы. Команда <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">tar</span>(1)</span> может сработать, а
+            может и не сработать. Также вы должны использовать
+            <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">dump</span>(8)</span> и <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">restore</span>(8)</span> при переносе
+            одного раздела в другой пустой раздел.
+            Последовательность шагов при использовании программы
+            dump для переноса данных раздела в новый раздел
+            такова:</p>
+
+            <div class="PROCEDURE">
+              <ol type="1">
+                <li>
+                  <p>выполните команду newfs над новым
+                  разделом.</p>
+                </li>
+
+                <li>
+                  <p>смонтируйте его во временный каталог.</p>
+                </li>
+
+                <li>
+                  <p>перейдите в этот каталог.</p>
+                </li>
+
+                <li>
+                  <p>Выполните команду dump над старым разделом,
+                  направив вывод в новый раздел.</p>
+                </li>
+              </ol>
+            </div>
+
+            <p>Например, если вы собираетесь перенести корневую
+            файловую систему на устройство <tt class=
+            "DEVICENAME">/dev/ad1s1a</tt> с использованием каталога
+            <tt class="FILENAME">/mnt</tt> в качестве временной
+            точки монтирования, то это делается так:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>newfs /dev/ad1s1a</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount /dev/ad1s1a /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dump 0af - / | restore xf -</b></tt>
+</pre>
+
+            <p>Переразбиение разделов с использованием dump требует
+            несколько больше усилий. Для объединения раздела типа
+            <tt class="FILENAME">/var</tt> с его вышестоящим
+            разделом, создайте новый раздел, достаточно большой для
+            размещенияих их обоих, переместите вышестоящий раздел
+            так, как это описано выше, а затем переместите
+            нижестоящий раздел в пустой каталог, созданный при
+            первом перемещении:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>newfs /dev/ad1s1a</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount /dev/ad1s1a /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dump 0af - / | restore xf -</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd var</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dump 0af - /var | restore xf -</b></tt>
+</pre>
+
+            <p>Для отделения каталога от вышестоящего, скажем, для
+            размещения <tt class="FILENAME">/var</tt> в собственном
+            разделе, которого не было, создайте оба раздела, затем
+            смонтируйте нижестоящий раздел в подходящий каталог во
+            временную точку монтирования, а затем переместите
+            старый единый раздел:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>newfs /dev/ad1s1a</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>newfs /dev/ad1s1d</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount /dev/ad1s1a /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mkdir /mnt/var</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount /dev/ad1s1d /mnt/var</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /mnt</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dump 0af - / | restore xf -</b></tt>
+</pre>
+
+            <p>Вы можете использовать <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">cpio</span>(1)</span>, <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">pax</span>(1)</span>, <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">tar</span>(1)</span> вместо <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">dump</span>(8)</span> для данных
+            пользователей. На момент написания этого документа было
+            известно, что они теряют информацию о флагах файлов,
+            так что используйте их с осторожностью.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="DANGEROUSLY-DEDICATED"></a><b>9.3.</b> Не
+            угрожает ли режим <span class="QUOTE">"dangerously
+            dedicated"</span> моему здоровью?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b><a name="DEDICATE"></a>В процессе установки
+            вы можете выбрать два различных метода разбиения вашего
+            диска. По умолчанию это делается в режиме совместимости
+            с другими операционными системами на этой же машине с
+            использованием записей в таблице разделов fdisk (то,
+            что называется <span class="QUOTE">"слайсом"</span> во
+            FreeBSD), со слайсом (разделом), выделенным FreeBSD.
+            Опционально, вы можете выбрать установку менеджера
+            загрузки для переключения между операционными
+            системами. Либо вы можете выделить диск полностью под
+            FreeBSD, не заботясь о совместимости с другими
+            операционными системами.</p>
+
+            <p>Почему же этот режим называется <span class=
+            "QUOTE">"dangerous"</span>? Дело в том, что диск в этом
+            режиме не будет содержать того, что обычные утилиты для
+            ПК распознают как таблицу разделов. В зависимости от
+            того, насколько хорошо они написаны, они могут сообщить
+            вам об этом, как только обнаружат такой диск, или, что
+            гораздо хуже, могут запортить загрузчик BSD, даже не
+            спрашивая и не сообщая об этом. К тому же известно, что
+            разметка диска в режиме <span class=
+            "QUOTE">"dangerously dedicated"</span> вводит в
+            заблуждение BIOS многих производителей, включая AWARD
+            (которые используются в компьютерах HP Netserver,
+            Micronics и многих других) и Symbios/NCR (производителя
+            популярных SCSI-контроллеров серии 53C8xx). И это не
+            полный список, есть ещё другие производители.
+            Симптомами подобных проблем является сообщение ``<tt
+            class="ERRORNAME">read error</tt>'', выводимое
+            загрузчиком FreeBSD, когда он не может найти сам себя,
+            а также зависания системы при загрузке.</p>
+
+            <p>Тогда зачем вообще нужен этот режим? Он экономит
+            всего лишь несколько килобайт дискового пространства и
+            может вызвать серьёзные проблемы при новой инсталляции.
+            Причиной появления этого режима является желание
+            избежать появления одной из самых распространённых
+            проблем, с которой сталкиваются новички - соответствие
+            параметров BIOS и реальных параметров диска.</p>
+
+            <p><span class="QUOTE">"Параметры"</span> диска
+            являются устаревшей концепцией, но она лежит в основе
+            работы BIOS с диском. Когда программа установки FreeBSD
+            создаёт слайсы, она записывает их расположение в
+            соответствии с тем, как с ними будет работать BIOS.
+            Если это делается неправильно, вы не сможете выполнить
+            загрузку системы.</p>
+
+            <p>Режим <span class="QUOTE">"dangerously
+            dedicated"</span> пытается обойти это, упрощая решение
+            данной проблемы. Иногда он делает это правильно. Однако
+            это значит, что его нужно использовать только как
+            последнюю альтернативу - есть способы получше, решающие
+            проблему в 99 случаях из 100.</p>
+
+            <p>Итак, как избежать использования режима <span class=
+            "QUOTE">"DD"</span> во время установки? Сначала
+            запишите параметры диска, которые сообщает BIOS. Вы
+            можете выяснить это, заставив ядро вывести эти
+            параметры при загрузке, указав <tt class=
+            "OPTION">-v</tt> в приглашении <tt class=
+            "LITERAL">boot:</tt>, или используя <tt class=
+            "COMMAND">boot -v</tt> в загрузчике. Перед тем, как
+            запустится программа установки, ядро выведет параметры,
+            используемые BIOS. Не волнуйтесь - подождите запуска
+            программы установки, а затем воспользуйтесь
+            скроллингом, чтобы посмотреть значения этих параметров.
+            Как правило, BIOS нумерует диски в том же порядке, что
+            и FreeBSD, сначала IDE, затем SCSI.</p>
+
+            <p>Когда вы разбиваете диск на слайсы, проверьте, что
+            параметры диска, выводимые в окне программы FDISK,
+            корректны (то есть они соответствуют параметрам BIOS);
+            если это не так, воспользуйтесь командой <tt class=
+            "LITERAL">g</tt>, чтобы их исправить. Вы можете это
+            сделать, если на диске нет абсолютно ничего или если
+            этот диск был перенесён с другой системы. Заметьте, что
+            это касается только загрузочного диска; FreeBSD
+            прекрасно разберётся с остальными дисками, которые
+            могут у вас быть.</p>
+
+            <p>Как только вы добились соответствия параметров диска
+            в BIOS и FreeBSD, скорее всего, проблем у вас больше не
+            будет, и использовать режим <span class=
+            "QUOTE">"DD"</span> не потребуется. Если, однако,
+            страшной сообщение ``<tt class="ERRORNAME">read
+            error</tt>'' продолжает появляться при загрузке, самое
+            время перекреститься и попробовать этот режим - терять
+            вам больше нечего.</p>
+
+            <p>Чтобы вернуть диск из режима <span class=
+            "QUOTE">"dangerously dedicated"</span> к нормальному
+            режиму использования, есть два способа. Первый
+            заключается в том, что вы записываете достаточное
+            количество байтов NULL поверх MBR, чтобы любой
+            инсталлятор думал, что это чистый диск. Это можно
+            сделать, например, командой</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dd if=/dev/zero of=/dev/rda0 count=15</b></tt>
+</pre>
+
+            <p>Другой способ - недокументированной командой DOS</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">C:\&gt;</tt> <tt class=
+"USERINPUT"><b>fdisk /mbr</b></tt>
+</pre>
+
+            <p>проинсталлировать новую MBR, удалив загрузчик
+            BSD.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="SAFE-SOFTUPDATES"></a><b>9.4.</b> На каких
+            разделах можно без опаски использовать систему
+            softupdates? Я слышал, что мягкие обновления на <tt
+            class="FILENAME">/</tt> могут приводить к
+            проблемам.</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Краткий ответ: обычно вы можете использовать
+            мягкие обновления без опаски на всех разделах.</p>
+
+            <p>Подробный ответ: Были несколько аргументов против
+            использования мягких обновлений на корневом разделе.
+            Мягкие обновления имеют две характеристики, которые
+            этому способствуют. Во-первых, раздел с мягкими
+            обновлениями имеет мало шансов потери данных по время
+            аварийного остановва системы. (Раздел не будет
+            попорчен; просто будут потеряны данные.) также мягкие
+            обновления могут приводить к временной нехватке
+            пространства.</p>
+
+            <p>При использовании мягких обновлений ядро может
+            задерживать до тридцати секунд реальную запись
+            изменений на физический диск. Если вы удаляете большой
+            файл, он остается на диске, пока ядро не выполнит
+            удаления на самом деле. Это может привести к очень
+            простой проблеме. Предположим, что вы удалили один
+            большой файл и тут же создали другой большой файл.
+            Первый большой файл еще не удален реально с физического
+            диска, так что на диске может не оказаться достаточного
+            пространства для второго большого файла. Вы получите
+            ошибку, говорящую о том, что на разделе нет
+            достаточного пространства, хотя вы точно знаете, что
+            только что освободили его большой объем! Если вы
+            попробуете еще раз выполнить операцию секундами позже,
+            создание файла сработает так, как это и ожидалось. Это
+            не раз заставляло пользователей почесать голову и
+            дважды проверить свое психическое здоровье, файловую
+            систему FreeBSD и оба этих объекта.</p>
+
+            <p>Если система может аварийно остановиться после того,
+            как ядро примет набор данных для записи на диск, но
+            перед тем, как данные реально запишутся, то данные
+            могут потеряться или оказаться испорченными. Такой риск
+            весьма мал, но в общем-то, управляем. Использование
+            кэширование записи на IDE очень сильно увеличивает этот
+            риск; настоятельно рекомендуется выключить кэширование
+            записи для IDE при использовании мягких обновлений.</p>
+
+            <p>Эти проблемы влияют на все разделы, использующие
+            мягкие обновления. Итак, что это означает для корневого
+            раздела?</p>
+
+            <p>Жизненно важная информация на корневом разделе
+            меняется очень редко. Файлы, такие, как <tt class=
+            "FILENAME">/kernel</tt> и содержимое <tt class=
+            "FILENAME">/etc</tt> меняется только при обслуживании
+            системы, или когда пользователи меняют свои пароли.
+            Если в системе произойдет сбой в период
+            тридцатисекундного окна после выполнения такого
+            изменения, возможно, что данные окажутся потерянными.
+            Этот риск незначителен для большинства применений, но
+            вы должны иметь в виду, что он есть. Если ваша система
+            не может принять такой риск, не используйте мягкие
+            обновления с корневой файловой системой!</p>
+
+            <p><tt class="FILENAME">/</tt> традиционно является
+            одним из самых маленьких разделов. По умолчанию FreeBSD
+            размещает каталог <tt class="FILENAME">/tmp</tt> в <tt
+            class="FILENAME">/</tt>. Если у вас забит <tt class=
+            "FILENAME">/tmp</tt>, вы можете встретиться с
+            возникающими время от времени проблемами с исковым
+            пространством. Создание символической ссылки <tt class=
+            "FILENAME">/tmp</tt>, указывающей на <tt class=
+            "FILENAME">/var/tmp</tt>, решит эту проблему.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="INAPPROPRIATE-CCD"></a><b>9.5.</b> Что не
+            так с устройством ccd?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Симптом выглядит так:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>ccdconfig -C</b></tt>
+    ccdconfig: ioctl (CCDIOCSET): /dev/ccd0c: Inappropriate file type or format
+</pre>
+
+            <p>Это сообщение обычно выдаётся, когда вы пытаетесь
+            объединить разделы <tt class="LITERAL">c</tt>, по
+            умолчанию имеющие тип <tt class="LITERAL">unused</tt>.
+            Драйвер ccd требует, чтобы используемые разделы имели
+            тип FS_BSDFFS. Отредактируйте метки тех дисков, которые
+            вы хотите использовать, сменив типы разделов на <tt
+            class="LITERAL">4.2BSD</tt>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="CCD-DISKLABEL"></a><b>9.6.</b> Почему
+            невозможно отредактировать метку диска ccd?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Симптом выглядит так:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel ccd0</b></tt>
+    (здесь выводится информация о диске, пробуем отредактировать метку)
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel -e ccd0</b></tt>
+    (редактирование, сохранение, выход)
+    disklabel: ioctl DIOCWDINFO: No disk label on disk;
+    use "disklabel -r" to install initial label
+</pre>
+
+            <p>Это происходит из-за того, что метка диска,
+            возвращаемая ccd, на самом деле <span class=
+            "QUOTE">"ненастоящая"</span>, не соответствующая
+            реально располагающейся на диске. Вы можете решить эту
+            проблему, явно записав эту метку обратно следующим
+            образом:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel ccd0 &gt; /tmp/disklabel.tmp</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel -Rr ccd0 /tmp/disklabel.tmp</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel -e ccd0</b></tt>
+    (теперь это будет работать)
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="MOUNT-FOREIGN-FS"></a><b>9.7.</b> Можно ли
+            смонтировать другие файловые системы?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b></p>
+
+            <dl>
+              <dt>Digital UNIX</dt>
+
+              <dd>
+                <p>Компакт-диски с файловой системой UFS могут быть
+                замонтированы без всяких проблем. Монтирование
+                файловых систем Digital UNIX или других систем,
+                поддерживающих UFS, может быть более сложным, в
+                зависимости от особенностей разбиения диска
+                конкретной операционной системой.</p>
+              </dd>
+
+              <dt>Linux</dt>
+
+              <dd>
+                <p>Начиная с версии 2.2 FreeBSD имеет поддержку
+                разделов <tt class="LITERAL">ext2fs</tt>. За
+                дополнительной информацией обратитесь к странице
+                справочника <span class="CITEREFENTRY"><span class=
+                "REFENTRYTITLE">mount_ext2fs</span>(8)</span>.</p>
+              </dd>
+
+              <dt>NT</dt>
+
+              <dd>
+                <p>Существует драйвер, позволяющий под FreeBSD
+                получить доступ к NTFS в режиме "только для
+                чтения". Посмотрите учебник от Марка Овенса (Mark
+                Ovens) по адресу <!--<a href=
+                "http://ukug.uk.FreeBSD.org/~mark/ntfs_install.html"
+                 target=
+                "_top">-->http://ukug.uk.FreeBSD.org/~mark/ntfs_install.html<!--</a>-->.</p>
+              </dd>
+
+              <dd>
+                <br>
+                <br>
+
+                <p>Нас интересует любая дополнительная информация
+                по этому вопросу.</p>
+              </dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="MOUNT-DOS"></a><b>9.8.</b> Как смонтировать
+            вторичный раздел DOS?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Вторичные разделы DOS находятся после ВСЕХ
+            первичных разделов. Например, если раздел <span class=
+            "QUOTE">"E"</span> является вторым разделом DOS на
+            втором диске SCSI, вам нужно создать специальные файлы
+            для пятого <span class="QUOTE">"слайса"</span> в
+            каталоге /dev, затем смонтировать /dev/da1s5:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>cd /dev</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>sh MAKEDEV da1s5</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount -t msdos /dev/da1s5 /dos/e</b></tt>
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="CRYPTO-FILESYSTEM"></a><b>9.9.</b>
+            Существует ли криптографическая файловая система для
+            FreeBSD?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Да; посмотрите порт <!--<a href=
+            "http://www.FreeBSD.org/cgi/url.cgi?ports/security/cfs/pkg-descr">-->
+            <tt class="PORT">security/cfs</tt><!--</a>-->.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="NT-BOOTLOADER"></a><b>9.10.</b> Как можно
+            использовать загрузчик NT для запуска FreeBSD?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Эта процедура выглядит по разному для версий
+            FreeBSD 2.2.x и 3.x (с трёхступенчатым процессом
+            загрузки системы).</p>
+
+            <p>Идея заключается в копировании первого сектора
+            корневого раздела FreeBSD в файл, находящийся в разделе
+            DOS/NT. Предположим, что вы назвали этот файл <tt
+            class="FILENAME">c:\bootsect.bsd</tt> (по аналогии с
+            <tt class="FILENAME">c:\bootsect.dos</tt>), после чего
+            можете отредактировать файл <tt class=
+            "FILENAME">c:\boot.ini</tt>, чтобы он выглядел примерно
+            так:</p>
+<pre class="PROGRAMLISTING">
+    [boot loader]
+    timeout=30
+    default=multi(0)disk(0)rdisk(0)partition(1)\WINDOWS
+    [operating systems]
+    multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Windows NT"
+    C:\BOOTSECT.BSD="FreeBSD"
+    C:\="DOS"
+
+</pre>
+
+            <p>Для систем 2.2.x предполагается, что DOS, NT,
+            FreeBSD или другая операционная система были
+            установлены в их соответствующие разделы fdisk на <span
+            class="emphasis"><i class="EMPHASIS">одном и том
+            же</i></span> диске. Этот пример тестировался с
+            системой, в которой DOS и NT находились на первом
+            разделе fdisk, а FreeBSD на втором. Кроме того, FreeBSD
+            была настроена на загрузку с её раздела, а <span class=
+            "emphasis"><i class="EMPHASIS">не</i></span> из
+            MBR.</p>
+
+            <p>Смонтируйте дискету в формате DOS (если вы
+            используете NTFS) или раздел FAT, скажем, в каталог <tt
+            class="FILENAME">/mnt</tt>.</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dd if=/dev/rda0a of=/mnt/bootsect.bsd bs=512 count=1</b></tt>
+
+</pre>
+
+            <p>Перезапустите DOS или NT. Пользователи NTFS должны
+            скопировать файл <tt class="FILENAME">bootsect.bsd</tt>
+            и/или <tt class="FILENAME">bootsect.lnx</tt> с дискеты
+            на диск <tt class="FILENAME">C:\</tt>. Измените
+            атрибуты (права) на файл <tt class=
+            "FILENAME">boot.ini</tt> следующим образом:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">C:\&gt;</tt> <tt class=
+"USERINPUT"><b>attrib -s -r c:\boot.ini</b></tt>
+
+</pre>
+
+            <p>Отредактируйте этот файл, добавив соответствующие
+            строки из примерного <tt class="FILENAME">boot.ini</tt>
+            выше, и восстановите атрибуты:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">C:\&gt;</tt> <tt class=
+"USERINPUT"><b>attrib +s +r c:\boot.ini</b></tt>
+
+</pre>
+
+            <p>Если FreeBSD загружается из MBR, восстановите его
+            командой DOS <tt class="COMMAND">fdisk</tt> после того,
+            как переконфигурировали их для загрузки с их <span
+            class="QUOTE">"родных"</span> разделов.</p>
+
+            <p>Для систем FreeBSD 3.x эта процедура выглядит
+            несколько проще.</p>
+
+            <p>Если FreeBSD установлена на тот же самый диск, что и
+            загрузочный раздел NT, просто скопируйте <tt class=
+            "FILENAME">/boot/boot1</tt> в <tt class=
+            "FILENAME">C:\BOOTSECT.BSD</tt>. Однако, если FreeBSD
+            установлена на другой диск, то <tt class=
+            "FILENAME">/boot/boot1</tt> работать не будет, нужно
+            копировать <tt class="FILENAME">/boot/boot0</tt>.</p>
+
+            <div class="WARNING">
+              <blockquote class="WARNING">
+                <p><b>Warning</b>НЕ КОПИРУЙТЕ ПРОСТО <tt class=
+                "FILENAME">/boot/boot0</tt> ВМЕСТО <tt class=
+                "FILENAME">/boot/boot1</tt>, ЭТИМ ВЫ ПЕРЕЗАПИШЕТЕ
+                ТАБЛИЦУ РАЗДЕЛОВ ВИНЧЕСТЕРА И ВАШ КОМПЬЮТЕР
+                ПЕРЕСТАНЕТ ЗАГРУЖАТЬСЯ!</p>
+              </blockquote>
+            </div>
+            <tt class="FILENAME">/boot/boot0</tt> нужно
+            устанавливать с помощью sysinstall, выбрав менеджер
+            загрузки FreeBSD в диалоговом окне при выборе менеджера
+            загрузки. Это потому что в <tt class=
+            "FILENAME">/boot/boot0</tt> область таблицы разделов
+            заполнена символами NULL, а sysinstall копирует сюда
+            таблицу разделов перед тем, как скопировать <tt class=
+            "FILENAME">/boot/boot0</tt> в область MBR.<br>
+            <br>
+
+            <p>При запуске менеджер загрузки FreeBSD задаёт ОС,
+            которая загружалась последний раз, устанавливая для
+            этой операционной системы признак активизации в таблице
+            разделов, а затем записывает 512 байт самого себя
+            обратно в MBR, так что если вы просто скопируете <tt
+            class="FILENAME">/boot/boot0</tt> в <tt class=
+            "FILENAME">C:\BOOTSECT.BSD</tt>, то в MBR будет
+            записана пустая таблица разделов с флагом активности в
+            некотором месте.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="LILO-BOOTLOADER"></a><b>9.11.</b> Как
+            загрузить FreeBSD и Linux с помощью LILO?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Если у вас установлены FreeBSD и Linux на
+            одном и том же диске, следуйте указаниям по установке
+            LILO о загрузке не-Linux операционных систем. Они
+            сводятся к следующему:</p>
+
+            <p>Загрузите Linux, и добавьте следующие строки в файл
+            <tt class="FILENAME">/etc/lilo.conf</tt>:</p>
+<pre class="PROGRAMLISTING">
+    other=/dev/hda2
+    table=/dev/hda
+    label=FreeBSD
+
+</pre>
+
+            <p>(здесь мы предполагаем, что слайс с FreeBSD известен
+            Linux как <tt class="DEVICENAME">/dev/hda2</tt>;
+            измените эту строку в соответствии с вашей
+            конфигурацией). Затем достаточно будет запустить <tt
+            class="COMMAND">lilo</tt>, войдя в систему как
+            администратор.</p>
+
+            <p>Если FreeBSD располагается на другом диске, вам
+            нужно добавить строчку <tt class=
+            "LITERAL">loader=/boot/chain.b</tt> в конфигурационный
+            файл LILO. Например:</p>
+<pre class="PROGRAMLISTING">
+    other=/dev/dab4
+    table=/dev/dab
+    loader=/boot/chain.b
+    label=FreeBSD
+
+</pre>
+
+            <p>В некоторых случаях для успешной загрузки со второго
+            диска вам может потребоваться указать номер диска BIOS
+            загрузчику FreeBSD. Например, если диск SCSI с FreeBSD
+            определяется BIOS как диск 1, в приглашении загрузчика
+            FreeBSD нужно указать:</p>
+<pre class="SCREEN">
+    Boot: <tt class="USERINPUT"><b>1:da(0,a)/kernel</b></tt>
+
+</pre>
+
+            <p>Во FreeBSD 2.2.5 и выше вы можете настроить <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">boot</span>(8)</span> на автоматическое
+            принятие таких параметров во время загрузки.</p>
+
+            <p>В документе <!--<a href=
+            "http://sunsite.unc.edu/LDP/HOWTO/mini/Linux+FreeBSD.html"
+             target="_top">-->Linux+FreeBSD mini-HOWTO<!--</a>--> содержится
+            много информации, касающейся взаимодействия FreeBSD и
+            Linux.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="BOOTEASY-LOADER"></a><b>9.12.</b> Как
+            загрузить FreeBSD и Linux с помощью BootEasy?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Установите LILO в начало загрузочного раздела
+            Linux, а не в Master Boot Record. После этого можно
+            запустить LILO из BootEasy.</p>
+
+            <p>Это рекомендуется сделать в любом случае при
+            одновременном использовании Windows-95 и Linux, чтобы
+            упростить восстановление работоспособности Linux после
+            переинсталляции Windows95 (которая является
+            Недоброжелательной Операционной Системой и не терпит
+            присутствия других операционных систем в Master Boot
+            Record).</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="REMOVABLE-DRIVES"></a><b>9.13.</b> Как
+            использовать устройство для чтения сменных дисков?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Каким бы ни было это устройство, типа ZIP, EZ
+            (или даже обычным дисководом, если вы хотите его
+            использовать) или каким-то другим, как только оно будет
+            установлено и распознано системой, и вы вставите в него
+            картридж/дискету/что-там-ещё, всё будет выглядеть
+            примерно одинаково.</p>
+
+            <p><a name="DISKLABEL"></a>(этот раздел опирается на <!--<a
+            href="http://www.vmunix.com/mark/FreeBSD/ZIP-FAQ.html"
+            target="_top">-->FAQ по устройствам ZIP<!--</a>--> Марка Мэйо
+            (Mark Mayo))</p>
+
+            <p>Если это устройство ZIP или обычный дисковод, и у
+            вас уже есть файловая система DOS на дискетах, то вы
+            можете использовать команду типа:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount -t msdos /dev/fd0c /floppy</b></tt>
+</pre>
+
+            <p>для обычных дискет, или</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount -t msdos /dev/da2s4 /zip</b></tt>
+</pre>
+
+            <p>для дискет ZIP со стандартной конфигурацией.</p>
+
+            <p>Для других дисков посмотрите их параметры с помощью
+            команды <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">fdisk</span>(8)</span> или <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">sysinstall</span>(8)</span>.</p>
+
+            <p>Остальные примеры даны для привода ZIP на da2,
+            третьем диске SCSI.</p>
+
+            <p>Если это дискета или сменный диск, который будет
+            использоваться для обмена информацией с другими людьми,
+            хорошей идеей будет помещение туда файловой системы
+            BSD. Вы получите поддержку длинных имён файлов,
+            увеличение производительности по крайней мере в два
+            раза и гораздо большую надёжность. Первым делом вам
+            снова будет нужно выполнить разбиение диска на
+            разделы/файловые системы. Вы можете воспользоваться
+            утилитой <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">fdisk</span>(8)</span> либо <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">sysinstall</span>(8)</span>, а в случае
+            небольшого диска, на котором не нужно располагать
+            несколько операционных систем, просто сотрите таблицу
+            разделов (слайсов) FAT и используйте разбиение на
+            разделы BSD.</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>dd if=/dev/zero of=/dev/rda2 count=2</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>disklabel -Brw da2 auto</b></tt>
+</pre>
+
+            <p>Вы можете использовать <span class=
+            "CITEREFENTRY"><span class=
+            "REFENTRYTITLE">disklabel</span>(8)</span> или <span
+            class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">sysinstall</span>(8)</span> для
+            создания нескольких разделов BSD. Вам наверняка
+            придётся это сделать, если вы станете добавлять место
+            для раздела подкачки на винчестере, хотя это не имеет
+            отношения к устройствам типа ZIP.</p>
+
+            <p>В итоге вы должны создать новую файловую систему (в
+            этом примере она занимает весь наш диск ZIP):</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>newfs /dev/rda2c</b></tt>
+</pre>
+
+            <p>и смонтировать её:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>mount /dev/da2c /zip</b></tt>
+</pre>
+
+            <p>Хорошо ещё добавить строку типа следующей в файл <tt
+            class="FILENAME">/etc/fstab</tt> (прочтите справку по
+            <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">fstab</span>(5)</span>), чтобы в
+            будущем можно было просто давать команду <tt class=
+            "COMMAND">mount /zip</tt>:</p>
+<pre class="PROGRAMLISTING">
+    /dev/da2c /zip ffs rw,noauto 0 0
+</pre>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="COPY-CD"></a><b>9.14.</b> Как создать образ
+            CD с данными?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Это описано в разделе Руководства о <a href=
+            "https://www.linuxlib.ru/handbook/creating-cds.html#IMAGING-CD" target=
+            "_top">копировании CD с данными</a>. Более полную
+            информацию о работе с компакт-дисками можно найти в
+            разделе о <a href="https://www.linuxlib.ru/handbook/creating-cds.html"
+            target="_top">создании компакт-дисков</a> главы об
+            устройствах хранения данных Руководства.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="USER-FLOPPYMOUNT"></a><b>9.15.</b> Как
+            разрешить обычным пользователям монтировать дискеты,
+            компакт-диски и другие сменные носители?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Обычным пользователям можно позволить
+            монтировать устройства. Вот как это делается:</p>
+
+            <div class="PROCEDURE">
+              <ol type="1">
+                <li>
+                  <p>Как пользователь <tt class=
+                  "USERNAME">root</tt>, установите системную
+                  переменную <tt class="VARNAME">vfs.usermount</tt>
+                  в значение <tt class="LITERAL">1</tt>.</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>sysctl -w vfs.usermount=1</b></tt>
+</pre>
+                </li>
+
+                <li>
+                  <p>Работая пользователем <tt class=
+                  "USERNAME">root</tt>, назначьте соответствующие
+                  права на устройства с поблочным доступом, которые
+                  соответствуют сменным носителям.</p>
+
+                  <p>Например, чтобы позволить пользователям
+                  монтировать дискеты в первом дисководе,
+                  воспользуйтесь командой</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>chmod 666 /dev/fd0</b></tt>
+</pre>
+
+                  <p>Чтобы разрешить пользователям из группы <tt
+                  class="GROUPNAME">operator</tt> монтировать
+                  компакт-диски, сделайте так:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>chgrp operator /dev/cd0c</b></tt>
+    <tt class="PROMPT">#</tt> <tt class=
+"USERINPUT"><b>chmod 640 /dev/cd0c</b></tt>
+</pre>
+                </li>
+
+                <li>
+                  <p>Наконец, добавьте строчку <tt class=
+                  "LITERAL"><tt class=
+                  "VARNAME">vfs.usermount</tt>=1</tt> в файл <tt
+                  class="FILENAME">/etc/sysctl.conf</tt>, чтобы она
+                  срабатывала во время загрузки системы.</p>
+                </li>
+              </ol>
+            </div>
+
+            <p>Теперь все пользователи могут монтировать дискету
+            <tt class="DEVICENAME">/dev/fd0</tt> в собственные
+            каталоги:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">%</tt> <tt class=
+"USERINPUT"><b>mkdir ~/my-mount-point</b></tt>
+    <tt class="PROMPT">%</tt> <tt class=
+"USERINPUT"><b>mount -t msdos /dev/fd0 ~/my-mount-point</b></tt>
+</pre>
+
+            <p>Пользователи из группы <tt class=
+            "GROUPNAME">operator</tt> теперь могут монтировать
+            компакт-диск <tt class="DEVICENAME">/dev/cd0c</tt> в
+            собственные каталоги:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">%</tt> <tt class=
+"USERINPUT"><b>mkdir ~/my-mount-point</b></tt>
+    <tt class="PROMPT">%</tt> <tt class=
+"USERINPUT"><b>mount -t msdos /dev/cd0c ~/my-mount-point</b></tt>
+</pre>
+
+            <p>Размонтировка устройства осуществляется просто:</p>
+<pre class="SCREEN">
+    <tt class="PROMPT">%</tt> <tt class="USERINPUT"><b>umount <tt
+class="FILENAME">~/my-mount-point</tt></b></tt>
+</pre>
+
+            <p>Использование <tt class=
+            "VARNAME">vfs.usermount</tt>, однако, имеет некоторые
+            негативные стороны, связанные с вопросами безопасности.
+            Более правильным способом работы с носителями в формате
+            MSDOS является использование пакета <!--<a href=
+            "http://www.FreeBSD.org/cgi/ports.cgi?query=%5Emtools-&stype=name"
+             target="_top">-->mtools<!--</a>--> из коллекции портов.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="DU-VS-DF"></a><b>9.16.</b> Команды <tt
+            class="COMMAND">du</tt> и <tt class="COMMAND">df</tt>
+            показывают разный объем доступного дискового
+            пространства. Что происходит?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>Вам нужно разобраться, что на самом деле
+            делают команды <tt class="COMMAND">du</tt> и <tt class=
+            "COMMAND">df</tt>. <tt class="COMMAND">du</tt> проходит
+            по дереву каталогов, замеряя, насколько большой объем
+            занимает каждый файл, и выдает общий объем. <tt class=
+            "COMMAND">df</tt> просто запрашивает файловую систему
+            об оставшемся объеме. Это выглядит как одно и то же,
+            однако файл без записи в каталоге затронет <tt class=
+            "COMMAND">df</tt>, но не повлияет на <tt class=
+            "COMMAND">du</tt>.</p>
+
+            <p>Когда программа использует файл, а вы его удалили,
+            файл на самом деле не удаляется из файловой системы,
+            пока программа не прекратит его использовать. Однако
+            файл тут же удаляется из списка каталога. Вы можете
+            легко это видеть при помощи такой программы, как <tt
+            class="COMMAND">more</tt>. Предположим, что у вас
+            имеется файл, настолько большой, что его присутствие
+            влияет на вывод команд <tt class="COMMAND">du</tt> и
+            <tt class="COMMAND">df</tt>. (Так как в настоящее время
+            диски могут быть настолько большими, это может быть
+            <span class="emphasis"><i class=
+            "EMPHASIS">очень</i></span> большой файл!) Если вы
+            удалите этот файл в процессе работы <tt class=
+            "COMMAND">more</tt> над ним, на команду <tt class=
+            "COMMAND">more</tt> это не повлияет и она не сообщит,
+            что не может просматривать файл. Запись о файле просто
+            удалена из каталога, так что другие программы или
+            пользователи не смогут к нему обратиться. <tt class=
+            "COMMAND">du</tt> покажет, что файл исчез -- она
+            просматривает дерево каталогов, а файла там не будет.
+            <tt class="COMMAND">df</tt> показывает, что он все еще
+            здесь, так как файловая система знает, что <tt class=
+            "COMMAND">more</tt> все еще использует это
+            пространство. Как только вы закончите работу с <tt
+            class="COMMAND">more</tt>, команды <tt class=
+            "COMMAND">du</tt> и <tt class="COMMAND">df</tt> придут
+            в соответствие.</p>
+
+            <p>Заметьте, что подсистема мягких обновлений
+            (softupdates) может задерживать освобождение дискового
+            пространства; вам может потребоваться подождать до 30
+            секунд, прежде, чем изменения будут заметны!</p>
+
+            <p>Такая ситуация часта на веб-серверах. Многие
+            устанавливают веб-сервер на FreeBSD и забывают
+            обновлять файлы протоколов. Журнал доступа заполняет
+            <tt class="FILENAME">/var</tt>. Новый администратор
+            удаляет файл, но система все еще сообщает о том, что
+            раздел заполнен. Остановка и перезапуск программы
+            веб-сервера освободит файл, позволяя системе освободить
+            дисковое пространство. Для предотвращения этого
+            настройте <span class="CITEREFENTRY"><span class=
+            "REFENTRYTITLE">newsyslog</span>(8)</span>.</p>
+          </div>
+        </div>
+
+        <div class="QANDAENTRY">
+          <div class="QUESTION">
+            <p><a name="ADD-SWAP-SPACE"></a><b>9.17.</b> Как
+            добавить дополнительную виртуальную память?</p>
+          </div>
+
+          <div class="ANSWER">
+            <p><b></b>В главе Руководства о <a href=
+            "https://www.linuxlib.ru/handbook/config-tuning.html" target=
+            "_top">конфигурации и тонкой настройке</a> вы найдёте
+            <a href="https://www.linuxlib.ru/handbook/adding-swap-space.html" target=
+            "_top">раздел</a>, в котором описывается, как это
+            сделать.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="NAVFOOTER">
+      <hr align="LEFT" width="100%">
+
+      <table summary="Footer navigation table" width="100%" border=
+      "0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="33%" align="left" valign="top"><a href=
+          "kernelconfig.html" accesskey="P">Prev</a></td>
+
+          <td width="34%" align="center" valign="top"><a href=
+          "index.html" accesskey="H">Home</a></td>
+
+          <td width="33%" align="right" valign="top"><a href=
+          "admin.html" accesskey="N">Next</a></td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left" valign="top">
+          Конфигурирование ядра</td>
+
+          <td width="34%" align="center" valign="top">&nbsp;</td>
+
+          <td width="33%" align="right" valign="top">Системное
+          администрирование</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

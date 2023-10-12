@@ -1,0 +1,1326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Build the initrd image — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../../index.html"><img src="../../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../../index.html"># Главная</a></B><BR>
+    <B><a href="../../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../../Linux/index.htm#console">консоль</A> |
+    <A HREF="../../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../text/index.htm#edit">редакторы</a> |
+    <A HREF="../../text/index.htm#office">офис</a> |
+    <A HREF="../../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../../gimp/index.htm#photo">фото</a> |
+    <A HREF="../../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../../net/index.htm#apache">Apache</a> |
+    <A HREF="../../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../../prog/index.htm#perl">Perl</a> |
+    <A HREF="../../prog/index.htm#php">PHP</a> |
+    <A HREF="../../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../../kern/index.htm"># Ядро</a>
+    <br><a href="../../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../../internet/index.htm"># Интернет</a>
+    <br><a href="../../post/index.htm"># Почта</a>
+    <br><a href="../../secur/index.htm"># Безопасность</a>
+    <br><a href="../../iron/index.htm"># Железо</a>
+    <br><a href="../../other/index.htm"># Разное</a><br><br>
+
+    <a href="../../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>EVMS User Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="kernsup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Appendix A. Building an init-ramdisk to use with EVMS</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="setupbootloader.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="AEN3834"
+></A
+>A.3. Build the initrd image</H1
+><P
+>The next step is to build the actual ramdisk image, which is
+described in the following subsections.
+The important thing to remember is that any program that needs to
+run from the initrd needs to be copied to the initrd.
+In addition, any shared libraries that are needed by programs that run
+from the initrd need to be copied to the initrd as well.</P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="createnewinitrd"
+></A
+>A.3.1. Create a new, blank initrd</H2
+><P
+>Start by creating a new initrd image with an ext2 file system.
+The following example creates the initrd image at
+<TT
+CLASS="filename"
+>/boot/initrd-evms</TT
+>.
+You can choose to use a different file name if you wish.</P
+><P
+>The size of the initrd in the following example is 16 MB.
+You can make the initrd larger or smaller by adjusting the "count"
+value.
+The minimum size needed for all the required EVMS tools and supporting
+libraries is about 11 MB.
+If you are installing kernel modules to your initrd (see step 3-H below)
+or other non-EVMS programs, the size might need to be increased.</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>dd if=/dev/zero of=/boot/initrd-evms bs=1M count=16
+mke2fs -F -m 0 -b 1024 /boot/initrd-evms</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN3843"
+></A
+>A.3.2. Mount the initrd</H2
+><P
+>In order to copy all the required files to the initrd, the initrd must be mounted
+through a loopback device.  To mount the initrd through a loopback device requires
+that you have loopback support compiled in your kernel (or as a kernel module).
+See the "Block Devices" menu in the kernel configuration for more information
+about loopback.</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>mkdir /mnt/initrd
+mount -t ext2 -o loop /boot/initrd-evms /mnt/initrd</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN3847"
+></A
+>A.3.3. Set up the basic directory structure</H2
+><P
+>Use the following commands to create several basic directories that
+are required on the initrd:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /mnt/initrd
+mkdir bin dev etc lib proc sbin var
+cd var
+mkdir lock log</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN3851"
+></A
+>A.3.4. Copy helpful utilities</H2
+><P
+>The script that runs in the initrd requires a few common command-line utilities, which
+you can create with the following commands:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /bin
+cp -a bash cat echo expr grep mount sh umount /mnt/initrd/bin
+cd /etc
+cp fstab /mnt/initrd/etc</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN3855"
+></A
+>A.3.5. Copy supporting libraries</H2
+><P
+>The utilities from the previous step, along with the EVMS tools, require a few
+common shared libraries.  You can create these shared libraries with the following
+commands:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /lib
+cp -a ld-* /mnt/initrd/lib
+cp -a libc-* libc.* /mnt/initrd/lib
+cp -a libdl-* libdl.* /mnt/initrd/lib
+cp -a libpthread* /mnt/initrd/lib
+cp -a libtermcap* /mnt/initrd/lib</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>It is possible that some of the utilities (bash in particular) require additional
+libraries.  Use the <B
+CLASS="command"
+>ldd</B
+> command to determine if you need additional
+libraries copied to your initrd.  For example, output from
+the <B
+CLASS="command"
+>ldd /bin/bash</B
+> command provides a list similar to the following:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>libtermcap.so.2 =&#62; /lib/libtermcap.so.2 (0x40020000)
+libdl.so.2 =&#62; /lib/libdl.so.2 (0x40024000)
+libc.so.6 =&#62; /lib/libc.so.6 (0x40027000)
+/lib/ld-linux.so.2 =&#62; /lib/ld-linux.so.2 (0x4000000)</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>All libraries listed by <B
+CLASS="command"
+>ldd</B
+> need to be copied to the
+<TT
+CLASS="filename"
+>/lib</TT
+> directory on the initrd.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN3866"
+></A
+>A.3.6. Copy the EVMS tools</H2
+><P
+>Several EVMS libraries and a couple of executables need to be copied
+to the initrd.
+First, you need to locate where the EVMS libraries were installed.  By default,
+these libraries are installed in <TT
+CLASS="filename"
+>/lib</TT
+>.  If you specified a different
+prefix or <TT
+CLASS="filename"
+>libdir</TT
+> when you configured EVMS, the libraries might be located in a
+different directory.  It is important that these libraries be installed in the same
+location on the initrd as they are on your real system.  For example, if the libraries
+installed in <TT
+CLASS="filename"
+>/lib</TT
+>, the libraries need to be copied to <TT
+CLASS="filename"
+>/lib</TT
+> on the initrd;
+If the libraries are installed in <TT
+CLASS="filename"
+>/usr/lib</TT
+>, they need to be copied to <TT
+CLASS="filename"
+>/usr/lib</TT
+> on the initrd.</P
+><P
+>The following example assumes the libraries are installed in <TT
+CLASS="filename"
+>/lib</TT
+>.  Only
+the shared libraries (.so) need to be copied.  The static versions (.a) are not
+needed on the initrd.</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /lib
+cp -a libevms*so* /mnt/initrd/lib
+cp -a libdlist*so* /mnt/initrd/lib</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Next, copy the plug-in libraries to the initrd.  The plug-ins are always installed
+in the <TT
+CLASS="filename"
+>evms</TT
+> subdirectory of the directory where <TT
+CLASS="filename"
+>libevms</TT
+> is installed.</P
+><P
+>Not all of the plug-ins need to be copied to the initrd.  Several plug-ins are
+only for interfacing with the file system utilities and are not necessary at boot time.
+Other plug-ins are only for interfacing with clustering packages, which cannot be
+started until the regular boot process.</P
+><P
+>The following is a list of the specific plug-ins that do not need to be installed:</P
+><P
+></P
+><UL
+><LI
+><P
+>csm</P
+></LI
+><LI
+><P
+>ext2</P
+></LI
+><LI
+><P
+>ha</P
+></LI
+><LI
+><P
+>jfs</P
+></LI
+><LI
+><P
+>reiser</P
+></LI
+><LI
+><P
+>replace</P
+></LI
+><LI
+><P
+>rsct</P
+></LI
+><LI
+><P
+>swap</P
+></LI
+><LI
+><P
+>xfs</P
+></LI
+></UL
+><P
+>Create and change directory to <TT
+CLASS="filename"
+>/lib/evms</TT
+>:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>mkdir /mnt/initrd/lib/evms
+cd /lib/evms</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Copy the contents of the <TT
+CLASS="filename"
+>/lib/evms</TT
+> directory, minus the plug-ins
+listed earlier that
+do not need to be installed, to <TT
+CLASS="filename"
+>/mnt/initrd/lib/evms</TT
+>:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>for foo in aix bbr bsd disk dos drivelink gpt lvm md os2 s390 snapshot sparse
+do
+  cp -a *$foo* /mnt/initrd/lib/evms
+done</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Next, copy the activation program to the initrd.  The full user interfaces are
+not needed, because the only thing the initrd does is activate the volumes.
+Unlike the EVMS libraries, the exact location of this program in the initrd is not
+important, so it can simply go in <TT
+CLASS="filename"
+>sbin</TT
+>:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /sbin
+cp evms_activate /mnt/initrd/sbin
+cp get_dev_num /mnt/initrd/sbin</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Finally, if you have an <TT
+CLASS="filename"
+>/etc/evms.conf</TT
+> file installed, you should copy it to
+the initrd so that EVMS uses the correct options during activation.  (However,
+if you have an <TT
+CLASS="filename"
+>/etc/evms.conf</TT
+> file but have never modified it for your system, it should still have all the default values and does not necessarily need to
+be installed on the initrd.)</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /etc
+cp evms.conf /mnt/initrd/etc</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="setupdiskdev"
+></A
+>A.3.7. Set up disk devices</H2
+><P
+>The initrd needs to be set up to reflect the disk devices that are on your system.
+EVMS needs to find the disks in order to activate the volumes.</P
+><P
+>Before setting up the disk devices on the initrd, determine if you are
+using <TT
+CLASS="filename"
+>devfs</TT
+>.  If you are not sure, you can quickly check for the file
+<TT
+CLASS="filename"
+>/dev/.devfsd</TT
+>.  If <TT
+CLASS="filename"
+>/dev/.devfsd</TT
+> exists, you are running <TT
+CLASS="filename"
+>devfs</TT
+>.
+You can also
+check your kernel configuration in the "Filesystems" menu.  If
+"/dev file system support" and "Automatically mount at boot" are enabled, you are
+running <TT
+CLASS="filename"
+>devfs</TT
+>.</P
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="AEN3925"
+></A
+>A.3.7.1. devfs users</H3
+><P
+>Because <TT
+CLASS="filename"
+>devfs</TT
+> runs automatically within the initrd, you do not need to
+manually copy the device files to the initrd.  However, <TT
+CLASS="filename"
+>devfs</TT
+> does need to be
+mounted within the initrd for it to work properly.  There are two ways to accomplish this:</P
+><P
+></P
+><UL
+><LI
+><P
+>In the kernel configuration, in the "Filesystems" menu, set the
+"Automatically mount at boot time" option.  With this option set, <TT
+CLASS="filename"
+>devfs</TT
+> will be
+automatically mounted on <TT
+CLASS="filename"
+>/dev</TT
+> when the initrd is loaded.</P
+></LI
+><LI
+><P
+>Manually mount <TT
+CLASS="filename"
+>devfs</TT
+> from the <B
+CLASS="command"
+>linuxrc</B
+> script before running
+<B
+CLASS="command"
+>evms_activate</B
+>.  See <A
+HREF="x3834.html#writelinuxrc"
+>Section A.3.9</A
+> for more details.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="AEN3941"
+></A
+>A.3.7.2. devfsd users</H3
+><P
+>EVMS does not require <TT
+CLASS="filename"
+>devfs</TT
+> users to run <TT
+CLASS="filename"
+>devfsd</TT
+>.
+However, if you do run
+<TT
+CLASS="filename"
+>devfsd</TT
+>, you also need to run it on the initrd to ensure that all disks and segments
+are discovered with the same names on both the initrd and the real system.  Thus, if
+you run <TT
+CLASS="filename"
+>devfsd</TT
+>, you need to copy the <TT
+CLASS="filename"
+>devfsd</TT
+> program and
+<TT
+CLASS="filename"
+>config</TT
+> file to the initrd, as
+follows:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /sbin
+cp devfsd /mnt/initrd/sbin
+cd /etc
+cp devfsd.conf /mnt/initrd/etc</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Next, examine the <TT
+CLASS="filename"
+>devfsd.conf</TT
+> file (the one you just copied to the ramdisk) with
+a text editor.  First look for a line like this:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>LOOKUP.* MODLOAD</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Also in the <TT
+CLASS="filename"
+>devfsd</TT
+> file, look for a line that begins with RESTORE.  This line
+specifies a directory where <TT
+CLASS="filename"
+>devfsd</TT
+> stores changes to
+the <TT
+CLASS="filename"
+>/dev</TT
+> file system.  Create this
+directory in your initrd.  For example, if your <TT
+CLASS="filename"
+>devfsd.conf</TT
+> file contains the line
+"RESTORE /dev-state," issue the following commands to prevent error messages from
+being generated when <TT
+CLASS="filename"
+>devfsd</TT
+> starts within the initrd:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /mnt/initrd
+mkdir dev-state</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="AEN3961"
+></A
+>A.3.7.3. Non-devfs users</H3
+><P
+>Because <TT
+CLASS="filename"
+>devfs</TT
+> is not running and mounted within the initrd, you need to
+manually copy the necessary device node files to the initrd.  If you only have IDE
+or SCSI disks, the following commands should be sufficient.  If you specifically
+know which disks are on your system, you can copy only those device files.</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /dev
+cp -a hd[a-z] /mnt/initrd/dev</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>In addition to the disk devices, you also need a console device:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cp -a console /mnt/initrd/dev</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="copykernmods"
+></A
+>A.3.8. Copy kernel modules</H2
+><P
+>If you have any kernel modules that need to be loaded in order for EVMS to
+run, those modules need to be copied to the initrd.  In particular, if you build your
+IDE or SCSI drivers, the Device Mapper or MD/Software-RAID drivers, or any
+required file systems as modules, they need to be present on the initrd so they
+can be loaded before you run EVMS and try to mount the root file system.</P
+><P
+>If you build all of the necessary drivers and file systems statically into the
+kernel, you can skip this step.  Skipping this step is the recommended approach so
+that you avoid any possible problems that might be caused by required modules missing
+from the initrd.</P
+><P
+>When copying the kernel modules, it is probably safest to copy the entire
+module directory so as not to miss any modules that might be needed on the initrd:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>mkdir /mnt/initrd/lib/modules
+cd /lib/modules
+cp -a x.y.z /mnt/initrd/lib/modules</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>x.y.z is the version of the kernel that will be running EVMS and the initrd.
+</P
+><P
+>In addition, you will need the module-loading utilities, and probably the module
+configuration file:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /sbin
+cp modprobe /mnt/initrd/sbin
+cd /etc
+cp modules.conf /mnt/initrd/etc</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="writelinuxrc"
+></A
+>A.3.9. Write the linuxrc script</H2
+><P
+>At this point, all of the necessary files, programs, and libraries should be on
+the initrd.  The only thing remaining is the <TT
+CLASS="filename"
+>linuxrc</TT
+> script.
+When the kernel mounts the initrd, it tries to run a script called <TT
+CLASS="filename"
+>linuxrc</TT
+>, in the root of
+the initrd.  This script performs all the actions necessary for the initrd, and prepares the
+root device so that it can be mounted when the initrd exits.</P
+><P
+>A sample <TT
+CLASS="filename"
+>linuxrc</TT
+> script is provided in the <TT
+CLASS="filename"
+>doc</TT
+> directory of the EVMS source package.
+You can use this script as a starting point.</P
+><P
+>Copy the <B
+CLASS="command"
+>linuxrc</B
+> sample to your initrd:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>cd /usr/src/evms-2.0.0/doc
+cp linuxrc /mnt/initrd</PRE
+></FONT
+></TD
+></TR
+></TABLE
+><P
+>Open the <TT
+CLASS="filename"
+>linuxrc</TT
+> sample script in your favorite text editor.  The following paragraphs
+provide a brief explanation of what the <B
+CLASS="command"
+>linuxrc</B
+> does at boot time and offer suggestions for
+modifying the script for your system.</P
+><P
+></P
+><UL
+><LI
+><P
+>The first section tries to mount <TT
+CLASS="filename"
+>devfs</TT
+>.  You only need to
+uncomment this section if you are running <TT
+CLASS="filename"
+>devfs</TT
+> and do not automatically mount
+devfs on <TT
+CLASS="filename"
+>/dev</TT
+> (see <A
+HREF="x3834.html#setupdiskdev"
+>Section A.3.7</A
+> for more details).</P
+></LI
+><LI
+><P
+>The next section tries to start the <TT
+CLASS="filename"
+>devfs</TT
+> daemon.  If <TT
+CLASS="filename"
+>devfs</TT
+>
+is not running or <TT
+CLASS="filename"
+>devfsd</TT
+> is not present, this section is skipped.</P
+></LI
+><LI
+><P
+>The next section mounts the <TT
+CLASS="filename"
+>proc</TT
+> file system.
+EVMS looks in the <TT
+CLASS="filename"
+>/proc</TT
+> file system to find the location of the
+Device Mapper driver.  Also, later parts of the <TT
+CLASS="filename"
+>linuxrc</TT
+> script try to
+access <TT
+CLASS="filename"
+>/proc</TT
+> in order to properly set the root file system device.</P
+></LI
+><LI
+><P
+>The next section loads the kernel modules.  If you did not copy any
+kernel modules to your initrd (<A
+HREF="x3834.html#copykernmods"
+>Section A.3.8</A
+>), you can leave this section commented out.
+If you need to load kernel modules from the initrd, this is the place to do it.  Use
+the <B
+CLASS="command"
+>modprobe</B
+> command for each module that needs to be loaded.
+A few examples have been provided within the section.</P
+></LI
+><LI
+><P
+>The next section is where EVMS runs and activates all of the volumes.</P
+></LI
+><LI
+><P
+>The next section examines the kernel command line for a parameter
+that specifies the root volume.  More information about how to set up this
+parameter is included in <A
+HREF="setupbootloader.html"
+>Section A.4</A
+>.  Device Mapper
+dynamically allocates all device numbers, which means it is possible that the
+root volume specified to LILO or GRUB might have a different number when the
+initrd runs than when the system was last running.  In order to make sure the
+correct volume is mounted as root, the <TT
+CLASS="filename"
+>linuxrc</TT
+> script must determine what the
+desired root volume name is, determine the number for that device, and set
+that value in the appropriate file in <TT
+CLASS="filename"
+>/proc</TT
+>.</P
+></LI
+><LI
+><P
+>Finally, the <TT
+CLASS="filename"
+>/proc</TT
+> file system can be unmounted.
+Also, <TT
+CLASS="filename"
+>devfs</TT
+>
+can be unmounted (but only if it was mounted at the start of the script).</P
+></LI
+></UL
+><P
+>When the <TT
+CLASS="filename"
+>linuxrc</TT
+> script completes, the kernel automatically tries to
+mount the root file system, and the initrd is removed from memory.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN4026"
+></A
+>A.3.10. Unmount the initrd image</H2
+><P
+>The contents of the initrd should now be complete and you can unmount it.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN4029"
+></A
+>A.3.11. Compress the initrd image</H2
+><P
+>To conserve space, compress the initrd image:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><FONT
+COLOR="#000000"
+><PRE
+CLASS="programlisting"
+>gzip /boot/initrd-evms</PRE
+></FONT
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="kernsup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="setupbootloader.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Kernel support for initrd</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="appxinitram.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Set up the boot loader</TD
+></TR
+></TABLE
+></DIV
+>
+
+  </div>
+</div>
+</body>
+</html>

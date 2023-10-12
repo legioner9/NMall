@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>www.vzletka.net - Настройка PPTP клиента под FreeBSD и Linux — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="index.htm#firewall">брандмауэры</a> |
+    <A HREF="index.htm#route">маршрутизация</a> |
+    <A HREF="index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="index.htm#www">веб-серверы</a> |
+    <A HREF="index.htm#apache">Apache</a> |
+    <A HREF="index.htm#proxy">прокси-серверы</a> |
+    <A HREF="index.htm#print">сетевая печать</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR><!-- start content -->
+          <TD width="3%">&nbsp;</TD>
+          <TD vAlign=top width="94%">
+            <H3>Настройка PPTP клиента под Linux и FreeBSD</H3>
+            <P>В связи с постоянным развитием программы pppclient, мы считаем
+            лучшим решением взять самую последнюю стабильную версию. И только по
+            этой причине не выкладываем исходные коды программы на нашем
+            сервере.</P>
+            <P>"Официально поддерживаемой" версией ppptclient's сетью
+            vzletka.net, на данный момент, является оп. система
+            FreeBSD4-Stable.</P>
+            <P>Документацию и поддержку пользователей pptp под unix ведет <A href="../cdn-cgi/l/email-protection.html#fc9e8e96bc8a86909988979dd2929988c38f899e96999f88c18c8c888c">Roman Y. Bogdanov</A>. Я
+            со своей стороны приложу все услилия, чтобы помочь тем, кто
+            изначально работает на unix/linux/beos/macos, но у меня просто нет
+            времени на техническую поддержку ВСЕХ СИСТЕМ. Это не потому, что я
+            гадкий и злой человек, который ни за что не будут помогать другим, а
+            только лишь в силу того, что я не могу отвечать на 400
+            сообщений/звонков в день и еще что-то делать для серверов
+            vzletka.net</P>
+            <P><B>Linux</B>
+            <P><B>1. Установка</B>
+            <P>Для установки PPTP клиента под Linux необходимо установить
+            программу <!--<A
+            href="http://pptpclient.sourceforge.net/">-->pptpclient<!--</A>-->, исходный
+            код которой можно скачать либо с сервера <!--<A
+            href="http://sourceforge.net/projects/pptpclient">-->SourceForge<!--</A>-->.
+            Можете поискать эту программу в Вашем дистрибутиве или (для
+            RPM-based систем) на <!--<A href="http://rpmfind.net/">-->rpmfind.net<!--</A>-->.
+            Для установки бинарного пакета руководствуйтесь документацией на Ваш
+            пакетный менеджер.
+            <P>Для установки из исходных текстов распакуйте архив следующими
+            командами: <PRE>$ tar -xzf pptp-linux-1.0.3-1.tar.gz
+$ cd pptp-linux-1.0.3-1
+$ tar -xzf pptp-linux-1.0.3.tar.gz
+$ patch -p0 &lt; ../pptp-linux-1.0.3.diff
+$ cd pptp-linux-1.0.3
+</PRE>Для сборки <CODE>pptp</CODE> Вам понадобятся программы gcc и
+            make. Наберите команду <PRE>$ make
+</PRE>У вас должны создаться два файла - <CODE>pptp</CODE> и
+            <CODE>pptp_callmgr</CODE>. Скопируйте их в каталог /usr/local/sbin/.
+
+            <P><B>Примечание:</B><BR>Также у вас должна быть установлена
+            программа pppd(8), она должна идти в комплекте с дистрибутивом. В
+            ядре также должна быть включена поддержка PPP.
+            <P><B>2. Настройка</B>
+            <P>Файл /etc/ppp/options должен быть примерно следующего содержания:
+<PRE>name &lt;LOGIN&gt;
+remotename vpn
+defaultroute
+noauth
+asyncmap 0
+crtscts
+lock
+hide-password
+local
+noproxyarp
+lcp-echo-interval 30
+lcp-echo-failure 4
+noipx
+</PRE>где <CODE>&lt;LOGIN&gt;</CODE> - имя пользователя для
+            авторизации на VPN сервере.<BR>
+            <P>Файл /etc/ppp/chap-secrets должен содержать строку: <PRE>&lt;LOGIN&gt;    vpn    &lt;PASSWORD&gt;
+</PRE>где <CODE>&lt;LOGIN&gt;</CODE> - имя пользователя для
+            авторизации на VPN сервере, а <CODE>&lt;PASSWORD&gt;</CODE> - его
+            пароль.
+            <P><B>ВАЖНО:</B> Если Вы не находитесь в одном IP сегменте с VPN
+            сервером, перед установлением соединения в таблице маршрутизации
+            должен быть прописан маршрут до VPN сервера. Это можно сделать
+            запустив команду: <PRE>/sbin/route add -host &lt;IP_address_of_VPN_server&gt; gw &lt;gateway&gt;
+</PRE>где <CODE>&lt;IP_address_of_VPN_server&gt;</CODE> - IP адрес
+            VPN сервера, а <CODE>&lt;gateway&gt;</CODE> - шлюз, имеющийся у вас
+            до установки PPTP соединения.
+            <P><B>3. Запуск и остановка</B>
+            <P>Подключение к VPN серверу выполняется командой, запущенной с
+            правами администратора: <PRE># /usr/local/sbin/pptp &lt;IP_address_of_VPN_server&gt;
+</PRE>где <CODE>&lt;IP_address_of_VPN_server&gt;</CODE> - IP адрес
+            VPN сервера.
+            <P>При успешном подключении создастся интерфейс pppX, где X - цифра.
+            Через этот интерфейс и пойдёт весь трафик.
+            <P>Разорвать соединение можно послав сигнал TERM (15) командой
+            kill(1) процессу pppd. Либо (если установлена команда
+            <CODE>killall</CODE> и запущен только один pppd процесс) с помощью
+            команды <PRE># killall pppd
+</PRE><BR>
+            <P>
+            <P><FONT size=+1><B>FreeBSD</B></FONT>
+            <P><B>1. Установка</B>
+            <P>Для установки PPTP клиента под FreeBSD необходимо установить из
+            <!--<A href="http://www.freebsd.org/ports/">-->портов<!--</A>--> пакет <!--<A
+            href="http://www.freebsd.org/ports/net.html#pptpclient-1.0.3">-->pptpclient<!--</A>-->,
+            а также необходимый ему пакет <!--<A
+            href="http://www.freebsd.org/ports/devel.html#libgnugetopt-1.1">-->libgnugetopt<!--</A>-->.
+            Скачать эти пакеты можно с официального <!--<A
+            href="ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-stable/All/">-->ftp
+            сервера<!--</A>--> FreeBSD.
+            <P>Чтобы установить эти пакеты, в системе FreeBSD используется
+            команда pkg_add(1). С правами администратора запустите следующие
+            команды: <PRE># pkg_add -p /usr libgnugetopt-1.1.tgz
+# pkg_add pptpclient-1.0.3.tgz
+</PRE>
+            <P><B>2. Настройка</B>
+            <P>Для настройки <CODE>ppp</CODE> добавьте следующие строки в файл
+            /etc/ppp/ppp.conf <PRE>vpn:
+set authname &lt;LOGIN&gt;
+set authkey &lt;PASSWORD&gt;
+set timeout 0
+set ifaddr 0 0
+add default HISADDR
+</PRE>где <CODE>&lt;LOGIN&gt;</CODE> - имя пользователя для
+            авторизации на VPN сервере, а <CODE>&lt;PASSWORD&gt;</CODE> - его
+            пароль.
+            <P><B>ВАЖНО:</B> Если Вы не находитесь в одном IP сегменте с VPN
+            сервером, перед установлением соединения в таблице маршрутизации
+            должен быть прописан маршрут до VPN сервера. Это можно сделать
+            запустив команду: <PRE>/sbin/route add -host &lt;IP_address_of_VPN_server&gt; &lt;gateway&gt;
+</PRE>где <CODE>&lt;IP_address_of_VPN_server&gt;</CODE> - IP адрес
+            VPN сервера, а <CODE>&lt;gateway&gt;</CODE> - шлюз, имеющийся у вас
+            до установки PPTP соединения.
+            <P><B>3. Запуск и остановка</B>
+            <P>Подключение к VPN серверу выполняется командой, запущенной с
+            правами администратора: <PRE># /usr/local/sbin/pptp &lt;IP_address_of_VPN_server&gt; vpn &amp;
+</PRE>При успешном подключении создастся интерфейс tunX, где X -
+            цифра. Через этот интерфейс и пойдёт весь трафик.
+            <P>Разорвать соединение можно послав сигнал TERM (15) командой kill
+            процессу pptp.
+            <P><BR>
+            <P><FONT size=+2><B>Настройка firewall'а</B></FONT>
+            <P>Протокол PPTP использует следующие порты и протоколы:
+            <UL>
+              <LI>На сервере - порт 1723, протокол TCP.
+              <LI>У клиента (т.е. у Вас) - некий верхний порт (&gt;1023),
+              протокол TCP.
+              <LI>С обеих сторон - протокол GRE (для создания туннеля).
+            </LI></UL>Если у Вас на машине установлен firewall, его необходимо
+            настроить с учётом этих данных. Смотрите руководство на программное
+            обеспечение, отвечающее за firewall в Вашей операционной системе.
+</TD>
+          <TD
+    width="100%">&nbsp;</TD></TR></TBODY></TABLE><!-- end contenttable --></TD></TR></TBODY></TABLE>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>MySQL Manual | 3.5.9  Использование атрибута AUTO_INCREMENT — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<!--UdmComment-->
+<form id="search" method="get" action="https://www.linuxlib.ru/search/index.php">
+<table id="header" width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+ <tr>
+  <td rowspan="2" id="logo"><a href="../index.html"><img src="https://www.linuxlib.ru/images/mysql.png" width="81" height="43" alt="MySQL" /></a></td>
+  <td id="tagline">The World's Most Popular Open Source Database</td>
+  <td id="navigation"><img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" /> <!--<a href="https://order.mysql.com/">-->Online shop<!--</a>--> <b>|</b> <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> <b>|</b> <label for="q">Search MySQL.com:</label></td>
+  <td id="searchfields">
+    <input id="q" type="text" name="q" size="15" maxlength="255" />&nbsp;<input id="submit" type="submit" value="Go" /><input type="hidden" name="from" value="/doc/ru/example-AUTO_INCREMENT.html" />
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" id="topnav">
+   <table summary="" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+<td class="sep"><img src="https://www.linuxlib.ru/images/nav/0n.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/company/index.html">Company</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/products/index.html">Products</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/support-and-consulting.html">Support&nbsp;&amp;&nbsp;Consulting</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/nn.png" width="20" height="18" alt="" /></td><td class="n"><a href="https://www.linuxlib.ru/training-and-certification.html">Training&nbsp;&amp;&nbsp;Certification</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/ns.png" width="20" height="18" alt="" /></td><td class="s"><a href="https://www.linuxlib.ru/downloads/index.html">Downloads</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/sa.png" width="20" height="18" alt="" /></td><td class="a"><a href="https://www.linuxlib.ru/documentation/index.html">Documentation</a></td><td class="sep"><img src="https://www.linuxlib.ru/images/nav/a0.png" width="20" height="18" alt="" /></td>    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td id="subnav" colspan="4" height="19">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="">
+    <tr>
+     <td id="left">&nbsp;</td>
+<td><a href="https://www.linuxlib.ru/portal/books/index.html">Books</a></td><td><a href="https://www.linuxlib.ru/articles/index.html">Articles</a></td><td><a href="https://www.linuxlib.ru/documentation/lists.html">Mailing&nbsp;Lists</a></td><td><a href="https://www.linuxlib.ru/information/presentations/index.html">Presentations</a></td><td><a href="https://www.linuxlib.ru/portal/sites/index.html">Other&nbsp;Sites</a></td>     <td id="right">&nbsp;</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+<!--/UdmComment-->
+<div id="body">
+</form><!--UdmComment-->
+<div id="toc">
+
+ <form action="https://www.linuxlib.ru/doc/search.php" method="get" id="docsearch">
+  <fieldset>
+   <legend>Search the MySQL manual:</legend>
+   <input id="searchq" type="text" name="q" value="" size="10" />
+   <input id="searchsubmit" type="submit" value="Go" />
+   <input type="hidden" name="from" value="/doc/ru/example-AUTO_INCREMENT.html" />
+  </fieldset>
+ </form>
+ <div id="doctop">
+  <a href="index.html"><img src="https://www.linuxlib.ru/images/nav/top.png" width="5" height="6" alt="" />MySQL Manual</a>
+ </div>
+<div><ul><li class="gp"><a href="Tutorial.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3 Учебное пособие по MySQL
+</a><ul><li class="p"><a href="Examples.html"><img src="https://www.linuxlib.ru/images/nav/up.png" width="5" height="6" alt="" />3.5 Примеры стандартных запросов
+</a><ul class="immediate"><li><a href="https://www.linuxlib.ru/mysqloff/example-Maximum-column.html">3.5.1 Максимальное значение столбца
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/example-Maximum-row.html">3.5.2 Строка, содержащая максимальное значение некоторого столбца
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/example-Maximum-column-group.html">3.5.3 Максимальное значение столбца для группы
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/example-Maximum-column-group-row.html">3.5.4 Строка, содержащая максимальное значение некоторого столбца
+</a></li><li><a href="https://www.linuxlib.ru/mysqloff/example-user-variables.html">3.5.5 Использование пользовательских переменных
+</a></li><li><a href="example-Foreign_keys.html">3.5.6 Использование внешних ключей
+</a></li><li><a href="Searching_on_two_keys.html">3.5.7 Поиск по двум ключам
+</a></li><li><a href="Calculating_days.html">3.5.8 Подсчет посещений за день
+</a></li><li class="self">3.5.9 Использование атрибута AUTO_INCREMENT
+</li></ul></li></ul></li></ul></div><div id="promo">
+<p><!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">-->Buy this Reference Manual in softcover from Barnes &amp; Noble!<!--</a>--></p>
+<!--<a href="http://service.bfast.com/bfast/click?bfmid=2181&amp;sourceid=34233559&amp;bfpid=0596002653&amp;bfmtype=book">--><img src="https://www.linuxlib.ru/images/portal/books/60.jpg" border="0" width="100" height="129" alt="MySQL Reference Manual" /><!--</a>-->
+</div>
+<!--/UdmComment-->
+</div>
+<div id="doccontent">
+<div id="docnav"><a rel="prev" href="Calculating_days.html" title="3.5.8  Подсчет посещений за день">Previous</a> / <a rel="next" href="Batch_mode.html" title="3.6  Использование mysql в пакетном режиме">Next</a> / <a rel="up" href="Examples.html" title="3.5  Примеры стандартных запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div><H3>3.5.9  Использование атрибута AUTO_INCREMENT</H3>
+
+<P>
+<A NAME="IDX408"></A>
+
+</P>
+<P>
+Атрибут <code>AUTO_INCREMENT</code> может использоваться для генерации уникального
+идентификатора для новых строк:
+
+</P>
+
+<pre>
+CREATE TABLE animals (id MEDIUMINT NOT NULL AUTO_INCREMENT,
+name CHAR(30) NOT NULL, PRIMARY KEY (id));
+INSERT INTO animals (name) VALUES ("dog"),("cat"),("penguin"),
+("lax"),("whale");
+
+SELECT * FROM animals;
+</pre>
+
+<P>
+Что вернет:
+
+</P>
+
+<pre>
++----+---------+
+| id | name    |
++----+---------+
+|  1 | dog     |
+|  2 | cat     |
+|  3 | penguin |
+|  4 | lax     |
+|  5 | whale   |
++----+---------+
+</pre>
+
+<P>
+В  таблицах <code>MyISAM</code> и <code>BDB</code> можно  определить <code>AUTO_INCREMENT</code> для  вторичного
+столбца  составного  ключа. В  этом  случае  значение, генерируемое  для
+автоинкрементного  столбца, вычисляется  как
+<code>MAX(auto_increment_column)+1) WHERE prefix=given-prefix</code>.  Столбец с
+атрибутом <code>AUTO_INCREMENT</code> удобно использовать, когда данные нужно помещать
+в упорядоченные группы.
+
+</P>
+
+<pre>
+CREATE TABLE animals (grp ENUM('fish','mammal','bird') NOT NULL,
+             id MEDIUMINT NOT NULL AUTO_INCREMENT
+             PRIMARY KEY (grp,id));
+INSERT INTO animals (grp,name) VALUES("mammal","dog"),("mammal","cat"),
+            ("bird","penguin"),("fish","lax"),("mammal","whale");
+SELECT * FROM animals ORDER BY grp,id;
+</pre>
+
+<P>
+Что вернет:
+
+</P>
+
+<pre>
++--------+----+---------+
+| grp    | id | name    |
++--------+----+---------+
+| fish   |  1 | lax     |
+| mammal |  1 | dog     |
+| mammal |  2 | cat     |
+| mammal |  3 | whale   |
+| bird   |  1 | penguin |
++--------+----+---------+
+</pre>
+
+<P>
+Обратите внимание, что в этом случае значение <code>AUTO_INCREMENT</code> будет
+использоваться повторно, если в какой-либо группе удаляется строка,
+содержащая наибольшее значение <code>AUTO_INCREMENT</code>.
+
+</P>
+<P>
+Последнее значение поля <code>AUTO_INCREMENT</code>, которое было создано
+автоматически, можно получить при помощи функции SQL <code>LAST_INSERT_ID()</code> или
+функции API <code>mysql_insert_id()</code>.
+
+</P>
+
+
+
+<!--UdmComment--><h2 id="comments">User Comments</h2><table id="c286" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Colin Reynolds on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=286&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=286">Edit</a>]</td></tr></table><p class="commenttext">[following on from the last example]<br />
+Of course, Bowser shuffled off this mortal coil <br />
+in 1995, which kind of makes him ineligible as a <br />
+potential mate. Refining this query to eliminate <br />
+dead pets resolves this:<br />
+SELECT p1.name, p1.sex, p2.name, p2.sex, <br />
+p1.species FROM pet AS p1, pet AS p2 WHERE <br />
+p1.species = p2.species AND p1.sex =&quot;f&quot; AND <br />
+p2.sex=&quot;m&quot; AND p1.death IS NULL AND p2.death IS <br />
+NULL;<br />
+</p><table id="c299" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Colin Reynolds on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=299&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=299">Edit</a>]</td></tr></table><p class="commenttext">Hmmm... issuing &quot;lock tables shop read&quot; seems to <br />
+lock the tmp table too, so the subsequent &quot;insert <br />
+into tmp select...&quot; fails with &quot;ERROR 1030: Got <br />
+error 13 from table handler&quot;. Trying:<br />
+&quot;insert into tmp values (8,7.77);&quot; results <br />
+in &quot;ERROR 1099: Table 'tmp' was locked with a <br />
+READ lock and can't be updated&quot; which seems to <br />
+confirm this. Unlocking the tables before <br />
+attempting the insert cures the problem: but <br />
+presumably there's a reason for locking the <br />
+tables in the first place... (spot the newbie :)<br />
+</p><table id="c388" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Steve Rapaport on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=388&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=388">Edit</a>]</td></tr></table><p class="commenttext">Spent some time banging around for this.<br />
+<br />
+If your syntax demands a value be INSERTed, use<br />
+NULL or 0 to get an auto_increment to happen.<br />
+<br />
+This was in the manual, but it was under CREATE<br />
+TABLE.<br />
+<br />
+Steve</p><table id="c425" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Tuesday January 29 2002, @8:30am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=425&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=425">Edit</a>]</td></tr></table><p class="commenttext">I finally figured out how to reset the <br />
+AUTO_INCREMENT counter:<br />
+<br />
+ALTER TABLE tbl_name AUTO_INCREMENT <br />
+= 1;<br />
+<br />
+<br />
+This will reset the counter to the current <br />
+maximum value.</p><table id="c521" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Carl Furst on Friday May 17 2002, @11:48am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=521&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=521">Edit</a>]</td></tr></table><p class="commenttext">How do you reset the auto_increment after you <br />
+empty your table.. ??? If I delete all the <br />
+records in a table I want auto_increment to <br />
+reset.. how do I do that???</p><table id="c576" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by DevOS X on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=576&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=576">Edit</a>]</td></tr></table><p class="commenttext">If mySQL doesnt optimize on the multiple-key <br />
+OR query: <br />
+<br />
+SELECT * FROM pet WHERE sex = 'f' OR <br />
+species = 'cat';<br />
+<br />
+but it says right here that &quot;The AND handling <br />
+is, in comparison, now completely general <br />
+and works very well.&quot;, then why go through all <br />
+the complexity of the TEMPORARY TABLE <br />
+business?  It seems obvious that if the OR is <br />
+not optimized, yet the AND is, why not, as a <br />
+general rule, just rewrite the OR condition <br />
+using DeMorgan's law to make it an AND <br />
+condition?:<br />
+<br />
+SELECT * FROM pet WHERE NOT (sex &lt;&gt; 'f' <br />
+AND species &lt;&gt; 'cat');<br />
+<br />
+This would also prevent the duplicate rows <br />
+you receive as consequences of the <br />
+TEMPORARY TABLE and UNION methods.<br />
+</p><table id="c577" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by DevOS X on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=577&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=577">Edit</a>]</td></tr></table><p class="commenttext">For the less bit-wise-inclined, just do:<br />
+<br />
+SELECT year, month, COUNT(DISTINCT day) <br />
+AS days FROM t1 GROUP BY year, month;<br />
+</p><table id="c732" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Friday May 24 2002, @3:45pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=732&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=732">Edit</a>]</td></tr></table><p class="commenttext">When using auto_increment in a secondary column <br />
+of a multi-part key, it only seems to work if <br />
+higher-order column(s) are declared not null <br />
+(this will be enforced anyway for a primary <br />
+key).  The auto_imcrement column itself need not <br />
+be not null.  Using MySQL 4.0.1.</p><table id="c749" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Wednesday March 27 2002, @8:04am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=749&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=749">Edit</a>]</td></tr></table><p class="commenttext">AUTO_INCREMENT query fails::<br />
+<br />
+I found that you have to specify the column as <br />
+either 'primary key' or 'unique' for it to work.<br />
+<br />
+I kept trying ALTER TABLE i MODIFY COLUMN j INT <br />
+NOT NULL AUTO_INCREMENT and it would give me <br />
+errors - so I finally found that ALTER TABLE i <br />
+MODIFY COLUMN j INT NOT NULL AUTO_INCREMENT <br />
+PRIMARY KEY works as well as ALTER TABLE i MODIFY <br />
+COLUMN j INT NOT NULL AUTO_INCREMENT UNIQUE</p><table id="c980" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#dd8eb4b1b4beb2b398a5adafb8aeae9d89b8beb5b4b8f3beb2b0">Scott McCandless</a> on Wednesday August 21 2002, @10:31pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=980&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=980">Edit</a>]</td></tr></table><p class="commenttext">How do you reset the Auto_Increment of a table? <br />
+After a long search I found the answer to my <br />
+question and thought I would share.  Here is the <br />
+SQL statement (ALTER TABLE tbl_name <br />
+AUTO_INCREMENT = 1)</p><table id="c1050" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#8eedbeeaebc3e0e5f7cee6e1fae3efe7e2a0ede1e3">William Gates, III</a> on Thursday September 5 2002, @8:48am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1050&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1050">Edit</a>]</td></tr></table><p class="commenttext">Is it possible to seed the value of an <br />
+AUTO_INCREMENT field? I want one of my tables to <br />
+start at 100000, not 1.</p><table id="c1058" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Michael Craig on Friday September 6 2002, @9:51pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1058&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1058">Edit</a>]</td></tr></table><p class="commenttext">ALTER TABLE tbl_name AUTO_INCREMENT = 100 <br />
+will start your records at 100<br />
+<br />
+ALTER TABLE tbl_name AUTO_INCREMENT = 1000<br />
+will start your records at 1000<br />
+<br />
+etc...</p><table id="c1122" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Andreas F. on Wednesday December 18 2002, @5:27pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1122&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1122">Edit</a>]</td></tr></table><p class="commenttext">Under some circumstances the auto_increment of a table will be reset when the table <br />
+becomes empty. <br />
+&quot;delete from tbl_name where id=XXX&quot; - auto_increment value will not be reset when <br />
+the table becomes empty.<br />
+<br />
+&quot;delete from tbl_name&quot; - table will be empty and auto_increment value will be reset.<br />
+</p><table id="c1166" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jim Martin on Tuesday October 1 2002, @11:57am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1166&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1166">Edit</a>]</td></tr></table><p class="commenttext">Just in case there's any question, the<br />
+AUTO_INCREMENT field /DOES NOT WRAP/.  Once you<br />
+hit the limit for the field size, INSERTs generate<br />
+an error. (As per Jeremy Cole)</p><table id="c1258" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Ethan Pooley on Wednesday October 23 2002, @5:34pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1258&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1258">Edit</a>]</td></tr></table><p class="commenttext">The solution presented here, ALTER TABLE tbl_name<br />
+AUTO_INCREMENT = 1, only seems to work for me when<br />
+the table is empty. I have found other suggestions<br />
+in other forums, but have not found one that will<br />
+reset the auto_increment number on a populated<br />
+table. This would be very useful for making<br />
+columns such as session_ids wrap without having to<br />
+drop and recreate them, or without having to use<br />
+BIGINT to try and avoid running out of ids. Having<br />
+an upper limit to your auto_increment column could<br />
+create the possibility of DOS attacks in some<br />
+applications.</p><table id="c1552" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by [name withheld] on Thursday January 9 2003, @1:57pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1552&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1552">Edit</a>]</td></tr></table><p class="commenttext">Can't you alter every record in the table? If the table is full, the database would have to do this anyway.<br />
+<br />
+{min} = select MIN(P_KEY) from table;<br />
+update table set P_KEY = P_KEY - {min};<br />
+</p><table id="c1605" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by <a href="../cdn-cgi/l/email-protection.html#e58f80838397809ca5918d8a8895968a8b8c86cb868a88"><span class="__cf_email__" data-cfemail="b8d2dddedecaddc1f8ccd0d7d5c8cbd7d6d1db96dbd7d5">[email&#160;protected]</span></a> on Saturday January 18 2003, @7:06am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1605&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1605">Edit</a>]</td></tr></table><p class="commenttext">A way through resetting the auto_increment to 100 (for example) is to delete or recreate the table, and then insert the first record with an ID that has the value of 100.  After that, when you allow MYSQL to assign the ID, it will continue the series at 101, 102, etc.  The suggestion above to simply set the AUTO_INCREMENT to 100 doesn't work (as far as I can tell).<br />
+</p><table id="c1797" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by Jeff Rose on Sunday February 16 2003, @1:10am</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1797&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1797">Edit</a>]</td></tr></table><p class="commenttext">For what it's worth - this function doesn't work in phpMyAdmin. It removes the whitespace from between the table name and the AUTO_INCREMENT causing errors. I successfully reset my auto_increment from the command line.</p><table id="c1913" class="commentdetails" summary="" width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td>Posted by John Swapceinski on Sunday March 2 2003, @5:09pm</td><td align="right">[<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1913&amp;action=delete">Delete</a>] [<a href="https://www.linuxlib.ru/doc/comment.php?comment_id=1913">Edit</a>]</td></tr></table><p class="commenttext">to change the auto_increment index for a table to zero:<br />
+<br />
+alter table &lt;table name&gt; auto_increment = 0;</p><p><a href="https://www.linuxlib.ru/doc/comment.php?sect=example-AUTO_INCREMENT">Add your own comment.</a></p><div id="docnav"><a href="example-AUTO_INCREMENT.html#">Top</a> / <a rel="prev" href="Calculating_days.html" title="3.5.8  Подсчет посещений за день">Previous</a> / <a rel="next" href="Batch_mode.html" title="3.6  Использование mysql в пакетном режиме">Next</a> / <a rel="up" href="Examples.html" title="3.5  Примеры стандартных запросов">Up</a> / <a rel="contents" href="index.html">Table of Contents</a></div></div></div>
+<!--UdmComment-->
+<div class="shim"></div>
+
+<div id="footer">
+<img class="box" src="https://www.linuxlib.ru/images/box.png" width="5" height="5" alt="#" />
+<a href="../index.html">MySQL.com home</a> | <a href="https://www.linuxlib.ru/sitemap.html">Site map</a> | <a href="https://www.linuxlib.ru/feedback/index.php">Contact us</a> | <a href="https://www.linuxlib.ru/press/index.html">Press</a> | <a href="https://www.linuxlib.ru/company/jobs/index.html">Jobs</a> | <a href="https://www.linuxlib.ru/company/privacy.html">Privacy policy</a> | <a href="https://www.linuxlib.ru/company/trademark.html">Trademark info</a> | &copy; 1995-2003 MySQL AB. All rights reserved.</div>
+</div>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

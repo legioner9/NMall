@@ -1,0 +1,1356 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Феномены Unix — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="index.htm#general">основные дистрибутивы</a> |
+    <A HREF="index.htm#server">серверный Linux</a> |
+    <A HREF="index.htm#bsd">BSD</a> |
+    <A HREF="index.htm#livecds">LiveCDs</a> |
+    <A HREF="index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                  <br><br><br>
+      <b>Партнеры сайта:</b>
+        <div class="adv">
+      <div class="lf"><a href="https://ssb-akva.ru/product-category/tumba/" target="_blank">тумбы под аквариум купить недорого</a><script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script></div>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END --><div class='block_links'  > <ul> <li class='block_links_icnt' ><div> <span onclick='window.open(&#39;https://turproezdka.ru/dostoprimechatelnosti/mugla-turcia.html&#39;, &#39;_blank&#39;); return false;'><p class='block_links_header'> Мугла в турции на карте </p> <p class='block_links_text'> <a href="https://turproezdka.ru/dostoprimechatelnosti/mugla-turcia.html" target="_blank">мугла в турции на карте</a> </p><p class='block_links_url'> turproezdka.ru </p></span> </div></li> </ul></div>          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<DIV class=Section1>
+<P class=MsoTitle style="MARGIN-TOP: 6pt; TEXT-INDENT: 0cm">Феномены U<SPAN
+lang=EN-US style="mso-ansi-language: EN-US">NIX</SPAN></P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoBodyText3>Операционная система UNIX изначально создавалась как
+инструмент, предназначенный для исследователей, занимающихся самыми
+разнообразными задачами. Именно этим объясняется гибкость и мобильность UNIX,
+которая, оставаясь платформой для суперкомпьютеров, находит сегодня и совершенно
+новые применения</P>
+<P class=MsoNormal style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>ОС UNIX в первозданном виде была разработана в Bell
+Laboratories (AT&amp;T) Кеном Томпсоном в 1969 году. Система создавалась не на
+пустом месте &#8211; она обобщила многие результаты проекта Multics и элементы
+одноименной операционной системы, разработанной консорциумом исследователей из
+General Electric, Массачусетского технологического института и, естественно,
+AT&amp;T Bell Laboratories. В 1970 году Деннис Ритчи вместе с Кеном Томпсоном
+переписали код UNIX на языке Си, созданном с целью обеспечения гибкости и
+мобильности при разработке программ. Язык Си позволил создать первый код ОС
+UNIX, который можно было компилировать на различных компьютерных платформах.
+Сама система стала мобильной, то есть переносимой на различные типы компьютеров
+практически без перепрограммирования. Широко распространяться UNIX начала в 80-х
+годах и вручение его создателям Международной премии А. Тьюринга в области
+программирования (1983 г.) ознаменовало признание этой системы мировой
+общественностью.</P>
+<P class=MsoNormal>Сегодня, спустя более 30 лет после создания, ОС UNIX остается
+живой легендой в области информационных технологий, поражая воображение
+многочисленными феноменами, некоторые из которых попытаемся обозначить ниже.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">1.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это идеология и технологическая
+основа систем, многие из которых не называют себя UNIX<o:p></o:p></B></P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Объяснение этому феномену достаточно простое. Изначально были
+доступны исходные тексты операционной системы, порожденной в исследовательской
+академической среде. Гибкость, мобильность, мощность и другие качества UNIX
+естественно привлекли многих специалистов, которые создавали клоны этой ОС,
+некоторые из которых оказались очень успешными.</P>
+<P class=MsoNormal>Само же название UNIX является защищенным товарным знаком,
+который многократно перепродавался и в настоящее время находится у компании
+Caldera International (CALD), одного из разработчиков и дистрибьюторов
+операционной системы Linux -- популярнейшего некоммерческого клона UNIX.</P>
+<P class=MsoNormal>В настоящее время можно условно выделить два основных
+семейства UNIX -- System V и BSD. Впрочем, многие UNIX-клоны сочетают свойства
+обоих семейств.</P>
+<P class=MsoNormal>Канонические исходные тексты ОС UNIX были написаны
+сотрудниками телефонной компании AT&amp;T, и, соответственно, долгое время
+авторские права и права на продажу лицензий на использование исходных текстов
+принадлежали этой компании. В дальнейшем компания AT&amp;T образовала дочернюю
+компанию USL (UNIX System Laboratories) с основной задачей развития и
+сопровождения исходных текстов ОС UNIX. Именно USL выпустила вариант ОС UNIX
+System V 4.0 (SVR 4.0), который стал фактическим стандартом операционной системы
+UNIX System V.<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>В свою очередь, на
+основе System V возникло много коммерческих клонов ОС UNIX.</P>
+<P class=MsoNormal>Многие годы клоны ОС UNIX, разработанные в Калифорнийском
+университете (г. Беркли), являлись реальной альтернативой AT&amp;T UNIX.
+Например, ОС UNIX BSD 4.2 была бесплатно доступна в исходных текстах и
+достаточно широко использовалась на компьютерах VAX компании DEC. BSD 4.3
+являлась основой популярной ОС Ultrix компании DEC. ОС UNIX BSD использовалась в
+SunOS. Перечислим и коротко охарактеризуем некоторые известные клоны ОС
+UNIX.</P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=H4
+style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">Solaris
+</SPAN><SPAN style="FONT-SIZE: 10pt">компании</SPAN><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US"> Sun
+Microsystems<o:p></o:p></SPAN></P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt">Начиная
+с SunOS 4.0, произошел переход этой системы к SVR 4.0. Это связано с тем, что
+SVR 4.0 включает функциональные возможности UNIX линии BSD.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt">Компания
+Sun Microsystems внесла ряд существенных расширений в SVR 4.0. Прежде всего, это
+касается обеспечения распараллеливания программ при использовании
+мультипроцессорных компьютеров. В настоящее время Sun Microsystems начала
+бета-тестирование девятой версии Solaris. Выпуск операционной системы намечен на
+2002 год. Бета-версия операционной системы работает на фирменных процессорах
+UltraSparc, а также на платформе Intel. В попытке составить конкуренцию
+"открытым" системам на базе Linux, компания Sun поставляет Solaris бесплатно
+вместе с серверами с числом процессоров менее 8.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=H4
+style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><SPAN
+style="FONT-SIZE: 10pt">HP-UX компании Hewlett-Packard, AIX компании
+IBM<o:p></o:p></SPAN></P>
+<P class=MsoNormal>Эти системы объединяет тот факт, что в основе каждой из них
+находится SVR 4.x. Поэтому основной набор системных и библиотечных вызовов в
+этих клонах ОС UNIX совпадает.</P>
+<P class=H4
+style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><SPAN
+style="FONT-SIZE: 10pt">SCO UNIX<o:p></o:p></SPAN></P>
+<P class=MsoNormal>Варианты ОС UNIX, производимые компанией SCO (приобретенной
+недавно компанией Caldera) и предназначенные исключительно для использования на
+Intel-платформах, до сих пор базируются на лицензированных исходных текстах
+System V 3.2. Однако SCO довела свои продукты до уровня полной совместимости со
+всеми основными стандартами. </P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN: 6pt 0cm 5pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><B
+style="mso-bidi-font-weight: normal">ОС</B><B
+style="mso-bidi-font-weight: normal"><SPAN style="mso-ansi-language: EN-US">
+</SPAN>группы</B><B style="mso-bidi-font-weight: normal"><SPAN lang=EN-US
+style="mso-ansi-language: EN-US"> Berkeley Software Distribution
+(BSD)<o:p></o:p></SPAN></B></P>
+<P class=MsoNormal>Группа BSD оказала огромное влияние на общее развитие ОС
+UNIX. В 70-х годах университет Беркли получил из AT&amp;T исходные тексты
+16-разрядной ОС UNIX. На ее основе была произведена 32-разрядная система,
+которая сначала использовалась на компьютерах семейства VAX. В результате наборы
+системных вызовов UNIX AT&amp;T и BSD стали значительно различаться. Это
+продолжалось до появления SVR 4.0, в которой был реализован общий набор
+системных вызовов.</P>
+<P class=MsoNormal>Несколько лет назад компания USL, являвшаяся владельцем
+исходных текстов System V, подала в суд на университет Беркли, мотивируя это
+тем, что в BSD 4.4 нелегально используются части исходных текстов SVR 4.0.
+Процесс продолжался около двух лет и закончился победой университета, хотя в то
+же время было выставлено условие произвести полную очистку текстов BSD от следов
+System V.</P>
+<P class=MsoNormal>В свое время BSD разделилась на коммерческую и некоммерческую
+части. Коммерческая компания получила название BSDI, а некоммерческие ветви
+развития получили такие широко известные на теперешний момент названия: FreeBSD,
+NetBSD, OpenBSD.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN: 6pt 0cm 5pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><B
+style="mso-bidi-font-weight: normal">ОС Linux<o:p></o:p></B></P>
+<P class=MsoNormal>ОС Linux - это оригинальная реализация ОС UNIX, выполненная
+молодым сотрудником университета Хельсинки (Финляндия) Линусом Торвальдсом. В
+августе 1991 года 21-летний программист Линус Торвальдс создал первую работающую
+версию ядра операционной системы Linux.</P>
+<P class=MsoNormal>"Я создаю бесплатную операционную систему (это всего лишь
+хобби, поэтому она не будет большой и профессиональной) для 386(486)AT. Я мучил
+ее с апреля, и вот теперь она работает", -- писал Торвальдс в конференцию,
+посвященную Minix, одному из вариантов операционной системы UNIX. По словам
+Торвальдса, "начиналось все с малого &#8212; это была даже не операционная система. Я
+просто развлекался со своей новой машиной. Превращение в операционную систему
+произошло в значительной мере случайно, просто потому, что выбор в этой области
+был невелик. Я не мог позволить себе приобрести какую-либо коммерческую ОС, но и
+не хотел обрекать себя на DOS или Windows. Не припомню даже, а была ли тогда
+Windows вообще?"</P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN-TOP: 6pt; TEXT-INDENT: 36pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>D.H.Brown Associates (DHBA) -- американская компания,
+занимающаяся консалтингом в сфере информационных технологий, провела в 2001 году
+исследования, которые показали, что самые мощные версии операционной системы
+семейства Linux превосходят по возможностям некоторые из коммерческих
+Unix-систем. В процессе тестирования ОС оценивались по множеству параметров, в
+том числе качеству работы в многопроцессорных системах и с файлами большого
+размера. Такое же исследование, проведенное несколько лет назад, тогда
+показывало, что у Linux, которая только начинала заручаться общественной
+поддержкой, было множество слабых мест. Последние же результаты отражают
+постепенный стабильный рост качества Linux -- клона UNIX, уже завоевавшего
+доверие со стороны крупнейших компаний и таких компьютерных гигантов, как IBM,
+Oracle, SAP AG, Intel и пр.</P>
+<P class=MsoNormal>В то время как важность Linux, как основной платформы для
+серверов, растет, компания Sun Microsystems может остаться сегодня единственным
+разработчиком патентованных решений. Такие компании, как IBM, HP и Compaq, уже
+внесли свою лепту в развитие Linux, способствуя выпуску различных дистрибутивов
+этой системы. Sun осталась практически единственной компанией, делающей ставку
+на ОС UNIX, видящей свое будущее в процессорах Sparc и своей системе Solaris.
+UNIX-клон от Hewlett-Packard HP-UX (последняя версия - 11i) все более
+вытесняется ОС Linux, которой в компании придают все большее значение. Например,
+новейшие серверы и рабочие станции Hewlett-Packard Itanium изначально
+поддерживаются этой ОС. IBM, продолжая поддерживать свой UNIX-клон AIX, <SPAN
+lang=UK style="mso-ansi-language: UK">уже </SPAN>внедряет Linux (Linux for
+zSeries) на серверных платформах S/390 Parallel Enterprise Server G5. Compaq,
+разработчик 64-разрядного Tru64 UNIX, сегодня также все большее предпочтение
+отдает Linux, пытаясь комбинировать лучшие решения обеих систем в рамках
+программы Linux/Tru64 UNIX Affinity.</P>
+<P class=MsoNormal>Многообразие клонов UNIX возможно и привело бы к
+несовместимости отдельных систем, если бы не стандарты, принятые и
+поддерживаемые сообществом разработчиков.</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Чем больше появлялось версий UNIX (и особенно коммерческих),
+тем очевиднее становилась необходимость стандартизации систем, так как наличие
+стандартов облегчает переносимость приложений и защищает как пользователей, так
+и производителей ПО.</P>
+<P class=MsoNormal>Одним из наиболее ранних стандартов ОС UNIX явился изданный
+UNIX System Laboratories (USL) документ System V Interface Definition (SVID).
+Сегодня, несмотря на многочисленные переходы авторского права на исходный код ОС
+UNIX,<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>SVID продолжает пользоваться
+авторитетом у производителей. Большинство коммерческих вариантов ОС UNIX
+основаны на лицензированных исходных текстах, в результате чего они де-факто
+удовлетворяют этому стандарту.</P>
+<P class=MsoNormal>Большинство коммерческих реализаций UNIX основывалось на
+System V, UNIX BSD всегда была более популярна в академических кругах и
+университетах, что вызвало необходимость определения некоторого интерфейса,
+который являлся бы по сути объединением средств AT&amp;T и BSD. Эта работа была
+начата Ассоциацией профессиональных программистов Открытых Систем UniForum, а
+затем продолжена в специально созданных рабочих группах POSIX (Portable
+Operating System Interface). Наиболее известным и авторитетным является принятый
+ISO по представлению IEEE стандарт POSIX 1003.1, в котором определены
+минимальные требования к UNIX-системе.</P>
+<P class=MsoNormal>Международная организация X/Open, которая выполняет многие
+работы, связанные с открытыми системами, собирает и систематизирует стандарты,
+имеющие промышленное значение, в специальном своде, так называемом X/Open Common
+Application Environment (CAE). Спецификации интерфейсов, входящих в CAE,
+публикуются в документе X/Open Portability Guide (XPG).</P>
+<P class=MsoNormal>В конце 1989 года Американским национальным институтом
+стандартов (ANSI) был утвержден стандарт языка программирования C (X3.159-1989).
+Целью принятия этого стандарта было улучшение переносимости программ, написанных
+на C, <SPAN lang=UK style="mso-ansi-language: UK">в различн</SPAN>ые
+операционные системы (не только UNIX). В нем определены не только семантика и
+синтаксис языка, но и содержимое стандартных библиотек.</P>
+<P class=MsoNormal>В заключение заметим, что развитие ОС UNIX продолжается на
+самых разных уровнях, в том числе появляются новые интерфейсы пользователей.
+Так, например, известный эксперт Марк Херст (Mark Hurst), попытавшись объединить
+графический интерфейс <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">MacOS</SPAN> и <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX</SPAN>-идеологию, получил в результате
+мощную и гибкую среду, более удобную, чем обычный Мак. В настоящее время Good
+Easy (такое название получила новая система) не без успеха применяется в
+принадлежащей Херсту консультационной компании Creative Good. Основу Good Easy
+составляют пять приложений: текстовый редактор, почтовый редактор, <SPAN
+lang=EN-US style="mso-ansi-language: EN-US">Web</SPAN>-браузер, файловый
+менеджер и календарь-планировщик. Общая среда, в которой они функционируют,
+позволяет программам обмениваться информацией в простом текстовом формате.
+Используя буфер и функциональные клавиши, можно быстро перенаправлять текст из
+одного приложения в другое. Как и в случае юниксовых средств конвейерной
+обработки (pipes), эта возможность используется, чтобы получить из совсем
+простых программ нечто большее.</P>
+<P class=MsoNormal>Необходимость развития идеологии ОС UNIX и сращения ее с
+графическим интерфейсом понимали и сами создатели UNIX. В восьмидесятых и начале
+девяностых годов в Bell Labs разрабатывалась операционная система Plan 9,
+которая преследовала те же цели, что и Good Easy. Однако, из-за политики
+компании Plan 9 так и не получил широкого распространения.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">2.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это система, изначально создаваемая
+в учебной и академической среде, что отразилось на открытости ее кодов и
+идеологии<o:p></o:p></B></P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Под открытостью UNIX понимается доступность спецификаций
+интерфейсов, протоколов, внутренних алгоритмов работы системы и даже исходных
+кодов. Открытость UNIX способствовала становлению и внедрению в практику общей
+концепции открытых систем. Именно открытость UNIX позволила одновременно
+существовать двум ветвям операционной системы: коммерческой<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>и некоммерческой.</P>
+<P class=MsoNormal>Демократичность ОС UNIX органически связана с особенностями
+самого UNIX-сообщества. ОС UNIX демократична, поскольку открывает любому
+квалифицированному пользователю или разработчику возможности своего
+совершенствования. UNIX-сообщество же демократично, поскольку его члены имеют
+общую цель - получение более удобной, надежной, мощной операционной системы.
+Объем скрываемого "ноу-хау" в UNIX очень небольшой.</P>
+<P class=MsoNormal>Вместе с UNIX развилась концепция программного обеспечения с
+открытым исходным кодом (Open Source), которая заключается в том, что
+программист или пользователь может, например, с помощью Internet, получить
+какую-нибудь программу вместе с ее исходным текстом, изменить ее, исправить
+ошибки и передать другим пользователям. Однако Open Source не означает только
+лишь доступность исходного текста. Существует документ (Open Source Definition),
+который в оригинале можно прочитать по адресу: www.opensource.org. Данный
+документ регламентирует все стороны лицензирования ПО, которое попадает под
+определение Open Source.</P>
+<P class=MsoNormal>За сравнительно короткое время много ведущих компаний сделали
+большой шаг в сторону модели открытого программного обеспечения. Например,
+компания Inprise<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>обеспечила статус
+бесплатного программного продукта компилятору С++ 5.5. Продукт С++ Builder и
+Borland Delphi перенесены на Linux в рамках проекта Kylix. Бесплатная
+Linux-версия JBuilder на базе Borland Java уже доступна для загрузки. Компания
+Samsung выпускает первый электронный органайзер Yopy на базе Linux. Motorola
+Computer Group объявила о намерении выпустить собственную версию ОС<SPAN
+lang=EN-US style="mso-ansi-language: EN-US"> Linux (High Availability Linux --
+HA Linux), </SPAN>а<SPAN lang=EN-US style="mso-ansi-language: EN-US"> Novell -
+NDS (Novell Directory Services) eDirectory for Linux. </SPAN>По словам многих
+аналитиков, поддержка Linux Novell'ом будет способствовать активизации
+применения Linux на предприятиях.</P>
+<P class=MsoNormal>По информации ведущих аналитических компаний мира, именно
+открытость исходного кода будет способствовать развитию тех или иных компаний -
+производителей программного обеспечения. В ближайшее время ожидается переход
+многих компаний в том числе, и Microsoft, к эре Open Source. Это должно
+способствовать ожесточению "борьбы за пользователя" между Windows и Linux,
+особенно<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>в серверной сфере.</P>
+<P class=MsoNormal>Компания Caldera International (CALD), ставшая владельцем
+компании SCO, а вместе с ней и принадлежавших той прав на операционную систему
+UNIX, объявила в 2001 году о намерении открыть исходники ряда входящих в UNIX
+утилит. Под условиями лицензии GNU GPL будут опубликованы оригинальные исходные
+коды программы для обработки текстов awk, поисковой утилиты grep, стандартного
+парсера регулярных выражений (UNIX Regular Expression Parser) и систему
+измерения производительности работы AIM. По всей видимости, это не последний шаг
+Caldera в этом направлении. В опубликованном пресс-релизе компания намекает, что
+за AIM, awk, grep и Regular Expression Parser могут последовать и другие
+компоненты UNIX. На всю операционную систему действие GNU GPL пока не
+распространяется, хотя Caldera намеревается по запросам предоставлять доступ к
+исходникам Open UNIX 8 участникам своей программы для разработчиков.
+Невозможность открытия кода всей системы объясняется наличием в ней фрагментов,
+права на которые принадлежат другим фирмам.</P>
+<P class=MsoNormal>Тем не менее, переход к идеологии Open Source не позволил
+решить компании Caldera сложных финансовых проблем. Недавно она объявила о том,
+что чистый убыток в III квартале 2001 года составил $18,8 млн., или $0,34 на
+акцию. В число 51 служащего, потерявшего работу в ходе последних сокращений в
+компании Caldera International, попал программист Джурген Кьенхофер (Juergen G.
+Kienhoefer), игравший ключевую роль в разработке корпоративной стратегии
+достижения минимальных отличий в работе операционных систем Linux и UNIX. Д.
+Кьенхофер<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>участвовал в разработке
+системы Linux Kernel Personality (LKP), позволяющей Linux-программам работать
+без модификаций на платформе высокоуровневого ПО Open Unix от Caldera.</P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN-TOP: 6pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">3.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это самая мобильная из всех
+известных ОС<o:p></o:p></B></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 18pt; TEXT-INDENT: 0cm; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><B
+style="mso-bidi-font-weight: normal"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></B></P>
+<P class=MsoNormal>Переносимость, мобильность &#8211; это те качества, которые
+ставились перед разработчиками ОС UNIX с самого начала. Эти качества следует
+понимать в двух смыслах. Во-первых, ядро ОС UNIX само обладает свойством
+простоты переноса на другую аппаратную платформу,<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>благодаря тому, что большая часть ядра и
+важнейшие утилиты системы написаны на языке Си. Язык Си был и остается основным
+инструментом мобильного программирования в среде UNIX-систем. Часть ядра,
+которая не может быть машинно-независимой (компоненты, связанные с управлением
+на аппаратном уровне) спроектирована в виде четкой модульной структуры, что
+облегчает ее адаптацию к различным аппаратным платформам.</P>
+<P class=MsoNormal>Кроме того, благодаря стандартизации интерфейсов UNIX
+обеспечивается единая операционная среда на компьютерах с различной
+архитектурой. На начальном периоде истории ОС UNIX единообразность операционной
+среды являлась следствием мобильности единого текстового варианта системы. Когда
+начали появляться варианты ОС UNIX с разными исходными текстами, единообразность
+операционной среды стала нарушаться. Выход был найден на пути стандартизации
+интерфейсов и семантики программных средств разного уровня, которые должна
+поддерживать любая операционная система, претендующая на совместимость с
+UNIX.</P>
+<P class=MsoNormal>В качестве примера мобильности приведем один из клонов ОС
+UNIX &#8211; Linux, который становится одной из самых популярных платформ для
+программного обеспечения в рамках лицензии &#8220;Open Source&#8221;. Linux поддерживает
+практически всю компьютерную периферию от RAID-контроллеров до принтеров и
+TV-тюнеров. Крупные производители аппаратного обеспечения сами пишут драйверы
+под Linux (Creative, nVidia и др.) и делают доступной необходимую для
+разработчиков информацию о своих продуктах (Intel, 3Dfx и др.).</P>
+<P class=MsoNormal>Другая область, в которой у Linux большие перспективы, - это
+встроенные системы. Всевозможные интеллектуальные устройства, начиная с
+Web-терминалов и карманных компьютеров и заканчивая всевозможной бытовой
+техникой с подключением к Сети и игровыми приставками, все более и более
+вытесняют персоналки из некоторых областей, в которых последние властвовали до
+сих пор. Другим примером мобильности UNIX может служить проект NetBSD, одной из
+основных целей которого изначально было построение дистрибутива ОС с поддержкой
+большого количества машинных архитектур (на данный момент он поддерживает 16
+архитектур).</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">4.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">Сегодня UNIX &#8211; это симбиоз коммерческих и
+абсолютно бесплатных операционных систем<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Как видно из приведенного выше, на данный момент наряду с
+коммерческими реализациями ОС UNIX существуют и полностью бесплатные с открытым
+исходным кодом, которые поддерживаются собственными сообществами разработчиков,
+разбросанными по всему миру.</P>
+<P class=MsoNormal>До тех пор, пока господствовала узкая трактовка ОС UNIX (т.
+е. пока ОС UNIX не была коммерческим продуктом), не было потребности в
+стандартизации средств этой операционной системы. Немногочисленные
+высококвалифицированные пользователи ОС UNIX сами могли разобраться в
+особенностях и отличиях используемой версии системы и выбрать то подмножество ее
+средств, которое обеспечивало переносимость разрабатываемого приложения.</P>
+<P class=MsoNormal>Однако, с выходом ОС UNIX на коммерческий рынок и
+существенным увеличением числа пользователей различных ее вариантов, стало
+необходимым ввести хотя бы возможность производства основанных на ОС UNIX
+операционных систем, которые были бы действительно совместимы. Для этого
+необходима стандартизация (интерфейсов) средств операционной системы на разных
+уровнях. В этом процессе стандартизации одинаково активно принимали участие
+разработчики как коммерческих, так и бесплатных клонов.</P>
+<P class=MsoNormal>Более того, многие из стандартизованных средств были впервые
+реализованы<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>именно в группах
+разработки бесплатных клонов ОС UNIX (<SPAN lang=UK
+style="mso-ansi-language: UK">например,</SPAN> в группе BSD был разработан и
+впервые реализован стек транспортных протоколов TCP/IP).</P>
+<P class=MsoNormal>Процесс стандартизации ведется уже много лет, но он еще не
+завершен и вряд ли когда-либо будет завершен в виде окончательного набора
+стандартов де-юре. Тем не менее, даже полученные результаты позволяют
+производителям обеспечить пользователей разных аппаратных платформ операционными
+системами, достаточно удобными для использования и позволяющими разрабатывать
+мобильные прикладные системы, которые могут выполняться на компьютерах,
+оснащенных операционными системами с аналогичными свойствами. Как пример можно
+привести существующую возможность использования огромного количества бесплатного
+ПО, распространяемого в исходных кодах, как в бесплатных, так и коммерческих
+версиях <SPAN lang=EN-US style="mso-ansi-language: EN-US">UNIX</SPAN>.</P>
+<P class=MsoNormal>Еще одним примером симбиоза может служить <SPAN lang=UK
+style="mso-ansi-language: UK">создание на базе бесплатн</SPAN>ых <SPAN lang=UK
+style="mso-ansi-language: UK">реализаций </SPAN>ОС UNIX коммерческих продуктов.
+Так компания Hewlett-Packard объявила о планах выпуска собственной защищенной
+версии операционной системы Linux, которая называется HP Secure OS Software for
+Linux. В отличие от обычной ОС Linux, стоить она будет недешево &#8211; $3000. Но зато
+она предназначается для мощных корпоративных серверов. В нее вошли версия ядра
+2.4 операционной системы Linux, дополнения, разработанные для нее программистами
+Hewlett-Packard, Web-сервер Apache и утилиты для организации связи между
+приложениями, а также для обнаружения атак на корпоративную сеть. Разработкой
+защищенных версий Linux занимается не только Hewlett-Packard. Например, по
+заказу Управления национальной безопасности США разработку защищенной ОС Linux
+сейчас ведет компания Network Associates. Агентство национальной безопасности
+США (АНБ) выложило второй релиз операционной системы собственного изготовления
+SE Linux. Гриф "SE" означает "Security-Enhanced", то есть "повышенная
+безопасность". Стоимость контракта оценивается в 1,2 миллиона долларов.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">5.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это самые защищенные серверы и
+рабочие места для профессионалов<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>UNIX хорош для квалифицированного (или желающего стать
+таковым) администратора, т. к. требует знания принципов функционирования
+происходящих в нем процессов. Реальная многозадачность и жесткое разделение
+памяти обеспечивают высокую надежность функционирования системы.</P>
+<P class=MsoNormal>UNIX изначально задумывался как <SPAN lang=UK
+style="mso-ansi-language: UK">многопользовательская многозадачная среда с
+возможностью в случае необходимости совместного использования данных
+пользователями. </SPAN>Как следствие в UNIX появились <SPAN lang=UK
+style="mso-ansi-language: UK">гибкие механизмы контроля за полномочиями
+пользователей</SPAN>.</P>
+<P class=MsoNormal>Права доступа к файлу регулируются установкой специальных
+битов разрешения доступа, связанных с файлом. Устанавливая биты разрешения
+доступа, можно независимо управлять выдачей разрешений на чтение, запись и
+выполнение для трех категорий пользователей: владельца файла, группового
+пользователя и прочих. Пользователи могут создавать файлы, если разрешен доступ
+к каталогу. Вновь созданные файлы становятся листьями в древовидной структуре
+файловой системы.</P>
+<P class=MsoNormal>Для пользователя система UNIX трактует устройства так, как
+если бы они были файлами. Устройства, для которых назначены специальные файлы,
+соответствующие им, становятся вершинами в структуре файловой системы. Обращение
+программ к устройствам имеет тот же синтаксис, что и обращение к обычным файлам;
+семантика операций чтения и записи по отношению к устройствам в большой степени
+совпадает с семантикой операций чтения и записи обычных файлов. Способ защиты
+устройств совпадает со способом защиты обычных файлов -- путем соответствующей
+установки битов разрешения доступа к ним (файлам). Поскольку имена устройств
+выглядят так же, как и имена обычных файлов, и поскольку над устройствами и над
+обычными файлами выполняются одни и те же операции, большинству программ нет
+необходимости различать внутри себя типы обрабатываемых файлов.</P>
+<P class=MsoNormal><SPAN lang=UK style="mso-ansi-language: UK">Также были
+введены гибкие средства для контроля за потребляем</SPAN>ыми пользователями
+ресурсами системы, такими как дисковое пространство, доступное пользователю,
+время центрального процессора, память и др.</P>
+<P class=MsoNormal>Как следствие такого весьма жесткого контроля за правами
+доступа пользователя и потребляемыми им ресурсами системы - практически полное
+отсутствие вирусов в среде ОС UNIX (несмотря на то, что первый в мире червь
+<SPAN lang=UK style="mso-ansi-language: UK">заражал</SPAN> именно UNIX,
+пользуясь &laquo;дырой&raquo; в программном обеспечении, позволявшей программе-вирусу
+получить права суперпользователя на заражаемой им системе). Широкое
+распространение версий ОС UNIX с открытым исходным кодом с одной стороны
+облегчает труд взломщика, но, с другой стороны, исходные тексты системы
+постоянно подвергаются аудиту разработчиков со всего мира, что способствует
+выявлению потенциальных &laquo;дыр&raquo; в защите и ликвидации их в случае обнаружения.</P>
+<P class=MsoNormal><SPAN lang=UK style="mso-ansi-language: UK">Еще одним
+немаловажным достоинством </SPAN>UNIX является п<SPAN lang=UK
+style="mso-ansi-language: UK">росто</SPAN>й, но мощный модульный
+пользовательский интерфейс. То есть имея в своем распоряжении набор утилит,
+каждая из которых решает узкоспециализированную задачу, можно конструировать из
+них достаточно сложные комплексы по обработке информации &#8211; чем очень удобно
+пользоваться при разработке различного прикладного ПО.</P>
+<P class=MsoNormal>Нельзя не упомянуть также о существовании большого количества
+бесплатно распространяемого ПО с открытым исходным кодом, которое может быть
+использовано в том виде, в котором оно есть, или же модифицировано под
+конкретные нужды разработчика.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">6.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; чаще всего это системы не для
+&laquo;чайников&raquo;, которых абсолютное большинство и с которыми нельзя не
+считаться<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Несмотря на все названные преимущества ОС UNIX, ее вряд ли
+можно считать удовлетворительным рабочим местом для человека, плохо
+разбирающегося в информационных технологиях, секретаря или бухгалтера. И главная
+причина этого &#8211; отсутствие привычного набора программ. Во всем мире сегодня идут
+жаркие дискуссии &#8220;UNIX против Windows&#8221;, &#8220;Linux против Windows&#8221; и т. п. Эти
+противопоставления интригуют разве что новичков. Очевидно, что никакую реальную
+систему нельзя сделать идеальной для всех применений &#8211; серверов, рабочих
+станций, домашних и офисных ПК, встроенных приложений бытовой техники.
+Существует мнение, что именно такой подход &#8211; причина всех нареканий на продукты
+Microsoft. У UNIX и его клонов есть своя, заданная с самого начала ниша, - это
+прежде всего система для разработчика, исследователя, специалиста в
+информационных технологиях.</P>
+<P class=MsoNormal>Вместе с тем, повсеместно идут попытки содания &#8220;десктопных&#8221;
+вариантов ОС UNIX, и прежде всего это касается клонов Linux.</P>
+<P class=MsoNormal>Есть и другой подход к привлечению широких кругов
+пользователей в ряды сторонников UNIX &#8211; обучать их работе с этой системой с
+детства, заставляя думать и вникать в тонкости информационных технологий. Так по
+заявлению представителей компании Blue Linux, следующая версия одноименной ОС
+Blue Linux будет разработана специально для образовательных учреждений. В пакет
+войдут образовательные программы, ориентированные на детей в возрасте от 5 лет.
+"Мы надеемся, что сможем снизить стоимость обеспечения школьных компьютерных
+систем, дать возможность школам направить деньги непосредственно на обучение", -
+заявил Мэтт Джезорек (Matt Jezorek), основатель компании.</P>
+<P class=MsoNormal>Австралийское отделение Sun Microsystems и Linux-сообщество
+решили взять под свое крыло благотворительную организацию PCs for Kids,
+подвергнувшуюся нападкам Microsoft за установку нелицензионных версий Windows на
+подержанные компьютеры, передаваемые детям из бедных семей. Sun Microsystems
+предложила взамен Windows устанавливать на ПК свое бесплатное программное
+обеспечение, а Linux-компания Cyber Source из Мельбурна взялась научить
+специалистов PCs for Kids необходимым навыкам для установки Sun'овского "Star
+Office" и ОС Linux Red Hat 6.2 на старые компьютеры. &laquo;Начать работать с Linux -
+это кардинально новый поворот в нашем деле, а для детей это будет как вместо
+футбола начать играть в гандбол&raquo;, - сказал директор PCs for Kids Колин Бэйс
+(Colin Bayes).</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">7.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это платформы для суперкомпьютеров и
+стиральных машин<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>И все-таки ОС UNIX особенно хороша в тех случаях, где не
+требуется развитого интерфейса неопытного пользователя-&laquo;чайника&raquo;. И где не
+требуются приложения, к которым привык последний. Серверы, суперкомпьютеры &#8211; с
+ними имеют дело ИТ-специалисты, которые понимают и принимают суть этой
+операционной системы &#8211; ее многозадачность, гибкость, мощь.</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Приведем несколько примеров серверных решений. В октябре 2001
+года IBM анонсировала самый мощный в мире UNIX-сервер, объединяющий в себе
+различные достижения в области создания микропроцессоров и технологий,
+апробированных на мэйнфреймах. Сервер IBM eServer p690 представляет собой
+UNIX-систему для консолидации разрозненной серверной инфраструктуры. Он работает
+под управлением операционной системы класса UNIX AIX 5L, а также 64-битовой ОС
+Linux.</P>
+<P class=MsoNormal>В условиях острой конкуренции на рынке UNIX-серверов SGI
+выпустила новую<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>32-процессорную
+систему среднего уровня Origin 300. В этой системе используются модули ЦП,
+ввода-вывода и накопителей, которые можно собирать в разных сочетаниях в
+зависимости от решаемой задачи. Тот же конструктивный принцип реализован в
+анонсированном в июле 2000 года семействе серверов Origin 3000, в которых может
+использоваться до 512 центральных процессоров. При этом SGI утверждает, что ее
+системы дешевле продуктов лидеров рынка UNIX-серверов Sun Microsystems, IBM и
+Hewlett-Packard.</P>
+<P class=MsoNormal>Национальный научный фонд США (National Science Foundation,
+NSF) заказал постройку мощнейшего в мире суперкомпьютера на 64-битовых
+процессорах Intel Itanium. Суперкомпьютер, получивший имя "TeraGrid," объединит
+более 3300 процессоров Itanium в кластерную систему, расположенную в четырех
+городах Соединенных Штатов: в университете штата Иллинойс, в суперкомпьютерном
+центе Сан-Диего (SDSC) в Калифорнийском университете, в Аргоннской национальной
+лаборатории (пригород Чикаго) и в Калифорнийском технологическом институте
+(Пасадена). Суммарная вычислительная мощность TeraGrid составит более 13,6
+терафлоп (13,6 трлн. операций в секунду), суммарный объем хранимых данных &#8211;
+более 450 ТБ. Часть из выделенных NSF $53 млн. пойдет на закупку уже готовых
+компонентов и подсистем у IBM, работающих под управлением ОС Linux и связанных
+между собой оптической сетью Qwest. </P>
+<P class=MsoNormal>Операционная система Linux и серверы, на которой она
+установлена, становятся самыми популярными в киноиндустрии. Именно Linux чаще
+всего устанавливают на студийные серверы, на которых создаются спецэффекты для
+фильмов. Например, на Linux-компьютерах были сделаны спецэффекты для фильма
+"Титаник". Недавно IBM официально представила новое аппаратное решение для кино-
+и анимационных студий Linux Digital Studio, которое состоит из мощных рабочих
+станций, серверов и накопительных систем. Основным конкурентом IBM в Голливуде
+является компания SGI, на счету которой есть такой шедевр спецэффектов, как
+"Парк юрского периода". Компания около двух лет назад начала поставлять в
+Голливуд компьютеры с ОС Linux. В этой области также известны компании
+Hewlett-Packard и Sun - их Linux-серверы тоже обслуживают индустрию кино.</P>
+<P class=MsoNormal>Встраиваемые ОС являются своеобразными логическими моторами
+различных бытовых приборов и приставок, поэтому их интерфейсная часть также не
+определяется конкретной операционной системой. Поэтому UNIX (более конкретно,
+Linux) сегодня считается самой перспективной ОС в этой области.</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Аналитическая компания Evans Data в конце прошлого года
+опубликовала результаты исследования рынка встроенных систем. Опросив более 500
+разработчиков, компания обнаружила, что в 2002 году, следует ожидать серьезных
+перемен в этой области. В настоящее время в большинстве встроенных устройств
+используются собственные операционные системы. Такой подход доминирует еще с тех
+времен, когда применение операционных систем общего назначения было невозможно
+или неэффективно. По прогнозу аналитиков Evans Data, в 2002 году произойдет
+коренной перелом в пользу ОС Linux. За несколько месяцев ее доля вырастет на
+140%, что обеспечит этому UNIX-клону лидирующее положение. По мере
+распространения Linux будет уменьшаться распространенность самодельных
+операционных систем (к концу 2002 года они практически выйдут из употребления).
+</P>
+<P class=MsoNormal>В конце 2001 года компания Red Hat анонсировала пакет для
+разработки встраиваемых приложений на платформе Linux - Red Hat Embedded Linux
+Developer Suite. В его состав вошли новая версия Red Hat Embedded Linux на
+основе ядра Linux 2.4, новые версии инструментальных средств GNUPro на базе
+gcc3, новые средства конфигурирования и среда разработки, отладчик RedBoot
+Embedded Bootloader/BIOS, библиотеки glibc 2.2 для всех архитектур, а также
+последние версии пакетов Red Hat Linux RPM.</P>
+<P class=MsoNormal>Приведем несколько примеров применения встроенных систем.</P>
+<P class=MsoNormal>Сингапурская компания Serial System, которая занимается
+производством бытовой электроники, недавно представила свое новое творение --
+карманное устройство Terapin Mine, на которое можно записать до 10 ГБ
+информации. Его размеры 178х81х25 мм. На Terapin Mine можно записывать цифровые
+фотографии, резервные копии файлов с компьютера, аудиофайлы и пр. Его можно
+также подключить к корпоративной локальной сети и использовать в качестве
+миниатюрного файл-сервера. Кроме того, Terapin оснащен разъемом PC Card, к
+которому можно подключить адаптер для радиосети. Работает он под управлением
+"усеченной" версии ОС Linux.</P>
+<P class=MsoNormal>Компания Access Co., Ltd. заявила о начале распространения
+демонстрационной версии Web-браузера "NetFront v3.0 for PS Linux" для
+PlayStation2, работающей под управлением Linux. Браузер предназначен для
+пользователей бета-версий Linux kit for PlayStation2 "SCPH-10270K", выпущенной
+Sony Computer Entertainment Inc. в июне 2000 года.</P>
+<P class=MsoNormal>Компания Motorola (MOT) включит встраиваемую ОС Lineo
+Embedix, работающую на базе ядра Linux, в hi-end-серию телевизионных приставок
+DCT5000. Начало продаж приставок намечено на первый квартал 2002 года.</P>
+<P class=MsoNormal>В конце сентября 2000 года IBM представила наручные часы с
+операционной системой Linux 2.2. Выпущено две основные модели - с
+жидкокристаллическим черно-белым дисплеем с разрешением 96х120 пикселов и часы с
+электролюминесцентным дисплеем, поддерживающим разрешение 640х480.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">8.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp; </SPAN></B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это явно выраженное отставание в
+десктопных приложениях<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Не все так же радужно на рынке &#8220;десктопных&#8221; приложений UNIX.
+Типичный пример &#8211; печальный конец проекта Corel Linux. Компания Corel Corp. не
+так давно продала большую часть своего подразделения по работе с Linux, подписав
+соглашение с частной компанией Xandros, дающее последней доступ к разработке
+операционной системы. Corel получает 5 процентов акций Xandros и 2 процента
+акций учредителя последней, компании Linux Global Partners.</P>
+<P class=MsoNormal>Недавно компания Dell прекратила онлайновые продажи
+настольных компьютеров с<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>предустановленной операционной системой Linux. Dell поддерживала эту
+операционную систему путем инвестиций в такие компании, как Red Hat и Eazel --
+поставщик программного обеспечения для Linux. Руководство Dell заявило, что
+потенциал Linux больше связан с рабочими станциями и серверами.</P>
+<P class=MsoNormal>Loki Software, самая известная из компаний, занимающихся
+портированием PC-игр на платформу Linux, обанкротилась. Loki была образована в
+августе 1998 года и предполагалось, что ее усилия одновременно помогут и Linux,
+и игровым компаниям: первый получил бы современные игры, которых ему не хватает,
+чтобы считаться полноценной системой для домашнего компьютера, вторые смогли бы
+освоить потенциально выгодный рынок. За время своей деятельности компания
+портировала на Linux множество игр, в том числе Tribes 2, Alpha Centauri, Quake
+III, SimCity 3000 и Heroes of Might and Magic III.</P>
+<P class=MsoNormal>Заметим, что во всех случаях речь идет о Linux, наиболее
+адаптированном к потребностям пользователей клоне ОС UNIX. "У Linux очень
+маленькая доля рынка настольных ПК", - отметил вице-президент по системному ПО
+аналитической фирмы IDC Дэн Кузнецки (Dan Kusnetzky). "Покупатели ПК мигрируют в
+том направлении, где лежат полезные программы", &#8212; сказал он. Другие
+производители ПК, такие как IBM, продолжают предлагать определенные модели
+компьютеров, например ноутбуки ThinkPad, с предустановленной Linux. Но и они
+говорят, что основной бизнес Linux связан с серверами. Несмотря на активизацию
+усилий таких групп, как Gnome, KDE направленных на создание графического
+интерфейса пользователя для Linux, операционная система так и не смогла
+закрепиться на рынке настольных ПК. "Для Linux нет офисных приложений, - заявила
+представительница Red Hat Мелисса Лондон (Melissa London). &#8212; Чтобы сделать ее
+операционной системой для десктопов, нужно приложить очень много сил. Мы
+стараемся, но все же больше надеемся на рынок серверов".</P>
+<P class=MsoNormal>Вместе с тем, попытки создать в рамках ОС UNIX (в частности,
+в рамках Linux) популярную среду для офисных приложений не прекращаются. Так,
+например, Turbolinux, разработчик решений для Internet-инфраструктуры на основе
+Linux, выпустила дистрибутив Turbolinux Workstation 7.0, рассчитанный на
+производителей персональных компьютеров (ОЕМ). Workstation 7.0 разработана с
+учетом требований корпоративных пользователей и призвана обеспечить
+бизнес-пользователей необходимыми для работы Linux-инструментами. Workstation
+7.0 позволяет дополнительно установить Windows 95/98 на свободный раздел диска и
+поддерживает выборочную загрузку (вот оно решение вопроса &laquo;Linux против
+Windows&#8221;). Еще один пример. Компанией CodeWeavers был выпущен плагин,
+позволяющий просматривать файлы Windows-приложений в среде Linux. Среди
+возможностей программы - просмотр контента в формате QuickTime и ShockWave в
+Linux браузерах, файлы формата MS Word, Excel, Powerpoint в e-mail клиентах для
+Linux. Плагин обеспечивает совместимость Linux с популярными Windows-форматами,
+дает практичное решение пользователям Linux. Программа поддерживает многие
+почтовые клиенты для Linux, такие как Netscape, GNOME Evolution и KDE Kmail. В
+будущих версиях плагина планируется поддержка практически всех
+Windows-форматов.</P>
+<P class=MsoNormal>В качестве же примера, который может послужить реальной
+альтернативой офисным приложениям Microsoft, можно привести, пожалуй, пока
+только StarOffice. Sun купила StarOffice в 1999 году у немецкой компании Star
+Division, сделав пакет бесплатным и попытавшись переманить часть пользователей
+Microsoft Office. Компания также сделала доступным исходный код программы в
+рамках проекта Open Office и <SPAN lang=UK style="mso-ansi-language: UK">тем
+сам</SPAN>ым привлекла к разработке бесплатного офисного пакета множество
+разработчиков со всего мира. Предыдущая версия программы 5.2, однако, занимала
+много памяти и очень медленно загружалась. В последней версии 6.0 все программы
+представляют собой отдельные приложения, работающие независимо друг от друга. В
+пакет интегрирован новый формат хранения данных, более компактный, чем в
+предыдущей версии. Новая версия StarOffice<SPAN style="mso-spacerun: yes">&nbsp;
+</SPAN>выпущена для платформ Linux, Sun Solaris и Microsoft Windows. Проводилась
+еще разработка версии для Mac OS X, однако Sun прекратила работу в этом
+направлении, предложив открытую доработку пакета.</P>
+<P class=MsoNormal
+style="LINE-HEIGHT: 12pt; MARGIN-TOP: 6pt; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=H3
+style="LINE-HEIGHT: 10pt; MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><SPAN
+style="FONT-SIZE: 10pt">9.<SPAN
+style="FONT: 7pt 'Times New Roman'">&nbsp;&nbsp;&nbsp;
+</SPAN></SPAN><![endif]><SPAN style="FONT-SIZE: 10pt">UNIX &#8211; это клон сетевых
+операционных систем, многие из которых стали поддерживать Internet на десятки
+(!) лет раньше, чем Windows<o:p></o:p></SPAN></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>История Internet <SPAN lang=UK
+style="mso-ansi-language: UK">началась в 1969 году, когда Агентство Исследований
+Министерства оборон</SPAN>ы США (Department of Defence Advanced Research
+Projects Agency - DARPA) начало финансирование проекта по созданию
+экспериментальной компьютерной сети коммутации пакетов (packet switching
+network). Эта сеть, получившая название ARPANET, <SPAN lang=UK
+style="mso-ansi-language: UK">б</SPAN>ы<SPAN lang=UK
+style="mso-ansi-language: UK">ла построена для обеспечения надежной связи между
+компьютерным оборудованием различных производителей. </SPAN>Агентство
+перспективных исследовательских проектов Министерства обороны США (DARPA --
+Department of Defense Advanced Research Project Agency) поддержало и
+финансировало проект, посвященный поиску общей основы связи сетей с разной
+технологией. Так появилось семейство протоколов TCP/IP. <SPAN lang=UK
+style="mso-ansi-language: UK">В 1983 году </SPAN>TCP/IP был стандартизирован. В
+это же время агентство DARPA начало финансирование проекта Калифорнийского
+университета в Беркли (&laquo;родины&raquo; BSD-<SPAN lang=UK
+style="mso-ansi-language: UK">клона </SPAN>UNIX) <SPAN lang=UK
+style="mso-ansi-language: UK">по поддержке </SPAN>TCP/IP в операционной системе
+UNIX.</P>
+<P class=MsoNormal>Разработка стека сетевых протоколов TCP/IP, реализация этого
+стека в UNIX и стыковка TCP/IP с механизмом программных гнезд привели к тому,
+что ОС UNIX стала истинной сетевой операционной системой. Сегодня большая часть
+коммуникационных средств ОС UNIX основывается на использовании протоколов стека
+TCP/IP. Протоколы TCP/IP положили основу Всемирной сети сетей Internet, а их
+комбинация с механизмом программных гнезд во многом способствовала становлению
+архитектурной концепции "клиент-сервер".</P>
+<P class=MsoNormal>Самый распространенный Web-сервер в мире - это Apache. По
+данным компании Netcraft (<I style="mso-bidi-font-style: normal"><U><SPAN
+style="COLOR: blue">http://www.netcraft.com/Survey/</SPAN></U></I>), общее число
+Web-узлов, работающих под его управлением, к концу 1998 г. достигло 2 млн. (55%
+общего числа узлов) и постоянно растет. Для сравнения: на долю серверов
+Microsoft приходится 25%, Netscape -7%. Будучи бесплатной открытой программой,
+предназначенной для бесплатных же UNIX-систем (FreeBSD, Linux и др.), по
+функциональным возможностям и надежности не уступает коммерческим серверам, а
+широкие возможности конфигурирования позволяют настроить его для работы
+практически с любой конкретной системой. Не так давно компания Compaq подписала
+соглашение с Covalent Technology по совместной разработке и продвижению на рынок
+программного обеспечения для Web-сервера Apache. Соглашение касается продуктов
+для линейки серверов Compaq Proliant, работающих под ОС Linux. Помимо Compaq,
+сервером Apache ранее заинтересовались Hewlett-Packard, IBM и Oracle. Apache
+составляет серьезную конкуренцию Internet Information Server корпорации
+Microsoft и коммерческому Web-серверу компании iPlanet. В ноябре 2001 года вышла
+финальная версия Apache 2.0. Новую версию отличает более высокая
+производительность и хорошая интеграция с другими платформами. Кроме того,
+управлять Apache 2.0 стало значительно проще, так что справиться с ним теперь
+сможет даже неквалифицированный пользователь.</P>
+<P class=MsoNormal>Среди основных нововведений можно выделить несколько особенно
+важных. Во-первых, это MPM (Multiprocessing Modules) - набор модулей, упрощающих
+работу с большим количеством параллельных процессов, потоков и с многочисленными
+одновременными запросами. Другое полезное новшество - это Apache Portable
+Run-Time, который представляет из себя основную часть Web-сервера, сделанную
+полностью независимой от ОС. Наконец, следует отметить появление фильтров &#8211;
+способа быстро менять содержимое сайта в зависимости от нужд пользователя
+(например, изменять язык сайта или использовать для генерации страниц другие
+программы).</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 0cm 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=H3
+style="LINE-HEIGHT: 10pt; MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><SPAN
+style="FONT-SIZE: 10pt">10.</SPAN><![endif]><SPAN style="FONT-SIZE: 10pt">UNIX &#8211;
+это серверное обеспечение подавляющего большинства
+Internet-служб<o:p></o:p></SPAN></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Компания Netcraft опубликовала очередное исследование,
+посвященное процентному соотношению операционных систем и различного ПО,
+устанавливаемых на http-серверах Сети. Согласно исследованию, администраторы все
+большее предпочтение отдают продукции конкурентов Microsoft: в процентном
+отношении доля серверов Apache и не-Windows операционных систем (в частности,
+Linux) заметно увеличилась.</P>
+<P class=MsoNormal>Тем не менее, общее число машин, работающих под различными
+версиями Windows (Windows 2000, NT4, NT3, Windows 9x/Me) составляет на данный
+момент почти половину всех Web-серверов. На втором по популярности месте идет ОС
+Linux - 29,6 процента серверов. Далее идут различные версии Solaris (Solaris 2,
+Solaris 7, Solaris 8) - 7,1 процента и BSD (BSDI BSD/OS, FreeBSD, NetBSD,
+OpenBSD) - 6,1 процента машин.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">11.</B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это родина таких &laquo;слонов&raquo;, как C,
+Shell, Perl, и технология конвейерной обработки команд<o:p></o:p></B></P>
+<P class=MsoNormal><SPAN lang=EN-US style="mso-ansi-language: EN-US"><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></SPAN></P>
+<P class=MsoNormal>Язык Си, на котором написана сама ОС, с одной стороны,
+сочетает в себе свойства языка высокого уровня: описание типов, программные
+структуры if, for, while и т. п., а с другой - содержит средства, присущие
+обычно языкам уровня ассемблера: регистровые переменные, адресную (ссылочную)
+арифметику, возможности работы с полями бит и отдельными битами и т. п. Язык Си,
+вслед за языком Би, был создан Деннисом Ритчи вместе с Кеном Томпсоном с целью
+обеспечения гибкости и мобильности при разработке программ для первых версий
+UNIX. Впоследствии язык Си был стандартизирован и на данный момент является
+основным средством разработчика при программировании под <SPAN lang=EN-US
+style="mso-ansi-language: EN-US">UNIX</SPAN>.</P>
+<P class=MsoNormal>Как и в большинстве интерактивных систем, традиционный
+интерфейс с пользователем ОС UNIX основан на использовании командных языков,
+которые позволяют пользователю взаимодействовать с системой в интерактивном
+режиме. Такой язык называется командным, поскольку каждую строку, вводимую с
+терминала и отправляемую системе, можно рассматривать как команду пользователя
+по отношению к системе. Одним из достижений ОС UNIX является то, что командные
+языки этой операционной системы являются хорошо определенными (не очень удачный
+русский термин, соответствующий однозначному английскому словосочетанию
+well-defined) и содержат много средств, приближающих их к языкам
+программирования.</P>
+<P class=MsoNormal>Особенностью командных языков является то, что в большинстве
+случаев они не используются для программирования в обычном смысле этого слова,
+хотя на развитом командном языке можно написать любую программу. По нашему
+мнению, правильным стилем использования командного языка является его применение
+в основном для непосредственного взаимодействия с системой с привлечением
+возможностей составления командных файлов (скриптов или сценариев в терминологии
+ОС UNIX) для экономии повторяющихся рутинных процедур.</P>
+<P class=MsoNormal>Программы, предназначенные для обработки конструкций
+командных языков, называются командными интерпретаторами. В отличие от
+компилируемых языков программирования (таких как Си или Паскаль), для каждого из
+которых обычно существует много различных компиляторов, командный язык, как
+правило, неразрывно связан с соответствующим интерпретатором. Когда ниже мы
+будем говорить о различных представителях командных языков ОС UNIX, относящихся
+к семейству shell, то каждый раз под одноименным названием мы будем
+подразумевать и соответствующий интерпретатор.</P>
+<P class=MsoNormal>Основное назначение этих языков (их разновидностей существует
+достаточно много, но мы рассмотрим только три наиболее распространенные варианта
+- Bourne-shell, C-shell и Korn-shell) состоит в том, чтобы предоставить
+пользователям удобные средства взаимодействия с системой. Что это означает?
+Языки не даром называются командными. Они предназначены для того, чтобы дать
+пользователю возможность выполнять команды, предназначенные для исполнения
+некоторых действий операционной системы. </P>
+<P class=MsoNormal>Существует два вида команд. Собственные команды
+<TT>shell</TT> (такие как <TT>cd</TT>, <TT>echo</TT>, <TT>exec</TT> и т. д.)
+выполняются непосредственно интерпретатором, т. е. их семантика встроена в
+соответствующий язык. Имена других команд на самом деле являются именами файлов,
+содержащих выполняемые программы. В случае вызова такой команды интерпретатор
+командного языка с использованием соответствующих системных вызовов запускает
+параллельный процесс, в котором выполняется нужная программа. Конечно, смысл
+действия подобных команд является достаточно условным, поскольку зависит от
+конкретного наполнения внешних файлов. Тем не менее, в описании каждого языка
+содержатся и характеристики "внешних команд" (например, <TT>find</TT>,
+<TT>grep</TT>, <TT>cc</TT> и т.д.) в расчете на то, что здравомыслящие
+пользователи (и их администраторы) не будут изменять содержимое соответствующих
+файлов.</P>
+<P class=MsoNormal>Существенным компонентом командного языка являются средства,
+позволяющие разнообразными способами комбинировать простые команды, образуя на
+их основе составные команды. В семействе языков <TT>shell</TT> возможны
+следующие средства комбинирования. В одной командной строке (важный термин,
+означающий единицу информационного взаимодействия с командным интерпретатором)
+можно указать список команд, которые должны выполняться последовательно, или
+список команд, которые должны выполняться "параллельно" (т.е. независимо одна от
+другой). </P>
+<P class=MsoNormal>Очень важной особенностью семейства языков <TT>shell</TT>
+являются возможности перенаправления ввода/вывода и организации конвейеров
+команд. Естественно, эти возможности опираются на базовые средства ОС UNIX.
+Кратко напомним, в чем они состоят. Для каждого пользовательского процесса (а
+внешние команды <TT>shell</TT> выполняются в рамках отдельных пользовательских
+процессов) предопределены три выделенных дескриптора файлов: файла стандартного
+ввода (standard input), файла стандартного вывода (standard output) и файла
+стандартного вывода сообщений об ошибках (standard error). Хорошим стилем
+программирования в среде ОС UNIX является такой, при котором любая программа
+читает свои вводные данные из файла стандартного ввода, а выводит свои
+результаты и сообщения об ошибках в файлы стандартного вывода и стандартного
+вывода сообщений об ошибках соответственно. Поскольку любой порожденный процесс
+"наследует" все открытые файлы своего предка, то при программировании команды
+рекомендуется не задумываться об источнике вводной информации программы, а также
+конкретном ресурсе, поддерживающем вывод основных сообщений и сообщений об
+ошибках. Нужно просто пользоваться стандартными файлами, за конкретное
+определение которых отвечает процесс-предок (заметим, что по умолчанию все три
+файла соответствуют вводу и выводу на тот терминал, с которого работает
+пользователь).</P>
+<P class=MsoNormal>Что обеспечивает такая дисциплина работы? Прежде всего
+возможность создания программ, "нейтральных" по отношению к источнику своих
+вводных данных и назначению своих выводных данных. Собственно, на этом и
+основаны принципы перенаправления ввода/вывода и организации конвейера команд.
+Все достаточно просто. Если вы пишете в командной строке конструкцию </P>
+<P style="TEXT-INDENT: 36pt"><TT><I style="mso-bidi-font-style: normal"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">com1 par1, par2,
+..., parn &gt; file_name,</SPAN></I></TT><I
+style="mso-bidi-font-style: normal"><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US; mso-bidi-font-size: 12.0pt"><o:p></o:p></SPAN></I></P>
+<P class=MsoNormal>то это означает, что для стандартного вывода команды <TT><I
+style="mso-bidi-font-style: normal">com1</I></TT> будет использоваться файл с
+именем <TT><I style="mso-bidi-font-style: normal">file_name</I></TT>. Если<SPAN
+style="mso-ansi-language: EN-US"> </SPAN>вы<SPAN
+style="mso-ansi-language: EN-US"> </SPAN>пишете<SPAN lang=EN-US
+style="mso-ansi-language: EN-US"><o:p></o:p></SPAN></P>
+<P style="TEXT-INDENT: 36pt"><TT><I style="mso-bidi-font-style: normal"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">file_name &lt; com1
+par1, par2, ..., parn,</SPAN></I></TT><I
+style="mso-bidi-font-style: normal"><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US; mso-bidi-font-size: 12.0pt"><o:p></o:p></SPAN></I></P>
+<P class=MsoNormal>то команда <TT><I
+style="mso-bidi-font-style: normal">com1</I></TT> будет использовать файл с
+именем <TT><I style="mso-bidi-font-style: normal">file_name</I></TT> в качестве
+источника своего стандартного ввода. В случае же, если вы пишете</P>
+<P style="TEXT-INDENT: 36pt"><TT><I style="mso-bidi-font-style: normal"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">com1 par1, par2,
+..., parn | com2 par1, par2, ..., parm,</SPAN></I></TT><I
+style="mso-bidi-font-style: normal"><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US; mso-bidi-font-size: 12.0pt"><o:p></o:p></SPAN></I></P>
+<P class=MsoNormal>то в качестве стандартного ввода команды <TT><I
+style="mso-bidi-font-style: normal">com2</I></TT> будет использоваться
+стандартный вывод команды <TT>com1</TT> (конечно, при организации такого рода
+"конвейеров" используются программные каналы).</P>
+<P class=MsoNormal>Конвейер представляет собой простое, но исключительно мощное
+средство языков семейства <TT>shell</TT>, поскольку позволяет во время работы
+динамически создавать "комбинированные" команды. Например, указание в одной
+командной строке последовательности связанных конвейером команд </P>
+<P style="TEXT-INDENT: 36pt"><TT><I style="mso-bidi-font-style: normal"><SPAN
+lang=EN-US style="FONT-SIZE: 10pt; mso-ansi-language: EN-US">ls -l | sort
+-r</SPAN></I></TT><I style="mso-bidi-font-style: normal"><SPAN lang=EN-US
+style="FONT-SIZE: 10pt; mso-ansi-language: EN-US; mso-bidi-font-size: 12.0pt"><o:p></o:p></SPAN></I></P>
+<P class=MsoNormal>приведет к тому, что подробное содержимое текущего каталога
+будет отсортировано по именам файлов в обратном порядке и выдано на экран
+терминала. Если бы не было возможности комбинирования команд, то для ее
+достижения потребовалось бы внедрение в программу <TT><I
+style="mso-bidi-font-style: normal">ls</I></TT> возможностей сортировки.</P>
+<P class=MsoNormal>Последнее, что нам следует обсудить в этом пункте, это
+существо команд семейства языков <TT>shell</TT>. Различаются три вида команд.
+Первая разновидность состоит из команд, встроенных в командный интерпретатор,
+т.е. составляющих часть его программного кода. Эти команды предопределены в
+командном языке, и их невозможно изменить без переделки интерпретатора. Команды
+второго вида - это выполняемые программы ОС UNIX. Обычно они пишутся на языке Си
+по определенным правилам. Такие команды включают стандартные утилиты ОС UNIX,
+состав которых может быть расширен любым пользователем (если, конечно, он еще
+способен программировать). Наконец, команды третьего вида (так называемые
+скрипты языка <TT>shell</TT>) пишутся на самом языке <TT>shell</TT>. Это то, что
+традиционно называлось командным файлом, поскольку на самом деле представляет
+собой отдельный файл, содержащий последовательность строк в синтаксисе
+командного языка. </P>
+<P class=MsoNormal>Язык программирования Perl был изначально предназначен для
+выполнения задач командных сценариев UNIX в тех случаях, когда они слишком
+трудны, плохо переносимы или сложны для программирования другими средствами.
+Дистрибутив Perl распространяется бесплатно, исходные тексты языка и многие
+двоичные файлы для использования вне UNIX-архитектуры можно получить на одном из
+серверов сети CPAN (Comprehensive Perl Archive Network) по адресу <U><SPAN
+style="COLOR: blue">http://www.perl.com/CPAN</SPAN></U> или на узле поддержки
+разработчиков по адресу <U><SPAN
+style="COLOR: blue">http://www.developer.net.ru/download</SPAN></U>. В настоящее
+время Perl перенесен практически на все платформы, и сейчас он известен в самых
+разных версиях - для UNIX, Windows, MS-DOS, OS/2, MacOS, Amiga, Atari ST, VMS,
+Plan 9 и др.</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">12.</B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это осязаемая и контролируемая
+совокупность множества одновременно выполняемых вычислительных
+процессов<o:p></o:p></B></P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>В операционной системе UNIX традиционно поддерживается
+классическая схема мультипрограммирования. Система поддерживает возможность
+параллельного (или квази-параллельного в случае наличия только одного
+аппаратного процессора) выполнения нескольких пользовательских программ. Каждому
+такому выполнению соответствует процесс операционной системы. Каждый процесс
+выполняется в собственной виртуальной памяти, и, тем самым, процессы защищены
+один от другого, т. е. один процесс не в состоянии неконтролируемым образом
+прочитать что-либо из памяти другого процесса или записать что-либо в нее.
+Однако контролируемые взаимодействия процессов допускаются системой, в том числе
+за счет возможности разделения одного сегмента памяти между виртуальной памятью
+нескольких процессов.</P>
+<P class=MsoNormal>Конечно, более важно защищать саму операционную систему от
+возможности ее повреждения каким бы то ни было пользовательским процессом. В ОС
+UNIX это достигается за счет того, что ядро системы работает в собственном
+виртуальном пространстве, к которому не может иметь доступа ни один
+пользовательский процесс.</P>
+<P class=MsoNormal>Ядро системы предоставляет возможности (набор системных
+вызовов) для порождения новых процессов, отслеживания окончания порожденных
+процессов и так далее. С другой стороны, в ОС UNIX ядро системы - это полностью
+пассивный набор программ и данных. Любая программа ядра может начать работать
+только по инициативе некоторого пользовательского процесса. Это происходит при
+выполнении системного вызова, либо по причине внутреннего или внешнего
+прерывания (примером внутреннего прерывания может быть прерывание из-за
+отсутствия в основной памяти требуемой страницы виртуальной памяти
+пользовательского процесса; примером внешнего прерывания является любое
+прерывание процессора по инициативе внешнего устройства). В любом случае
+считается, что выполняется &laquo;ядерная&raquo; часть обратившегося или прерванного
+процесса, т. е. ядро всегда работает в контексте некоторого процесса.</P>
+<P class=MsoNormal>В последние годы в связи с широким распространением так
+называемых симметричных мультипроцессорных архитектур компьютеров (Symmetric
+Multiprocessor Architectures - SMP) в ОС UNIX был внедрен механизм легковесных
+процессов (light-weight processes) -- нитей, или потоков управления (threads).
+Говоря по-простому, нить - это процесс, выполняющийся в виртуальной памяти,
+используемой совместно с другими нитями того же "тяжеловесного" (т. е.
+обладающего отдельной виртуальной памятью) процесса. В принципе, легковесные
+процессы использовались в операционных системах много лет назад. Уже тогда стало
+ясно, что программирование с неконтролируемым использованием общей памяти
+приносит больше хлопот и неприятностей, чем пользы, по причине необходимости
+использования явных примитивов синхронизации.</P>
+<P class=MsoNormal>Наиболее важно то, что для внедрения механизма нитей
+потребовалась существенная переделка ядра. Разные производители аппаратуры и
+программного обеспечения стремились как можно быстрее выставить на рынок
+продукт, пригодный для эффективного использования на SMP-платформах. Поэтому
+версии ОС UNIX опять несколько разошлись.</P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]><B
+style="mso-bidi-font-weight: normal">13.</B><![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это одновременная реализация двух
+концепций &laquo;компьютер &#8211; это сеть&raquo; и &laquo;сеть &#8211; это компьютер&raquo;<o:p></o:p></B></P>
+<P class=MsoNormal><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Оба девиза &laquo;компьютер &#8211; это сеть&raquo; и &laquo;сеть &#8211; это компьютер&raquo;
+приписывают компании Sun Microsystems, Inc. &#8211; ведущему производителю
+UNIX-систем. Первая концепция хорошо иллюстрируется линейкой рабочих станций Sun
+Ultra 5, Sun Ultra 10, Sun Ultra 30, Sun Ultra 60 и Sun Ultra 450, а также
+вариантами серверных решений на этих платформах. Каждая из представленных
+моделей построена на основе архитектуры UltraComputing. Радикально новым в
+архитектуре Ultra<SPAN lang=EN-US
+style="mso-ansi-language: EN-US">C</SPAN>omputing является отказ от традиционной
+шины, захватываемой активным устройством, в пользу коммутатора пакетов для связи
+основных компонентов системы. Коммутатор объединяет в сеть отдельные подсистемы
+компьютера: связь между процессором, оперативной памятью, графической
+подсистемой и подсистемой ввода-вывода в компьютерах Ultra осуществляется через
+коммутатор пакетов Ultra Port Architecture (UPA), допускающим одновременную
+транспортировку нескольких потоков данных между ЦП, памятью, системами
+ввода/вывода и другими периферийными устройствами.</P>
+<P class=MsoNormal>В последние годы большое развитие получила технология сетей
+хранения данных - SAN (Storage Area Networking), которые представляют собой
+наборы аппаратных и программных технологий,<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>связывающие устройства хранения примерно
+таким же образом, как локальные сети объединяют персональные компьютеры. Такой
+подход дает конечным пользователям ряд преимуществ, в частности обеспечивает
+более простую маршрутизацию запросов с поддержкой высокого уровня готовности,
+возможность постепенно, &laquo;небольшими порциями&raquo; наращивать емкость дисковой памяти
+и более гибкий подход к управлению.</P>
+<P class=MsoNormal>Производители аппаратных систем хранения и поставщики
+программного обеспечения активно участвуют в развитии концепции SAN. &laquo;В Sun
+Microsystems говорят, что компьютер - это сеть, - заявил один из авторов
+концепции SAN Роджер Клорес (Veritas Software) . - Мы<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>же считаем, что компьютер - это сеть
+хранения&raquo;.</P>
+<P class=MsoNormal>И все-же основная концепция компании Sun Microsystems - "Сеть
+- это Компьютер". Основной смысл этого подхода состоит в использовании для
+информационных вычислений не только отдельно взятого компьютера с ограниченными
+ресурсами, но и практически безграничных ресурсов сети, к которым данный
+компьютер имеет доступ.</P>
+<P class=MsoNormal>В качестве иллюстрации этой концепции очень хорошо подходит
+проект другой компании - Hewlett-Packard, которая совместно с Французским
+научно-исследовательским<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>институтом
+компьютерных наук (INRIA) обнародовали технологию организации<SPAN
+style="mso-spacerun: yes">&nbsp; </SPAN>высокопроизводительной вычислительной
+сети из обычных персональных компьютеров без какой-либо их аппаратной доработки.
+Испытания системы под названием "I-Cluster" успешно прошли в 2001 году. Ученые
+ставили задачу попасть в список TOP500 самых мощных суперкомпьютеров мира. По
+результатам стандартного теста Linpack комплекс I-Cluster с задачей справился,
+заняв в мировом рейтинге 385-е место. Каждая из 225 машин представляла собой
+самый обычный настольный компьютер с процессором Pentium III 733 MГц, памятью
+256 MБ и жестким диском 15 ГБ. Никаких аппаратных доработок не делалось, даже не
+открывались корпуса системных блоков. Машины объединили скоростной
+Ethernet-сетью. Общая стоимость машин составила около 210 тысяч долларов.
+Вначале на 100 машинах удалось получить производительность 36 гигафлоп в секунду
+(миллиардов операций с плавающей точкой в секунду). После увеличения числа
+компьютеров до 225 эта величина достигла 81,6 гигафлоп в секунду. Комплекс
+работал под управлением специально разработанного программного обеспечения для
+Linux.</P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt; tab-stops: 36.0pt 72.0pt 108.0pt 144.0pt 180.0pt 216.0pt 252.0pt 288.0pt 324.0pt 360.0pt 396.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 36pt; TEXT-INDENT: -18pt; tab-stops: 18.0pt list 36.0pt left 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt; mso-list: l0 level1 lfo2"><![if !supportLists]>14.<![endif]><B
+style="mso-bidi-font-weight: normal">UNIX &#8211; это то, что не так часто
+рекламируется в широкой прессе, как Windows, потому что для целевой аудитории ее
+реклама зачастую не требуется</B></P>
+<P class=MsoNormal
+style="MARGIN: 6pt 0cm 0pt 18pt; TEXT-INDENT: 0cm; tab-stops: 18.0pt 36.0pt 54.0pt 72.0pt 90.0pt 108.0pt 126.0pt 144.0pt 162.0pt 180.0pt 198.0pt 216.0pt 234.0pt 252.0pt 270.0pt 288.0pt 306.0pt 324.0pt 342.0pt 360.0pt 378.0pt 396.0pt 414.0pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P>
+<P class=MsoNormal>Естественно, людей интересующихся профессиональными рабочими
+станциями и серверами, значительно меньше, чем обычных пользователей
+компьютеров, для которых UNIX &#8211; лишь не очень удобная альтернатива настольным
+Windows-решениям. Отсюда и информации об UNIX значительно меньше. Так, например,
+по слову UNIX поисковый сервер Яndex выдает всего лишь 667 468 страниц, в то
+время как по слову Windows &#8211; 1 965 258. Итак, несколько слов в заключение.</P>
+<P class=MsoNormal>UNIX сегодня представляет собой операционную систему, вклад в
+развитие которой вносят программисты и компании всего мира. Этому способствует
+несколько факторов -- приверженность концепции Open Sources, свободность и
+доступность, чаще всего бесплатность клонов UNIX, серьезный уровень
+стандартизации, и, наконец, развитие сети Internet, с помощью которой
+осуществляется обмен идеями, кодами, "заплатами" и т. д.</P>
+<P class=MsoNormal>Среди вышеназванных в статье феноменов, конечно же, наиболее
+пародоксальными выглядят те, которые связаны с предпочтениями, которые отдают
+многие коммерческие корпорации бесплатным вариантам UNIX (чаще всего Linux).
+Вряд ли такие "киты" рынка ИТ, как IBM, HP, Sun, Intel и другие, стали бы
+поддерживать и развивать бесплатные ОС, не просчитав стратегических результатов
+этой деятельности. Большую роль в развитии UNIX играет и политика Microsoft
+(снова парадокс), для операционных систем которой реальной альтернативой во
+многих сегментах применений может стать только UNIX. Однако поддержка
+крупнейшими корпорациями бесплатных клонов UNIX говорит скорее о наблюдающейся
+сегодня общей тенденции, предполагающей развитие рынка ИТ в направлении
+увеличения роли системной интеграции, сервисного обслуживания, консалтинга. То
+есть секторов, связанных напрямую не с производством и разработкой новых
+высокотехнологичных продуктов, а скорее с их внедрением и сопровождением.</P>
+<P align=left class=MsoNormal style="TEXT-ALIGN: left"><BR><I
+style="mso-bidi-font-style: normal">Дмитрий Ландэ,<BR>Зам. директора ИЦ
+"ЭЛВИСТИ",<BR>e-mail: <A href="../cdn-cgi/l/email-protection.html#c3a7b4af83b5aab0b7aaedada6b7"><span class="__cf_email__" data-cfemail="b9ddced5f9cfd0cacdd097d7dccd">[email&#160;protected]</span></A><BR>Александр
+Дармохвал,<BR>Руководитель отдела ИЦ "ЭЛВИСТИ",<BR>e-mail: <A href="../cdn-cgi/l/email-protection.html#d6bea0b7ba96a0bfa5a2bff8b8b3a2"><span class="__cf_email__" data-cfemail="3d554b5c517d4b544e495413535849">[email&#160;protected]</span></A><o:p></o:p></I></P>
+<P class=MsoNormal
+style="MARGIN-TOP: 6pt"><![if !supportEmptyParas]><![endif]>&nbsp;<o:p></o:p></P></DIV>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

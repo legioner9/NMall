@@ -1,0 +1,614 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<title>Руководство начинающего пользователя Linux: Способы загрузки (LILO и GRUB). — Linux-библиотека</title>
+
+<meta content="text/html; charset=windows-1251" http-equiv="content-type">
+<!--<link rel="stylesheet" type="text/css" href="/main.css">-->
+<style type="text/css">
+  div.stat {position:absolute; left:0px; top:0px; visibility:hidden;}
+  div.stat img {width:0; height:0;}
+
+	div.cont-left {width:30%; float:left;}
+	div.cont-right {width:70%; float:right;}
+  div.menu {padding:0 10px;}
+  div.cont {padding:0 10px 30px 10px;}
+  div.adv {font-size:0.9em; padding:5px 0 25px 0;}
+
+  .collapsible-link {color:black; text-decoration:none;}
+
+  .block_links * {
+      background:transparent none repeat scroll 0 0 !important;
+      border:medium none !important;
+      clear:none !important;
+      clip:rect(auto, auto, auto, auto) !important;
+      font-size:100% !important;
+      font-style:normal !important;
+      font-variant:normal !important;
+      font-weight:normal !important;
+      height:auto !important;
+      letter-spacing:normal !important;
+      line-height:normal !important;
+      margin:0 !important;
+      overflow:visible !important;
+      padding:0 !important;
+      position:static !important;
+      text-align:left !important;
+      text-decoration:none !important;
+      text-indent:0 !important;
+      text-transform:none !important;
+      vertical-align:baseline !important;
+      visibility:visible !important;
+      white-space:normal !important;
+      width:auto;
+      word-spacing:normal !important;
+      z-index:auto !important;
+      cursor: pointer!important;
+      word-wrap: break-word!important;
+  }
+  .block_links li {
+      display:list-item !important;
+      list-style-image:none !important;
+      list-style-position:outside !important;
+      list-style-type:none !important;
+      display: inline;
+  }
+  .block_links li DIV {
+      padding:0.5em !important;
+  }
+  .block_links DIV, .block_links TABLE {
+      padding: 5px !important;
+  }
+  .block_links {
+      width: auto!important;
+      font-family: Verdana!important;
+      font-size: 11px!important;
+      border: 1px solid #DDDDDD!important;
+      background-color: #FFFFFF!important;
+      padding:5px!important;
+      position: relative!important;
+      display:block!important;
+
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  .block_links_icnt, .block_links_icnt * {
+      text-align: left!important;
+  }
+
+  .block_links_text, .block_links_text A, .block_links_text A:hover {
+      color: #000000!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_url {
+      color: #006600!important;
+      font-size: 11px!important;
+      text-decoration: none!important;
+  }
+  .block_links_header, .block_links_header A {
+      color: #000066!important;
+      font-size: 13px!important;
+      font-weight: bold!important;
+      text-decoration: underline!important;
+  }
+  .block_links_sign {
+      color: #999999!important;
+      font-size: 10px!important;
+      text-align: left!important;
+      text-decoration: none!important;
+  }
+  .block_links_clear {
+      clear:both!important;
+  }
+  .block_links TABLE {
+      width: 100%!important;
+      border: 0px!important;
+  }
+
+  div.lf {
+      padding:10px 10px 10px 10px;
+      margin-bottom:10px;
+      /*color:#000066;*/
+
+      border: 1px solid #DDDDDD!important;
+      -webkit-border-radius:5px !important;
+      -khtml-border-radius:5px !important;
+      -moz-border-radius:5px !important;
+      border-radius:5px !important;
+  }
+  div.lf a {
+      color:#000066;
+      /*font-size:11px;*/
+      /*text-decoration: none!important;*/
+  }
+</style>
+<script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=1972021" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".collapsible-link").next().hide();
+    $(".collapsible-link").text("\u21E9");
+    $(".collapsible-link").bind("click", function(e) {
+      $(this).next().toggle();
+      $(this).text( $(this).text() == "\u21E9" ? "\u21E7" : "\u21E9" );
+      e.preventDefault();
+    });
+  });
+</script>
+</head>
+
+<body>
+
+<div class="cont-left">
+  <div class="menu">
+    <a href="../index.html"><img src="../images/logo.png" width="344" height="80" border="0"></a><br><br>
+
+    <B><a href="../index.html"># Главная</a></B><BR>
+    <B><a href="../about.htm"># О библиотеке</a></B><BR><BR>
+
+    <B><a href="../distr/index.htm"># Выбор дистрибутива</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../distr/index.htm#linux">преимущества Linux/UNIX</a> |
+    <A HREF="../distr/index.htm#general">основные дистрибутивы</a> |
+    <A HREF="../distr/index.htm#server">серверный Linux</a> |
+    <A HREF="../distr/index.htm#bsd">BSD</a> |
+    <A HREF="../distr/index.htm#livecds">LiveCDs</a> |
+    <A HREF="../distr/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../inst/index.htm"># Установка и удаление программ</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../inst/index.htm#linux">общие вопросы</a> |
+    <A HREF="../inst/index.htm#general">каталоги софта</a> |
+    <A HREF="../inst/index.htm#server">специальные случаи</A></FONT><BR><BR>
+
+    <B><a href="../Linux/index.htm"># Настройка и работа</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../Linux/index.htm#loading">установка, загрузчики</A> |
+    <A HREF="../Linux/index.htm#setting">настройка Linux</A> |
+    <A HREF="../Linux/index.htm#console">консоль</A> |
+    <A HREF="../Linux/index.htm#filesys">файловые системы</A> |
+    <A HREF="../Linux/index.htm#proc">процессы</A> |
+    <A HREF="../Linux/index.htm#shells">шеллы, русификация, коммандеры</A> |
+    <A HREF="../Linux/index.htm#virtual">виртуальные машины, эмуляторы</A></FONT><BR><BR>
+
+    <B><a href="../xwin/index.htm"># X Window и оконные менеджеры</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../xwin/index.htm#xwin">настройка X Window</a> |
+    <A HREF="../xwin/index.htm#gnome">GNOME</a> |
+    <A HREF="../xwin/index.htm#kde">KDE</a> |
+    <A HREF="../xwin/index.htm#other">IceWM и др.</A></FONT><BR><BR>
+
+    <B><a href="../text/index.htm"># Работа с текстами</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../text/index.htm#edit">редакторы</a> |
+    <A HREF="../text/index.htm#office">офис</a> |
+    <A HREF="../text/index.htm#local">шрифты, кодировки и русификация</a> |
+    <A HREF="../text/index.htm#conv">преобразования текстовых файлов</a> |
+    <A HREF="../text/index.htm#sgml">LaTeX, SGML и др.</a> |
+    <A HREF="../text/index.htm#dict">словари</A></FONT><BR><BR>
+
+    <B><a href="../gimp/index.htm"># Графика</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../gimp/index.htm#gimp">GIMP</a> |
+    <A HREF="../gimp/index.htm#photo">фото</a> |
+    <A HREF="../gimp/index.htm#imgproc">обработка изображений</a> |
+    <A HREF="../gimp/index.htm#formats">форматы графических файлов</A></FONT><BR><BR>
+
+    <B><a href="../net/index.htm"># Сети, администрирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../net/index.htm#tcp-ip">общие вопросы</a> |
+    <A HREF="../net/index.htm#ppp">Dialup &amp; PPP</a> |
+    <A HREF="../net/index.htm#firewall">брандмауэры</a> |
+    <A HREF="../net/index.htm#route">маршрутизация</a> |
+    <A HREF="../net/index.htm#winnet">работа в Windows-сетях</a> |
+    <A HREF="../net/index.htm#www">веб-серверы</a> |
+    <A HREF="../net/index.htm#apache">Apache</a> |
+    <A HREF="../net/index.htm#proxy">прокси-серверы</a> |
+    <A HREF="../net/index.htm#print">сетевая печать</a> |
+    <A HREF="../net/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <B><a href="../prog/index.htm"># Программирование</a></B><BR>
+    <FONT SIZE="-1">
+    <A HREF="../prog/index.htm#gnu">GCC &amp; GNU make</a> |
+    <A HREF="../prog/index.htm#unixprog">программирование в UNIX</a> |
+    <A HREF="../prog/index.htm#gl">графические библиотеки</a> |
+    <A HREF="../prog/index.htm#tcl">Tcl</a> |
+    <A HREF="../prog/index.htm#perl">Perl</a> |
+    <A HREF="../prog/index.htm#php">PHP</a> |
+    <A HREF="../prog/index.htm#java">Java &amp; C#</a> |
+    <A HREF="../prog/index.htm#dbms">СУБД</a> |
+    <A HREF="../prog/index.htm#cvs">CVS</a> |
+    <A HREF="../prog/index.htm#other">прочее</A></FONT><BR><BR>
+
+    <a href="../kern/index.htm"># Ядро</a>
+    <br><a href="../mmedia/index.htm"># Мультимедиа</a>
+    <br><a href="../internet/index.htm"># Интернет</a>
+    <br><a href="../post/index.htm"># Почта</a>
+    <br><a href="../secur/index.htm"># Безопасность</a>
+    <br><a href="../iron/index.htm"># Железо</a>
+    <br><a href="../other/index.htm"># Разное</a><br><br>
+
+    <a href="../HowTo/index.htm"><b># Linux HowTo (как сделать)</b></a><br>
+    <a href="../indexbook.htm"><b># Книги и руководства</b></a><br>
+    <a href="../en/index.htm"><b># Материалы на английском языке</b></a>
+
+                <div class="adv">
+      <script async="async" src="https://w.uptolike.com/widgets/v1/zp.js?pid=lfc4a8db38f70133e1ecc1f8a448b1f0d111ccfe83" type="text/javascript"></script>      
+
+<!-- SAPE RTB JS -->
+<script
+    async="async"
+    src="https://cdn-rtb.sape.ru/teasers/js/419/2/126419.js"
+    type="text/javascript">
+</script>
+<!-- SAPE RTB END -->          </div>
+
+
+  </div>
+</div>
+
+<div class="cont-right">
+  <div class="cont">
+<style type="text/css">
+ body {
+  background-color: #FFFFFF;
+  color: #000000;
+ }
+ :link { color: #3366FF }
+ :visited { color: #CC33CC }
+ :active { color: #FF0000 }
+ p.c110 {font-size: 80%}
+ tt.c109 {font-size: 80%}
+ span.c108 {font-size: 80%}
+ b.c107 {font-size: 100%}
+ h2.c106 {font-size: 100%; font-weight: bold}
+ span.c105 {font-size: 100%}
+ b.c104 {font-size: 119%}
+</style>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" class="tablemain">
+<tr>
+<td>
+<center>
+<p><font size="+2" color="#FF0000"><b>Руководство начинающего пользователя Linux.<br>
+</b></font><b>(Оно же &quot;Руководство новичка - администратора Linux&quot;, <br>
+оно же - &quot;Linux
+Newbie
+Administrator
+Guide&quot; или просто LNAG).</b></p>
+<p>Версия 0.193 2002-12-14 by Stan, Peter and Marie Klimas.<br>
+Оригинал на английском языке находится по адресу <!--<a href="http://sunsite.dk/linux-newbie/">-->http://sunsite.dk/linux-newbie<!--</a>-->.<br>
+Updated: 1.02.03. Переведено  - ~77 %. Текст еще не прошёл литературную обработку :). <br>
+Все комментарии   / исправления / сообщения по поводу перевода принимаются на <a href="../cdn-cgi/l/email-protection.html#097166606d3b3f496560677c712466676560676c277b7c"><span class="__cf_email__" data-cfemail="ec94838588dedaac8085829994c1838280858289c29e99">[email&#160;protected]</span></a>.<b></b>
+</p>
+<font size="-1">Copyright (c) &lt;1999-2002&gt; Peter and Stan Klimas. Your feedback, comments, corrections, and improvements are appreciated. Send them to <a href="../cdn-cgi/l/email-protection.html#34585d5a414c6b5a55537457555a5550551a575b59"><span class="__cf_email__" data-cfemail="472b2e29323f18292620072426292623266924282a">[email&#160;protected]</span></a>. This material may be distributed only subject to the terms and conditions set forth in the Open Publication License, v1.0, 8 or later <!--<a href="http://opencontent.org/openpub/">-->http://opencontent.org/openpub/<!--</a>--> with the modification noted in <!--<a href="http://sunsite.dk/linux-newbie/lnag_licence.html">-->lnag_licence.html<!--</a>-->.<br>
+</font>
+<hr>
+<a href="https://www.linuxlib.ru/lnag/index.html">Главная</a> | <a href="https://www.linuxlib.ru/lnag/0.html">0. Преимущества Linux</a> | <a href="https://www.linuxlib.ru/lnag/1.html">1. Перед установкой</a> | <a href="2.html">2. Помощь</a> | <a href="https://www.linuxlib.ru/lnag/3.html">3. Основы работы</a> | <a href="41.html">4.1. Способы загрузки</a> <br>
+<a href="42.html">4.2. Накопители</a> | <a href="https://www.linuxlib.ru/lnag/43.html">4.3. X Window System</a> | <a href="https://www.linuxlib.ru/lnag/44.html">4.4. Конфигурации</a> | <a href="45.html">4.5. Работа в сети</a> | <a href="5.html">5. Команды</a> | <a href="6.html">6. Программы</a>
+</center>
+<br>
+
+<b>Часть 4.1: Способы загрузки (LILO
+и GRUB). </b>Перевод - <a href="../cdn-cgi/l/email-protection.html#dbbdb2a9a8b4bdbd9bafbab6b9f5a9ae">Константин Фирсов</a>.<br>
+<b>[переведено полностью]</b><br>
+<hr width="100%">
+<b><u>Содержание этой главы:</u></b>
+<br>
+&nbsp;&nbsp; 4.1.0 <a href="41.html#lilo_and_grub">LILO и GRUB</a>
+<br>&nbsp;&nbsp; 4.1.1 <a href="41.html#detecting_memory">Linux не может распознать
+всю мою память</a>
+<br>&nbsp;&nbsp; 4.1.2 <a href="41.html#LILO_stops">LILO показывает только LI (или
+LIL) и виснет</a>
+<br>&nbsp;&nbsp; 4.1.3 <a href="41.html#LILO_boot_order">Как мне изменить операционную систему которую LILO загружает по умолчанию?</a>
+<br>&nbsp;&nbsp; 4.1.4 <a href="41.html#lilo_delay">Приглашение LILO во время загрузки  отображается на экране слишком
+малое (или слишком большое) время</a>
+<br>&nbsp;&nbsp; 4.1.5 <a href="41.html#uninstall_linux">Удаляем Linux</a>
+<hr>
+<h3>
+<a NAME="lilo_and_grub"></a>4.1.0&nbsp; LILO и GRUB</h3>
+
+<p>И новомодный GRUB и более старый LILO не являются загрузчиками (boot loaders) Linux. Они
+делают возможным выбор операционной системы для загрузки. Большинство (не все ли?) проблемы с загрузкой, описываемые в этой главе,
+возможно могут быть преодолены установкой более современного ядра Linux и
+последнего GRUB.&nbsp; GRUB лучше чем LILO, поскольку LILO работает с
+абсолютными адресами жесткого диска для поиска загрузочного образа, тогда как GRUB
+понимает файловые системы и ищет файлы с загрузочными образами.&nbsp;
+Мы рекомендуем использовать GRUB, если у вас есть выбор.
+<p>Основной конфигурационный файл GRUB
+<tt>/boot/grub/menu.lst</tt>
+(или <tt>grub.conf</tt>, в моей операционной системе один из них является символьной ссылкой на другой).&nbsp;
+Здесь размещены пояснения к пунктам существующим в этих файлах:
+<br>
+#Строки, начинающиеся с # помечены как комментарии.
+<br>
+<tt>timeout 5</tt>
+<br>
+# Выше определяется, что установленная по умолчанию операционная система будет запущена через
+5 секунд, если не трогать клавиатуру
+<br>
+<tt>default 0</tt>
+<br>
+# Здесь определяется, что по умолчанию будет загружаться операционная система стоящая в первой строчке меню. Если я использую "default 3" то будет загружена 4-я операционная система из списка.
+<br>
+<tt>title linux</tt>
+<br>
+<tt>kernel (hd0,2)/boot/vmlinuz root=/dev/hda3&nbsp; mem=64M hdc=ide-scsi</tt>
+<br>
+# Предыдущие две строки определяют пункт меню загрузки, и устанавливают действия, совершаемые при выборе этого пункта.
+<br>
+#Первая строка дает имя пункту меню: "linux".
+<br>
+#Во второй строке указывается место расположения загрузочного образа:&nbsp;
+физический жесткий диск N1(hd0),&nbsp; Третий раздел (partition) (2), загрузочный образ - это файл&nbsp; /boot/vmlinux
+<br>
+# Кроме того, во второй строке, ядру передаются следующие параметры:
+<br>
+# root=/dev/hda3&nbsp; (т.е., сделать основным разделом (root partition) третий раздел
+первого физического жесткого диска (hda) ),
+<br>
+# mem=64M (i.e., форсировать использование 64 мегабайт физической памяти.).
+<br>
+# hdc=ide-scsi (использовать эмуляцию SCSI на моем CD, поскольку это - записывающий CD).
+<br>
+#
+<br>
+<tt>initrd /boot/initrd-2.4.17-custom.img</tt>
+<br>
+# определяет файлы, содержащие модули, необходимые во время загрузки,
+например, модуль, загружающий "Начальный виртуальный диск (initial ram disk)" (initrd).
+<br>
+# Я должен создать свой (поскольку я перекомпилировал ядро), используя&nbsp;
+mkinitrd /boot/initrd-2.4.7-10custom.img 2.4.7-custom
+
+<p class="c110">Хорошая документация по GRUB доступна при использовании <tt>info
+grub.</tt></p>
+<h3>
+<a NAME="detecting_memory"></a>4.1.1 Linux не может распознать всю мою память</h3>
+
+<p>Если у вас больше 64 мегабайт физической памяти,  ядро Linux
+ver. 2.0.36 и ниже будет использовать, по умолчанию, только первые 64 MB.
+Для того, чтобы увидеть, сколько оперативной памяти использует ваш Linux, напечатайте в командной строке:
+<br>
+<tt>cat /proc/meminfo</tt>
+<br>или
+<br><tt>free</tt></p>
+
+<p>Вы можете проверить версию ядра с помощью команды:
+<br><tt>uname -a</tt></p>
+
+<p>Последнее популярное ядро с "проблемами памяти", 2.0.36,
+поставлялось с RedHat 5.2.&nbsp;RedHat 6.0 с ядром  2.2.5-15 таких проблем не имеет.
+<p>Чтобы получить более 64 MB памяти в RH5.2, вы должны исправить
+(как суперпользователь(root)) файл <tt>/etc/lilo.conf</tt>, добавив перед "image=" строку, подобную этой:
+<br>
+<tt>append="mem=80M"</tt></p>
+
+<p>Если у вас не 80 MB, то поставьте свое значение. Чтобы почувствовать изменения в <tt>/etc/lilo.conf,</tt>
+перезагрузите программу:
+<br>
+<tt>lilo</tt></p>
+
+<p>(убедитесь в отсутствии ошибок) и перезагрузите компьютер. После перезагрузки вы можете проверить эффект при помощи одной из команд:
+<br>
+<tt>cat /proc/meminfo</tt>
+<br><tt>free</tt></p>
+
+<p>Для тестовых целей, или если у вас проблемы, параметр,
+определяющий количество памяти в командной строке LILO весьма полезен:</p>
+
+<p>[Например, напечатайте] <tt>linux "mem=16M"</tt></p>
+
+<p>Иногда, я слышал, полезно пропустить несколько верхних мегабайт,
+если у вас проблемы с разрешением всей оперативной памяти, которую находит Ваша машина.
+Например, разрешите только 78 из Ваших 80 MB. Это очевидно в случае некоторых
+SCSI-контроллеров, использующих верхнюю часть основной памяти.
+Попробуйте это, чтобы оценить.</p>
+
+<p>Иногда, на некоторых системах, Linux распознает только 16 MB памяти.
+Обычно это связано с установкой "memory hole at 15-16 MB"
+в BIOS (решение состоит в отключении этой установки BIOS).
+По всей видимости, хорощо бы отключить все установки в секции "advanced features" вашего BIOS.
+(Например, распознание вирусов  (virus detection) в BIOS может быть постоянным
+источником проблем).</p>
+
+<p>Смешение чипов памяти с различными временными характеристиками также может привести к проблемам с распознанием памяти или к краху системы
+(решение в подборе блоков памяти с одинаковыми временными характеристиками).
+</p>
+
+<h3>
+<a NAME="LILO_stops"></a>4.1.2 LILO показывает только LI (или LIL) и виснет.</h3>
+
+<p>Вот цитата из моей настольной книги "Red Hat Linux Unleashed" написанной Кемраном Хассайном
+(Kamran Hussain), Тимоти Паркером (Timothy Parker), и др. , опубликованной в издательстве SAMS Publishing:</p>
+
+<p>"Когда LILO загружает себя, она выводит слово LILO. Каждая буква печатается перед
+или после выполнения некоторых специфичных действий. Если LILO зависает на некоторой точке, напечатанные буквы могут быть использованы для идентификации проблемы.
+[...]</p>
+
+<p>LI [...] Это происходит в случае несовпадения геометрии или перемещения
+<tt>/etc/lilo/boot.b</tt>
+без выполнения установки Карты.</p>
+
+<p>LIL [...] Это обычно вызвано ошибкой носителя данных или несовпадением геометрии."</p>
+
+<p>Под геометрией понимается количество секторов/ головок/цилиндров (sectors/heads/cylinders), использованных
+в конфигурации жестких дисков в BIOS. Воспользуйтесь советом!</p>
+
+<p>Это очень хорошая идея - иметь настольную книгу по Linux или хотя бы
+книгу о UNIX. Руководства по Windows бесполезны, но Linux - другое дело!&nbsp; "Red Hat Linux Unleashed" - очень хорошая книга,
+но,скорее всего, есть много других хороших руководств.</p>
+
+<p>При ошибке LILO, похожей на указанные, вы можете загрузить свою машину с дискеты Linux или DOS. Вот некоторые основные возможности для исправления ошибок LILO, зависящие от типа ошибки:</p>
+
+<p>1. Если LILO просто было разрушено (не совсем обычный случай), вы можете удалить и переустановить его. вы можете удалить LILO командой
+Linux:
+<br><tt>lilo -u /dev/hda</tt></p>
+
+<p>или, под DOS:
+<br><tt>FDISK/MBR</tt></p>
+
+<p>Это перезаписывает главную загрузочную запись (MBR), в
+которой располагается LILO, и заменяет ее "чистой" DOS-овской ерундой. Вы потеряете доступ к Linux, если перезагрузите компьютер после удаления LILO (но вы сможете загрузить Linux с дискеты и переустановить LILO поверх DOS MBR).
+<p>Для переустановки LILO, просто выполните команду <tt>lilo</tt> (как суперпользователь (root)).</p>
+
+<p>2. Задайте режим
+<tt> линейный(linear) </tt>в верхней части файла <tt>/etc/lilo.conf</tt>. Это весьма полезно для больших дисков (>8 GB). Смотрите <tt>man lilo.conf</tt> для детального понимания.
+Режим "linear" безопасен -- он не повредит хорошо работающей системе,
+так что можете установить его в любом случае.
+</p>
+
+<p>Можете еще поработать с типом обращения к диску установленном в BIOS . Например, попереключайте режим LBA ("linear or large block access")
+в вашем BIOS - это может помочь.
+<p>Вместо режима "linear" можете попробовать режим (полезный при более чем 1024 цилиндрах с большими дисками и новыми BIOSами):
+<br><tt>lba32</tt></p>
+
+<p>Поскольку это новый режим, то он  он не работает с  LILO поставляемом с
+RH6.1 и ниже. Используйте последние Mandrake и RedHat, если имеете дело с вариантом проблемы  "LI".
+Диски становятся больше и больше, и изготовители BIOS пускаются на все новые трюки, чтобы поддержать их.
+<p>3. Загляните в BIOS, установите соответствие между геометрией диска, указанной в BIOS и реальной. Под Linux, вы можете посмотреть используемую геометрию диска. Например, для первого диска IDE:
+<br>
+<tt>hdparm -g&nbsp; /dev/hda</tt>
+<p>Также вы можете использовать геометрию, рекомендованную производителем. Если вы не найдете ее на самом устройстве, то поищите ее в сети по номеру модели (например,  с помощью Google).</p>
+<p>4. Поместите LILO на другой раздел (на другом диске) и, используя fdisk, сделайте этот раздел загрузочным (если ваша система позволяет загрузку с другого диска). Иначе, поменяйте диски местами, поставив первым на интерфейсе IDE(DOS-овский "C") тот,
+который поддерживается вашим стареньким BIOS лучше.
+</p>
+
+<p>5. Может быть вам более понравится "loadlin", чем "lilo". Из DOS, посмотрите на вашем CDROM программу
+<tt>/dosutils/loadlin.exe</tt>.&nbsp;
+Она запускает linux из под DOS.
+<p>6. Избавьтесь от LILO и используйте GRUB. Mandrake 7.2 содержит GRUB как загрузчик по умолчанию.</p>
+
+<h3>
+<a NAME="LILO_boot_order"></a>4.1.3 Как мне изменить операционную систему, которую LILO загружает по умолчанию?</h3>
+
+<p>Это может быть установлено в конфигурационном файле lilo
+<tt>/etc/lilo.conf</tt>
+.&nbsp; Мой (lilo version 0.21.5.1-4MDK) выглядит примерно так:
+<br><tt>boot=/dev/hda</tt>
+<br><tt>map=/boot/map</tt>
+<br><tt>install=/boot/boot.b</tt>
+<br><tt>vga=normal</tt>
+<br><tt>default=linux</tt>
+<br><tt>keytable=/boot/us.klt</tt>
+<br><tt>lba32</tt>
+<br><tt>prompt</tt>
+<br><tt>timeout=50</tt>
+<br><tt>message=/boot/message</tt>
+<br><tt>menu-scheme=wb:bw:wb:bw</tt>
+<br><tt>image=/boot/vmlinuz</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label=linux</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; root=/dev/hda3</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; append=" mem=96M"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read-only</tt>
+<br><tt>image=/boot/vmlinuz</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label=failsafe</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; root=/dev/hda3</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; append=" mem=96M failsafe"</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read-only</tt>
+<br><tt>other=/dev/hda1</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label=windows</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; table=/dev/hda</tt>
+<br><tt>other=/dev/fd0</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; label=floppy</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsafe</tt>
+<p>Четыре "label=" объявляют имена вариантов загрузки. Операционная система, загружаемая по умолчанию определяется параметром "default="
+в верхней части файла. При отсутствии параметра "default", будет выбран первый вариант загрузки, указанный в <tt>/etc/lilo.conf</tt>.
+<p>Не забывайте запускать команду
+<br><tt>lilo</tt>
+<p>после любых изменений в <tt>/etc/lilo/conf</tt>.
+<p>Есть также графические программы конфигурирования lilo. Например попробуйте, как суперпользователь (root),
+в X-терминале:
+<br>
+<tt>klilo &amp;</tt></p>
+
+<h3>
+<a NAME="lilo_delay"></a>4.1.4 Приглашение LILO во время загрузки  отображается на экране слишком
+малое (или слишком большое) время</h3>
+
+<p>Добавьте или измените строку
+<br><tt>delay=100</tt>
+<p>перед первым "image=" или "append=" операторе в вашем
+<tt>/etc/lilo.conf</tt>
+файле.&nbsp; (Новейшие версии lilo могут использовать параметр "timeout" вместо "delay".)
+Число - время  задержки в десятых долях секунды (0.1 сек.), следовательно в примере задержка составляет 10 секунд.&nbsp; И не забудьте перезапустить
+<tt>lilo</tt>
+после внесения каких-либо изменений в
+<tt>/etc/lilo.conf</tt> , или Ваши изменения не вступят в силу.</p>
+
+<h3>
+<a NAME="uninstall_linux"></a>4.1.5 Удаляем Linux</h3>
+
+<p>Если вам действительно хочется "удалить" Linux, вы можете использовать две команды&nbsp; (из под DOS или MS Windows):</p>
+
+<p><tt>LOCK C:</tt>
+<br>
+<tt>FDISK /MBR</tt></p>
+
+<p>что избавит вас от LILO -- это перезапишет главную загрузочную запись
+(MBR) на вашем первом жестком диске, заместив LILO. Команда "lock"
+позволяет "низкоуровневую (raw)" запись на диск, которая обычно запрещена в большинстве версий
+DOS из антивирусных соображений. Проблема с FDISK/MBR в том что он не сообщает об ошибках или успехе операции, так что лучше выполнять его с командой
+"lock". После этого можно удалить раздел Linux используя, например DOS-овскую программу "FDISK" для перераспределения дискового пространства.
+<p>Очевидно, MS FDISK не всегда справляется с удалением раздела Linux.
+В этом случае, можно использовать fdisk для linux . Для этого проще всего загрузиться с установочных дискет/CD
+Linux, и удалить раздел, используя средства управления разделами Linux, когда они возникают в процессе процедуры "установки".
+<p><font size=-1>Если и это не поможет, то попробуйте метод очистки MBR, опубликованный по адресу http://www.linuxgazette.com/issue63/okopnik.html:</font>
+<p><font size=-1>* * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * *</font>
+<br>
+<font size=-1>Предупреждение: Следующий совет полностью уничтожит вашу главную загрузочную запись (MBR), которая содержит ВСЮ информацию о разбиении вашего диска на разделы.
+НЕ ДЕЛАЙТЕ ЭТОГО. Если не уверены в том что это - именно тот вариант, которого вы хотите добиться
+- после этого ваш диск придет в начальное("совершенно чистое") состояние(ДАННЫЕ БУДУТ ПОТЕРЯНЫ ПОЛНОСТЬЮ), его надо будет снова разбивать на разделы и форматировать.</font>
+<br>
+<font size=-1>* * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * *</font>
+
+<p class="c110"><font size=-1><b>Решение для Linux.</b> Если вы можете загрузить
+Linux - скажем с дискеты - вам нужна только команда "dd":</font>
+<p><tt><font size=-1>dd if=/dev/zero of=/dev/hda bs=512 count=1</font></tt>
+
+<p class="c110"><font size=-1>Это заполнит MBR нулями. Естественно,
+вы должны быть суперпользователем(root).</font>
+
+<p class="c110"><font size=-1><b>Решение для DOS.</b> загрузитесь с дискеты с программой "debug" на ней; запустите</font>
+<p><tt><font size=-1>debug</font></tt>
+
+<p class="c110"><font size=-1>В командной строке('-'), зарезервируйте("block-fill") 512-байтный
+массив памяти с нулями:</font>
+
+<p class="c110"><font size=-1>f 9000:0 200 0</font>
+
+<p class="c110"><font size=-1>Перейдите в ассемблерный режим командой 'a',
+и введите следующий код:</font>
+<p class="c110"><font size=-1>mov dx,9000</font>
+<br>
+<font size=-1>mov es,dx</font>
+<br>
+<font size=-1>xor bx,bx</font>
+<br>
+<font size=-1>mov cx,0001</font>
+<br>
+<font size=-1>mov dx,0080</font>
+<br>
+<font size=-1>mov ax,0301</font>
+<br>
+<font size=-1>int 13</font>
+<br>
+<font size=-1>int 20</font>
+<p class="c110"><font size=-1>Нажмите &lt;Enter> для выхода из режима ассемблера, сделайте глубокий вдох - и нажмите "g" для выполнения, после чего нажмите "q" для выхода из "debug". Ваш HD снова девственно чист, и готов к разбиению и форматированию.</font>
+<p class="c110"><b>Переход к части: 4.2 -</b> <a href="42.html">Обращение к жестким дискам</a>
+<br>
+<a href="https://www.linuxlib.ru/lnag/index.html">На главную страницу</a>
+</td>
+</tr>
+</table>
+
+  </div>
+</div>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
