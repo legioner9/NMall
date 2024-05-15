@@ -1,0 +1,63 @@
+## Каталоги и файлы Nginx.
+    /etc/nginx/ — домашний каталог
+    /etc/nginx/nginx.conf — каталог настроек сервера
+    /usr/local/nginx/logs/nginx.pid — каталог главного процесса
+    /etc/nginx/sites-available.d — каталог настроек сайта
+    /etc/nginx/sites-enabled.d/ — каталог запуска сайта
+    /var/log/nginx — каталог журналов
+    ps -ax | grep nginx — процессы
+
+## Устанавливаем пакеты 
+
+    apt-get install nginx php7-fpm-fcgi php7-apcu
+    chkconfig php7-fpm on
+    service php7-fpm start
+    
+## Делаем симлинк для подключения сделанной конфигурации:
+
+    ln -s /etc/nginx/sites-available.d/scena_1.conf /etc/nginx/sites-enabled.d/scena_1.conf
+
+## php ...
+
+    $cat index.php
+        <h1>NGINX INSTALLED1</h1>
+        <?php phpinfo(); ?>
+
+    /home/st/REPOBARE/_repo/NWeb/3w/html
+    ├── scena
+    │   └── index.php
+    ├── scena_2
+    │   └── index.html
+    └── scena_3
+        └── index.html
+
+    3 directories, 3 files
+
+    sites-available.d # cat scena_1.conf
+    
+    server {
+      listen 80;
+      server_name localhost .local 10.0.2.11;
+    
+      access_log /var/log/nginx/access.log;
+      error_log /var/log/nginx/error.log;
+    
+      location / {
+        root /home/st/REPOBARE/_repo/NWeb/3w/html;
+        autoindex on;
+       }
+               location ~ \.php$ {
+                    root /home/st/REPOBARE/_repo/NWeb/3w/html;
+                    try_files $uri =404;
+                    include /etc/nginx/fastcgi_params;
+                    fastcgi_pass unix:/var/run/php7-fpm/php7-fpm.sock;
+                    fastcgi_param SCRIPT_FILENAME /home/st/REPOBARE/_repo/NWeb/3w/html/$fastcgi_script_name;
+            }
+    }
+
+sudo service nginx start
+sudo service php7-fpm start
+
+ln -s '/home/st/REPOBARE/_repo/NPhp' '/home/st/REPOBARE/_repo/NWeb/3w/html/NPhp'
+
+переход: http://127.0.0.1/scena/index.php
